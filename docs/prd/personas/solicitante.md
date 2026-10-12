@@ -1,0 +1,122 @@
+# Persona — Solicitante
+
+Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões citadas (A1 a A8, B1 a B4) estão em [perguntas-abertas.md](../perguntas-abertas.md).
+
+Legenda: **fato** (vem da especificação), **decisão** (da equipe, com ID), **suposição** (inferência, com impacto), **lacuna** (ainda sem decisão).
+
+## 1. Resumo
+
+| Item | Descrição | Natureza |
+| --- | --- | --- |
+| Papel | Professor ou coordenador que consulta a disponibilidade e cria, altera ou cancela suas reservas | Fato |
+| Contexto de uso | Reserva sala, professor e material para atividades acadêmicas, antes de a atividade acontecer | Suposição: decorre do objetivo da especificação. Impacto: define o momento em que a tela de busca é usada |
+| Frequência | Ocasional, ligada ao calendário das atividades | Suposição, sem dado de uso. Impacto: usuário eventual precisa de interface autoexplicativa |
+| Dispositivo | Computador e celular | Suposição: RF-13 exige interface responsiva. Impacto: a tela de reserva precisa funcionar em viewport pequeno |
+| Familiaridade | Sabe usar sistemas web em geral, sem treinamento específico | Suposição. Impacto: mensagens e fluxo precisam dispensar manual |
+
+## 2. Cenário típico (ilustrativo)
+
+Uma professora precisa de uma sala com capacidade para a turma e de um projetor para uma aula extra. Ela pesquisa por tipo, capacidade e intervalo e vê os horários ocupados sem saber de quem são (B3). Escolhe uma sala livre e inclui o projetor, que o Administrador marcou como restrito (A1).
+
+A reserva fica em SOLICITADA e ela recebe uma notificação quando o Responsável a aprova (A5). Dias depois, a aula é cancelada e ela cancela a reserva APROVADA antes do início (A8), liberando o recurso. Em outra ocasião, reserva só uma sala sem recurso restrito e a reserva é aprovada automaticamente (A1).
+
+Cenário ilustrativo, não é dado de pesquisa.
+
+## 3. Objetivos
+
+| Objetivo | Natureza | RF e RN | Critério de sucesso observável |
+| --- | --- | --- | --- |
+| Saber o que está livre | Fato | RF-03, A6, B3 | A busca devolve apenas recursos livres no intervalo, dentro da janela da sala, sem identificar quem reservou |
+| Reservar sem conflito | Fato | RF-04, RF-05, RF-06, RN-01, RN-02, RN-03 | Reserva criada, ou recusa com motivo; nenhuma sobreposição é aceita, nem com pedidos simultâneos |
+| Obter aprovação de recurso restrito | Fato | RF-07, RN-05, RN-06, A1 | Vê a reserva em SOLICITADA e depois em APROVADA ou rejeitada, com notificação |
+| Alterar e cancelar as próprias reservas | Fato | RF-04, RN-05, RN-07, A8 | Cancelamento aceito em SOLICITADA e em APROVADA até o início; recusado em EM_USO |
+| Entender a recusa | Decisão da equipe de apresentar o motivo; suposição quanto ao conteúdo | RF-13 | A mensagem indica o motivo (sobreposição, manutenção, fora da janela) sem identificar terceiros. Impacto se estiver errada: muda o texto dos erros |
+
+## 4. Tarefas principais
+
+| Tarefa | Gatilho | Resultado esperado | RF |
+| --- | --- | --- | --- |
+| Pesquisar disponibilidade | Precisa de recurso para uma atividade | Lista filtrada por tipo, capacidade, localização, competência e intervalo | RF-03 |
+| Criar reserva | Encontrou recurso livre | Reserva em SOLICITADA; passa a APROVADA automaticamente se não houver recurso restrito (A1) | RF-04, RF-05, RF-06 |
+| Acompanhar o pedido | Enviou reserva com recurso restrito | Estado atualizado e notificação de aprovação ou rejeição (A5) | RF-07, RF-11 |
+| Alterar reserva | Mudou horário ou recursos | Reserva atualizada sem conflito; estados e reaprovação são lacuna (C1) | RF-04 |
+| Cancelar reserva | Atividade cancelada ou remarcada | Reserva em cancelada e recurso liberado | RF-04 |
+| Ler o motivo de uma recusa | Recebeu recusa ou conflito | Entende o que mudar para reservar | RF-13 |
+
+## 5. Frustrações
+
+Hipóteses: a especificação não descreve frustrações.
+
+| Frustração | Impacto se estiver errada |
+| --- | --- |
+| Ver horário ocupado sem saber quando volta a ficar livre ou de quem é (B3 impede ver o dono) | Baixo: se for relevante, B3 pode ser revista |
+| Esperar a aprovação sem prazo informado (C2) | Médio: pode exigir prazo ou lembrete |
+| Ter reserva APROVADA cancelada por manutenção (A7) | Médio: a notificação precisa explicar o motivo |
+| Receber recusa sem entender o motivo | Médio: muda o conteúdo das mensagens (RF-13) |
+| Alteração de reserva que reinicia a aprovação (C1) | Médio: depende da decisão em C1 |
+
+## 6. Regras de negócio que afetam a persona
+
+| Regra | Efeito na experiência |
+| --- | --- |
+| RN-01 | Fim deve ser posterior ao início; duração zero é recusada (A2) |
+| RN-02 | Reservas do mesmo recurso não se sobrepõem; reservas consecutivas são permitidas (A2) |
+| RN-03 | Em pedidos simultâneos, só um é aceito; o outro recebe recusa |
+| RN-04 | Recurso em manutenção não pode ser reservado |
+| RN-05 | A reserva percorre estados e algumas ações só existem em certos estados (A8) |
+| RN-06 | Não pode aprovar recurso restrito; depende de um Responsável |
+| RN-07 | Reserva iniciada não pode ser apagada nem cancelada (A8) |
+| RN-08 | Toda mudança de estado gera auditoria; o Solicitante não acessa a auditoria (B3) |
+| A6 | A reserva precisa caber na janela da sala e não cruza a meia-noite local |
+
+## 7. Permissões e visibilidade de dados
+
+| Operação ou dado | Permitido | Decisão ou origem |
+| --- | --- | --- |
+| Pesquisar disponibilidade | Sim, vendo intervalos ocupados sem identificar quem reservou | RF-03, B3 |
+| Criar reserva | Sim | Fato (RF-04); aprovação automática sem recurso restrito (A1) |
+| Ver as próprias reservas | Sim | B3 |
+| Ver reservas de outros usuários | Não | B3 |
+| Alterar a própria reserva | Sim, em estados a definir | Fato (RF-04); estados são lacuna (C1) |
+| Cancelar reserva SOLICITADA própria | Sim, sem motivo | A8 |
+| Cancelar reserva APROVADA própria | Sim, até o início | A8 |
+| Cancelar reserva EM_USO ou em estado terminal | Não | A8, RN-07 |
+| Aprovar recurso restrito | Não | RN-06 |
+| Ver a auditoria | Não | B3 |
+| Gerenciar cadastros, usuários e bloqueios | Não | B2 (atribuições do Administrador) |
+| Definir que um recurso é restrito | Não | A1 |
+
+## 8. Relação com as outras personas
+
+| Com quem | O que entrega | O que recebe |
+| --- | --- | --- |
+| Responsável | O pedido que exige aprovação (recurso restrito) | Decisão de aprovar ou rejeitar; registro de início e de retirada ao usar o recurso |
+| Administrador | Nada diretamente; depende do catálogo e dos bloqueios por ele mantidos | Recursos cadastrados, restrições e cancelamento por manutenção (A7) |
+| Sistema | Pedido de reserva | Aprovação automática (ator SISTEMA, A1), notificações (A5) |
+
+O Responsável também pode ser Solicitante (B1); nesse caso, a reserva dele não é aprovada por ele mesmo.
+
+## 9. Cenários de risco e uso indevido
+
+Alimentam os testes de autorização.
+
+| O que poderia tentar | O que impede |
+| --- | --- |
+| Ver, alterar ou cancelar a reserva de outro usuário | RF-01, B3, A8: acesso recusado |
+| Aprovar a própria reserva de recurso restrito | RN-06, B1: resposta 403, sem mudança de estado |
+| Descobrir quem reservou um horário pela consulta de disponibilidade | B3: a resposta só traz intervalos |
+| Enviar a reserva com "exige aprovação" falso | A1: o valor é calculado no servidor a partir do cadastro, não vem do cliente |
+| Reservar recurso em manutenção ou fora da janela da sala | RN-04, A6 |
+| Enviar dois pedidos ao mesmo tempo para o mesmo recurso e horário | RN-03, RF-06: uma única reserva aceita |
+| Cancelar reserva em uso ou apagar reserva iniciada | RN-07, A8 |
+| Informar fim antes do início ou duração zero | RN-01, A2 |
+
+## 10. Questões remanescentes
+
+- C1: estados em que a alteração é permitida e necessidade de nova aprovação.
+- C2: prazo e motivo na decisão do Responsável, que afetam a espera do Solicitante.
+- C8: se um professor vinculado a usuário pode reservar a si mesmo como recurso.
+
+## 11. Jornada na aplicação
+
+A jornada passo a passo é produzida no Prompt 1.2. TODO.
