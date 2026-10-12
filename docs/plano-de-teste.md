@@ -31,6 +31,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 ## 3. Escopo
 
+**Itens de teste (versão ou build):** TODO. A identificação do build testado depende da casca do projeto e da integração contínua (Fase 3).
+
 ### 3.1 Itens a testar
 
 | Grupo | Itens | Observação |
@@ -53,6 +55,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Feriados no cálculo de utilização | Fora de escopo | C5 |
 | Provedor de notificação real | A integração é simulada por endpoint de teste e por WireMock | A5, S5 |
 | Comportamento com valor da tolerância, do reenvio ou do tamanho de página | Valores sem decisão: D1, D3 e D4. Testa-se que o valor é configurável, não o valor | Lacunas |
+| Comportamento das ambiguidades D10 a D16 | Instante de "até o início", "reserva futura", recálculo de "exige aprovação", operação da própria reserva pelo Responsável, desativação de usuário, levantamento de bloqueio e reserva com início no passado. O caso de teste só é escrito depois da decisão | Lacunas |
 | Retenção e anonimização de auditoria e notificações | Lacuna D9 | Lacuna |
 | Mecanismo automático de SEM_DECISAO e de não comparecimento | Lacuna D2: o teste depende da decisão sobre job ou avaliação sob demanda | Lacuna |
 | Desempenho com metas numéricas | A especificação não define critérios. TODO na Fase 2 e na Fase 5 | Lacuna |
@@ -64,7 +67,7 @@ Níveis exigidos pela especificação (seção 5). Ferramentas e versões são d
 | Nível | Foco | Ferramenta prevista | Observação |
 | --- | --- | --- | --- |
 | Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
-| Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Sem banco em memória que não reproduza o comportamento real (TODO: confirmar no ADR da Fase 2) |
+| Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção 5): persistência verificada em ambiente real, não com mock |
 | API em caixa-preta | Contrato, autorização por perfil, códigos de erro | TODO: ferramenta | Matriz perfil × operação |
 | Ponta a ponta | Jornadas das personas | TODO: ferramenta | Depende do front end (Fase 6) |
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
@@ -100,6 +103,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Cenários de qualidade e arquitetura definidos | TODO (Fase 2) |
 | Casca do projeto, integração contínua e processo de defeitos | TODO (Fase 3) |
 | Decisões A1, A3 e A5 confirmadas com o professor | TODO |
+| Lacunas D10 a D16 decididas, ou assumidas como suposição com impacto | TODO |
 
 ### 5.2 Critérios de saída
 
@@ -124,7 +128,7 @@ Proposta da equipe, a validar:
 | A integração contínua está quebrada na linha principal | A integração contínua volta a passar |
 | O ambiente de teste containerizado não sobe | O ambiente volta a subir |
 | Defeito bloqueante impede a execução de um conjunto de casos | A correção é verificada |
-| Decisão pendente de D1, D2, D3 ou D4 impede definir o resultado esperado | A decisão é registrada |
+| Decisão pendente de D1 a D4 ou de D10 a D16 impede definir o resultado esperado | A decisão é registrada |
 
 TODO: critério numérico de defeito bloqueante, se necessário.
 
@@ -178,7 +182,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | R-13 | Controle incorreto de unidade e devolução de material | RF-09 | RN-12, RN-23 | Integração e tabela de decisão |
 | R-14 | Cadastro inconsistente de recurso ou usuário | RF-02, RF-15 | RN-13 | Partição e integração |
 | R-15 | Documentação diverge do comportamento | RF-14 | — | Teste de contrato |
-| R-16 | Decisão pendente ou suposição altera o comportamento | RF-16 | RN-21, RN-25 | Revisão da suposição antes de escrever o caso |
+| R-16 | Decisão pendente ou suposição altera o comportamento | RF-02, RF-04, RF-07, RF-08, RF-09, RF-10, RF-11, RF-12, RF-15, RF-16 | RN-01, RN-10, RN-16, RN-18, RN-19, RN-20, RN-21, RN-22, RN-23, RN-25, RN-28, RN-29, RN-31, RN-32 | Revisão da suposição antes de escrever o caso |
 
 ### 8.1 Riscos de projeto
 
@@ -186,7 +190,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | --- | --- |
 | Decisões A1, A3 e A5 podem ser alteradas pelo professor | A3 é a de maior impacto no modelo de dados |
 | Prazo até a semana 46 | Cronograma na seção 9 |
-| Lacunas D1 a D4 e D9 sem decisão | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
+| Lacunas D1 a D4 e D9 a D16 sem decisão | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
 
 ## 9. Papéis, recursos e cronograma
 
@@ -197,6 +201,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | TODO: nomes |
 | Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | TODO |
 | Professor | Validar as decisões pendentes de confirmação | TODO |
+| Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
 ### 9.2 Cronograma (especificação, seção 9)
 
@@ -232,7 +237,7 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 | Cenários de qualidade (CEN-xx) e ADRs | Fase 2 |
 | Ferramentas de API em caixa-preta e de ponta a ponta | Fase 2 e Fase 3 |
 | Política de dados e de limpeza dos testes | Fase 3 |
-| Valores de D1, D3 e D4 e decisão de D2 e D9 | Equipe e professor |
+| Valores de D1, D3 e D4 e decisão de D2, D9 e D10 a D16 | Equipe e professor |
 | Confirmação de A1, A3 e A5 | Professor |
 | Escolha da funcionalidade de TDD ou BDD | Fase 4 |
 | Nomes e prazos dos responsáveis | Equipe |
