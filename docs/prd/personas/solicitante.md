@@ -1,6 +1,6 @@
 # Persona — Solicitante
 
-Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões citadas (A1 a A8, B1 a B4) estão em [perguntas-abertas.md](../perguntas-abertas.md).
+Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões e lacunas citadas (identificadores A, B, C e D) estão em [perguntas-abertas.md](../perguntas-abertas.md).
 
 Legenda: **fato** (vem da especificação), **decisão** (da equipe, com ID), **suposição** (inferência, com impacto), **lacuna** (ainda sem decisão).
 
@@ -29,7 +29,7 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Saber o que está livre | Fato | RF-03, A6, B3 | A busca devolve apenas recursos livres no intervalo, dentro da janela da sala, sem identificar quem reservou |
 | Reservar sem conflito | Fato | RF-04, RF-05, RF-06, RN-01, RN-02, RN-03 | Reserva criada, ou recusa com motivo; nenhuma sobreposição é aceita, nem com pedidos simultâneos |
 | Obter aprovação de recurso restrito | Fato | RF-07, RN-05, RN-06, A1 | Vê a reserva em SOLICITADA e depois em APROVADA ou rejeitada, com notificação |
-| Alterar e cancelar as próprias reservas | Fato | RF-04, RN-05, RN-07, A8 | Cancelamento aceito em SOLICITADA e em APROVADA até o início; recusado em EM_USO |
+| Alterar e cancelar as próprias reservas | Fato | RF-04, RN-05, RN-07, RN-18, RN-19, A8, C1 | Cancelamento aceito em SOLICITADA e em APROVADA até o início; recusado em EM_USO |
 | Entender a recusa | Decisão da equipe de apresentar o motivo; suposição quanto ao conteúdo | RF-13 | A mensagem indica o motivo (sobreposição, manutenção, fora da janela) sem identificar terceiros. Impacto se estiver errada: muda o texto dos erros |
 
 ## 4. Tarefas principais
@@ -40,7 +40,7 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Criar reserva | Encontrou recurso livre | Reserva em SOLICITADA; passa a APROVADA automaticamente se não houver recurso restrito (A1) | RF-04, RF-05, RF-06 |
 | Acompanhar o pedido | Enviou reserva com recurso restrito | Estado atualizado e notificação de aprovação ou rejeição (A5) | RF-07, RF-11 |
 | Alterar reserva | Mudou horário ou recursos | Reserva atualizada sem conflito, de forma atômica; volta a SOLICITADA se exigia aprovação (C1) | RF-04 |
-| Cancelar reserva | Atividade cancelada ou remarcada | Reserva em cancelada e recurso liberado | RF-04 |
+| Cancelar reserva | Atividade cancelada ou remarcada | Reserva cancelada e recurso liberado | RF-04 |
 | Ler o motivo de uma recusa | Recebeu recusa ou conflito | Entende o que mudar para reservar | RF-13 |
 
 ## 5. Frustrações
@@ -115,10 +115,15 @@ Alimentam os testes de autorização.
 | Cancelar reserva em uso ou apagar reserva iniciada | RN-07, RN-27, A8 |
 | Alterar reserva EM_USO ou em estado terminal | C1, RN-19 |
 | Informar fim antes do início ou duração zero | RN-01, A2 |
+| Incluir recurso restrito, por alteração, em reserva que não exigia aprovação | RN-10 e RN-19 não definem o recálculo: lacuna D12 |
+| Reservar com início no passado | RN-01 não cobre: lacuna D16 |
 
 ## 10. Questões remanescentes
 
 - D2: mecanismo do cancelamento por SEM_DECISAO (suposição S6), que o Solicitante percebe como cancelamento automático.
+- D10: instante exato de "até o início" para cancelar e alterar.
+- D12: recálculo de "exige aprovação" quando a alteração inclui recurso restrito.
+- D16: reserva com início no passado.
 
 ## 11. Jornada na aplicação
 

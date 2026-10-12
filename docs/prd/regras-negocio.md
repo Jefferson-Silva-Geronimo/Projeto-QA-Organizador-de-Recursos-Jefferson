@@ -11,6 +11,22 @@ Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis
 | Exemplos | Dados fictícios. Nenhum nome, data ou horário é real |
 | Técnica | Técnica de teste prevista: valor limite, partição, tabela de decisão ou transição de estados |
 
+### Convenção de nomes
+
+Esta convenção vale para todos os documentos do projeto, para o modelo de dados e para os diagramas.
+
+| Termo | Em texto, tabelas e diagramas | Identificador técnico (banco, API, auditoria) |
+| --- | --- | --- |
+| Perfis | Solicitante, Responsável, Administrador | `SOLICITANTE`, `RESPONSAVEL`, `ADMINISTRADOR` |
+| Estados do fluxo principal | SOLICITADA, APROVADA, EM_USO, CONCLUÍDA | `SOLICITADA`, `APROVADA`, `EM_USO`, `CONCLUIDA` |
+| Estados alternativos | rejeitada, cancelada, não compareceu (minúsculas, como na especificação) | `REJEITADA`, `CANCELADA`, `NAO_COMPARECEU` |
+| Tipos de recurso | sala, professor, material | `SALA`, `PROFESSOR`, `MATERIAL` |
+| Motivos de cancelamento pelo sistema | MANUTENCAO e SEM_DECISAO, sempre como identificador, sem acento | `MANUTENCAO`, `SEM_DECISAO` |
+| Ator das transições automáticas | SISTEMA. A palavra "sistema" em minúsculas designa a aplicação | `SISTEMA` no tipo de ator |
+| Status de notificação | PENDENTE, ENVIADA, FALHA | `PENDENTE`, `ENVIADA`, `FALHA` |
+| Eventos de auditoria | RESERVA_CRIADA, RESERVA_ALTERADA, RESERVA_APROVADA, RESERVA_REJEITADA, RESERVA_CANCELADA, RESERVA_INICIADA, RESERVA_CONCLUIDA, RESERVA_NAO_COMPARECEU (nomes propostos, a confirmar na Fase 2) | os mesmos nomes |
+| Tabelas e colunas | entre crases e em minúsculas, como em `modelo-dados.dbml` | os mesmos nomes |
+
 ### Dados fictícios usados nos exemplos
 
 | Item | Descrição fictícia |
@@ -18,6 +34,7 @@ Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis
 | Sala A | Janela de 07:00 às 22:00, de segunda a sexta (valores de exemplo) |
 | Sala B | Sala sem restrição, mesma janela da Sala A |
 | Professor 1 | Professor sem vínculo com usuário |
+| Professor 2 | Professor vinculado ao usuário Solicitante 1 |
 | Projetor P-001 | Material com patrimônio, marcado como restrito |
 | Notebook N-001 | Material com patrimônio, não restrito |
 | Solicitante 1 e Solicitante 2 | Usuários com perfil Solicitante |
@@ -34,6 +51,7 @@ Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis
 - **Aceita:** Sala A, 20/10/2026, das 14:00 às 16:00.
 - **Rejeita:** das 14:00 às 14:00 (duração zero); das 16:00 às 14:00 (término antes do início).
 - **Técnica:** valor limite, com término antes, igual e depois do início.
+- **Depende de lacuna aberta:** D16 (reserva com início no passado não está definida).
 
 ### RN-02. Reservas do mesmo recurso não podem se sobrepor
 
@@ -80,7 +98,7 @@ Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis
 - **Texto fiel:** reservas iniciadas não podem ser apagadas.
 - **Origem:** especificação, seção 4 (Estados e auditoria). Reforçada por RN-27.
 - **Aceita:** reserva SOLICITADA do Solicitante 1 é cancelada (mudança de estado, sem apagar).
-- **Rejeita:** qualquer tentativa de apagar ou cancelar uma reserva EM_USO.
+- **Rejeita:** qualquer tentativa de apagar uma reserva EM_USO ou CONCLUÍDA, ou de cancelar uma reserva EM_USO.
 - **Técnica:** partição por estado (não iniciada e iniciada).
 
 ### RN-08. Toda mudança de estado gera auditoria
@@ -110,6 +128,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva criada em 12/10/2026 com o Projetor P-001 (restrito) exige aprovação; o Administrador 1 desmarca o projetor em 13/10/2026 e a reserva continua exigindo aprovação.
 - **Rejeita:** requisição que envia "exige aprovação" falso: o valor do cliente é ignorado.
 - **Técnica:** partição (com e sem recurso restrito) e teste de que a mudança do atributo não afeta reserva existente.
+- **Depende de lacuna aberta:** D12 (recálculo de "exige aprovação" quando a alteração inclui recurso restrito).
 
 ### RN-11. Intervalos semiabertos [início, fim)
 
@@ -122,17 +141,17 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-12. Material é unidade identificada
 
 - **Marca:** decisão da equipe. **Origem:** A3.
-- **Texto:** cada material é uma unidade identificada por código de patrimônio e cada unidade é um recurso. Controle por quantidade e consumíveis estão fora de escopo.
+- **Texto:** cada material é uma unidade identificada por código de patrimônio único, e cada unidade é um recurso. Controle por quantidade e consumíveis estão fora de escopo.
 - **Aceita:** Notebook N-001 reservado das 14:00 às 16:00; Notebook N-002, outra unidade, reservado no mesmo horário.
-- **Rejeita:** cadastro de material sem código de patrimônio; segunda reserva do Notebook N-001 no mesmo horário.
+- **Rejeita:** cadastro de material sem código de patrimônio; cadastro com código de patrimônio já existente; segunda reserva do Notebook N-001 no mesmo horário.
 - **Técnica:** partição por unidade e valor limite de sobreposição (RN-02).
 
 ### RN-13. Professor é recurso; vínculo com usuário é opcional
 
 - **Marca:** decisão da equipe. **Origem:** A4 e C8.
 - **Texto:** professor é recurso alocável e pode não ter login. O vínculo com usuário, quando existe, não concede perfil. Para solicitar, é preciso um usuário Solicitante. Reservar aula em que o próprio vinculado é o professor alocado é permitido, e a agenda continua sob RN-02.
-- **Aceita:** Professor 1 sem login alocado a uma aula; Solicitante 1, vinculado ao Professor 1, reserva uma aula com ele alocado.
-- **Rejeita:** a mesma reserva se o Professor 1 já está alocado das 14:00 às 16:00 em outra sala.
+- **Aceita:** Professor 1, sem login, alocado a uma aula; Solicitante 1, vinculado ao Professor 2, reserva uma aula com o Professor 2 alocado.
+- **Rejeita:** a mesma reserva se o Professor 2 já está alocado das 14:00 às 16:00 em outra sala.
 - **Técnica:** partição (com e sem vínculo) e valor limite na agenda.
 
 ### RN-14. Janela e dias de funcionamento da sala
@@ -140,7 +159,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Marca:** decisão da equipe. **Origem:** A6 e C5.
 - **Texto:** a sala tem hora de abertura e de fechamento e dias da semana de funcionamento. A reserva precisa caber na janela e em um dia de funcionamento, e não cruza a meia-noite local nesta versão (suposição S3). Professor e material não têm janela.
 - **Aceita:** Sala A em 20/10/2026 (terça), das 07:00 às 22:00.
-- **Rejeita:** Sala A em 20/10/2026 das 21:00 às 23:00 (fora da janela); em 24/10/2026 (sábado, dia sem funcionamento); das 23:00 às 01:00 (cruza a meia-noite).
+- **Rejeita:** Sala A em 20/10/2026 das 06:00 às 08:00 (começa antes da abertura) e das 21:00 às 23:00 (termina depois do fechamento); em 24/10/2026 (sábado, dia sem funcionamento); das 23:00 às 01:00 (cruza a meia-noite).
 - **Técnica:** valor limite das bordas da janela e partição por dia da semana.
 
 ### RN-15. Tempo em UTC com fuso configurável
@@ -158,6 +177,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** Responsável 1 cria reserva com o Projetor P-001 e o Responsável 2 a aprova.
 - **Rejeita:** Responsável 1 aprova a própria reserva (403).
 - **Técnica:** tabela de decisão aprovador × dono da reserva.
+- **Depende de lacuna aberta:** D13 (início, retirada e conclusão pelo dono Responsável) e D14 (desativação de usuário e mínimo de dois Responsáveis).
 
 ### RN-17. Administrador não reserva nem aprova; um perfil por usuário
 
@@ -171,9 +191,10 @@ Todas as regras desta seção são **decisão da equipe**.
 
 - **Marca:** decisão da equipe. **Origem:** A8.
 - **Texto:** SOLICITADA é cancelada pelo dono, sem motivo, ou pelo Administrador, com motivo obrigatório. APROVADA é cancelada pelo dono até o início, ou por Responsável ou Administrador, com motivo. EM_USO não é cancelada por ninguém; só é concluída pelo Responsável. Estados terminais não são cancelados. Não há antecedência mínima.
-- **Aceita:** Solicitante 1 cancela a própria reserva APROVADA em 20/10/2026 às 13:00, para início às 14:00; Responsável 2 cancela a mesma reserva com motivo.
-- **Rejeita:** Solicitante 1 cancela a reserva às 14:00 em ponto, após o início; Responsável 1 cancela reserva SOLICITADA de outro usuário; qualquer cancelamento de EM_USO.
+- **Aceita:** Solicitante 1 cancela a própria reserva APROVADA em 20/10/2026 às 13:00, para início às 14:00; em outra reserva APROVADA, Responsável 2 cancela com motivo informado.
+- **Rejeita:** Solicitante 1 cancela a própria reserva às 14:01 de 20/10/2026, depois do início das 14:00; Responsável 1 cancela reserva SOLICITADA de outro usuário; qualquer cancelamento de EM_USO. O instante exato do início (14:00:00) é a lacuna D10.
 - **Técnica:** tabela de decisão estado × perfil e valor limite no instante de início.
+- **Depende de lacuna aberta:** D10 (instante exato de "até o início").
 
 ### RN-19. Alteração por estado e perfil
 
@@ -182,6 +203,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva APROVADA com o Projetor P-001 muda de 14:00–16:00 para 15:00–17:00 sem conflito: volta a SOLICITADA e gera evento de auditoria.
 - **Rejeita:** mudança para 15:00–17:00 com a Sala A ocupada nesse horário (409, ocupação anterior preservada); alteração de reserva EM_USO.
 - **Técnica:** transição de estados, partição por tipo de mudança (título versus período ou recurso) e teste de atomicidade com banco real.
+- **Depende de lacuna aberta:** D10 (instante exato de "até o início") e D12 (recálculo de "exige aprovação").
 
 ### RN-20. Início de uso
 
@@ -190,6 +212,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** Responsável 1 registra a retirada do Projetor P-001 e a reserva vai a EM_USO.
 - **Rejeita:** Solicitante 1 tenta registrar o início; registro de início em reserva SOLICITADA.
 - **Técnica:** transição de estados e tabela de decisão por perfil.
+- **Depende de lacuna aberta:** D13 (início e retirada pelo dono Responsável).
 
 ### RN-21. Não compareceu
 
@@ -198,14 +221,16 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva com início às 14:00, sem uso, marcada pelo Responsável depois de passada a tolerância configurada.
 - **Rejeita:** marcação antes de terminar a tolerância; marcação de reserva SOLICITADA ou EM_USO.
 - **Técnica:** valor limite no fim da tolerância e transição de estados.
+- **Depende de lacuna aberta:** D1 (valor da tolerância) e D2 (mecanismo da marcação automática).
 
 ### RN-22. Bloqueio de manutenção sobre reservas existentes
 
 - **Marca:** decisão da equipe. **Origem:** A7 e D7.
 - **Texto:** a criação do bloqueio primeiro responde 409 listando as reservas conflitantes, sem gravar. O Administrador pode confirmar, e então as reservas SOLICITADA e APROVADA conflitantes são canceladas pelo sistema com motivo MANUTENCAO, com auditoria e notificação. Reserva com vários recursos é cancelada por inteiro, não apenas o item afetado (D7). Se houver reserva EM_USO, o bloqueio é recusado, sem opção de forçar (RN-07).
-- **Aceita:** bloqueio da Sala A em 21/10/2026, das 08:00 às 12:00, com duas reservas APROVADA, uma delas com a Sala A e o Projetor P-001: 409 com a lista; após confirmar, ambas são canceladas por inteiro com motivo MANUTENCAO, e o Projetor P-001 volta a ficar livre.
+- **Aceita:** bloqueio da Sala A em 21/10/2026, das 08:00 às 12:00, com duas reservas APROVADA, uma delas com a Sala A e o Projetor P-001: 409 com a lista; após confirmar, ambas são canceladas por inteiro com motivo MANUTENCAO, e o Projetor P-001 volta a ficar livre. Reserva da Sala A das 07:00 às 08:00 não conflita com o bloqueio e não entra na lista (RN-11).
 - **Rejeita:** o mesmo bloqueio com uma reserva EM_USO no período; confirmação sem ter recebido a lista.
 - **Técnica:** partição por estado das reservas conflitantes e transição de estados.
+- **Depende de lacuna aberta:** D15 (levantamento de bloqueio).
 
 ### RN-23. Conclusão condicionada à devolução
 
@@ -214,6 +239,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva com Projetor P-001 e Notebook N-001, ambos retirados e devolvidos, é concluída; reserva com o projetor reservado e nunca retirado é concluída.
 - **Rejeita:** conclusão com o projetor retirado e não devolvido.
 - **Técnica:** tabela de decisão (retirado × devolvido) e transição de estados.
+- **Depende de lacuna aberta:** D13 (conclusão pelo dono Responsável).
 
 ### RN-24. Decisão do Responsável
 
@@ -230,6 +256,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva SOLICITADA para 20/10/2026 às 14:00, sem decisão até as 14:00, é cancelada pelo sistema.
 - **Rejeita:** cancelamento por SEM_DECISAO de reserva já APROVADA ou antes do início.
 - **Técnica:** valor limite no instante de início e transição de estados. O mecanismo está em aberto (D2).
+- **Depende de lacuna aberta:** D2 (mecanismo) e D10 (instante do início).
 
 ### RN-26. Visibilidade por perfil
 
@@ -254,6 +281,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva aprovada gera notificação ENVIADA ao Solicitante; provedor com erro 500 deixa a notificação PENDENTE para reenvio e a reserva permanece APROVADA.
 - **Rejeita:** falha do provedor que reverte a reserva; reenvio sem a mesma chave de idempotência.
 - **Técnica:** partição por resposta do provedor (200, 404, 500, lentidão, JSON inválido), com WireMock.
+- **Depende de lacuna aberta:** D3 (tentativas e intervalo de reenvio) e D9 (retenção e dados pessoais).
 
 ### RN-29. Auditoria ampliada
 
@@ -262,6 +290,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** o Administrador 1 altera o perfil de um usuário e um evento registra ator, entidade, valor anterior e valor novo.
 - **Rejeita:** alteração de cadastro sem evento.
 - **Técnica:** teste de integração com banco real, um caso por tipo de entidade.
+- **Depende de lacuna aberta:** D9 (retenção), D14 (desativação de usuário) e D15 (levantamento de bloqueio).
 
 ### RN-30. Conflitos evitados são registrados
 
@@ -282,6 +311,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva APROVADA das 14:00 às 16:00 em 20/10/2026 conta 2 horas no período de 20/10/2026.
 - **Rejeita:** reserva SOLICITADA contada na carga; reserva que atravessa o início do período contada por inteiro.
 - **Técnica:** valor limite nas bordas do período e dados semeados com resultado conferido contra o banco.
+- **Depende de lacuna aberta:** D4 (tamanho da página).
 
 ### RN-32. Desativação de recurso
 
@@ -290,6 +320,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** Notebook N-001 sem reservas futuras é desativado em 13/10/2026; o histórico de reservas CONCLUÍDA continua consultável.
 - **Rejeita:** desativar a Sala A com uma reserva APROVADA em 20/10/2026: 409 com a lista, e o recurso permanece ativo.
 - **Técnica:** partição por estado das reservas futuras (SOLICITADA, APROVADA, EM_USO, terminais) e valor limite na data de início da reserva.
+- **Depende de lacuna aberta:** D11 (significado de "reserva futura").
 
 ### RN-33. Quem rejeita uma solicitação
 
@@ -315,7 +346,7 @@ Os nomes dos eventos de auditoria são **propostas** a confirmar na Fase 2. As r
 | SOLICITADA | cancelada | SISTEMA | Início chegou sem decisão, motivo SEM_DECISAO (RN-25) | RESERVA_CANCELADA, ator SISTEMA |
 | SOLICITADA | cancelada | SISTEMA | Bloqueio confirmado, motivo MANUTENCAO (RN-22) | RESERVA_CANCELADA, ator SISTEMA |
 | SOLICITADA | SOLICITADA | Dono | Alteração com RN-01, RN-02 e RN-04 reavaliadas (RN-19) | RESERVA_ALTERADA |
-| APROVADA | SOLICITADA | Dono | Alteração de período ou recurso em reserva que exigia aprovação, até o início (RN-19) | RESERVA_ALTERADA e novo pedido de aprovação |
+| APROVADA | SOLICITADA | Dono | Alteração de período ou recurso em reserva que exigia aprovação, até o início (RN-19) | RESERVA_ALTERADA (o estado volta a SOLICITADA) e notificação SOLICITACAO_PENDENTE |
 | APROVADA | APROVADA | Dono | Alteração de título ou descrição, ou de reserva que não exigia aprovação, até o início (RN-19) | RESERVA_ALTERADA |
 | APROVADA | EM_USO | Responsável | Registra o início ou a retirada do primeiro material (RN-20) | RESERVA_INICIADA |
 | APROVADA | cancelada | Dono, até o início; Responsável ou Administrador, com motivo (RN-18) | Antes do início para o dono | RESERVA_CANCELADA |
@@ -378,7 +409,7 @@ A reserva exige aprovação se **ao menos um** dos recursos é restrito (RN-10).
 
 ## 5. Lacunas que continuam abertas
 
-Detalhe em [perguntas-abertas.md](perguntas-abertas.md), seção D. **Nenhuma foi decidida e nenhum valor foi inventado.** D5, D6, D7 e D8 foram decididas em 12/10/2026 e deram origem a RN-32 e RN-33 e às atualizações de RN-22 e RN-26.
+Detalhe em [perguntas-abertas.md](perguntas-abertas.md), seção D. **Nenhuma foi decidida e nenhum valor foi inventado.** D5 a D8 foram decididas em 12/10/2026 e deram origem a RN-32 e RN-33 e às atualizações de RN-22 e RN-26.
 
 | ID | Lacuna | Regra afetada |
 | --- | --- | --- |
@@ -387,3 +418,10 @@ Detalhe em [perguntas-abertas.md](perguntas-abertas.md), seção D. **Nenhuma fo
 | D3 | Valor padrão de tentativas e de intervalo de reenvio da notificação (S7) | RN-28 |
 | D4 | Tamanho da página do relatório | RN-31 |
 | D9 | Retenção da auditoria e das notificações e tratamento de dados pessoais | RN-28, RN-29 |
+| D10 | Instante exato de "até o início" | RN-18, RN-19, RN-25 |
+| D11 | Significado de "reserva futura" na desativação de recurso | RN-32 |
+| D12 | Recálculo de "exige aprovação" quando a alteração inclui recurso restrito | RN-10, RN-19 |
+| D13 | Início, retirada, devolução e conclusão pelo dono Responsável | RN-16, RN-20, RN-23 |
+| D14 | Desativação de usuário: reservas, aprovações pendentes e mínimo de dois Responsáveis | RN-16, RN-29 |
+| D15 | Levantamento de bloqueio de manutenção | RN-22, RN-29 |
+| D16 | Reserva com início no passado | RN-01 |

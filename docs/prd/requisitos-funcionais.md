@@ -402,3 +402,10 @@ Ver [perguntas-abertas.md](perguntas-abertas.md), seção D. Nenhuma foi decidid
 | D3 | Valor padrão de tentativas e intervalo do reenvio de notificação | RF-11 |
 | D4 | Tamanho da página do relatório | RF-12 |
 | D9 | Retenção da auditoria e das notificações | RF-10, RF-11 |
+| D10 | Instante exato de "até o início" | RF-04, RF-16 |
+| D11 | Significado de "reserva futura" na desativação de recurso | RF-02 |
+| D12 | Recálculo de "exige aprovação" quando a alteração inclui recurso restrito | RF-04, RF-07 |
+| D13 | Início, retirada, devolução e conclusão pelo dono Responsável | RF-09, RF-16 |
+| D14 | Desativação de usuário, reservas e aprovações pendentes | RF-15, RF-10 |
+| D15 | Levantamento de bloqueio de manutenção | RF-08, RF-10 |
+| D16 | Reserva com início no passado | RF-04 |

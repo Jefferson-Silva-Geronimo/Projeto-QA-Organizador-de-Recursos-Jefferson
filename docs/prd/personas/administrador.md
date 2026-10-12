@@ -1,6 +1,6 @@
 # Persona — Administrador
 
-Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões citadas (A1 a A8, B1 a B4) estão em [perguntas-abertas.md](../perguntas-abertas.md).
+Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões e lacunas citadas (identificadores A, B, C e D) estão em [perguntas-abertas.md](../perguntas-abertas.md).
 
 Legenda: **fato** (vem da especificação), **decisão** (da equipe, com ID), **suposição** (inferência, com impacto), **lacuna** (ainda sem decisão).
 
@@ -28,11 +28,11 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Objetivo | Natureza | RF e RN | Critério de sucesso observável |
 | --- | --- | --- | --- |
 | Manter o catálogo correto | Fato | RF-02 | Recurso cadastrado aparece na pesquisa com os atributos informados; material tem código de patrimônio (A3) |
-| Controlar quem é restrito | Decisão A1 | RF-07, RN-06 | Reservas novas com recurso restrito exigem aprovação; as existentes não mudam |
-| Gerenciar usuários e perfis | Fato; um perfil por usuário é decisão B2 | RF-01 | Cada usuário tem exatamente um perfil |
-| Bloquear recurso sem surpresa | Fato; fluxo é decisão A7 | RF-08, RN-04, RN-07 | O bloqueio só é gravado após confirmar a lista de conflitos; EM_USO impede |
-| Supervisionar reservas e auditoria | Decisão B3 | RF-10, RN-08 | Encontra quem mudou o quê e quando |
-| Intervir com cancelamento motivado | Decisão A8 | RF-04, RN-05 | Cancela SOLICITADA e APROVADA com motivo obrigatório |
+| Controlar quem é restrito | Decisão A1 | RF-02, RF-07, RN-06, RN-10 | Reservas novas com recurso restrito exigem aprovação; as existentes não mudam |
+| Gerenciar usuários e perfis | Fato; um perfil por usuário é decisão B2 | RF-01, RF-15, RN-17 | Cada usuário tem exatamente um perfil |
+| Bloquear recurso sem surpresa | Fato; fluxo é decisão A7 | RF-08, RN-04, RN-07, RN-22 | O bloqueio só é gravado após confirmar a lista de conflitos; EM_USO impede |
+| Supervisionar reservas e auditoria | Decisão B3 | RF-10, RN-08, RN-26, RN-29 | Encontra quem mudou o quê e quando |
+| Intervir com cancelamento motivado | Decisão A8 | RF-04, RN-05, RN-18 | Cancela SOLICITADA e APROVADA com motivo obrigatório |
 | Consultar utilização dos recursos | Decisão D5: acessa o relatório RF-12, somente leitura | RF-12, B4, RN-31 | Obtém carga horária, utilização de salas e conflitos evitados por filtro |
 
 ## 4. Tarefas principais
@@ -42,11 +42,13 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Cadastrar sala com janela | Nova sala disponível | Sala pesquisável, com abertura, fechamento e dias de funcionamento (A6, C5) | RF-02 |
 | Cadastrar professor e competências | Novo docente | Professor alocável; vínculo com usuário opcional (A4) | RF-02 |
 | Cadastrar material com patrimônio | Nova unidade | Unidade com código, tratada como recurso (A3) | RF-02 |
-| Marcar recurso como restrito | Recurso exige controle | Novas reservas com ele exigem aprovação (A1) | RF-07 |
-| Criar e alterar usuários e perfis | Novo usuário ou mudança de função | Usuário com um único perfil (B2) | RF-01 |
+| Marcar recurso como restrito | Recurso exige controle | Novas reservas com ele exigem aprovação (A1) | RF-02, RF-07 |
+| Criar e alterar usuários e perfis | Novo usuário ou mudança de função | Usuário com um único perfil (B2) | RF-15, RF-01 |
 | Bloquear recurso em manutenção | Manutenção programada | 409 com lista; após confirmar, cancelamento com motivo MANUTENCAO (A7) | RF-08 |
 | Consultar reservas e auditoria | Dúvida ou incidente | Histórico completo disponível (B3) | RF-10 |
 | Cancelar reserva com motivo | Necessidade operacional | Reserva cancelada com motivo e auditoria (A8) | RF-04 |
+| Desativar recurso | Recurso fora de uso | Desativado, ou 409 com a lista se houver reservas futuras SOLICITADA, APROVADA ou EM_USO (D6) | RF-02 |
+| Consultar relatório | Acompanhamento da utilização | Relatório RF-12 filtrado e paginado, somente leitura (D5) | RF-12 |
 
 ## 5. Frustrações
 
@@ -64,13 +66,13 @@ Hipóteses: a especificação não descreve frustrações.
 
 | Regra | Efeito na experiência |
 | --- | --- |
-| RN-02 e A2 | Bloqueios usam a mesma fronteira semiaberta das reservas |
+| RN-11 | Bloqueios usam a mesma fronteira semiaberta das reservas |
 | RN-04 | O bloqueio torna o recurso não reservável no período |
 | RN-05 | Os cancelamentos por manutenção são transições para cancelada |
 | RN-06 | Não aprova, mesmo sendo administrador (B2) |
 | RN-07 | Reserva EM_USO impede o bloqueio e não pode ser cancelada |
 | RN-08 | Vê a auditoria; suas ações também geram eventos |
-| A6 e C5 | Define a janela e os dias de funcionamento das salas |
+| RN-14 | Define a janela e os dias de funcionamento das salas |
 | RN-22 | O bloqueio exige confirmação e cancela SOLICITADA e APROVADA; EM_USO impede |
 | RN-27 | Reservas nunca são apagadas; os cancelamentos ficam consultáveis |
 | RN-29 | Suas ações de cadastro, perfil e bloqueio geram auditoria |
@@ -128,6 +130,9 @@ Alimentam os testes de autorização.
 ## 10. Questões remanescentes
 
 - D9: retenção da auditoria e tratamento de dados pessoais nela.
+- D11: significado de "reserva futura" ao desativar um recurso.
+- D14: desativação de usuário, reservas e aprovações pendentes.
+- D15: levantamento de um bloqueio de manutenção.
 
 ## 11. Jornada na aplicação
 

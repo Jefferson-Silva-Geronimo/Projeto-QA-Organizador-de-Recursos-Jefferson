@@ -2,7 +2,7 @@
 
 Registro único das lacunas da [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) e das dúvidas surgidas na redação dos documentos de produto, com a decisão da equipe para cada uma.
 
-O nome do arquivo foi mantido (`perguntas-abertas.md`) para não quebrar links. Os IDs A1 a A8 e B1 a B4 também foram mantidos.
+O nome do arquivo foi mantido (`perguntas-abertas.md`) para não quebrar links. Os IDs das decisões (A1 a A8, B1 a B4, C1 a C8 e D5 a D8) e das lacunas (D1 a D4 e D9 a D16) são estáveis e não são renumerados.
 
 ## Como ler
 
@@ -59,7 +59,7 @@ Observações importantes:
 - **Justificativa:** mantém a regra num só lugar (o cadastro), sob controle do Administrador, e dá previsibilidade ao Solicitante. Guardar o valor na reserva evita que uma mudança de cadastro invalide ou reabra aprovações já dadas.
 - **Alternativas consideradas:** restrição por tipo de recurso (por exemplo, todo material); restrição escolhida pelo Solicitante na reserva; todas as reservas passarem por aprovação.
 - **Impacto:**
-  - RF e RN: RF-02, RF-07, RN-05, RN-06, RN-08.
+  - RF e RN: RF-02, RF-07, RN-06, RN-09, RN-10 (e RN-05, RN-08 para estados e auditoria).
   - Modelo de dados: campo `restrito` no recurso; campo `exige_aprovacao` na reserva; auditoria precisa aceitar o ator SISTEMA.
   - Testes: tabela de decisão perfil × tipo de recurso (RN-06); aprovação automática com ator SISTEMA; mudança do atributo não afeta reserva existente.
 - **Status:** Decidida (equipe), confirmar com o professor.
@@ -74,7 +74,7 @@ Observações importantes:
 - **Justificativa:** uma única fórmula vale para sala, professor, material e bloqueio, o que simplifica regra, banco e testes. Permite reservas em sequência no mesmo recurso.
 - **Alternativas consideradas:** intervalos fechados (fim igual ao início conflita); exigir folga entre reservas.
 - **Impacto:**
-  - RF e RN: RN-01, RN-02, RN-04, RF-05, RF-06.
+  - RF e RN: RF-05, RF-06, RN-01, RN-02, RN-04, RN-11.
   - Modelo de dados: o período deve ser armazenado de forma que a proteção contra sobreposição use a mesma convenção (a escolha técnica fica para a Fase 2).
   - Testes: valor limite em trinca (um instante antes, no limite, um instante depois) para reservas e bloqueios.
 - **Status:** Decidida (equipe).
@@ -88,7 +88,7 @@ Observações importantes:
 - **Justificativa:** trata material como sala e professor: um recurso, um período, sem sobreposição. Evita um segundo modelo de disponibilidade (saldo de estoque).
 - **Alternativas consideradas:** controle por quantidade em estoque; modelo híbrido (unidade para equipamento e quantidade para consumível).
 - **Impacto:**
-  - RF e RN: RF-02, RF-09, RN-02, RN-03.
+  - RF e RN: RF-02, RF-09, RN-02, RN-03, RN-12.
   - Modelo de dados: material com código de patrimônio, uma linha por unidade; retirada e devolução ligadas à unidade.
   - Testes: sobreposição e concorrência valem igualmente para material; não há teste de saldo.
 - **Status:** Decidida (equipe), confirmar com o professor.
@@ -103,7 +103,7 @@ Observações importantes:
 - **Justificativa:** o catálogo precisa conter docentes que nunca usarão o sistema, e o Solicitante pode ser professor, então o vínculo não pode ser obrigatório nem proibido.
 - **Alternativas consideradas:** professor sempre com usuário; professor nunca com usuário (cadastros totalmente separados).
 - **Impacto:**
-  - RF e RN: RF-01, RF-02, RF-05, RN-02.
+  - RF e RN: RF-01, RF-02, RF-05, RN-02, RN-13.
   - Modelo de dados: relação opcional entre professor (recurso) e usuário.
   - Testes: agenda do professor sem usuário vinculado; vínculo não concede perfil nem permissão.
 - **Status:** Decidida (equipe).
@@ -117,7 +117,7 @@ Observações importantes:
 - **Justificativa:** satisfaz RF-11 sem depender de provedor real e permite teste com WireMock sem alterar o código de produção. Enviar após o commit mantém a reserva válida mesmo com provedor fora do ar.
 - **Alternativas consideradas:** simulação interna apenas com registro em tabela; e-mail; integração com serviço de terceiros específico; envio dentro da transação.
 - **Impacto:**
-  - RF e RN: RF-11, RN-05, RN-08.
+  - RF e RN: RF-11, RN-28.
   - Modelo de dados: registro de notificação com status e número de tentativas.
   - Testes: matriz de respostas do provedor (200, 404, 500, lentidão, JSON inválido) com WireMock; falha do provedor não altera o estado da reserva.
 - **Status:** Decidida (equipe), confirmar com o professor.
@@ -130,9 +130,9 @@ Observações importantes:
 - **Fato:** a especificação não define fuso nem horário de funcionamento (seção 10, item 6).
 - **Decisão:** fuso America/Sao_Paulo, configurável, com armazenamento em UTC e conversão apenas na borda. A sala tem hora de abertura e de fechamento, e a reserva precisa caber na janela. Professor e material não têm janela. A reserva não cruza a meia-noite local nesta versão.
 - **Justificativa:** o armazenamento em UTC evita ambiguidade entre ambientes; a janela por sala dá base ao cálculo de utilização (B4) e a uma regra de validação objetiva.
-- **Alternativas consideradas:** usar o fuso do servidor; gravar horário local sem conversão; fuso por usuário; sala sem janela (24 horas); permitir reserva que cruza a meia-noite.
+- **Alternativas consideradas:** usar o fuso do servidor; gravar horário local sem conversão; fuso por usuário; sala sem janela, aberta o dia todo; permitir reserva que cruza a meia-noite.
 - **Impacto:**
-  - RF e RN: RF-03, RF-04, RN-01, RN-02, RN-04, RF-12.
+  - RF e RN: RF-03, RF-04, RF-12, RN-01, RN-02, RN-04, RN-14, RN-15.
   - Modelo de dados: hora de abertura e de fechamento na sala; fuso em configuração.
   - Testes: reserva dentro, na borda e fora da janela; transição de horário e virada de dia.
 - **Status:** Decidida (equipe).
@@ -147,7 +147,7 @@ Observações importantes:
 - **Justificativa:** o Administrador vê o efeito antes de aplicar; nenhuma reserva em uso é interrompida; todo cancelamento fica rastreado.
 - **Alternativas consideradas:** recusar o bloqueio sempre que houver reserva; cancelar automaticamente sem confirmação; remanejar reservas para outro recurso.
 - **Impacto:**
-  - RF e RN: RF-08, RN-04, RN-05, RN-07, RN-08, RF-10, RF-11.
+  - RF e RN: RF-08, RF-10, RF-11, RN-04, RN-07, RN-22 (e RN-05, RN-08 para estados e auditoria).
   - Modelo de dados: motivo de cancelamento MANUTENCAO; ator SISTEMA nas transições automáticas.
   - Testes: 409 sem gravação; confirmação cancela só SOLICITADA e APROVADA; reserva EM_USO impede o bloqueio; uma notificação e um evento de auditoria por reserva cancelada.
 - **Status:** Decidida (equipe).
@@ -171,7 +171,7 @@ Observações importantes:
 - **Justificativa:** limita o cancelamento ao dono e a quem tem autoridade, com motivo quando outra pessoa interfere, e protege o que está em uso (RN-07).
 - **Alternativas consideradas:** prazo mínimo de antecedência; qualquer Responsável cancelar qualquer reserva; marcação automática obrigatória de não compareceu.
 - **Impacto:**
-  - RF e RN: RF-04, RF-09, RF-10, RN-05, RN-07, RN-08.
+  - RF e RN: RF-04, RF-09, RF-10, RF-16, RN-05, RN-07, RN-08, RN-18, RN-20, RN-21.
   - Modelo de dados: motivo de cancelamento; tolerância em configuração.
   - Testes: tabela de transição de estados cobrindo as proibidas; cancelamento por perfil e estado; marcação de não compareceu antes e depois da tolerância.
 - **Status:** Decidida (equipe).
@@ -190,7 +190,7 @@ Não estão na seção 10 da especificação. Foram levantadas ao escrever o PRD
 - **Justificativa:** o Responsável também precisa de recursos; a segregação mantém o sentido de RN-06.
 - **Alternativas consideradas:** o Responsável não reserva; o Responsável pode auto-aprovar.
 - **Impacto:**
-  - RF e RN: RF-01, RF-04, RF-07, RN-06.
+  - RF e RN: RF-01, RF-04, RF-07, RN-06, RN-16.
   - Modelo de dados: comparação entre solicitante e aprovador da reserva.
   - Testes: aprovação da própria reserva é recusada; matriz perfil × operação.
   - **Restrição de operação:** são necessários ao menos dois Responsáveis, senão reserva com recurso restrito feita por um Responsável nunca é aprovada.
@@ -205,7 +205,7 @@ Não estão na seção 10 da especificação. Foram levantadas ao escrever o PRD
 - **Justificativa:** separa administração de uso e elimina a necessidade de segregação de funções para o Administrador.
 - **Alternativas consideradas:** o Administrador reserva; o Administrador aprova como superusuário; usuário com mais de um perfil.
 - **Impacto:**
-  - RF e RN: RF-01, RF-04, RN-06.
+  - RF e RN: RF-01, RF-04, RF-15, RN-06, RN-17.
   - Modelo de dados: um único perfil por usuário.
   - Testes: Administrador recebe 403 ao criar ou aprovar reserva; usuário não acumula perfis.
 - **Status:** Decidida (equipe).
@@ -219,7 +219,7 @@ Não estão na seção 10 da especificação. Foram levantadas ao escrever o PRD
 - **Justificativa:** o Solicitante precisa saber o que está livre, mas não precisa saber de quem é o horário; quem decide e quem administra precisam de visão completa.
 - **Alternativas consideradas:** todas as reservas visíveis a todos; Solicitante vendo o dono de cada reserva.
 - **Impacto:**
-  - RF e RN: RF-01, RF-03, RF-10, RN-08.
+  - RF e RN: RF-01, RF-03, RF-10, RN-08, RN-26.
   - Modelo de dados: nenhum campo novo; a consulta de disponibilidade devolve apenas intervalos.
   - Testes: resposta da disponibilidade sem identificação; acesso a reserva de outro usuário recusado; matriz de visibilidade por perfil.
   - O Responsável não acessa a auditoria completa (C4).
@@ -238,7 +238,7 @@ Não estão na seção 10 da especificação. Foram levantadas ao escrever o PRD
 - **Justificativa:** definições mensuráveis e conferíveis contra os dados. Utilização só para salas porque só elas têm janela de funcionamento (A6).
 - **Alternativas consideradas:** contar também reservas SOLICITADA na carga; calcular utilização para todos os tipos; contar conflitos apenas por RN-02.
 - **Impacto:**
-  - RF e RN: RF-12, RN-02, RN-03, RN-04.
+  - RF e RN: RF-12, RN-02, RN-03, RN-04, RN-30, RN-31.
   - Modelo de dados: tentativas de conflito persistidas, com motivo, recurso, período e solicitante.
   - Testes: dados semeados com resultado esperado conferido contra o banco; parte interna do período nas bordas.
 - **Status:** Decidida (equipe).
@@ -253,7 +253,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Decisão (equipe):** nenhuma reserva é apagada fisicamente em nenhum estado. Cancelamento, rejeição e demais encerramentos são mudanças de estado com auditoria.
 - **Justificativa:** reforça RN-07 (reserva iniciada não é apagada) e RN-08 (toda mudança de estado gera auditoria), e preserva o histórico para RF-10 e RF-12.
 - **Alternativas consideradas:** permitir exclusão física de reservas nunca iniciadas.
-- **Impacto:** RN-07, RN-08, RF-10, RF-12; modelo de dados sem exclusão de reserva; testes de que não existe operação de exclusão.
+- **Impacto:** RF-10, RF-12, RN-07, RN-08, RN-27; modelo de dados sem exclusão de reserva; testes de que não existe operação de exclusão.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
 ### C1. Alteração de reserva
@@ -263,7 +263,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Justificativa:** a alteração não pode abrir brecha para contornar a aprovação (A1) nem deixar a agenda em estado intermediário; a atomicidade evita perder a ocupação anterior em caso de conflito.
 - **Alternativas consideradas:** alterar apenas em SOLICITADA; exigir cancelar e criar nova reserva; manter APROVADA após qualquer alteração.
 - **Impacto:**
-  - RF e RN: RF-04, RF-05, RF-07, RN-01, RN-02, RN-04, RN-05, RN-08.
+  - RF e RN: RF-04, RF-05, RF-07, RN-01, RN-02, RN-04, RN-05, RN-08, RN-10, RN-19.
   - Modelo de dados: troca de ocupações na mesma transação; evento de auditoria de alteração.
   - Testes: alteração com conflito não muda nada; alteração de reserva que exigia aprovação volta a SOLICITADA; alteração de título não reaprova; alteração em EM_USO e em estado terminal recusada.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
@@ -275,7 +275,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Justificativa:** a rejeição precisa ser compreensível para quem pediu (RF-13); sem prazo a fila não gera obrigação de tempo de resposta que a especificação não prevê; o cancelamento ao chegar o início evita reserva SOLICITADA ocupando um período que já começou.
 - **Alternativas consideradas:** motivo sempre obrigatório; prazo máximo para decidir; manter SOLICITADA indefinidamente.
 - **Impacto:**
-  - RF e RN: RF-07, RN-05, RN-08, RF-11.
+  - RF e RN: RF-07, RF-11, RF-16, RN-05, RN-08, RN-24, RN-25.
   - Modelo de dados: motivo na decisão; motivo SEM_DECISAO; ator SISTEMA.
   - Testes: rejeição sem motivo é recusada; aprovação sem motivo é aceita; SOLICITADA cancelada ao chegar o início.
 - **Status:** Decidida (equipe), com uma suposição marcada.
@@ -289,7 +289,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Justificativa:** impede reserva encerrada com material fora; limitar a "material retirado" evita travar a conclusão por um item que nunca saiu.
 - **Alternativas consideradas:** concluir sem verificar devolução; exigir devolução de todo material reservado, mesmo o não retirado.
 - **Impacto:**
-  - RF e RN: RF-09, RN-05, RN-08.
+  - RF e RN: RF-09, RF-16, RN-05, RN-08, RN-23.
   - Modelo de dados: registro de retirada e de devolução por unidade.
   - Testes: conclusão recusada com material retirado e não devolvido; conclusão aceita com material não retirado.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
@@ -300,7 +300,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Decisão:** o Responsável vê o histórico das reservas e o relatório RF-12. O Administrador vê toda a auditoria, incluindo cadastro e perfil.
 - **Justificativa:** o Responsável acompanha o ciclo das reservas e precisa do relatório; a auditoria completa, que inclui usuários e perfis (C7), fica com quem administra.
 - **Alternativas consideradas:** auditoria completa também para o Responsável; relatório apenas para o Administrador.
-- **Impacto:** RF-10, RF-12, RN-08; matriz de visibilidade por perfil; testes de acesso negado à auditoria completa para Responsável e Solicitante. B3 foi atualizada. O acesso do Administrador ao relatório RF-12 foi decidido em D5.
+- **Impacto:** RF-10, RF-12, RN-08, RN-26; matriz de visibilidade por perfil; testes de acesso negado à auditoria completa para Responsável e Solicitante. B3 foi atualizada. O acesso do Administrador ao relatório RF-12 foi decidido em D5.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
 ### C5. Janela, dias de funcionamento e relatório
@@ -310,7 +310,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Justificativa:** torna a utilização calculável e conferível sem depender de calendário externo.
 - **Alternativas consideradas:** funcionamento todos os dias; calendário de feriados; relatório sem paginação.
 - **Impacto:**
-  - RF e RN: RF-12, RN-02, A6, B4.
+  - RF e RN: RF-12, RN-14, RN-31 (decisões A6 e B4).
   - Modelo de dados: dias da semana na sala, além de abertura e fechamento.
   - Testes: utilização em período que inclui dia sem funcionamento; reserva em dia sem funcionamento recusada; paginação do relatório.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
@@ -322,7 +322,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Justificativa:** a chave de idempotência torna o reenvio seguro; o conteúdo mínimo limita a exposição de dados.
 - **Alternativas consideradas:** payload com dados completos da reserva; destinatário único; reenvio em intervalo fixo.
 - **Impacto:**
-  - RF e RN: RF-11, RN-05, RN-08; A5.
+  - RF e RN: RF-11, RN-28 (decisão A5).
   - Modelo de dados: status, tentativas, próximo reenvio e chave de idempotência.
   - Testes: matriz de respostas do provedor com WireMock; reenvio não duplica efeito; payload sem dado pessoal desnecessário.
 - **Status:** Decidida (equipe).
@@ -335,7 +335,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Decisão:** auditar também criação, alteração e desativação de recursos, usuários, perfis e bloqueios, no mesmo mecanismo (ator, entidade, antes e depois).
 - **Justificativa:** são ações que alteram regras de acesso e disponibilidade; RF-10 pede histórico auditável de mudanças, e RN-08 cobre apenas estado de reserva.
 - **Alternativas consideradas:** auditar só estado de reserva; mecanismo separado para cadastros.
-- **Impacto:** RF-10, RN-08, RF-01, RF-02, RF-08; um único mecanismo de auditoria; testes de evento para cada operação de cadastro, perfil e bloqueio.
+- **Impacto:** RF-01, RF-02, RF-08, RF-10, RF-15, RN-08, RN-29; um único mecanismo de auditoria; testes de evento para cada operação de cadastro, perfil e bloqueio.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
 ### C8. Vínculo professor e usuário
@@ -344,12 +344,12 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Decisão:** o vínculo professor e usuário não concede perfil. Para solicitar, é preciso usuário Solicitante. Reservar aula em que o próprio vinculado é o professor alocado é permitido e a agenda continua sob RN-02.
 - **Justificativa:** mantém separação entre cadastro do recurso e controle de acesso (A4, B2) sem proibir o caso comum.
 - **Alternativas consideradas:** proibir autoalocação; vínculo concedendo perfil automaticamente.
-- **Impacto:** RF-01, RF-05, RN-02, A4; testes de autoalocação com conflito na própria agenda e de vínculo sem perfil.
+- **Impacto:** RF-01, RF-05, RN-02, RN-13 (decisão A4); testes de autoalocação com conflito na própria agenda e de vínculo sem perfil.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
 ## D. Decisões e lacunas surgidas ao aplicar C
 
-As nove lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe decidiu **D5, D6, D7 e D8**. D1, D2, D3, D4 e D9 seguem abertas.
+As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe decidiu **D5, D6, D7 e D8**. D1, D2, D3, D4 e D9 seguem abertas. D10 a D16 foram identificadas na revisão das Fases 0 e 1, também em 12/10/2026, e seguem abertas.
 
 ### D5. O Administrador acessa o relatório RF-12?
 
@@ -402,7 +402,7 @@ As nove lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equi
 
 ### Lacunas que seguem abertas
 
-**Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica como suposição com validação pendente. Responsável pela validação: equipe. Prazo: TODO.
+**Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica registrada, com validação pendente. Responsável pela validação: equipe. Prazo: TODO, a definir pela equipe.
 
 | ID | Pergunta | Afeta | Impacto se assumir errado | Estado |
 | --- | --- | --- | --- | --- |
@@ -411,3 +411,10 @@ As nove lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equi
 | D3 | Qual o valor padrão de tentativas e de intervalo do reenvio de notificação (S7)? | C6, RF-11, RN-28 | Notificações perdidas ou carga sobre o provedor | Aberta, valor sem definição |
 | D4 | Qual o tamanho da página do relatório RF-12? | C5, RF-12, RN-31 | Relatório lento ou incômodo de navegar | Aberta, valor sem definição |
 | D9 | Qual a retenção da auditoria e das notificações, e o tratamento de dados pessoais nelas? | RF-10, RF-11, C6, C7 | Dado pessoal guardado além do necessário | Aberta |
+| D10 | Qual é o instante exato de "até o início" em A8 e C1? Às 14:00:00, numa reserva que começa às 14:00, o dono ainda cancela ou altera? | A8, C1, C2, RN-18, RN-19, RN-25 | Cancelamento ou alteração aceitos depois do início, ou recusados antes dele; SEM_DECISAO no instante errado | Aberta |
+| D11 | O que é "reserva futura" em D6: início posterior ao instante atual ou término posterior? EM_USO já começou, o que sugere o término | D6, RN-32 | Desativação indevida de recurso com reserva em curso, ou recusa por reserva já encerrada | Aberta |
+| D12 | Quando a alteração de C1 inclui um recurso restrito numa reserva que não exigia aprovação, "exige aprovação" é recalculado? | C1, A1, RN-10, RN-19 | Reserva com recurso restrito sem decisão de Responsável, contornando RN-06 | Aberta |
+| D13 | O Responsável dono pode registrar início, retirada, devolução e conclusão da própria reserva? B1 e D8 tratam só de aprovar e rejeitar | A8, B1, D8, RN-16, RN-20, RN-23 | Segregação de funções incompleta, ou impossibilidade de operar a própria reserva | Aberta |
+| D14 | O que acontece com reservas e aprovações pendentes quando um usuário é desativado, em especial um Responsável? C7 só exige auditar | C7, B1, RF-15, RN-29 | Reservas órfãs, fila sem aprovador ou menos de dois Responsáveis | Aberta |
+| D15 | Como se levanta um bloqueio de manutenção: quem, quando e o que acontece com o período liberado? C7 cita a desativação de bloqueios | A7, C7, RF-08, RN-22, RN-29 | Recurso preso em manutenção, ou liberado sem rastro | Aberta |
+| D16 | Uma reserva pode ter início no passado? RN-01 trata só da ordem entre início e término | RN-01, RF-04 | Reserva retroativa aceita sem controle, ou registro tardio recusado indevidamente | Aberta |

@@ -4,7 +4,7 @@
 | --- | --- |
 | Projeto | Organização de Recursos (Qualidade de Software, TADS, 2026.2) |
 | Fonte de verdade | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), lida em 12/10/2026 |
-| Estado | Rascunho da Fase 1, Prompts 1.1, 1.1b, 1.2 e etapas 1.3 a 1.6 |
+| Estado | Fase 1 concluída e revisada em 12/10/2026 |
 | Entrega | Semana 46 |
 
 Este documento separa o que a especificação **afirma** (fato), o que a equipe **decidiu** (decisão, com ID), o que é **suposição** (com impacto) e o que segue em **lacuna**. O registro completo está em [perguntas-abertas.md](prd/perguntas-abertas.md) e as regras, com exemplos e técnica de teste, em [regras-negocio.md](prd/regras-negocio.md).
@@ -67,7 +67,7 @@ Fato (especificação, seção 3). Numeração preservada.
 | RF-13 | Interface responsiva e mensagens de erro compreensíveis |
 | RF-14 | Documentação de API ou dos fluxos públicos do sistema |
 
-O detalhamento (persona, jornada, regras ligadas e critério de aceite) é produzido no Prompt 1.3 e não faz parte deste documento.
+O detalhamento (persona, jornada, regras ligadas, decisões e critério de aceite) está em [requisitos-funcionais.md](prd/requisitos-funcionais.md), que também traz os acréscimos da equipe RF-15 e RF-16.
 
 ### 4.2 Regras críticas
 
@@ -79,7 +79,7 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 | RN-02 | Reservas do mesmo recurso não podem se sobrepor (sala, material ou professor) |
 | RN-03 | Duas solicitações simultâneas devem produzir uma única reserva aceita |
 | RN-04 | Recursos em manutenção não podem ser reservados |
-| RN-05 | Fluxo principal `SOLICITADA → APROVADA → EM_USO → CONCLUÍDA`; estados alternativos: rejeitada, cancelada e não compareceu |
+| RN-05 | Fluxo principal `SOLICITADA → APROVADA → EM_USO → CONCLUÍDA`. Estados alternativos: rejeitada, cancelada e não compareceu |
 | RN-06 | Somente responsáveis aprovam recursos restritos |
 | RN-07 | Reservas iniciadas não podem ser apagadas |
 | RN-08 | Toda mudança de estado deve gerar auditoria |
@@ -100,35 +100,35 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 
 ### 4.4 Decisões da equipe que moldam o escopo
 
-Decisões de 12/10/2026, detalhadas com justificativa, alternativas e impacto em [perguntas-abertas.md](prd/perguntas-abertas.md). A coluna "Confirmar" indica o que ainda depende do professor.
+Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Confirmar" indica o que ainda depende do professor.
 
-| ID | Decisão que afeta o escopo | RF e RN | Confirmar com o professor |
+| ID | Tema | RF e RN afetados | Confirmar com o professor |
 | --- | --- | --- | --- |
-| A1 | Atributo "restrito" no recurso, definido pelo Administrador; reserva sem recurso restrito é aprovada automaticamente, com ator SISTEMA; "exige aprovação" fica gravado na reserva | RF-02, RF-07, RN-05, RN-06, RN-08 | Sim |
-| A2 | Intervalos semiabertos [início, fim); duração zero é inválida; vale também para bloqueios | RN-01, RN-02, RN-04 | Não |
-| A3 | Material é unidade identificada, com código de patrimônio; cada unidade é um recurso | RF-02, RF-09, RN-02 | Sim |
-| A4 | Professor é recurso; vínculo com usuário é opcional | RF-01, RF-02, RF-05 | Não |
-| A5 | Notificação por porta e adapter de webhook configurável; envio após o commit; falha do provedor não desfaz a reserva | RF-11 | Sim |
-| A6 | Fuso America/Sao_Paulo configurável; UTC no armazenamento; janela de abertura e fechamento por sala | RF-03, RF-04, RN-01, RN-02 | Não |
-| A7 | Bloqueio sobre reservas: 409 com lista, confirmação, cancelamento pelo sistema com motivo MANUTENCAO; recusado se houver reserva EM_USO | RF-08, RN-04, RN-07 | Não |
-| A8 | Matriz de cancelamento por estado e perfil; sem antecedência mínima; início de uso e não comparecimento pelo Responsável | RF-04, RF-09, RN-05, RN-07 | Não |
-| B1 | Responsável também reserva; ninguém aprova a própria reserva | RF-04, RF-07, RN-06 | Não |
-| B2 | Administrador não aprova nem reserva; um perfil por usuário | RF-01, RN-06 | Não |
-| B3 | Visibilidade por perfil; Solicitante não vê quem reservou | RF-03, RF-10 | Não |
-| B4 | Definições de carga horária, utilização (só salas) e conflitos evitados | RF-12 | Não |
-| C1 | O dono altera em SOLICITADA e APROVADA até o início; alteração atômica; volta a SOLICITADA se exigia aprovação | RF-04, RF-07, RN-01, RN-02, RN-04 | Não |
-| C2 | Rejeitar exige motivo; sem prazo; SOLICITADA cancelada com SEM_DECISAO quando o início chega (suposição S6) | RF-07, RN-05 | Não; S6 a validar |
-| C3 | CONCLUÍDA só com todo material retirado devolvido; cobrança de atraso fora de escopo | RF-09, RN-05 | Não |
-| C4 | Responsável vê histórico e relatório; Administrador vê toda a auditoria | RF-10, RF-12 | Não |
-| C5 | Sala com dias da semana de funcionamento; feriados fora de escopo; relatório paginado | RF-12 | Não |
-| C6 | Webhook com POST JSON, idempotência, status PENDENTE, ENVIADA e FALHA, reenvio configurável | RF-11 | Não; S7 a validar |
-| C7 | Auditoria também de cadastros, usuários, perfis e bloqueios | RF-10, RN-08 | Não |
-| C8 | Vínculo professor e usuário não concede perfil; autoalocação permitida | RF-01, RF-05, RN-02 | Não |
-| — | Regra geral: nenhuma reserva é apagada fisicamente | RN-07, RN-08 | Não |
-| D5 | O Administrador vê o relatório RF-12, somente leitura | RF-12, RN-26 | Não |
-| D6 | Desativar recurso com reservas futuras SOLICITADA, APROVADA ou EM_USO é recusado com 409, sem cancelamento automático | RF-02, RN-32 | Não |
-| D7 | Bloqueio sobre reserva com vários recursos cancela a reserva inteira | RF-08, RN-22 | Não |
-| D8 | Rejeita o Responsável que não é o dono; o dono cancela | RF-07, RN-33 | Não |
+| A1 | Recurso restrito e aprovação automática | RF-02, RF-07, RN-09, RN-10 | Sim |
+| A2 | Fronteira de horário [início, fim) | RN-11 | Não |
+| A3 | Material por unidade identificada | RF-02, RF-09, RN-12 | Sim |
+| A4 | Professor como recurso, vínculo opcional | RF-02, RF-05, RN-13 | Não |
+| A5 | Notificação por webhook, após o commit | RF-11, RN-28 | Sim |
+| A6 | Fuso, UTC e janela da sala | RF-03, RF-04, RN-14, RN-15 | Não |
+| A7 | Bloqueio sobre reservas existentes | RF-08, RN-22 | Não |
+| A8 | Cancelamento, início de uso e não comparecimento | RF-04, RF-09, RF-16, RN-18, RN-20, RN-21 | Não |
+| B1 | Responsável também reserva, sem aprovar a própria | RF-04, RF-07, RN-16 | Não |
+| B2 | Administrador não reserva nem aprova | RF-01, RF-15, RN-17 | Não |
+| B3 | Visibilidade por perfil | RF-03, RF-10, RN-26 | Não |
+| B4 | Cálculos do relatório | RF-12, RN-30, RN-31 | Não |
+| C1 | Alteração atômica de reserva | RF-04, RN-19 | Não |
+| C2 | Motivo na decisão e cancelamento SEM_DECISAO | RF-07, RF-16, RN-24, RN-25 | Não; S6 a validar |
+| C3 | Conclusão condicionada à devolução | RF-09, RF-16, RN-23 | Não |
+| C4 | Acesso a histórico, auditoria e relatório | RF-10, RF-12, RN-26 | Não |
+| C5 | Dias de funcionamento e relatório paginado | RF-12, RN-14, RN-31 | Não |
+| C6 | Contrato e reenvio do webhook | RF-11, RN-28 | Não; S7 a validar |
+| C7 | Auditoria ampliada | RF-10, RF-15, RN-29 | Não |
+| C8 | Vínculo professor e usuário sem perfil | RF-01, RF-05, RN-13 | Não |
+| — | Nenhuma reserva é apagada fisicamente | RF-10, RN-27 | Não |
+| D5 | Administrador vê o relatório, somente leitura | RF-12, RN-26 | Não |
+| D6 | Desativação de recurso recusada com reservas futuras | RF-02, RN-32 | Não |
+| D7 | Bloqueio cancela a reserva inteira | RF-08, RN-22 | Não |
+| D8 | Rejeita o Responsável que não é o dono | RF-07, RN-33 | Não |
 
 ### 4.5 Decisões técnicas da equipe fora da especificação
 
@@ -163,7 +163,7 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 | Reservas próprias do Administrador | Decisão B2 | O Administrador administra; quem precisa reservar usa outro perfil |
 | Cobrança de atraso na devolução de material | Decisão C3 | Só se exige devolução para concluir; a cobrança não existe nesta versão |
 | Calendário de feriados na utilização | Decisão C5 | A utilização usa só dias da semana de funcionamento. Impacto: percentual inclui feriados como dias de funcionamento |
-| Qualquer funcionalidade além de RF-01 a RF-14 | Suposição S2 | Só entra como RF-15 em diante se uma jornada ficar sem requisito, com justificativa |
+| Qualquer funcionalidade além de RF-01 a RF-16 | Suposição S2 | RF-15 e RF-16 foram acrescentados porque uma jornada ficou sem requisito. Outros só entram com a mesma justificativa |
 | Pontos listados na seção D de [perguntas-abertas.md](prd/perguntas-abertas.md) | Lacuna | Não são implementados nem assumidos até haver decisão |
 
 ## 6. Métricas de sucesso
@@ -192,7 +192,8 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 - As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
 - Três decisões aguardam confirmação do professor: A1, A3 e A5.
 - As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
-- Nove lacunas novas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026; D1 a D4 e D9 seguem abertas na seção D do mesmo documento, sem valor assumido.
+- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026; D1 a D4 e D9 seguem abertas, sem valor assumido.
+- Sete ambiguidades (D10 a D16) foram registradas na revisão das Fases 0 e 1 e seguem abertas: instante exato de "até o início", significado de "reserva futura", recálculo de "exige aprovação" na alteração, operação da própria reserva pelo Responsável dono, desativação de usuário, levantamento de bloqueio e reserva com início no passado.
 - Duas decisões carregam suposição a validar: C2 (S6) e C6 (S7).
 
 ## 9. Suposições registradas
@@ -200,7 +201,7 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 | ID | Suposição | Impacto se estiver errada |
 | --- | --- | --- |
 | S1 | O problema hoje é resolvido de forma manual e sujeito a conflito | Muda o texto de motivação, não os requisitos |
-| S2 | O escopo é RF-01 a RF-14 mais acréscimos justificados por jornada | O escopo pode estar subdimensionado |
+| S2 | O escopo é RF-01 a RF-14 mais os acréscimos RF-15 e RF-16, justificados por jornada | O escopo pode estar subdimensionado |
 | S3 | Reservas que cruzam a meia-noite local não são necessárias nesta versão (A6) | Eventos noturnos não podem ser reservados; a regra de janela precisa ser revista |
 | S4 | O valor padrão da tolerância de não comparecimento ainda não foi definido e exige validação (A8, lacuna D1) | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais |
 | S5 | O endpoint de teste da demonstração basta como integração externa para RF-11 (A5) | Pode ser exigido provedor real, com credenciais e contrato |

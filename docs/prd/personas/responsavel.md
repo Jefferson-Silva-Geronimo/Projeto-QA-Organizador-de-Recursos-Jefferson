@@ -1,6 +1,6 @@
 # Persona — Responsável
 
-Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões citadas (A1 a A8, B1 a B4) estão em [perguntas-abertas.md](../perguntas-abertas.md).
+Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões e lacunas citadas (identificadores A, B, C e D) estão em [perguntas-abertas.md](../perguntas-abertas.md).
 
 Legenda: **fato** (vem da especificação), **decisão** (da equipe, com ID), **suposição** (inferência, com impacto), **lacuna** (ainda sem decisão).
 
@@ -32,7 +32,7 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Decidir aprovações com contexto | Fato (aprovar); decisão da equipe quanto à segregação | RF-07, RN-05, RN-06, A1, B1 | Toda reserva SOLICITADA com recurso restrito sai da fila com decisão e ator registrados na auditoria (RN-08) |
 | Validar a alocação de docentes | Fato; a forma é suposição: ocorre pela aprovação quando o professor é recurso restrito (A1). Impacto: se for outra validação, surge fluxo novo | RF-05, RF-07 | Professor restrito só é alocado após aprovação |
 | Acompanhar retiradas e devoluções | Fato | RF-09, RN-05 | Cada retirada e devolução registrada com quem registrou e quando |
-| Conduzir a reserva pelos estados | Decisão A8 | RN-05, RN-07 | Registra início, conclui e marca não compareceu respeitando as transições permitidas |
+| Conduzir a reserva pelos estados | Decisão A8 | RF-16, RN-05, RN-07, RN-20, RN-21, RN-23 | Registra início, conclui e marca não compareceu respeitando as transições permitidas |
 | Fazer o material voltar | Decisão C3: conclusão só com material retirado devolvido; cobrança de atraso fora de escopo | RF-09, RN-05 | Nenhuma reserva é concluída com material retirado e não devolvido |
 | Ter visão geral das reservas | Decisão B3 | RF-04, RF-10 | Vê todas as reservas e a fila de aprovações |
 
@@ -41,10 +41,10 @@ Cenário ilustrativo, não é dado de pesquisa.
 | Tarefa | Gatilho | Resultado esperado | RF |
 | --- | --- | --- | --- |
 | Revisar fila de aprovações | Notificação de solicitação pendente | Reserva aprovada ou rejeitada, com decisão registrada | RF-07 |
-| Registrar início de uso ou retirada do primeiro material | Chegada para usar o recurso | Reserva passa de APROVADA para EM_USO (A8) | RF-09 |
+| Registrar início de uso ou retirada do primeiro material | Chegada para usar o recurso | Reserva passa de APROVADA para EM_USO (A8) | RF-09, RF-16 |
 | Registrar devolução | Material devolvido | Devolução registrada para a unidade (A3) | RF-09 |
-| Concluir reserva | Fim do uso | Reserva em CONCLUÍDA | RF-09 |
-| Marcar não compareceu | Início mais tolerância sem uso | Reserva APROVADA vai a não compareceu (A8) | RF-04 |
+| Concluir reserva | Fim do uso | Reserva em CONCLUÍDA | RF-09, RF-16 |
+| Marcar não compareceu | Início mais tolerância sem uso | Reserva APROVADA vai a não compareceu (A8) | RF-16 |
 | Cancelar reserva APROVADA com motivo | Necessidade operacional | Reserva cancelada, com motivo e auditoria (A8) | RF-04, RF-10 |
 | Criar reserva própria | Precisa de recurso | Reserva criada e aprovada por outro Responsável, se houver recurso restrito (B1) | RF-04 |
 | Consultar histórico e relatório | Acompanhamento ou prestação de contas | Histórico das reservas e relatório RF-12 filtrado e paginado (C4, C5) | RF-10, RF-12 |
@@ -70,11 +70,12 @@ Hipóteses: a especificação não descreve frustrações.
 | RN-06 | Só o Responsável aprova recursos restritos; ele mesmo não aprova a própria reserva (B1) |
 | RN-07 | Não pode apagar reserva iniciada; EM_USO só termina pela conclusão (A8) |
 | RN-08 | Cada ação sua gera um evento de auditoria |
-| A1 | Reservas sem recurso restrito não chegam à fila: são aprovadas pelo SISTEMA |
+| RN-09 | Reservas sem recurso restrito não chegam à fila: são aprovadas pelo SISTEMA |
 | RN-23 | Só conclui a reserva quando todo material retirado foi devolvido |
 | RN-24 | Rejeitar exige motivo; aprovar tem motivo opcional |
 | RN-25 | Reserva SOLICITADA sem decisão ao chegar o início é cancelada pelo sistema |
-| A8 | Cancela APROVADA com motivo; não cancela EM_USO nem estados terminais |
+| RN-18 | Cancela APROVADA com motivo; não cancela EM_USO nem estados terminais |
+| RN-33 | Rejeita só reserva de outro usuário; a própria ele cancela |
 
 ## 7. Permissões e visibilidade de dados
 
@@ -122,12 +123,16 @@ Alimentam os testes de autorização.
 | Rejeitar a própria reserva para escapar da fila | D8, RN-33: recusado com 403; ele a cancela |
 | Concluir reserva com material retirado e não devolvido | C3, RN-23 |
 | Rejeitar sem informar motivo | C2, RN-24 |
+| Registrar início ou concluir a própria reserva sem outro Responsável | RN-16 cobre só a aprovação: lacuna D13 |
 | Abrir a auditoria completa de cadastros e perfis | C4, C7: acesso negado |
 
 ## 10. Questões remanescentes
 
 - D1: valor padrão da tolerância de não comparecimento.
 - D2: mecanismo do cancelamento por SEM_DECISAO e da marcação automática de não comparecimento.
+- D10: instante exato de "até o início".
+- D13: se o dono Responsável registra início, retirada, devolução e conclusão da própria reserva.
+- D14: desativação de usuário, em especial de um Responsável, e o mínimo de dois.
 
 ## 11. Jornada na aplicação
 
