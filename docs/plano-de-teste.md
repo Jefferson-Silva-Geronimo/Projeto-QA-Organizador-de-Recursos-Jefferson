@@ -1,0 +1,238 @@
+# Plano de teste
+
+Esqueleto no formato do plano de teste da ISO/IEC/IEEE 29119-3. **Nenhum caso de teste é escrito aqui** e nenhum número foi inventado: o que depende de decisão fica como TODO.
+
+Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+
+## 1. Identificação
+
+| Campo | Valor |
+| --- | --- |
+| Projeto | Organização de Recursos |
+| Documento | Plano de teste |
+| Versão e estado | 0.1, esqueleto (fim da Etapa 1 da Fase 1) |
+| Data | 12/10/2026 |
+| Responsável | Equipe. Nomes: TODO |
+| Aprovação | TODO: professor e equipe |
+
+## 2. Objetivo e referências
+
+**Objetivo:** reunir a estratégia pela qual a equipe vai demonstrar, com evidência objetiva, que o sistema cumpre os requisitos funcionais e as regras de negócio, e que atende às metas de qualidade da especificação.
+
+| Referência | Documento |
+| --- | --- |
+| Requisitos funcionais | [requisitos-funcionais.md](prd/requisitos-funcionais.md) |
+| Regras de negócio | [regras-negocio.md](prd/regras-negocio.md) |
+| Decisões e lacunas | [perguntas-abertas.md](prd/perguntas-abertas.md) |
+| Modelo de dados | [modelo-dados.dbml](prd/modelo-dados.dbml) |
+| Fluxos de sequência | [fluxos-sequencia.md](prd/fluxos-sequencia.md) |
+| Rastreabilidade | [RTM.md](../RTM.md) |
+| Produto | [prd.md](prd.md) |
+
+## 3. Escopo
+
+### 3.1 Itens a testar
+
+| Grupo | Itens | Observação |
+| --- | --- | --- |
+| Requisitos funcionais | RF-01 a RF-16 | RF-15 e RF-16 são acréscimos da equipe |
+| Regras críticas da especificação | RN-01 a RN-08 | Marcadas como críticas na RTM |
+| Regras decorrentes de decisões da equipe | RN-09 a RN-33 | Cada regra tem decisão de origem |
+| Segurança funcional | Autorização por perfil e posse, validação de entrada, tratamento seguro de erros | Exigência da especificação, seção 5 |
+| Concorrência | Dupla reserva em solicitações simultâneas | Teste automatizado exigido (RN-03, RF-06) |
+| Integração externa | Notificação por webhook | Com WireMock (A5, C6) |
+
+### 3.2 Itens que não serão testados
+
+| Item | Motivo | Origem |
+| --- | --- | --- |
+| Controle de material por quantidade em estoque e consumíveis | Fora de escopo | A3 |
+| Reserva que cruza a meia-noite local | Fora de escopo nesta versão | A6, S3 |
+| Reservas próprias do Administrador | Fora de escopo nesta versão | B2 |
+| Cobrança de atraso na devolução | Fora de escopo | C3 |
+| Feriados no cálculo de utilização | Fora de escopo | C5 |
+| Provedor de notificação real | A integração é simulada por endpoint de teste e por WireMock | A5, S5 |
+| Comportamento com valor da tolerância, do reenvio ou do tamanho de página | Valores sem decisão: D1, D3 e D4. Testa-se que o valor é configurável, não o valor | Lacunas |
+| Retenção e anonimização de auditoria e notificações | Lacuna D9 | Lacuna |
+| Mecanismo automático de SEM_DECISAO e de não comparecimento | Lacuna D2: o teste depende da decisão sobre job ou avaliação sob demanda | Lacuna |
+| Desempenho com metas numéricas | A especificação não define critérios. TODO na Fase 2 e na Fase 5 | Lacuna |
+
+## 4. Estratégia e níveis de teste
+
+Níveis exigidos pela especificação (seção 5). Ferramentas e versões são decisões da Fase 2 e da Fase 3.
+
+| Nível | Foco | Ferramenta prevista | Observação |
+| --- | --- | --- | --- |
+| Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
+| Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Sem banco em memória que não reproduza o comportamento real (TODO: confirmar no ADR da Fase 2) |
+| API em caixa-preta | Contrato, autorização por perfil, códigos de erro | TODO: ferramenta | Matriz perfil × operação |
+| Ponta a ponta | Jornadas das personas | TODO: ferramenta | Depende do front end (Fase 6) |
+| Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
+| Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
+| Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: TODO |
+| TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TODO: escolha da funcionalidade | Candidata natural: regras de aprovação e bloqueio, conforme o cronograma da especificação |
+
+### 4.1 Técnicas de projeto de teste
+
+| Técnica | Onde se aplica |
+| --- | --- |
+| Valor limite | RN-01, RN-02, RN-04, RN-11, RN-14, RN-21 e janelas de funcionamento |
+| Partição de equivalência | Tipo de recurso, estado da reserva, perfil, material retirado ou não |
+| Tabela de decisão | RN-06, RN-09, RN-10, RN-16, RN-17, RN-18, RN-23, RN-26, RN-33 |
+| Transição de estados | RN-05, RN-19, RN-20, RN-21, RN-23, RN-25, incluindo as proibidas |
+| Teste de concorrência | RN-03 |
+| Teste de contrato | RF-14 |
+
+A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negocio.md).
+
+### 4.2 Dados de teste
+
+- Dados sempre fictícios. Nenhum dado pessoal real e nenhum segredo no repositório.
+- Cada caso de teste cria o estado de que precisa; TODO: política de limpeza.
+
+## 5. Critérios de entrada, saída e suspensão
+
+### 5.1 Critérios de entrada
+
+| Critério | Estado |
+| --- | --- |
+| Requisitos, regras, modelo de dados e fluxos versionados e verificados pela skill analyze-docs | Atendido ao fim da Etapa 1 |
+| Cenários de qualidade e arquitetura definidos | TODO (Fase 2) |
+| Casca do projeto, integração contínua e processo de defeitos | TODO (Fase 3) |
+| Decisões A1, A3 e A5 confirmadas com o professor | TODO |
+
+### 5.2 Critérios de saída
+
+Metas da especificação (seção 6):
+
+| Meta | Valor |
+| --- | --- |
+| Cobertura de linhas | 80% |
+| Cobertura de branches | 70% |
+| Requisitos críticos na RTM | 100% |
+| Bugs ou vulnerabilidades críticos | 0 |
+
+Proposta da equipe, a validar:
+
+- Todo requisito e regra crítica com ao menos um caso de teste executado, com evidência registrada na RTM.
+- Nenhuma falha de autorização e nenhuma possibilidade de dupla reserva, que são limitadores de nota na especificação (seção 8).
+
+### 5.3 Critérios de suspensão e retomada
+
+| Suspender quando | Retomar quando |
+| --- | --- |
+| A integração contínua está quebrada na linha principal | A integração contínua volta a passar |
+| O ambiente de teste containerizado não sobe | O ambiente volta a subir |
+| Defeito bloqueante impede a execução de um conjunto de casos | A correção é verificada |
+| Decisão pendente de D1, D2, D3 ou D4 impede definir o resultado esperado | A decisão é registrada |
+
+TODO: critério numérico de defeito bloqueante, se necessário.
+
+## 6. Entregáveis de teste
+
+| Entregável | Origem | Estado |
+| --- | --- | --- |
+| Este plano de teste | Especificação, seção 7 | Esqueleto |
+| Casos de teste identificados por CT-xxx | Fase 4 | TODO |
+| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Esqueleto |
+| Suíte automatizada e relatório de testes | Especificação, seção 7 | TODO |
+| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | TODO |
+| Plano e resultado do teste de carga | Especificação, seção 7 | TODO |
+| Registro de defeitos | Especificação, seção 7 | TODO |
+| Relatório final de qualidade | Especificação, seção 7 | TODO |
+| Evidência de TDD ou BDD | Especificação, seção 5 | TODO |
+
+## 7. Ambiente
+
+| Item | Descrição | Estado |
+| --- | --- | --- |
+| Linguagem e framework | Java 21 e Spring Boot 3.x | Exigido pela especificação |
+| Banco | PostgreSQL em container (decisão da equipe) | Decidido, ADR na Fase 2 |
+| Integração externa simulada | WireMock | Exigido pela especificação |
+| Integração contínua | GitHub Actions em pull requests | Exigido pela especificação |
+| Análise estática | SonarCloud | Exigido pela especificação |
+| Cobertura | JaCoCo | Exigido pela especificação |
+| Carga | JMeter | Exigido pela especificação |
+| Fuso | Configurável, padrão America/Sao_Paulo | Decisão A6 |
+| Versões e configuração de máquina | TODO | Fase 3 |
+| Segredos | Em variáveis de ambiente e no repositório de segredos da CI, nunca no repositório | Regra do projeto |
+
+## 8. Riscos
+
+Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimentam a coluna Risco da [RTM](../RTM.md) e serão refinados na Fase 2. Probabilidade e impacto quantitativos: TODO, não foram estimados.
+
+| ID | Risco | RF | RN | Técnica ou nível previsto |
+| --- | --- | --- | --- | --- |
+| R-01 | Dupla reserva sob concorrência | RF-06 | RN-03 | Concorrência com banco real |
+| R-02 | Sobreposição não detectada nas fronteiras ou por tipo de recurso | RF-03, RF-04, RF-05, RF-08 | RN-02, RN-11 | Valor limite em trinca e partição por tipo |
+| R-03 | Falha de autorização ou escalada de perfil | RF-01, RF-07, RF-15 | RN-06, RN-16, RN-17, RN-33 | Tabela de decisão perfil × operação, API em caixa-preta |
+| R-04 | Aprovação contornada | RF-04, RF-07 | RN-09, RN-10 | Tabela de decisão e integração |
+| R-05 | Perda de integridade em alteração ou cancelamento | RF-04 | RN-18, RN-19, RN-27 | Integração com banco real e transição de estados |
+| R-06 | Transição de estado indevida | RF-09, RF-16 | RN-05, RN-07, RN-20, RN-24 | Tabela de transição de estados |
+| R-07 | Auditoria incompleta ou alterável | RF-10 | RN-08, RN-29 | Integração com banco real |
+| R-08 | Bloqueio ou desativação inconsistente | RF-02, RF-08 | RN-04, RN-22, RN-32 | Integração e partição por estado |
+| R-09 | Erro de fuso, janela ou fronteira de horário | RF-03, RF-04, RF-12 | RN-01, RN-14, RN-15 | Valor limite e partição por fuso, com controle do tempo no teste |
+| R-10 | Falha do provedor afeta a reserva | RF-11 | RN-28 | WireMock, matriz de respostas |
+| R-11 | Números incorretos no relatório | RF-12 | RN-30, RN-31 | Integração com dados semeados |
+| R-12 | Vazamento de dados entre perfis ou de segredo em erro | RF-01, RF-03, RF-11, RF-13 | RN-26 | API em caixa-preta e testes negativos |
+| R-13 | Controle incorreto de unidade e devolução de material | RF-09 | RN-12, RN-23 | Integração e tabela de decisão |
+| R-14 | Cadastro inconsistente de recurso ou usuário | RF-02, RF-15 | RN-13 | Partição e integração |
+| R-15 | Documentação diverge do comportamento | RF-14 | — | Teste de contrato |
+| R-16 | Decisão pendente ou suposição altera o comportamento | RF-16 | RN-21, RN-25 | Revisão da suposição antes de escrever o caso |
+
+### 8.1 Riscos de projeto
+
+| Risco | Observação |
+| --- | --- |
+| Decisões A1, A3 e A5 podem ser alteradas pelo professor | A3 é a de maior impacto no modelo de dados |
+| Prazo até a semana 46 | Cronograma na seção 9 |
+| Lacunas D1 a D4 e D9 sem decisão | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
+
+## 9. Papéis, recursos e cronograma
+
+### 9.1 Papéis
+
+| Papel | Responsabilidade | Responsável |
+| --- | --- | --- |
+| Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | TODO: nomes |
+| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | TODO |
+| Professor | Validar as decisões pendentes de confirmação | TODO |
+
+### 9.2 Cronograma (especificação, seção 9)
+
+| Semana | Tema | O que avança |
+| --- | --- | --- |
+| 34 | Caixa branca vs caixa preta | Repositório, ambiente, escopo e perfis definidos |
+| 35 | Arquitetura e análise ATAM com IA agêntica | C4, utility tree, riscos, trade-offs e ADRs |
+| 36 | Gestão de erros e bugs | Registro e triagem dos primeiros defeitos |
+| 37 | Testes automatizados em CI | Casca Maven com teste mínimo e pipeline no GitHub Actions |
+| 38 | JUnit 5, JaCoCo e SonarCloud | Cobertura de ramo nas regras de sobreposição de horário |
+| 39 | WireMock, Testcontainers e chamadas de API seguras | Banco em container e integração externa isolada em teste |
+| 40 | Prova escrita | Sem avanço no projeto |
+| 41 | TDD e BDD | Regras de aprovação e bloqueio guiadas por teste |
+| 42 | Testes de carga com JMeter | Reservas simultâneas do mesmo recurso sob carga |
+| 43 e 44 | Desenvolvimento do projeto final | Relatórios, auditoria e fechamento dos requisitos |
+| 45 | Preparação para a prova oral | RTM fechada e relatório de qualidade |
+| 46 | Finalização e entrega | Release candidate, pacote de evidências e decisão de qualidade |
+
+Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerramento.
+
+## 10. Rastreabilidade
+
+- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco inicial e status **não iniciado**.
+- Casos de teste usam o prefixo CT-xxx e serão ligados na RTM a partir da Fase 4.
+- Defeitos usam o prefixo BUG-xxx e serão registrados em `docs/defeitos/` a partir da Fase 3.
+- Identificadores: RN-xx, RF-xx, RNF-xx, CEN-xx, ADR-xxx, CT-xxx, INT-xx, BUG-xxx e R-xx.
+
+## 11. Pendências
+
+| Pendência | Destino |
+| --- | --- |
+| Requisitos não funcionais e metas numéricas de desempenho | Fase 2 |
+| Cenários de qualidade (CEN-xx) e ADRs | Fase 2 |
+| Ferramentas de API em caixa-preta e de ponta a ponta | Fase 2 e Fase 3 |
+| Política de dados e de limpeza dos testes | Fase 3 |
+| Valores de D1, D3 e D4 e decisão de D2 e D9 | Equipe e professor |
+| Confirmação de A1, A3 e A5 | Professor |
+| Escolha da funcionalidade de TDD ou BDD | Fase 4 |
+| Nomes e prazos dos responsáveis | Equipe |
