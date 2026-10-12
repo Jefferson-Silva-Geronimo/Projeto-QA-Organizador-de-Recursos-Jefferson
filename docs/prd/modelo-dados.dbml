@@ -1,0 +1,464 @@
+// ============================================================================
+// Modelo de dados - Organização de Recursos
+// Importável no dbdiagram.io (Import > From DBML).
+//
+// Fonte dos requisitos:
+// https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html
+//
+// Documentos de apoio (no repositório):
+//   requisitos-funcionais.md  RF-01 a RF-16
+//   regras-negocio.md         RN-01 a RN-33
+//   perguntas-abertas.md      decisões A, B, C, D e lacunas
+//
+// Convenções deste arquivo
+//   - Cada tabela traz uma Note com RF, RN e decisão que a justificam.
+//   - "ESCOLHA ALÉM DO PEDIDO" marca tabelas, colunas ou tipos que não vieram da
+//     lista de entidades pedida e que a equipe deve confirmar na Fase 2.
+//   - Valores de configuração não decididos (D1, D3) ficam nulos, sem valor.
+//   - O DBML não expressa constraint de exclusão nem CHECK entre tabelas. Estas
+//     ficam documentadas nas Notes e serão criadas por migração (Fases 3 e 4).
+//   - Todo instante é timestamptz, gravado em UTC (RN-15, A6).
+//   - Chaves primárias surrogate (bigint com identidade) são ESCOLHA ALÉM DO PEDIDO.
+//
+// Lacunas que NÃO foram decididas aqui: D1 (tolerância), D2 (mecanismo de
+// SEM_DECISAO), D3 (tentativas e intervalo de reenvio), D4 (tamanho de página do
+// relatório) e D9 (retenção de auditoria e notificações).
+// ============================================================================
+
+Project organizacao_recursos {
+  database_type: 'PostgreSQL'
+  Note: '''
+  Modelo de dados do sistema Organização de Recursos.
+  Extensão necessária: btree_gist (constraint de exclusão em ocupacoes).
+  Fuso de exibição configurável (A6). Armazenamento em UTC (RN-15).
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Enumerações
+// ---------------------------------------------------------------------------
+
+Enum perfil_usuario {
+  SOLICITANTE
+  RESPONSAVEL
+  ADMINISTRADOR
+}
+
+Enum tipo_recurso {
+  SALA
+  PROFESSOR
+  MATERIAL
+}
+
+Enum estado_reserva {
+  SOLICITADA
+  APROVADA
+  EM_USO
+  CONCLUIDA
+  REJEITADA
+  CANCELADA
+  NAO_COMPARECEU
+}
+
+Enum motivo_sistema {
+  MANUTENCAO
+  SEM_DECISAO
+}
+
+Enum origem_ocupacao {
+  RESERVA
+  BLOQUEIO
+}
+
+Enum decisao_aprovacao {
+  APROVADA
+  REJEITADA
+}
+
+Enum tipo_movimentacao {
+  RETIRADA
+  DEVOLUCAO
+}
+
+Enum tipo_ator {
+  USUARIO
+  SISTEMA
+}
+
+Enum entidade_auditada {
+  RESERVA
+  RECURSO
+  USUARIO
+  BLOQUEIO
+  CONFIGURACAO
+}
+
+Enum motivo_conflito {
+  SOBREPOSICAO
+  CONCORRENCIA
+  MANUTENCAO
+}
+
+Enum evento_notificacao {
+  SOLICITACAO_PENDENTE
+  RESERVA_APROVADA
+  RESERVA_REJEITADA
+  RESERVA_CANCELADA
+}
+
+Enum status_notificacao {
+  PENDENTE
+  ENVIADA
+  FALHA
+}
+
+// ---------------------------------------------------------------------------
+// Acesso
+// ---------------------------------------------------------------------------
+
+Table usuarios {
+  id bigint [pk, increment]
+  nome varchar [not null]
+  email varchar [not null, unique]
+  senha_hash varchar [not null, note: 'Somente o hash. Nenhuma senha em texto.']
+  perfil perfil_usuario [not null, note: 'Uma coluna, um perfil: garante exatamente um perfil por usuário (B2, RN-17).']
+  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: desativação em vez de exclusão (RF-15, C7).']
+  criado_em timestamptz [not null]
+
+  Note: '''
+  RF-01 (autenticação e autorização por perfil) e RF-15 (gestão de usuários).
+  RN-06, RN-17 (um perfil por usuário), RN-26 (visibilidade), RN-29 (auditoria de cadastro e perfil).
+  Decisões: B1, B2, C4, C7, D5.
+  Pelo menos dois usuários RESPONSAVEL são necessários na operação (B1). Isso é restrição de
+  operação, não constraint do banco.
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Recursos
+// ---------------------------------------------------------------------------
+
+Table recursos {
+  id bigint [pk, increment]
+  tipo tipo_recurso [not null]
+  nome varchar [not null]
+  restrito boolean [not null, default: false, note: 'Atributo definido pelo Administrador (A1). Mudar o valor não altera reservas existentes.']
+  ativo boolean [not null, default: true, note: 'Desativação recusada com 409 se houver reservas futuras SOLICITADA, APROVADA ou EM_USO (D6, RN-32).']
+  criado_em timestamptz [not null]
+
+  Note: '''
+  Supertipo de sala, professor e material, para que RN-02 e RN-04 sejam uma única garantia.
+  RF-02, RF-03, RF-05, RF-07. RN-02, RN-10, RN-32, RN-29.
+  Decisões: A1, A3 (cada unidade de material é um recurso), A4, D6.
+  '''
+}
+
+Table salas {
+  recurso_id bigint [pk, note: 'Especialização de recursos (tipo SALA).']
+  capacidade integer [not null]
+  localizacao varchar [not null]
+  tipo_sala varchar [not null]
+  hora_abertura time [not null, note: 'Horário local, interpretado no fuso de configuracao (A6).']
+  hora_fechamento time [not null, note: 'A reserva precisa caber entre abertura e fechamento e não cruza a meia-noite local (RN-14, S3).']
+
+  Note: '''
+  RF-02, RF-03, RF-12 (utilização só para salas).
+  RN-14 (janela e dias de funcionamento), RN-15.
+  Decisões: A6, C5, B4.
+  Professor e material não têm janela (A6).
+  '''
+}
+
+Table sala_dias_funcionamento {
+  sala_id bigint [not null]
+  dia_semana smallint [not null, note: 'Convenção do dia da semana a definir na Fase 2.']
+
+  indexes {
+    (sala_id, dia_semana) [pk]
+  }
+
+  Note: '''
+  ESCOLHA ALÉM DO PEDIDO: dias da semana de funcionamento em tabela própria, em vez de lista na sala.
+  RF-02, RF-12. RN-14, RN-31. Decisão: C5 (feriados fora de escopo).
+  Sem nenhum dia cadastrado, a sala não aceita reserva (RF-02, critério 1).
+  '''
+}
+
+Table professores {
+  recurso_id bigint [pk, note: 'Especialização de recursos (tipo PROFESSOR).']
+  usuario_id bigint [unique, note: 'Vínculo opcional com usuário. Não concede perfil (A4, C8, RN-13).']
+
+  Note: '''
+  RF-02, RF-05. RN-02, RN-13.
+  Decisões: A4, C8.
+  Professor pode existir sem login.
+  '''
+}
+
+Table competencias {
+  id bigint [pk, increment]
+  nome varchar [not null, unique]
+
+  Note: '''
+  RF-03 (pesquisa por competência) e RF-02.
+  ESCOLHA ALÉM DO PEDIDO: nome único para evitar competências duplicadas.
+  '''
+}
+
+Table professor_competencias {
+  professor_id bigint [not null]
+  competencia_id bigint [not null]
+
+  indexes {
+    (professor_id, competencia_id) [pk]
+  }
+
+  Note: '''
+  Tabela de ligação professor x competência. RF-03.
+  '''
+}
+
+Table materiais {
+  recurso_id bigint [pk, note: 'Especialização de recursos (tipo MATERIAL). Cada linha é uma unidade (A3).']
+  codigo_patrimonio varchar [not null, unique, note: 'Identifica uma única unidade (RN-12).']
+  descricao varchar [note: 'ESCOLHA ALÉM DO PEDIDO: descrição livre da unidade.']
+
+  Note: '''
+  RF-02, RF-09. RN-02, RN-12, RN-23.
+  Decisão: A3 (por unidade identificada). Consumíveis e controle por quantidade estão fora de escopo.
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Reservas e ocupações
+// ---------------------------------------------------------------------------
+
+Table reservas {
+  id bigint [pk, increment]
+  solicitante_id bigint [not null, note: 'Dono da reserva. Perfil SOLICITANTE ou RESPONSAVEL (B1). Administrador não reserva (B2, RN-17).']
+  titulo varchar [not null]
+  descricao text [note: 'Alterar título ou descrição não reaprova (C1, RN-19).']
+  inicio timestamptz [not null]
+  fim timestamptz [not null, note: 'CHECK fim > inicio (RN-01). Intervalo [inicio, fim) (A2, RN-11).']
+  estado estado_reserva [not null]
+  exige_aprovacao boolean [not null, note: 'Calculado pelo servidor na criação e gravado. Mudança posterior do atributo restrito não altera (A1, RN-10).']
+  motivo_sistema motivo_sistema [note: 'Preenchido quando o sistema cancela: MANUTENCAO (A7) ou SEM_DECISAO (C2). SEM_DECISAO é suposição S6.']
+  motivo_texto text [note: 'Motivo informado por pessoa ao cancelar (A8). Motivo da rejeição fica em aprovacoes (C2, RN-24).']
+  criada_em timestamptz [not null]
+  atualizada_em timestamptz [not null, note: 'ESCOLHA ALÉM DO PEDIDO.']
+
+  indexes {
+    (solicitante_id, estado) [note: 'ESCOLHA ALÉM DO PEDIDO: Minhas reservas (RF-04, RN-26).']
+    (estado, inicio) [note: 'ESCOLHA ALÉM DO PEDIDO: fila, não comparecimento e SEM_DECISAO (RF-07, RF-16).']
+  }
+
+  Note: '''
+  RF-04, RF-07, RF-09, RF-16. RN-01, RN-05, RN-07, RN-09, RN-10, RN-18, RN-19, RN-27.
+  Decisões: A1, A2, A7, A8, C1, C2, C3, regra geral (nenhuma exclusão física, RN-27).
+  Nenhuma reserva é apagada: encerramentos são mudança de estado com auditoria.
+  Transições permitidas e proibidas: regras-negocio.md, seção 3.
+  Os recursos da reserva estão em ocupacoes (uma linha por recurso).
+  '''
+}
+
+Table ocupacoes {
+  id bigint [pk, increment]
+  recurso_id bigint [not null]
+  periodo tstzrange [not null, note: 'Intervalo semiaberto [inicio, fim) (A2, RN-11).']
+  origem origem_ocupacao [not null, note: 'RESERVA ou BLOQUEIO. Reservas e bloqueios disputam a mesma garantia (RN-02, RN-04).']
+  origem_id bigint [not null, note: 'Identifica reservas.id ou bloqueios_manutencao.id conforme origem. Sem FK declarável por ser polimórfica. A integridade será garantida por regra na Fase 2.']
+  ativa boolean [not null, default: true, note: 'Só ocupações ativas concorrem na constraint de exclusão. Reserva encerrada libera a ocupação.']
+
+  indexes {
+    recurso_id [note: 'ESCOLHA ALÉM DO PEDIDO: consulta de disponibilidade (RF-03).']
+    (origem, origem_id) [note: 'ESCOLHA ALÉM DO PEDIDO: ocupações de uma reserva ou bloqueio.']
+  }
+
+  Note: '''
+  RF-03, RF-04, RF-05, RF-06, RF-08, RF-12. RN-02, RN-03, RN-04, RN-11, RN-14.
+  Decisões: A2, A7, D7 (o cancelamento da reserva libera todas as ocupações dela).
+
+  CONSTRAINT DE EXCLUSÃO (não expressa em DBML), a criar por migração:
+    EXCLUDE USING gist (recurso_id WITH =, periodo WITH &&) WHERE (ativa)
+  Requer a extensão btree_gist. Garante no banco que dois períodos ativos do mesmo recurso não
+  se sobrepõem. O operador && sobre tstzrange com limites [) implementa a regra
+  inicioA < fimB e inicioB < fimA (A2). A violação deve virar 409 (RF-06).
+
+  O índice GiST criado pela constraint serve também à consulta de disponibilidade.
+  '''
+}
+
+Table bloqueios_manutencao {
+  id bigint [pk, increment]
+  recurso_id bigint [not null]
+  inicio timestamptz [not null]
+  fim timestamptz [not null, note: 'Intervalo [inicio, fim), mesma convenção das reservas (A2).']
+  motivo text [not null]
+  criado_por_id bigint [not null, note: 'Administrador.']
+  criado_em timestamptz [not null]
+  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: levantamento do bloqueio sem apagar.']
+
+  Note: '''
+  ESCOLHA ALÉM DO PEDIDO: tabela necessária porque ocupacoes referencia o bloqueio por origem_id e
+  nenhum requisito pedido listava onde o bloqueio é guardado.
+  RF-08. RN-04, RN-22, RN-29. Decisões: A7, D7, C7.
+  Bloqueio sobre reserva EM_USO é recusado (A7, RN-07).
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Decisão, uso e conflito
+// ---------------------------------------------------------------------------
+
+Table aprovacoes {
+  id bigint [pk, increment]
+  reserva_id bigint [not null]
+  responsavel_id bigint [not null, note: 'Quem decidiu. Não pode ser o dono da reserva (B1, D8, RN-16, RN-33). Regra entre tabelas, aplicada pela aplicação.']
+  decisao decisao_aprovacao [not null]
+  motivo text [note: 'Obrigatório quando decisao = REJEITADA. Opcional para APROVADA (C2, RN-24).']
+  decidida_em timestamptz [not null]
+
+  Note: '''
+  RF-07. RN-05, RN-06, RN-16, RN-24, RN-33. Decisões: A1, B1, C2, D8.
+  Guarda somente decisões humanas. A aprovação automática (RN-09) aparece apenas em
+  auditoria_eventos, com ator SISTEMA.
+  ESCOLHA ALÉM DO PEDIDO: uma reserva pode ter várias linhas, porque a alteração que exige
+  reaprovação devolve a reserva a SOLICITADA (C1, RN-19).
+  '''
+}
+
+Table movimentacoes_material {
+  id bigint [pk, increment]
+  reserva_id bigint [not null]
+  material_id bigint [not null, note: 'Unidade identificada (A3). Referencia materiais.recurso_id.']
+  tipo tipo_movimentacao [not null]
+  registrado_por_id bigint [not null, note: 'Responsável que registrou.']
+  registrado_em timestamptz [not null]
+
+  Note: '''
+  RF-09, RF-16. RN-05, RN-12, RN-20, RN-23. Decisões: A3, A8, C3.
+  Devolução exige retirada anterior da mesma unidade na mesma reserva, e a conclusão exige que
+  toda unidade retirada tenha sido devolvida (regras de aplicação, não constraint de banco).
+  '''
+}
+
+Table tentativas_conflito {
+  id bigint [pk, increment]
+  recurso_id bigint [not null]
+  periodo tstzrange [not null]
+  solicitante_id bigint [not null]
+  motivo motivo_conflito [not null, note: 'SOBREPOSICAO = RN-02, CONCORRENCIA = RN-03, MANUTENCAO = RN-04.']
+  ocorrida_em timestamptz [not null]
+
+  indexes {
+    (recurso_id, ocorrida_em) [note: 'ESCOLHA ALÉM DO PEDIDO: relatório por recurso e período (RF-12).']
+    (solicitante_id, ocorrida_em) [note: 'ESCOLHA ALÉM DO PEDIDO: contagem distinta por solicitante (B4).']
+  }
+
+  Note: '''
+  Fonte de "conflitos evitados" do relatório (RF-12). RF-05, RF-06, RF-12. RN-02, RN-03, RN-04, RN-30, RN-31.
+  Decisões: B4. Toda solicitação recusada por sobreposição, concorrência ou manutenção grava uma linha.
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Auditoria, notificação e configuração
+// ---------------------------------------------------------------------------
+
+Table auditoria_eventos {
+  id bigint [pk, increment]
+  ocorrido_em timestamptz [not null]
+  ator_tipo tipo_ator [not null, note: 'SISTEMA nas transições automáticas (A1, A7, C2).']
+  ator_id bigint [note: 'Nulo somente quando ator_tipo = SISTEMA. CHECK a criar por migração.']
+  entidade entidade_auditada [not null]
+  entidade_id bigint [not null]
+  acao varchar [not null, note: 'Nome do evento. Os nomes são propostas a confirmar na Fase 2.']
+  estado_anterior varchar [note: 'Para mudanças de estado de reserva (RN-08).']
+  estado_novo varchar
+  valores_antes jsonb [note: 'ESCOLHA ALÉM DO PEDIDO: antes, para cadastros e perfis (C7).']
+  valores_depois jsonb [note: 'ESCOLHA ALÉM DO PEDIDO: depois, para cadastros e perfis (C7).']
+  motivo text
+  correlacao_id uuid [note: 'Liga eventos da mesma operação, por exemplo bloqueio e cancelamentos em cascata.']
+
+  indexes {
+    (entidade, entidade_id, ocorrido_em) [note: 'ESCOLHA ALÉM DO PEDIDO: histórico de uma entidade (RF-10).']
+  }
+
+  Note: '''
+  RF-10, RF-04, RF-07, RF-08, RF-15, RF-16. RN-08, RN-26, RN-27, RN-29.
+  Decisões: C4, C7, D5.
+  SOMENTE INSERÇÃO: não existe atualização nem exclusão de eventos. A garantia (permissões ou
+  gatilho) é definida na Fase 2.
+  Retenção e tratamento de dados pessoais: lacuna D9, não decidida.
+  '''
+}
+
+Table notificacoes {
+  id bigint [pk, increment]
+  reserva_id bigint [not null]
+  evento evento_notificacao [not null]
+  destinatario_id bigint [not null, note: 'Solicitante para aprovada, rejeitada e cancelada. Responsáveis para pendente (C6, RN-28).']
+  status status_notificacao [not null, default: 'PENDENTE']
+  tentativas integer [not null, default: 0]
+  chave_idempotencia varchar [not null, unique, note: 'Enviada no corpo do webhook. O reenvio usa a mesma chave (C6).']
+  proxima_tentativa_em timestamptz [note: 'ESCOLHA ALÉM DO PEDIDO: instante do próximo reenvio. Política de crescimento do intervalo: lacuna D3.']
+  criada_em timestamptz [not null]
+  enviada_em timestamptz
+
+  indexes {
+    (status, proxima_tentativa_em) [note: 'ESCOLHA ALÉM DO PEDIDO: busca de pendentes para reenvio.']
+  }
+
+  Note: '''
+  RF-11. RN-28. Decisões: A5, C6, S5, S7.
+  Envio após o commit. A falha do provedor nunca desfaz a reserva.
+  O endereço do webhook vem de variável de ambiente e não é guardado aqui (A5).
+  Conteúdo mínimo, sem dados pessoais além do necessário (C6).
+  '''
+}
+
+Table configuracao {
+  id smallint [pk, default: 1, note: 'Linha única. CHECK id = 1 a criar por migração.']
+  fuso varchar [not null, default: 'America/Sao_Paulo', note: 'Decisão A6. Configurável.']
+  tolerancia_nao_comparecimento interval [note: 'SEM VALOR: lacuna D1 (S4). Nenhum valor inventado.']
+  tentativas_reenvio integer [note: 'SEM VALOR: lacuna D3 (S7). Nenhum valor inventado.']
+  intervalo_reenvio_inicial interval [note: 'SEM VALOR: lacuna D3 (S7). Política de crescimento também em aberto.']
+
+  Note: '''
+  RF-11, RF-16, RF-02 (janela em fuso). RN-15, RN-21, RN-28.
+  Decisões: A6, A8, C6. Lacunas: D1 e D3. Alterações são auditadas (entidade CONFIGURACAO, C7).
+  O tamanho de página do relatório (D4) não foi incluído por estar em aberto.
+  '''
+}
+
+// ---------------------------------------------------------------------------
+// Relações
+// ---------------------------------------------------------------------------
+
+Ref: salas.recurso_id - recursos.id
+Ref: professores.recurso_id - recursos.id
+Ref: materiais.recurso_id - recursos.id
+Ref: sala_dias_funcionamento.sala_id > salas.recurso_id
+Ref: professores.usuario_id - usuarios.id
+Ref: professor_competencias.professor_id > professores.recurso_id
+Ref: professor_competencias.competencia_id > competencias.id
+
+Ref: reservas.solicitante_id > usuarios.id
+Ref: ocupacoes.recurso_id > recursos.id
+Ref: bloqueios_manutencao.recurso_id > recursos.id
+Ref: bloqueios_manutencao.criado_por_id > usuarios.id
+
+Ref: aprovacoes.reserva_id > reservas.id
+Ref: aprovacoes.responsavel_id > usuarios.id
+
+Ref: movimentacoes_material.reserva_id > reservas.id
+Ref: movimentacoes_material.material_id > materiais.recurso_id
+Ref: movimentacoes_material.registrado_por_id > usuarios.id
+
+Ref: tentativas_conflito.recurso_id > recursos.id
+Ref: tentativas_conflito.solicitante_id > usuarios.id
+
+Ref: auditoria_eventos.ator_id > usuarios.id
+
+Ref: notificacoes.reserva_id > reservas.id
+Ref: notificacoes.destinatario_id > usuarios.id
