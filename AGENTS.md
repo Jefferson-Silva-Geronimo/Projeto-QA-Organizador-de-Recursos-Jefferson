@@ -79,14 +79,19 @@ Onde houver conflito com os blocos acima (por exemplo, `npm run lint` e `docs/st
 
 1. **Consultar `.aiox-core/` antes de qualquer tarefa** (personas em `.aiox-core/development/agents/`, skills em `.aiox-core/development/skills/`, tasks, templates e checklists).
 2. **Executar a skill `analyze-docs` ao finalizar qualquer criação ou edição de documentação.** Só considerar o trabalho pronto com zero erros.
-3. **Nunca inventar número, SLA, volume ou regra.** Classificar cada afirmação como:
+3. **Nunca inventar número, SLA, volume ou regra.** Em todo documento do projeto, classificar cada afirmação como:
    - **fato**, com o caminho do arquivo de origem;
    - **lacuna**, algo que a fonte não define;
    - **suposição**, com o impacto se estiver errada e a validação pendente;
    - **decisão**, com a origem (requisito, cenário, restrição ou ADR).
 4. **Nunca gravar token, senha ou dado pessoal real** em arquivo, log, commit ou documento. Não ler nem imprimir `.env`.
-5. **Trabalhar em branch**, com commits `test(red)`, `feat(green)`, `refactor`, `docs` e `ci`. Commit e push são feitos por quem revisa o diff, nunca sem pedido explícito.
+5. **Trabalhar em branch**, com commits `test(red)`, `feat(green)`, `refactor`, `docs`, `ci` e `chore`. Commit só quando o usuário pedir. Nunca `git push`, `--amend`, `rebase` nem `--no-verify` sem pedido explícito.
 6. **Nunca alterar, desativar ou enfraquecer um teste para fazê-lo passar.** Teste que parece errado é confrontado com a regra na fonte.
+7. **Citar a especificação pelo endereço público** `https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html` e nunca por caminho local. `docs/especificacao.md` e `docs/plano_mestre.md` são material de apoio ignorado pelo Git: não são versionados nem citados nos documentos do projeto.
+8. **Preservar identificadores.** Nunca renumerar nem reutilizar RF, RN, RNF, CEN, ADR, CT, INT, BUG, R e S, nem as decisões A a D. RF-01 a RF-14 e RN-01 a RN-08 mantêm o texto fiel da especificação; só a ortografia pode ser corrigida.
+9. **Commits com caminho explícito.** `git add <arquivo>`, um a um; nunca `git add .` nem `git add -A`. Antes de commitar, `git diff --cached --name-only` deve confirmar que `.env`, `docs/especificacao.md` e `docs/plano_mestre.md` não estão no índice.
+10. **Não decidir lacunas.** Lacuna, ambiguidade ou contradição numa decisão registrada vai ao usuário, com alternativas e recomendação. O texto de uma decisão registrada não é alterado, e nenhum valor sem origem é preenchido.
+11. **Documentos em português do Brasil, com acentuação completa**, termos canônicos da convenção de nomes de `docs/prd/regras-negocio.md` e links relativos válidos.
 
 ### Convenção de identificadores
 
@@ -99,11 +104,16 @@ Documento antes de código, arquitetura antes de teste, teste antes de implement
 ### Estrutura de pastas
 
 ```text
-README.md, RTM.md
-docs/prd/ (personas/, regras-negocio.md, requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md)
-docs/arquitetura.md, docs/adr/, docs/avaliacao-arquitetural/
-docs/plano-de-teste.md, docs/testes/, docs/defeitos/, docs/performance/
-perf/ (JMeter), frontend/ (React + Vite), src/ (Maven, na raiz)
-.github/ (ISSUE_TEMPLATE/defeito.md, pull_request_template.md, workflows/)
+README.md, RTM.md, AGENTS.md
+docs/prd.md
+docs/prd/            personas/, perguntas-abertas.md, regras-negocio.md,
+                     requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md
+docs/plano-de-teste.md
+docs/adr/, docs/avaliacao-arquitetural/, docs/testes/, docs/defeitos/, docs/performance/
+docs/arquitetura.md  (prevista, Fase 2)
+perf/                JMeter (previsto)
+frontend/            React + Vite (previsto)
+src/, pom.xml        Maven, na raiz (previstos)
+.github/             ISSUE_TEMPLATE/defeito.md e pull_request_template.md; workflows/ (previsto)
 ```
 <!-- PROJETO-END: organizacao-recursos -->
