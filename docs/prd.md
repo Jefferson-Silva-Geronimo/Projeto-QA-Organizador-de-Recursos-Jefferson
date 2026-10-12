@@ -4,10 +4,10 @@
 | --- | --- |
 | Projeto | Organização de Recursos (Qualidade de Software, TADS, 2026.2) |
 | Fonte de verdade | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), lida em 12/10/2026 |
-| Estado | Rascunho da Fase 1, Prompts 1.1 e 1.1b |
+| Estado | Rascunho da Fase 1, Prompts 1.1, 1.1b, 1.2 e etapas 1.3 a 1.6 |
 | Entrega | Semana 46 |
 
-Este documento separa o que a especificação **afirma** (fato), o que a equipe **decidiu** (decisão, com ID), o que é **suposição** (com impacto) e o que segue em **lacuna**. O registro completo está em [perguntas-abertas.md](prd/perguntas-abertas.md).
+Este documento separa o que a especificação **afirma** (fato), o que a equipe **decidiu** (decisão, com ID), o que é **suposição** (com impacto) e o que segue em **lacuna**. O registro completo está em [perguntas-abertas.md](prd/perguntas-abertas.md) e as regras, com exemplos e técnica de teste, em [regras-negocio.md](prd/regras-negocio.md).
 
 ## 1. Visão
 
@@ -41,7 +41,8 @@ Decisões sobre os perfis:
 - Professor é recurso alocável e o vínculo com usuário é opcional ([A4](prd/perguntas-abertas.md)).
 - O Responsável também cria reservas, mas ninguém aprova a própria ([B1](prd/perguntas-abertas.md)).
 - O Administrador não aprova nem cria reservas próprias; cada usuário tem exatamente um perfil ([B2](prd/perguntas-abertas.md)).
-- Visibilidade por perfil em [B3](prd/perguntas-abertas.md).
+- Visibilidade por perfil em [B3](prd/perguntas-abertas.md) e [D5](prd/perguntas-abertas.md).
+- Rejeita apenas o Responsável que não é o dono da reserva ([D8](prd/perguntas-abertas.md)).
 
 ## 4. Escopo
 
@@ -70,7 +71,7 @@ O detalhamento (persona, jornada, regras ligadas e critério de aceite) é produ
 
 ### 4.2 Regras críticas
 
-Fato (especificação, seção 4). Numeração preservada.
+Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos e técnica de teste em [regras-negocio.md](prd/regras-negocio.md), que também traz RN-09 em diante, decorrentes das decisões da equipe.
 
 | ID | Regra |
 | --- | --- |
@@ -115,6 +116,19 @@ Decisões de 12/10/2026, detalhadas com justificativa, alternativas e impacto em
 | B2 | Administrador não aprova nem reserva; um perfil por usuário | RF-01, RN-06 | Não |
 | B3 | Visibilidade por perfil; Solicitante não vê quem reservou | RF-03, RF-10 | Não |
 | B4 | Definições de carga horária, utilização (só salas) e conflitos evitados | RF-12 | Não |
+| C1 | O dono altera em SOLICITADA e APROVADA até o início; alteração atômica; volta a SOLICITADA se exigia aprovação | RF-04, RF-07, RN-01, RN-02, RN-04 | Não |
+| C2 | Rejeitar exige motivo; sem prazo; SOLICITADA cancelada com SEM_DECISAO quando o início chega (suposição S6) | RF-07, RN-05 | Não; S6 a validar |
+| C3 | CONCLUÍDA só com todo material retirado devolvido; cobrança de atraso fora de escopo | RF-09, RN-05 | Não |
+| C4 | Responsável vê histórico e relatório; Administrador vê toda a auditoria | RF-10, RF-12 | Não |
+| C5 | Sala com dias da semana de funcionamento; feriados fora de escopo; relatório paginado | RF-12 | Não |
+| C6 | Webhook com POST JSON, idempotência, status PENDENTE, ENVIADA e FALHA, reenvio configurável | RF-11 | Não; S7 a validar |
+| C7 | Auditoria também de cadastros, usuários, perfis e bloqueios | RF-10, RN-08 | Não |
+| C8 | Vínculo professor e usuário não concede perfil; autoalocação permitida | RF-01, RF-05, RN-02 | Não |
+| — | Regra geral: nenhuma reserva é apagada fisicamente | RN-07, RN-08 | Não |
+| D5 | O Administrador vê o relatório RF-12, somente leitura | RF-12, RN-26 | Não |
+| D6 | Desativar recurso com reservas futuras SOLICITADA, APROVADA ou EM_USO é recusado com 409, sem cancelamento automático | RF-02, RN-32 | Não |
+| D7 | Bloqueio sobre reserva com vários recursos cancela a reserva inteira | RF-08, RN-22 | Não |
+| D8 | Rejeita o Responsável que não é o dono; o dono cancela | RF-07, RN-33 | Não |
 
 ### 4.5 Decisões técnicas da equipe fora da especificação
 
@@ -133,6 +147,9 @@ A especificação exige apenas Java 21, Spring Boot 3.x e interface responsiva (
 | Cada usuário tem exatamente um perfil | B2 | Quem precisa de dois papéis precisa de duas contas |
 | Fuso e tolerância de não comparecimento são configuráveis | A6, A8 | Valores iniciais não fazem parte do produto; o da tolerância segue como suposição S4 |
 | Endereço do webhook vem de variável de ambiente | A5 | Nenhuma URL ou token no repositório |
+| Nenhuma reserva é apagada fisicamente | Regra geral, RN-07, RN-08 | Encerramentos são mudanças de estado com auditoria; não existe operação de exclusão de reserva |
+| Número de tentativas e intervalo do reenvio são configuráveis | C6 | Valor padrão segue como suposição S7 |
+| Sala exige janela diária e dias de funcionamento | A6, C5 | Sala sem esses dados não aceita reserva |
 
 ## 5. Fora de escopo
 
@@ -144,8 +161,10 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 | Controle de material por quantidade em estoque e consumíveis | Decisão A3 | Cada material é uma unidade identificada. Se o professor discordar, o modelo de dados muda |
 | Reserva que cruza a meia-noite local | Decisão A6 (suposição S3) | Impacto se estiver errada: eventos noturnos ficam impossíveis de reservar |
 | Reservas próprias do Administrador | Decisão B2 | O Administrador administra; quem precisa reservar usa outro perfil |
+| Cobrança de atraso na devolução de material | Decisão C3 | Só se exige devolução para concluir; a cobrança não existe nesta versão |
+| Calendário de feriados na utilização | Decisão C5 | A utilização usa só dias da semana de funcionamento. Impacto: percentual inclui feriados como dias de funcionamento |
 | Qualquer funcionalidade além de RF-01 a RF-14 | Suposição S2 | Só entra como RF-15 em diante se uma jornada ficar sem requisito, com justificativa |
-| Pontos listados na seção C de [perguntas-abertas.md](prd/perguntas-abertas.md) | Lacuna | Não são implementados nem assumidos até haver decisão |
+| Pontos listados na seção D de [perguntas-abertas.md](prd/perguntas-abertas.md) | Lacuna | Não são implementados nem assumidos até haver decisão |
 
 ## 6. Métricas de sucesso
 
@@ -172,7 +191,9 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 
 - As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
 - Três decisões aguardam confirmação do professor: A1, A3 e A5.
-- Oito lacunas novas (C1 a C8) surgiram ao aplicar as decisões e seguem abertas na seção C do mesmo documento.
+- As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
+- Nove lacunas novas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026; D1 a D4 e D9 seguem abertas na seção D do mesmo documento, sem valor assumido.
+- Duas decisões carregam suposição a validar: C2 (S6) e C6 (S7).
 
 ## 9. Suposições registradas
 
@@ -181,5 +202,7 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 | S1 | O problema hoje é resolvido de forma manual e sujeito a conflito | Muda o texto de motivação, não os requisitos |
 | S2 | O escopo é RF-01 a RF-14 mais acréscimos justificados por jornada | O escopo pode estar subdimensionado |
 | S3 | Reservas que cruzam a meia-noite local não são necessárias nesta versão (A6) | Eventos noturnos não podem ser reservados; a regra de janela precisa ser revista |
-| S4 | O valor padrão da tolerância de não comparecimento ainda não foi definido e exige validação (A8) | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais |
+| S4 | O valor padrão da tolerância de não comparecimento ainda não foi definido e exige validação (A8, lacuna D1) | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais |
 | S5 | O endpoint de teste da demonstração basta como integração externa para RF-11 (A5) | Pode ser exigido provedor real, com credenciais e contrato |
+| S6 | Reserva SOLICITADA sem decisão ao chegar o início deve ser cancelada com motivo SEM_DECISAO (C2) | Reservas legítimas canceladas por demora do Responsável, ou períodos presos sem o cancelamento |
+| S7 | O valor padrão de tentativas e do intervalo de reenvio de notificação será definido depois (C6, lacuna D3) | Notificações perdidas ou carga desnecessária sobre o provedor |

@@ -14,7 +14,7 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 - **Stack exigida:** Java 21 e Spring Boot 3.x.
 - **Decisões da equipe:** PostgreSQL, Maven e front end React + Vite (a especificação não as exige).
 - **Escopo:** os 14 requisitos funcionais (RF-01 a RF-14) e as 8 regras críticas (RN-01 a RN-08) da especificação. Detalhes em [docs/prd.md](docs/prd.md).
-- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4) e as lacunas remanescentes (C1 a C8). A1, A3 e A5 aguardam confirmação do professor.
+- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4, C1 a C8) e as lacunas que seguem abertas (D1 a D4 e D9; D5 a D8 foram decididas). A1, A3 e A5 aguardam confirmação do professor; S6 e S7 são suposições a validar. As regras estão em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
 
 ## Perfis
 
@@ -44,7 +44,8 @@ docs/
   prd.md               visão, escopo e métricas
   prd/personas/        solicitante, responsável e administrador
   prd/perguntas-abertas.md   registro de decisões e lacunas
-  prd/regras-negocio.md, requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md   (prevista)
+  prd/regras-negocio.md  RN-01 a RN-08 e regras da equipe (RN-09 em diante)
+  prd/requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md   (prevista)
   arquitetura.md       (prevista)
   adr/                 decisões de arquitetura (prevista)
   avaliacao-arquitetural/   (prevista)
@@ -64,7 +65,7 @@ src/, pom.xml          back end Maven na raiz (prevista)
 | Fase | Foco | Estado |
 | --- | --- | --- |
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
-| 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM em esqueleto | Em andamento (Prompts 1.1 e 1.1b) |
+| 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM em esqueleto | Em andamento (Prompts 1.1, 1.1b e 1.2) |
 | 2 | Requisitos não funcionais, arquitetura e ATAM | Prevista |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Prevista |
 | 4 | Back end guiado por testes (TDD e BDD) | Prevista |
