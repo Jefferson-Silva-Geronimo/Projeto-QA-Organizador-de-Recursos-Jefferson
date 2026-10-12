@@ -117,6 +117,7 @@ sequenceDiagram
 - **Desfechos:**
   - Sucesso: 201 APROVADA, com ator SISTEMA, quando não há recurso restrito
   - Sucesso: 201 SOLICITADA quando há recurso restrito
+  - Erro: 403 para perfil sem permissão, como o Administrador
   - Erro: 400 por término não posterior ao início
   - Erro: 422 fora da janela ou em dia sem funcionamento
   - Erro: 409 por manutenção, sobreposição ou professor ocupado, com tentativa de conflito registrada
@@ -131,7 +132,9 @@ sequenceDiagram
     participant P as Provedor de notificação
     U->>F: Escolhe recursos, título, início e fim
     F->>A: POST reservas
-    alt término igual ou anterior ao início
+    alt perfil sem permissão para reservar
+        A-->>F: 403 sem gravar nada
+    else término igual ou anterior ao início
         A-->>F: 400 término deve ser posterior ao início
     else intervalo válido
         A->>B: Carrega recursos, janelas das salas e bloqueios
@@ -209,7 +212,7 @@ sequenceDiagram
 - **Decisões:** A1, B1, C2, D8
 - **Resumo:** O Responsável decide sobre reserva SOLICITADA. Cobre aprovação, rejeição com motivo, rejeição sem motivo, decisão do próprio dono e estado inválido.
 - **Desfechos:**
-  - Sucesso: 200 com estado APROVADA ou REJEITADA, auditoria e notificação ao Solicitante
+  - Sucesso: 200 com estado APROVADA ou rejeitada, auditoria e notificação ao Solicitante
   - Erro: 400 por rejeição sem motivo
   - Erro: 403 para o dono, Solicitante ou Administrador
   - Erro: 409 por reserva que não está em SOLICITADA
@@ -240,8 +243,8 @@ sequenceDiagram
         A-->>F: 200 reserva APROVADA
         A->>P: Notifica o Solicitante após o commit
     else decisão é rejeitar com motivo
-        A->>B: Grava rejeição, motivo, estado REJEITADA e auditoria
-        A-->>F: 200 reserva REJEITADA
+        A->>B: Grava rejeição, motivo, estado rejeitada e auditoria
+        A-->>F: 200 reserva rejeitada
         A->>P: Notifica o Solicitante com o motivo após o commit
     else decisão é rejeitar sem motivo
         A-->>F: 400 motivo obrigatório na rejeição
@@ -343,14 +346,17 @@ sequenceDiagram
     F->>A: POST cancelamento
     alt reserva EM_USO ou em estado terminal
         A-->>F: 409 só a conclusão encerra reserva em uso
-    else SOLICITADA cancelada pelo dono
+    else SOLICITADA cancelada pelo dono sem motivo
         A->>B: Grava estado cancelada e auditoria
         A-->>F: 200
-    else SOLICITADA ou APROVADA cancelada por Responsável ou Administrador com motivo
+    else SOLICITADA cancelada pelo Administrador com motivo
         A->>B: Grava estado cancelada, motivo e auditoria
         A-->>F: 200
     else APROVADA cancelada pelo dono até o início
         A->>B: Grava estado cancelada e auditoria
+        A-->>F: 200
+    else APROVADA cancelada por Responsável ou Administrador com motivo
+        A->>B: Grava estado cancelada, motivo e auditoria
         A-->>F: 200
     else sem motivo quando exigido, ou perfil sem permissão
         A-->>F: 400 motivo obrigatório ou 403
@@ -382,7 +388,7 @@ sequenceDiagram
     F->>A: POST bloqueio sem confirmação
     alt perfil sem permissão
         A-->>F: 403
-    else
+    else perfil Administrador
         A->>B: Busca reservas ativas do recurso no período
         B-->>A: Reservas conflitantes
         alt há reserva EM_USO no período
@@ -415,7 +421,7 @@ sequenceDiagram
 - **Decisões:** A8, C2, D1, D2
 - **Resumo:** O Responsável marca não compareceu após a tolerância. Quando o início de uma reserva SOLICITADA chega sem decisão, o sistema a cancela com motivo SEM_DECISAO.
 - **Desfechos:**
-  - Sucesso: NAO_COMPARECEU ou cancelada com SEM_DECISAO, com auditoria
+  - Sucesso: não compareceu ou cancelada com SEM_DECISAO, com auditoria
   - Erro: 409 por tolerância não encerrada ou estado inválido
   - Em aberto: valor da tolerância (D1) e mecanismo de disparo (D2)
 
@@ -436,7 +442,7 @@ sequenceDiagram
     R->>F: Marca uma reserva como não compareceu
     F->>A: POST não compareceu
     alt reserva APROVADA e tolerância encerrada
-        A->>B: Grava estado NAO_COMPARECEU e auditoria
+        A->>B: Grava estado não compareceu e auditoria
         A-->>F: 200
     else tolerância ainda não encerrada
         A-->>F: 409 tolerância não encerrada
@@ -626,7 +632,6 @@ sequenceDiagram
     autonumber
     actor C as Consumidor da API
     participant A as API
-    participant B as Banco
     C->>A: GET documentação do contrato
     alt documentação publicada
         A-->>C: 200 contrato com perfis, parâmetros, respostas e códigos de erro
