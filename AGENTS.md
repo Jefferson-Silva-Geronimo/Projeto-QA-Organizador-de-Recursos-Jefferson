@@ -69,7 +69,7 @@ Interprete os atalhos abaixo carregando o arquivo correspondente em `.aiox-core/
 
 Projeto: aplicação que aloca **salas, professores e materiais** sem conflito de horário.
 Stack: Java 21, Spring Boot 3.x, Maven, PostgreSQL, front end React + Vite.
-Fonte dos requisitos: https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html
+Fonte dos requisitos: <https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html>
 (cite a especificação por esse endereço nos documentos versionados, nunca por caminho local).
 
 Esta seção é do projeto e não faz parte dos blocos `AIOX-MANAGED`; os sincronizadores do aiox-core não devem sobrescrevê-la.

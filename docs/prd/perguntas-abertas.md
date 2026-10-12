@@ -42,7 +42,7 @@ Observações importantes:
 | C5 | Janela, dias e relatório | Dias da semana por sala; feriados fora de escopo; relatório paginado | Decidida (equipe) |
 | C6 | Notificação | POST JSON, idempotência, destinatários e status definidos; reenvio configurável | Decidida (equipe) |
 | C7 | Auditoria ampliada | Cadastros, usuários, perfis e bloqueios também auditados | Decidida (equipe) |
-| C8 | Vínculo professor e usuário | Vínculo não concede perfil; autoalocação permitida | Decidida (equipe) |
+| C8 | Vínculo professor e usuário | Vínculo não concede perfil; o próprio professor vinculado pode ser alocado | Decidida (equipe) |
 | — | Regra geral | Nenhuma reserva é apagada fisicamente | Decidida (equipe) |
 | D5 | Relatório RF-12 para o Administrador | O Administrador vê o relatório, somente leitura | Decidida (equipe) |
 | D6 | Desativação de recurso | Recusada com 409 se houver reservas futuras SOLICITADA, APROVADA ou EM_USO | Decidida (equipe) |
@@ -343,8 +343,8 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 - **Pergunta:** um professor vinculado a usuário pode reservar a si mesmo como recurso?
 - **Decisão:** o vínculo professor e usuário não concede perfil. Para solicitar, é preciso usuário Solicitante. Reservar aula em que o próprio vinculado é o professor alocado é permitido e a agenda continua sob RN-02.
 - **Justificativa:** mantém separação entre cadastro do recurso e controle de acesso (A4, B2) sem proibir o caso comum.
-- **Alternativas consideradas:** proibir autoalocação; vínculo concedendo perfil automaticamente.
-- **Impacto:** RF-01, RF-05, RN-02, RN-13 (decisão A4); testes de autoalocação com conflito na própria agenda e de vínculo sem perfil.
+- **Alternativas consideradas:** proibir que o próprio professor vinculado seja alocado; vínculo concedendo perfil automaticamente.
+- **Impacto:** RF-01, RF-05, RN-02, RN-13 (decisão A4); testes de alocação do próprio professor vinculado, com conflito na própria agenda e de vínculo sem perfil.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
 ## D. Decisões e lacunas surgidas ao aplicar C

@@ -113,7 +113,7 @@ As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da esp
   2. Fronteira [início, fim): fim às 16:00 e início às 16:00 não conflitam; um instante de sobreposição conflita.
   3. Os mesmos casos de limite valem para sala, professor e material.
   4. Cada recusa por sobreposição gera exatamente 1 tentativa de conflito registrada.
-  5. A agenda de professor sem usuário vinculado e a de professor vinculado (autoalocação) usam a mesma regra.
+  5. A agenda de professor sem usuário vinculado e a de professor vinculado alocado por ele mesmo usam a mesma regra.
 
 ### RF-06. Proteção contra dupla reserva em solicitações simultâneas
 
