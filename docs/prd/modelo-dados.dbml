@@ -20,6 +20,14 @@
 //   - Todo instante é timestamptz, gravado em UTC (RN-15, A6).
 //   - Chaves primárias surrogate (bigint com identidade) são ESCOLHA ALÉM DO PEDIDO.
 //
+// ALTERAÇÃO DA AUDITORIA (revisão das Fases 0 e 1, 12/10/2026): em ocupacoes, as colunas
+// polimórficas origem e origem_id foram substituídas por reserva_id e bloqueio_id, com chave
+// estrangeira real e CHECK de exatamente uma preenchida. O enum origem_ocupacao foi removido.
+//
+// Verificação (revisão de 12/10/2026): o arquivo foi aceito pelo parser @dbml/cli 3.9.5
+// (dbml2sql --postgres), o esquema gerado foi aplicado em PostgreSQL 17 e a constraint de
+// exclusão, os CHECKs e as unicidades foram exercitados com dados fictícios descartáveis.
+//
 // Lacunas que NÃO foram decididas aqui: D1 (tolerância), D2 (mecanismo de
 // SEM_DECISAO), D3 (tentativas e intervalo de reenvio), D4 (tamanho de página do
 // relatório) e D9 (retenção de auditoria e notificações).
@@ -63,11 +71,6 @@ Enum estado_reserva {
 Enum motivo_sistema {
   MANUTENCAO
   SEM_DECISAO
-}
-
-Enum origem_ocupacao {
-  RESERVA
-  BLOQUEIO
 }
 
 Enum decisao_aprovacao {
@@ -150,6 +153,9 @@ Table recursos {
   Supertipo de sala, professor e material, para que RN-02 e RN-04 sejam uma única garantia.
   RF-02, RF-03, RF-05, RF-07. RN-02, RN-10, RN-32, RN-29.
   Decisões: A1, A3 (cada unidade de material é um recurso), A4, D6.
+  RISCO PARA A FASE 2: salas, professores e materiais referenciam recursos.id, mas o banco não
+  impede que uma sala aponte para um recurso do tipo PROFESSOR. A chave composta com o tipo é
+  questão de arquitetura e fica registrada, não resolvida aqui.
   '''
 }
 
@@ -242,8 +248,8 @@ Table reservas {
   fim timestamptz [not null, note: 'CHECK fim > inicio (RN-01). Intervalo [inicio, fim) (A2, RN-11).']
   estado estado_reserva [not null]
   exige_aprovacao boolean [not null, note: 'Calculado pelo servidor na criação e gravado. Mudança posterior do atributo restrito não altera (A1, RN-10).']
-  motivo_sistema motivo_sistema [note: 'Preenchido quando o sistema cancela: MANUTENCAO (A7) ou SEM_DECISAO (C2). SEM_DECISAO é suposição S6.']
-  motivo_texto text [note: 'Motivo informado por pessoa ao cancelar (A8). Motivo da rejeição fica em aprovacoes (C2, RN-24).']
+  motivo_sistema motivo_sistema [note: 'Preenchido só quando o sistema cancela: MANUTENCAO (A7) ou SEM_DECISAO (C2, suposição S6). CHECK: só com estado CANCELADA.']
+  motivo_texto text [note: 'Motivo informado por pessoa ao cancelar (A8, RN-18) ou ao rejeitar (C2, RN-24). A decisão e o motivo também ficam em aprovacoes, como histórico.']
   criada_em timestamptz [not null]
   atualizada_em timestamptz [not null, note: 'ESCOLHA ALÉM DO PEDIDO.']
 
@@ -258,6 +264,8 @@ Table reservas {
   Nenhuma reserva é apagada: encerramentos são mudança de estado com auditoria.
   Transições permitidas e proibidas: regras-negocio.md, seção 3.
   Os recursos da reserva estão em ocupacoes (uma linha por recurso).
+  CHECKs a criar por migração: fim > inicio (RN-01); motivo_texto obrigatório quando o estado
+  é REJEITADA (RN-24); motivo_sistema só quando o estado é CANCELADA.
   '''
 }
 
@@ -265,13 +273,14 @@ Table ocupacoes {
   id bigint [pk, increment]
   recurso_id bigint [not null]
   periodo tstzrange [not null, note: 'Intervalo semiaberto [inicio, fim) (A2, RN-11).']
-  origem origem_ocupacao [not null, note: 'RESERVA ou BLOQUEIO. Reservas e bloqueios disputam a mesma garantia (RN-02, RN-04).']
-  origem_id bigint [not null, note: 'Identifica reservas.id ou bloqueios_manutencao.id conforme origem. Sem FK declarável por ser polimórfica. A integridade será garantida por regra na Fase 2.']
-  ativa boolean [not null, default: true, note: 'Só ocupações ativas concorrem na constraint de exclusão. Reserva encerrada libera a ocupação.']
+  reserva_id bigint [note: 'ALTERAÇÃO DA AUDITORIA: preenchida quando a ocupação vem de uma reserva. Substitui origem e origem_id, que não tinham integridade referencial.']
+  bloqueio_id bigint [note: 'ALTERAÇÃO DA AUDITORIA: preenchida quando a ocupação vem de um bloqueio de manutenção. Exatamente uma entre reserva_id e bloqueio_id é preenchida (CHECK).']
+  ativa boolean [not null, default: true, note: 'Só ocupações ativas concorrem na constraint de exclusão. Verdadeira enquanto a reserva está em SOLICITADA, APROVADA ou EM_USO e falsa nos demais estados; no bloqueio, acompanha bloqueios_manutencao.ativo.']
 
   indexes {
     recurso_id [note: 'ESCOLHA ALÉM DO PEDIDO: consulta de disponibilidade (RF-03).']
-    (origem, origem_id) [note: 'ESCOLHA ALÉM DO PEDIDO: ocupações de uma reserva ou bloqueio.']
+    reserva_id [note: 'ESCOLHA ALÉM DO PEDIDO: ocupações de uma reserva (cancelamento por inteiro, D7).']
+    bloqueio_id [note: 'ESCOLHA ALÉM DO PEDIDO: ocupações de um bloqueio.']
   }
 
   Note: '''
@@ -285,6 +294,15 @@ Table ocupacoes {
   inicioA < fimB e inicioB < fimA (A2). A violação deve virar 409 (RF-06).
 
   O índice GiST criado pela constraint serve também à consulta de disponibilidade.
+
+  CHECKs a criar por migração:
+    num_nonnulls(reserva_id, bloqueio_id) = 1   (exatamente uma origem)
+    NOT isempty(periodo) AND lower(periodo) < upper(periodo)   (RN-01)
+
+  COERÊNCIA DE ativa COM O ESTADO (questão para a Fase 2): a coluna é derivada do estado da reserva
+  ou do bloqueio e pode divergir se for mantida por duas escritas. O relatório RF-12 conta
+  reservas em CONCLUÍDA, portanto deve ler reservas.estado e não ativa. Manter ou não a ocupação
+  ativa de uma reserva concluída antes do término previsto é decisão de arquitetura.
   '''
 }
 
@@ -296,12 +314,13 @@ Table bloqueios_manutencao {
   motivo text [not null]
   criado_por_id bigint [not null, note: 'Administrador.']
   criado_em timestamptz [not null]
-  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: levantamento do bloqueio sem apagar.']
+  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: levantamento do bloqueio sem apagar. Como se levanta um bloqueio é a lacuna D15.']
 
   Note: '''
-  ESCOLHA ALÉM DO PEDIDO: tabela necessária porque ocupacoes referencia o bloqueio por origem_id e
-  nenhum requisito pedido listava onde o bloqueio é guardado.
-  RF-08. RN-04, RN-22, RN-29. Decisões: A7, D7, C7.
+  ESCOLHA ALÉM DO PEDIDO: tabela necessária porque ocupacoes referencia o bloqueio por bloqueio_id e
+  nenhuma entidade pedida listava onde o bloqueio é guardado.
+  RF-08. RN-04, RN-22, RN-29. Decisões: A7, D7, C7. Lacuna: D15.
+  CHECK a criar por migração: fim > inicio (A2).
   Bloqueio sobre reserva EM_USO é recusado (A7, RN-07).
   '''
 }
@@ -435,16 +454,20 @@ Table configuracao {
 // Relações
 // ---------------------------------------------------------------------------
 
-Ref: salas.recurso_id - recursos.id
-Ref: professores.recurso_id - recursos.id
-Ref: materiais.recurso_id - recursos.id
+// Especializações um-para-um. Em relação um-para-um o DBML coloca a chave estrangeira na tabela
+// da direita, por isso a tabela especializada vem depois (verificado com dbml2sql, 12/10/2026).
+Ref: recursos.id - salas.recurso_id
+Ref: recursos.id - professores.recurso_id
+Ref: recursos.id - materiais.recurso_id
 Ref: sala_dias_funcionamento.sala_id > salas.recurso_id
-Ref: professores.usuario_id - usuarios.id
+Ref: usuarios.id - professores.usuario_id
 Ref: professor_competencias.professor_id > professores.recurso_id
 Ref: professor_competencias.competencia_id > competencias.id
 
 Ref: reservas.solicitante_id > usuarios.id
 Ref: ocupacoes.recurso_id > recursos.id
+Ref: ocupacoes.reserva_id > reservas.id
+Ref: ocupacoes.bloqueio_id > bloqueios_manutencao.id
 Ref: bloqueios_manutencao.recurso_id > recursos.id
 Ref: bloqueios_manutencao.criado_por_id > usuarios.id
 
