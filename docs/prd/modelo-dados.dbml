@@ -181,7 +181,7 @@ Table salas {
   recurso_id bigint [pk, note: 'Especialização de recursos (tipo SALA).']
   capacidade integer [not null]
   localizacao varchar [not null]
-  tipo_sala varchar [not null]
+  tipo_sala varchar [note: 'Opcional: RF-02 não lista o tipo da sala entre os campos obrigatórios (migração V3).']
   hora_abertura time [not null, note: 'Horário local, interpretado no fuso de configuracao (A6).']
   hora_fechamento time [not null, note: 'A reserva precisa caber entre abertura e fechamento e não cruza a meia-noite local (RN-14, S3).']
 

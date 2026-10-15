@@ -4,9 +4,7 @@ import br.senac.recursos.aplicacao.porta.RecursoRepositorio;
 import br.senac.recursos.dominio.TipoRecurso;
 import java.sql.Array;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -225,15 +223,5 @@ class JdbcRecursoRepositorio implements RecursoRepositorio {
             }
         }
         return lista;
-    }
-
-    @SuppressWarnings("unused")
-    private static Timestamp ts(Instant instante) {
-        return Timestamp.from(instante);
-    }
-
-    @SuppressWarnings("unused")
-    private static LocalTime hora(java.sql.Time t) {
-        return t == null ? null : t.toLocalTime();
     }
 }
