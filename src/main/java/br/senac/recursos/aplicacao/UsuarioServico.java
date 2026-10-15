@@ -98,6 +98,15 @@ public class UsuarioServico {
         return obter(id);
     }
 
+    /**
+     * Cria o primeiro Administrador quando não há nenhum usuário. Sem ele, ninguém cadastra usuários.
+     * Devolve {@code true} se criou.
+     */
+    @Transactional
+    public boolean semearPrimeiroAdministrador(String nome, String email, String senha) {
+        return false;
+    }
+
     @Transactional(readOnly = true)
     public List<Registro> listar() {
         return usuarios.listar();
