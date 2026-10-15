@@ -2,6 +2,8 @@
 spring:
   application:
     name: organizacao-recursos
+  jackson:
+    default-property-inclusion: non_null
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}

@@ -16,6 +16,10 @@ public enum CodigoErro {
             "A desativação deixaria menos de dois Responsáveis ativos."),
     USUARIO_COM_RESERVA_FUTURA(Categoria.CONFLITO,
             "O usuário tem reservas futuras e não pode ser desativado."),
+    PATRIMONIO_JA_EXISTE(Categoria.CONFLITO, "Já existe um material com este código de patrimônio."),
+    VINCULO_JA_EXISTE(Categoria.CONFLITO, "O usuário já está vinculado a outro professor."),
+    RECURSO_COM_RESERVA_FUTURA(Categoria.CONFLITO,
+            "O recurso tem reservas futuras e não pode ser desativado."),
     ERRO_INTERNO(Categoria.INTERNO, "Não foi possível concluir a operação. Tente novamente mais tarde.");
 
     /** Categoria de recusa, independente de protocolo. */
