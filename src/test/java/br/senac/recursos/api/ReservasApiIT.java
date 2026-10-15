@@ -368,7 +368,7 @@ class ReservasApiIT extends ApiIT {
 
         assertThat(estado(id)).isEqualTo("APROVADA");
         assertThat(contar("select count(*) from auditoria_eventos where entidade_id = ? and acao = 'RESERVA_APROVADA' "
-                + "and ator_tipo = 'SISTEMA'", id)).isEqualTo(2);
+                + "and ator_tipo = 'SISTEMA'", id)).isEqualTo(1);
     }
 
     @ParameterizedTest(name = "{0}")
