@@ -9,6 +9,11 @@ spring:
   flyway:
     enabled: true
 
+app:
+  sessao:
+    # ISO-8601, por exemplo PT30M. Obrigatório e sem valor padrão (lacuna D17).
+    duracao: ${SESSAO_DURACAO}
+
 server:
   error:
     include-message: never
