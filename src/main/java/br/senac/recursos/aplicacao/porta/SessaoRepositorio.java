@@ -13,4 +13,7 @@ public interface SessaoRepositorio {
     Optional<UsuarioAutenticado> buscarAtiva(String tokenHash, Instant agora);
 
     void revogar(String tokenHash, Instant agora);
+
+    /** Revoga todas as sessões abertas do usuário (desativação, D14). */
+    void revogarTodas(long usuarioId, Instant agora);
 }

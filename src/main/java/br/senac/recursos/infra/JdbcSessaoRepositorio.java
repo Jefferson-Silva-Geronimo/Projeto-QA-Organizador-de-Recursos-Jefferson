@@ -58,6 +58,14 @@ class JdbcSessaoRepositorio implements SessaoRepositorio {
                 .update();
     }
 
+    @Override
+    public void revogarTodas(long usuarioId, Instant agora) {
+        jdbc.sql("update sessoes set revogada_em = :agora where usuario_id = :usuario and revogada_em is null")
+                .param("agora", utc(agora))
+                .param("usuario", usuarioId)
+                .update();
+    }
+
     static OffsetDateTime utc(Instant instante) {
         return instante.atOffset(ZoneOffset.UTC);
     }
