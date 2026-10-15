@@ -6,10 +6,6 @@ spring:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: none   # ADR-009: o esquema nasce só das migrações
   flyway:
     enabled: true
 
