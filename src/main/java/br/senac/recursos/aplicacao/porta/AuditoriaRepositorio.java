@@ -27,6 +27,12 @@ public interface AuditoriaRepositorio {
             return new Evento(quando, TipoAtor.USUARIO, atorId, entidade, entidadeId, acao,
                     null, null, antes, depois, null, null);
         }
+
+        public static Evento deSistema(Instant quando, Entidade entidade, long entidadeId, String acao,
+                                       Map<String, Object> antes, Map<String, Object> depois) {
+            return new Evento(quando, TipoAtor.SISTEMA, null, entidade, entidadeId, acao,
+                    null, null, antes, depois, null, null);
+        }
     }
 
     void registrar(Evento evento);

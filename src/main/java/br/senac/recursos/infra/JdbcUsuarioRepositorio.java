@@ -46,6 +46,11 @@ class JdbcUsuarioRepositorio implements UsuarioRepositorio {
     }
 
     @Override
+    public long contar() {
+        return jdbc.sql("select count(*) from usuarios").query(Long.class).single();
+    }
+
+    @Override
     public long criar(String nome, String email, String senhaHash, Perfil perfil, Instant criadoEm) {
         return jdbc.sql("""
                         insert into usuarios (nome, email, senha_hash, perfil, criado_em)

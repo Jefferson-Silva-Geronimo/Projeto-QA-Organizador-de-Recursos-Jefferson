@@ -13,6 +13,11 @@ app:
   sessao:
     # ISO-8601, por exemplo PT30M. Obrigatório e sem valor padrão (lacuna D17).
     duracao: ${SESSAO_DURACAO}
+  bootstrap:
+    admin:
+      # Cria o primeiro Administrador se a tabela de usuários estiver vazia. Sem valor padrão.
+      email: ${BOOTSTRAP_ADMIN_EMAIL:}
+      senha: ${BOOTSTRAP_ADMIN_SENHA:}
 
 server:
   error:

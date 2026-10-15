@@ -18,6 +18,8 @@ public interface UsuarioRepositorio {
 
     List<Registro> listar();
 
+    long contar();
+
     /** Cria o usuário. Falha com {@code DuplicateKeyException} se o e-mail já existe. */
     long criar(String nome, String email, String senhaHash, Perfil perfil, Instant criadoEm);
 

@@ -104,7 +104,15 @@ public class UsuarioServico {
      */
     @Transactional
     public boolean semearPrimeiroAdministrador(String nome, String email, String senha) {
-        return false;
+        if (usuarios.contar() > 0) {
+            return false;
+        }
+        String normalizado = AutenticacaoServico.normalizar(email);
+        Instant agora = relogio.instant();
+        long id = usuarios.criar(nome.trim(), normalizado, codificador.encode(senha), Perfil.ADMINISTRADOR, agora);
+        auditoria.registrar(Evento.deSistema(agora, Entidade.USUARIO, id, "USUARIO_CRIADO",
+                null, visao(nome.trim(), normalizado, Perfil.ADMINISTRADOR, true)));
+        return true;
     }
 
     @Transactional(readOnly = true)
