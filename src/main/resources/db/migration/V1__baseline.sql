@@ -1,0 +1,2 @@
+-- Baseline vazia (Fase 3). O esquema real nasce do modelo-dados.dbml nas fatias da Fase 4:
+-- extensão btree_gist, constraint de exclusão em ocupacoes e gatilho de auditoria (ADR-003, ADR-006).

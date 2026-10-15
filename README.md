@@ -26,15 +26,33 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 
 ## Como subir
 
-TODO: ainda não há aplicação. Será preenchido na Fase 3, quando a casca Maven existir.
+Pré-requisitos: Java 21 (Temurin ou equivalente) e Docker. O Maven vem pelo wrapper (`./mvnw`).
+
+1. Copie `.env.example` para `.env` e preencha valores **locais**. O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
+2. Suba o banco: `docker compose up -d postgres`.
+3. Exporte `DB_URL`, `DB_USER` e `DB_PASSWORD` com os mesmos valores do `.env` e rode `./mvnw spring-boot:run`.
+4. Verifique a saúde: `GET http://localhost:8080/actuator/health`. Todo o resto exige autenticação, que entra na Fase 4 (ADR-004).
+
+Estado atual: casca do projeto. Não há regra de negócio nem endpoint de negócio ainda.
 
 ## Como testar
 
-TODO: ainda não há testes. Será preenchido na Fase 3 (suíte mínima e integração contínua) e completado na Fase 4.
+```bash
+./mvnw -B verify
+```
+
+Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integração com PostgreSQL real em container (`*IT`, Failsafe e Testcontainers; o Docker precisa estar ativo). Os relatórios ficam em `target/surefire-reports`, `target/failsafe-reports` e `target/site/jacoco`.
+
+| Teste | O que prova |
+| --- | --- |
+| `ArquiteturaTest` | O domínio não depende de Spring, JPA nem das outras camadas (ADR-001) |
+| `ContextoIT` | A aplicação sobe com PostgreSQL real, o Flyway aplica a baseline e o relógio é UTC (ADR-005, ADR-009) |
+
+A suíte cresce a partir da Fase 4. O gate de cobertura (80% de linhas e 70% de branches) liga na primeira fatia de domínio (ADR-011).
 
 ## Estrutura de pastas
 
-Itens marcados como *previsto* ainda não existem ou estão vazios.
+Itens marcados como *vazio* ou *previsto* ainda não têm conteúdo.
 
 ```text
 README.md              visão do projeto
@@ -59,8 +77,12 @@ docs/
   performance/         (vazio)
 perf/                  testes de carga com JMeter (vazio)
 frontend/              React + Vite (vazio)
-src/, pom.xml          back end Maven na raiz (previstos, Fase 3)
-.github/               ISSUE_TEMPLATE/defeito.md e pull_request_template.md; workflows/ (previsto)
+pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrapper
+compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
+src/main/java/br/senac/recursos/   dominio, aplicacao, api e infra (ADR-001)
+src/main/resources/    application.yml (só variáveis de ambiente) e db/migration (Flyway)
+src/test/java/         ArquiteturaTest e ContextoIT
+.github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md e workflows/ci.yml (Fase 3)
 .aiox-core/            framework de agentes, instalado, com as skills do projeto
 .claude/, .codex/, .cursor/, .gemini/, .antigravity/, .grok/, .kimi/   configuração de agentes e IDEs, geradas pelo aiox-core
 ```
