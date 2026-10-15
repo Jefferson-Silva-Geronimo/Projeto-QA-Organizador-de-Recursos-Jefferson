@@ -14,7 +14,7 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 - **Stack exigida:** Java 21 e Spring Boot 3.x.
 - **Decisões da equipe:** PostgreSQL, Maven e front end React + Vite (a especificação não as exige).
 - **Escopo:** os 14 requisitos funcionais (RF-01 a RF-14) e as 8 regras críticas (RN-01 a RN-08) da especificação, mais RF-15 e RF-16 (acréscimos da equipe) e as regras RN-09 a RN-33 (decisões da equipe). Detalhes em [docs/prd.md](docs/prd.md).
-- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4, C1 a C8 e D5 a D8) e as lacunas que seguem abertas (D1 a D4 e D9 a D16). A1, A3 e A5 aguardam confirmação do professor; S6 e S7 são suposições a validar. As regras estão em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
+- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4, C1 a C8, D2, D5 a D8 e D10 a D16) e as lacunas que seguem abertas (D1, D3, D4, D9 e D17). A1, A3 e A5 aguardam confirmação do professor; S6 e S7 são suposições a validar. As regras estão em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
 
 ## Perfis
 
@@ -50,9 +50,10 @@ docs/
     requisitos-funcionais.md   RF-01 a RF-16 e matrizes RN-RF
     modelo-dados.dbml      modelo de dados, importável no dbdiagram.io
     fluxos-sequencia.md    14 diagramas de sequência
-  arquitetura.md       (previsto, Fase 2)
+  arquitetura.md       drivers, C4, decisões de arquitetura (rascunho da Fase 2)
+  taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 decisões de arquitetura (vazio)
-  avaliacao-arquitetural/   (vazio)
+  avaliacao-arquitetural/   ciclo-00.md (ATAM, rascunho da Fase 2)
   testes/              (vazio)
   defeitos/            (vazio)
   performance/         (vazio)
@@ -69,8 +70,8 @@ src/, pom.xml          back end Maven na raiz (previstos, Fase 3)
 | Fase | Foco | Estado |
 | --- | --- | --- |
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
-| 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1 a D4 e D9 a D16 seguem abertas |
-| 2 | Requisitos não funcionais, arquitetura e ATAM | Prevista |
+| 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
+| 2 | Requisitos não funcionais, arquitetura e ATAM | Em andamento: Prompts 2.1 a 2.3 feitos; faltam revisão cruzada e ADR |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Prevista |
 | 4 | Back end guiado por testes (TDD e BDD) | Prevista |
 | 5 | Testes de carga e concorrência (JMeter) | Prevista |

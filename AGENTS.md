@@ -110,7 +110,7 @@ docs/prd/            personas/, perguntas-abertas.md, regras-negocio.md,
                      requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md
 docs/plano-de-teste.md
 docs/adr/, docs/avaliacao-arquitetural/, docs/testes/, docs/defeitos/, docs/performance/
-docs/arquitetura.md  (prevista, Fase 2)
+docs/arquitetura.md, docs/taticas-arquiteturais-len-bass.md  (Fase 2)
 perf/                JMeter (previsto)
 frontend/            React + Vite (previsto)
 src/, pom.xml        Maven, na raiz (previstos)

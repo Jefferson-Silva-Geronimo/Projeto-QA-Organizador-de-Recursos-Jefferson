@@ -55,9 +55,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Feriados no cálculo de utilização | Fora de escopo | C5 |
 | Provedor de notificação real | A integração é simulada por endpoint de teste e por WireMock | A5, S5 |
 | Comportamento com valor da tolerância, do reenvio ou do tamanho de página | Valores sem decisão: D1, D3 e D4. Testa-se que o valor é configurável, não o valor | Lacunas |
-| Comportamento das ambiguidades D10 a D16 | Instante de "até o início", "reserva futura", recálculo de "exige aprovação", operação da própria reserva pelo Responsável, desativação de usuário, levantamento de bloqueio e reserva com início no passado. O caso de teste só é escrito depois da decisão | Lacunas |
 | Retenção e anonimização de auditoria e notificações | Lacuna D9 | Lacuna |
-| Mecanismo automático de SEM_DECISAO e de não comparecimento | Lacuna D2: o teste depende da decisão sobre job ou avaliação sob demanda | Lacuna |
+| Marcação automática de não compareceu por job | Fora desta versão: o Responsável marca manualmente (A8, D2) | Decisão D2 |
 | Desempenho com metas numéricas | A especificação não define critérios. TODO na Fase 2 e na Fase 5 | Lacuna |
 
 ## 4. Estratégia e níveis de teste
@@ -103,7 +102,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Cenários de qualidade e arquitetura definidos | TODO (Fase 2) |
 | Casca do projeto, integração contínua e processo de defeitos | TODO (Fase 3) |
 | Decisões A1, A3 e A5 confirmadas com o professor | TODO |
-| Lacunas D10 a D16 decididas, ou assumidas como suposição com impacto | TODO |
+| Lacunas D2 e D10 a D16 decididas em 15/10/2026 | Atendido |
 
 ### 5.2 Critérios de saída
 
@@ -128,7 +127,7 @@ Proposta da equipe, a validar:
 | A integração contínua está quebrada na linha principal | A integração contínua volta a passar |
 | O ambiente de teste containerizado não sobe | O ambiente volta a subir |
 | Defeito bloqueante impede a execução de um conjunto de casos | A correção é verificada |
-| Decisão pendente de D1 a D4 ou de D10 a D16 impede definir o resultado esperado | A decisão é registrada |
+| Decisão pendente de D1, D3, D4, D9 ou D17 impede definir o resultado esperado | A decisão é registrada |
 
 TODO: critério numérico de defeito bloqueante, se necessário.
 
@@ -163,7 +162,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 
 ## 8. Riscos
 
-Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimentam a coluna Risco da [RTM](../RTM.md) e serão refinados na Fase 2. Probabilidade e impacto quantitativos: TODO, não foram estimados.
+Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimentam a coluna Risco da [RTM](../RTM.md). R-17 a R-24 vieram da avaliação arquitetural de 15/10/2026 ([ciclo-00.md](avaliacao-arquitetural/ciclo-00.md)). Probabilidade e impacto quantitativos: TODO, não foram estimados.
 
 | ID | Risco | RF | RN | Técnica ou nível previsto |
 | --- | --- | --- | --- | --- |
@@ -183,6 +182,14 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | R-14 | Cadastro inconsistente de recurso ou usuário | RF-02, RF-15 | RN-13 | Partição e integração |
 | R-15 | Documentação diverge do comportamento | RF-14 | — | Teste de contrato |
 | R-16 | Decisão pendente ou suposição altera o comportamento | RF-02, RF-04, RF-07, RF-08, RF-09, RF-10, RF-11, RF-12, RF-15, RF-16 | RN-01, RN-10, RN-16, RN-18, RN-19, RN-20, RN-21, RN-22, RN-23, RN-25, RN-28, RN-29, RN-31, RN-32 | Revisão da suposição antes de escrever o caso |
+| R-17 | Impasse ou espera longa em reserva com vários recursos | RF-04, RF-06 | RN-02, RN-03 | Concorrência com banco real, ordens opostas de recursos |
+| R-18 | Coluna `ativa` diverge do estado da reserva e a constraint barra ou libera indevidamente | RF-04, RF-08, RF-12 | RN-02, RN-04, RN-31 | Integração com banco real em cada transição de estado |
+| R-19 | Tentativa de conflito perdida quando a gravação separada falha, e o relatório subconta | RF-12 | RN-30 | Integração com falha injetada na gravação |
+| R-20 | Notificação perdida ou duplicada entre o commit e o envio, ou reenvio que não executa | RF-11 | RN-28 | WireMock e falha injetada entre commit e envio |
+| R-21 | Consulta de sessão a cada requisição degrada o p95, ou cache mantém token válido após revogação | RF-01, RF-15 | RN-17, RN-29 | Teste de revogação e carga com JMeter |
+| R-22 | Job de SEM_DECISAO em mais de uma instância sem trava eficaz gera evento duplicado | RF-07, RF-16 | RN-25 | Execução repetida e simultânea com relógio controlado |
+| R-23 | Auditoria alterada por papel com privilégio | RF-10 | RN-08, RN-29 | Tentativa de UPDATE e DELETE com cada papel |
+| R-24 | Medidas hipotéticas tornam cenários sem critério de aceite fechado | RF-06 | RN-03 | Validação das hipóteses com o professor |
 
 ### 8.1 Riscos de projeto
 
@@ -190,7 +197,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | --- | --- |
 | Decisões A1, A3 e A5 podem ser alteradas pelo professor | A3 é a de maior impacto no modelo de dados |
 | Prazo até a semana 46 | Cronograma na seção 9 |
-| Lacunas D1 a D4 e D9 a D16 sem decisão | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
+| Lacunas D1, D3, D4, D9 e D17 sem valor | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
 
 ## 9. Papéis, recursos e cronograma
 
@@ -237,7 +244,7 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 | Cenários de qualidade (CEN-xx) e ADRs | Fase 2 |
 | Ferramentas de API em caixa-preta e de ponta a ponta | Fase 2 e Fase 3 |
 | Política de dados e de limpeza dos testes | Fase 3 |
-| Valores de D1, D3 e D4 e decisão de D2, D9 e D10 a D16 | Equipe e professor |
+| Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe e professor |
 | Confirmação de A1, A3 e A5 | Professor |
 | Escolha da funcionalidade de TDD ou BDD | Fase 4 |
 | Nomes e prazos dos responsáveis | Equipe |
