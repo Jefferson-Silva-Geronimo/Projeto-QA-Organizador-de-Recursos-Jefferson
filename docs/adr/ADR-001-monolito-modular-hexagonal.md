@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto, aguardando aceite da equipe |
+| Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 10 da equipe, revisada em [arquitetura.md](../arquitetura.md), seções 10 e 12 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 
@@ -24,6 +24,8 @@ RNF-01, RNF-02, RNF-11; RN-03, RN-08, RN-28; CEN-08 em [ciclo-00.md](../avaliaca
 
 ## Decisão
 
+**Versão:** Spring Boot 3.5.16, a última versão 3.x estável publicada no Maven Central em 15/10/2026. A especificação exige 3.x (seção 1) e o Spring Initializr passou a oferecer apenas 4.x, então o projeto é criado à mão a partir do `spring-boot-starter-parent` 3.5.16.
+
 Um único artefato implantável, dividido em módulos por área, com quatro camadas que espelham o C4: `api`, `aplicacao`, `dominio` e `infra`. O domínio não depende de Spring. Portas existem **só onde há substituição em teste ou troca prevista**: relógio, notificação e repositórios.
 
 ## Fundamentação
@@ -34,6 +36,7 @@ Um único artefato implantável, dividido em módulos por área, com quatro cama
 | Domínio testável sem contexto do framework | Especificação, seção 5 (unitários isolados, mocks só em unitário) e RNF-01, RNF-02 |
 | Trocar o provedor altera um componente | CEN-08; táticas **Use an Intermediary**, **Encapsulate**, **Restrict Dependencies** (catálogo, seção 4.3) |
 | Um único artefato cabe no prazo | Especificação, seção 1 (entrega na semana 46) |
+| Spring Boot 3.x, e não 4.x | Especificação, seção 1 ("Java 21 e Spring Boot 3.x") |
 
 ## Consequências
 

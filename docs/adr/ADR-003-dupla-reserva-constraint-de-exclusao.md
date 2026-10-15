@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto. A decisão sobre a tentativa de conflito foi aprovada em 15/10/2026 |
+| Status | Aceito em 15/10/2026 (aprovação do usuário), inclusive a tentativa de conflito em transação separada |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 2 da equipe; [arquitetura.md](../arquitetura.md), seções 12 e 13.1 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 

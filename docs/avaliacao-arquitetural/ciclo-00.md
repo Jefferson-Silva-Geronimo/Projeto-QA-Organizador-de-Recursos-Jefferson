@@ -270,4 +270,4 @@ Padrões que se repetem em várias decisões.
 2. (I, D) de todos os cenários, inclusive CEN-10 e CEN-11, seguem como proposta; a confirmação é da equipe.
 3. Validar com o professor as hipóteses de CEN-01, CEN-04, CEN-05 e CEN-08.
 4. **Feito:** a coluna Cenário da [RTM](../../RTM.md) foi preenchida.
-5. **Feito:** [ADR-001 a ADR-012](../adr/) criados com status Proposto ou Aceito. O aceite da equipe segue pendente nos propostos.
+5. **Feito:** [ADR-001 a ADR-012](../adr/) criados e aceitos em 15/10/2026 por aprovação do usuário.

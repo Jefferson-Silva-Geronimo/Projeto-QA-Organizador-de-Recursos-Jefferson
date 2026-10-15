@@ -71,7 +71,7 @@ src/, pom.xml          back end Maven na raiz (previstos, Fase 3)
 | --- | --- | --- |
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
 | 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
-| 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026, com pendências externas: aceite dos ADR propostos e respostas do professor |
+| 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Prevista |
 | 4 | Back end guiado por testes (TDD e BDD) | Prevista |
 | 5 | Testes de carga e concorrência (JMeter) | Prevista |

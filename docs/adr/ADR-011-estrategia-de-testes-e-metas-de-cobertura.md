@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto, aguardando aceite da equipe |
+| Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Especificação, seções 5 e 6; [plano-de-teste.md](../plano-de-teste.md), seção 4; [arquitetura.md](../arquitetura.md), seção 5 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 
@@ -24,7 +24,7 @@ RNF-01, RNF-02, RNF-03, RNF-04; todos os CEN; TR-03.
 
 ## Decisão
 
-Níveis: unitário com JUnit 5 e testes parametrizados no domínio; integração com Testcontainers; API em caixa-preta com matriz perfil × operação; ponta a ponta; concorrência com banco real; integração externa com WireMock; carga com JMeter. Mocks só em teste unitário isolado. Metas como as da especificação. Uma funcionalidade nova com TDD ou BDD, conforme o cronograma da especificação (regras de aprovação e bloqueio, semana 41). Cada requisito crítico termina na RTM ligado a cenário, caso de teste e evidência.
+Níveis: unitário com JUnit 5 e testes parametrizados no domínio; integração com Testcontainers; API em caixa-preta com matriz perfil × operação; ponta a ponta; concorrência com banco real; integração externa com WireMock; carga com JMeter. Mocks só em teste unitário isolado. Metas como as da especificação. Uma funcionalidade nova com TDD ou BDD, conforme o cronograma da especificação (regras de aprovação e bloqueio, semana 41). Cada requisito crítico termina na RTM ligado a cenário, caso de teste e evidência. **Gate de cobertura:** o JaCoCo roda e publica relatório desde a Fase 3, sem barrar o build. O gate de 80% de linhas e 70% de branches liga na primeira fatia de domínio da Fase 4, quando já existe código de regra para medir.
 
 ## Fundamentação
 
@@ -34,6 +34,7 @@ Níveis: unitário com JUnit 5 e testes parametrizados no domínio; integração
 | Metas | Especificação, seção 6; RNF-01 a RNF-04 |
 | A cobertura não substitui o teste de regra | Especificação, seção 6 |
 | Suíte determinística, repetida | Tática **Limit Nondeterminism** (catálogo, seção 4.6.2) |
+| Gate depois de existir regra de domínio | Especificação, seção 9 (semana 38: cobertura de ramo nas regras de sobreposição) |
 
 ## Consequências
 

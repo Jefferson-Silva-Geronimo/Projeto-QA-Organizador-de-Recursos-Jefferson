@@ -592,7 +592,7 @@ As doze decisões iniciais da equipe e os doze ADR do plano não são um para um
 | — | Estratégia de testes e metas | [ADR-011](adr/ADR-011-estrategia-de-testes-e-metas-de-cobertura.md) |
 | — | Job de SEM_DECISAO (D2) | [ADR-012](adr/ADR-012-job-agendado-de-sem-decisao.md) |
 
-Status: ADR-004, ADR-006, ADR-007 e ADR-012 estão **Aceitos** por aprovação do usuário em 15/10/2026. Os demais estão **Propostos**, aguardando aceite da equipe.
+Status: os doze ADR estão **Aceitos** por aprovação do usuário em 15/10/2026. A3 (ADR-002) e A5 (ADR-007) seguem aguardando o professor.
 
 ## 20. Revisão cruzada: painel de seis papéis
 
@@ -718,6 +718,6 @@ Nenhum outro risco foi aceito: os demais aguardam teste ou decisão.
 
 | Passo | Entrega | Depende de |
 | --- | --- | --- |
-| Aceite dos ADR propostos | ADR-001, 002, 003, 005, 008, 009, 010 e 011 com status Aceito | Equipe |
+| Aceite dos ADR propostos | **Feito** em 15/10/2026: ADR-001 a ADR-012 com status Aceito | — |
 | Respostas do professor | A1, A3, A5, hipóteses e perguntas da seção 22.4 | Professor |
 | Fase 3 | Casca Maven, pipeline em pull requests, JaCoCo, SonarCloud e processo de defeitos | Aceite do ADR-009 e do ADR-011 |

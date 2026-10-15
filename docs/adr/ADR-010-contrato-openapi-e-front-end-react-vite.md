@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto, aguardando aceite da equipe |
+| Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 9 da equipe; decisão técnica de [prd.md](../prd.md), seção 4.5; [arquitetura.md](../arquitetura.md), seção 12 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 

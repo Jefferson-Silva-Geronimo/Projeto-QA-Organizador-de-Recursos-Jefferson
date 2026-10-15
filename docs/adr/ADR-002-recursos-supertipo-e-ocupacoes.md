@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto. Depende da confirmação de A3 pelo professor |
+| Status | Aceito em 15/10/2026 (aprovação do usuário). A3 segue aguardando o professor |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 1 da equipe; [modelo-dados.dbml](../prd/modelo-dados.dbml); [arquitetura.md](../arquitetura.md), seção 12 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 

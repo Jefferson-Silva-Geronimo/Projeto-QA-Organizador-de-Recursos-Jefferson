@@ -2,10 +2,10 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Proposto, aguardando aceite da equipe |
+| Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Decisões iniciais 3 e 11 da equipe; [arquitetura.md](../arquitetura.md), seções 12 e 13.5 |
-| Decisores | Equipe. Nomes: TODO |
+| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
 
 ## Contexto
 
