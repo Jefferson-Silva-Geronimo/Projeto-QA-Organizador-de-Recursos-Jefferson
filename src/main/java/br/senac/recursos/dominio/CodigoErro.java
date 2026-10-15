@@ -30,6 +30,8 @@ public enum CodigoErro {
     RECURSO_EM_MANUTENCAO(Categoria.CONFLITO, "O recurso está em manutenção neste horário."),
     TRANSICAO_PROIBIDA(Categoria.CONFLITO, "A reserva não está em um estado que permita esta operação."),
     RESERVA_JA_INICIADA(Categoria.CONFLITO, "A reserva já começou e não pode ser alterada ou cancelada pelo dono."),
+    RECURSO_INATIVO(Categoria.CONFLITO, "Um dos recursos está desativado e não pode ser reservado."),
+    METODO_NAO_PERMITIDO(Categoria.VALIDACAO, "Esta operação não existe para este endereço."),
     ERRO_INTERNO(Categoria.INTERNO, "Não foi possível concluir a operação. Tente novamente mais tarde.");
 
     /** Categoria de recusa, independente de protocolo. */

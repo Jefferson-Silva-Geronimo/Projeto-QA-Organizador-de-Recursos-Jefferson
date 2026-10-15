@@ -177,6 +177,15 @@ class JdbcRecursoRepositorio implements RecursoRepositorio {
     }
 
     @Override
+    public List<Long> travarCompartilhado(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return jdbc.sql("select id from recursos where id in (:ids) order by id for share")
+                .param("ids", ids).query(Long.class).list();
+    }
+
+    @Override
     public List<Long> reservasFuturas(long recursoId, Instant agora) {
         return jdbc.sql("""
                         select distinct r.id

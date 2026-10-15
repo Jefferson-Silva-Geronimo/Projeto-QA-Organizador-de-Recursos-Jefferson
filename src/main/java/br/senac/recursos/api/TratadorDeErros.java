@@ -88,6 +88,9 @@ class TratadorDeErros extends ResponseEntityExceptionHandler {
         if (status.value() == 404) {
             return CodigoErro.NAO_ENCONTRADO;
         }
+        if (status.value() == 405) {
+            return CodigoErro.METODO_NAO_PERMITIDO;
+        }
         if (status.is4xxClientError()) {
             return CodigoErro.VALIDACAO_FALHOU;
         }

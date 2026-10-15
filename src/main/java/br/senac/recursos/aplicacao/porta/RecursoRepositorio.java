@@ -58,6 +58,12 @@ public interface RecursoRepositorio {
     /** Trava a linha do recurso até o fim da transação. */
     boolean travar(long id);
 
+    /**
+     * Trava os recursos em modo compartilhado, ordenados por identificador, até o fim da transação.
+     * Impede a desativação concorrente e fixa a ordem de aquisição (ADR-003). Devolve os que existem.
+     */
+    List<Long> travarCompartilhado(List<Long> ids);
+
     /** Reservas SOLICITADA, APROVADA ou EM_USO do recurso com término posterior a {@code agora} (D11). */
     List<Long> reservasFuturas(long recursoId, Instant agora);
 }

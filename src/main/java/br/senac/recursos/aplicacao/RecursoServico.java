@@ -3,6 +3,7 @@ package br.senac.recursos.aplicacao;
 import br.senac.recursos.aplicacao.porta.AuditoriaRepositorio;
 import br.senac.recursos.aplicacao.porta.AuditoriaRepositorio.Entidade;
 import br.senac.recursos.aplicacao.porta.AuditoriaRepositorio.Evento;
+import br.senac.recursos.aplicacao.porta.ConfiguracaoRepositorio;
 import br.senac.recursos.aplicacao.porta.RecursoRepositorio;
 import br.senac.recursos.aplicacao.porta.RecursoRepositorio.Detalhe;
 import br.senac.recursos.aplicacao.porta.RecursoRepositorio.Filtro;
@@ -12,9 +13,14 @@ import br.senac.recursos.aplicacao.porta.RecursoRepositorio.NovoMaterial;
 import br.senac.recursos.aplicacao.porta.RecursoRepositorio.NovoProfessor;
 import br.senac.recursos.dominio.CodigoErro;
 import br.senac.recursos.dominio.ErroDeNegocio;
+import br.senac.recursos.dominio.JanelaDeFuncionamento;
+import br.senac.recursos.dominio.Periodo;
+import br.senac.recursos.dominio.TipoRecurso;
 import br.senac.recursos.dominio.UsuarioAutenticado;
 import java.time.Clock;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,11 +38,14 @@ public class RecursoServico {
 
     private final RecursoRepositorio recursos;
     private final AuditoriaRepositorio auditoria;
+    private final ConfiguracaoRepositorio configuracao;
     private final Clock relogio;
 
-    public RecursoServico(RecursoRepositorio recursos, AuditoriaRepositorio auditoria, Clock relogio) {
+    public RecursoServico(RecursoRepositorio recursos, AuditoriaRepositorio auditoria,
+                          ConfiguracaoRepositorio configuracao, Clock relogio) {
         this.recursos = recursos;
         this.auditoria = auditoria;
+        this.configuracao = configuracao;
         this.relogio = relogio;
     }
 
@@ -124,7 +133,26 @@ public class RecursoServico {
         if (filtro.inicio() != null && !filtro.fim().isAfter(filtro.inicio())) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU, "O fim deve ser posterior ao início.");
         }
-        return recursos.pesquisar(filtro);
+        List<Detalhe> encontrados = recursos.pesquisar(filtro);
+        if (filtro.inicio() == null) {
+            return encontrados;
+        }
+        // Sala só é devolvida se o intervalo cabe na janela e cai em dia de funcionamento (RN-14, RF-03).
+        Periodo periodo = new Periodo(filtro.inicio(), filtro.fim());
+        ZoneId fuso = configuracao.fuso();
+        return encontrados.stream().filter(d -> d.tipo() != TipoRecurso.SALA || cabeNaJanela(d, periodo, fuso))
+                .toList();
+    }
+
+    private static boolean cabeNaJanela(Detalhe sala, Periodo periodo, ZoneId fuso) {
+        JanelaDeFuncionamento janela = new JanelaDeFuncionamento(sala.horaAbertura(), sala.horaFechamento(),
+                sala.diasFuncionamento().stream().map(DayOfWeek::of).collect(java.util.stream.Collectors.toSet()));
+        try {
+            janela.verificar(periodo, fuso);
+            return true;
+        } catch (ErroDeNegocio e) {
+            return false;
+        }
     }
 
     @Transactional(readOnly = true)
