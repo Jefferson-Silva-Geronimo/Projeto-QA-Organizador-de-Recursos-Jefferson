@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 import org.springframework.core.NestedExceptionUtils;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -48,6 +48,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class ReservaServico {
 
     private static final String SQLSTATE_VIOLACAO_DE_EXCLUSAO = "23P01";
+    private static final String SQLSTATE_IMPASSE = "40P01";
 
     /** Dados para criar uma reserva. */
     public record NovaReserva(String titulo, String descricao, Periodo periodo, List<Long> recursoIds) {
@@ -294,8 +295,8 @@ public class ReservaServico {
         for (Detalhe d : alocados) {
             try {
                 reservas.inserirOcupacao(reservaId, d.id(), periodo);
-            } catch (DataIntegrityViolationException e) {
-                if (ehViolacaoDeExclusao(e)) {
+            } catch (DataAccessException e) {
+                if (ehConflitoDeConcorrencia(e)) {
                     throw new ConflitoDeAlocacao(d.id(), Motivo.CONCORRENCIA, periodo, solicitanteId);
                 }
                 throw e;
@@ -303,9 +304,19 @@ public class ReservaServico {
         }
     }
 
-    private static boolean ehViolacaoDeExclusao(Throwable e) {
+    /**
+     * Duas transações que inserem ocupações sobrepostas ao mesmo tempo terminam em violação da constraint
+     * de exclusão (23P01) ou, quando cada uma espera a outra, em impasse detectado pelo banco (40P01).
+     * Nos dois casos as alocações se sobrepõem e uma delas perde: o pedido é tratado como conflito, sem
+     * repetição automática (ADR-003).
+     */
+    private static boolean ehConflitoDeConcorrencia(Throwable e) {
         Throwable causa = NestedExceptionUtils.getMostSpecificCause(e);
-        return causa instanceof SQLException sql && SQLSTATE_VIOLACAO_DE_EXCLUSAO.equals(sql.getSQLState());
+        if (!(causa instanceof SQLException sql)) {
+            return false;
+        }
+        return SQLSTATE_VIOLACAO_DE_EXCLUSAO.equals(sql.getSQLState())
+                || SQLSTATE_IMPASSE.equals(sql.getSQLState());
     }
 
     private ErroDeNegocio registrarEConverter(ConflitoDeAlocacao c) {
