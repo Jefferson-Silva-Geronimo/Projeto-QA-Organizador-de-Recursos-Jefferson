@@ -129,6 +129,14 @@ Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e 
 | D6 | Desativação de recurso recusada com reservas futuras | RF-02, RN-32 | Não |
 | D7 | Bloqueio cancela a reserva inteira | RF-08, RN-22 | Não |
 | D8 | Rejeita o Responsável que não é o dono | RF-07, RN-33 | Não |
+| D10 | "Até o início" é antes do instante de início | RF-04, RF-16, RN-18, RN-19, RN-25 | Não |
+| D11 | Reserva futura é a de término posterior ao instante atual | RF-02, RN-32 | Não |
+| D12 | "Exige aprovação" recalculado quando a alteração muda os recursos | RF-04, RF-07, RN-10, RN-19 | Não |
+| D13 | Responsável dono opera a própria reserva, sem aprovar nem rejeitar | RF-09, RF-16, RN-16, RN-20, RN-23 | Não |
+| D2 | Job agendado só para SEM_DECISAO; não comparecimento manual | RF-07, RF-16, RN-21, RN-24, RN-25 | Não; S6 a validar |
+| D14 | Desativação de usuário recusada com pendências ou com menos de dois Responsáveis | RF-15, RF-10, RN-16, RN-29 | Não |
+| D15 | Levantamento de bloqueio pelo Administrador, com motivo | RF-08, RF-10, RN-22, RN-29 | Não |
+| D16 | Reserva com início no passado é recusada | RF-04, RN-01, RN-18, RN-19 | Não |
 
 ### 4.5 Decisões técnicas da equipe fora da especificação
 
@@ -192,8 +200,8 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 - As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
 - Três decisões aguardam confirmação do professor: A1, A3 e A5.
 - As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
-- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026; D1 a D4 e D9 seguem abertas, sem valor assumido.
-- Sete ambiguidades (D10 a D16) foram registradas na revisão das Fases 0 e 1 e seguem abertas: instante exato de "até o início", significado de "reserva futura", recálculo de "exige aprovação" na alteração, operação da própria reserva pelo Responsável dono, desativação de usuário, levantamento de bloqueio e reserva com início no passado.
+- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 seguem abertas, sem valor assumido.
+- Sete ambiguidades (D10 a D16) foram registradas na revisão das Fases 0 e 1. D10, D11, D12 e D13 (instante de "até o início", "reserva futura", recálculo de "exige aprovação" e operação da própria reserva pelo Responsável dono) foram **decididas** em 15/10/2026. D14, D15 e D16 (desativação de usuário, levantamento de bloqueio e reserva com início no passado) também foram **decididas** em 15/10/2026, junto com D2 (mecanismo de SEM_DECISAO). D17 (duração da sessão) foi aberta em 15/10/2026 e segue sem valor.
 - Duas decisões carregam suposição a validar: C2 (S6) e C6 (S7).
 
 ## 9. Suposições registradas

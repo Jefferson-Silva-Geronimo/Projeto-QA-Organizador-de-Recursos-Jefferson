@@ -2,7 +2,7 @@
 
 Registro único das lacunas da [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) e das dúvidas surgidas na redação dos documentos de produto, com a decisão da equipe para cada uma.
 
-O nome do arquivo foi mantido (`perguntas-abertas.md`) para não quebrar links. Os IDs das decisões (A1 a A8, B1 a B4, C1 a C8 e D5 a D8) e das lacunas (D1 a D4 e D9 a D16) são estáveis e não são renumerados.
+O nome do arquivo foi mantido (`perguntas-abertas.md`) para não quebrar links. Os IDs das decisões (A1 a A8, B1 a B4, C1 a C8, D2, D5 a D8 e D10 a D16) e das lacunas (D1, D3, D4, D9 e D17) são estáveis e não são renumerados.
 
 ## Como ler
 
@@ -17,7 +17,7 @@ Observações importantes:
 
 - As **decisões e os status** vêm da equipe. As **justificativas e as alternativas consideradas** foram redigidas a partir das decisões e do texto da especificação; a equipe deve revisá-las e corrigir onde não refletirem o que foi discutido.
 - "Decidida (equipe), confirmar com o professor" significa que a decisão vale para o projeto, mas a especificação deixa o ponto em aberto e o professor ainda não a validou. Se ele discordar, o impacto descrito em cada item mostra o que muda.
-- Data de todas as decisões: 12/10/2026. Responsável: equipe.
+- Data das decisões: 12/10/2026, exceto D2 e D10 a D16, de 15/10/2026. Responsável: equipe.
 
 ## Resumo
 
@@ -48,6 +48,14 @@ Observações importantes:
 | D6 | Desativação de recurso | Recusada com 409 se houver reservas futuras SOLICITADA, APROVADA ou EM_USO | Decidida (equipe) |
 | D7 | Bloqueio sobre reserva com vários recursos | Cancela a reserva inteira | Decidida (equipe) |
 | D8 | Quem rejeita | O Responsável que não é o dono; o dono cancela | Decidida (equipe) |
+| D10 | Instante de "até o início" | Antes do instante de início; às 14:00:00 de uma reserva das 14:00 ela já começou | Decidida (equipe) |
+| D11 | "Reserva futura" na desativação | Término posterior ao instante atual, o que inclui EM_USO | Decidida (equipe) |
+| D12 | Recálculo de "exige aprovação" | Recalculado quando a alteração muda a lista de recursos; volta a SOLICITADA se passar a exigir | Decidida (equipe) |
+| D13 | Responsável dono opera a própria reserva | Registra início, retirada, devolução e conclusão, com o ator auditado; não aprova nem rejeita | Decidida (equipe) |
+| D2 | Mecanismo de SEM_DECISAO e de não comparecimento | Job agendado, idempotente e com trava só para SEM_DECISAO; não comparecimento segue manual | Decidida (equipe), com suposição S6 |
+| D14 | Desativação de usuário | Recusada com 409 se deixar menos de dois Responsáveis ativos ou se houver reserva futura; revoga as sessões | Decidida (equipe) |
+| D15 | Levantamento de bloqueio | O Administrador levanta com motivo e auditoria; o período volta a ser reservável; reservas canceladas não voltam | Decidida (equipe) |
+| D16 | Reserva com início no passado | Recusada quando o início é anterior ou igual ao instante atual | Decidida (equipe) |
 
 ## A. Lacunas da seção 10 da especificação
 
@@ -349,7 +357,7 @@ As oito lacunas abaixo surgiram ao aplicar as decisões A e B e foram decididas 
 
 ## D. Decisões e lacunas surgidas ao aplicar C
 
-As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe decidiu **D5, D6, D7 e D8**. D1, D2, D3, D4 e D9 seguem abertas. D10 a D16 foram identificadas na revisão das Fases 0 e 1, também em 12/10/2026, e seguem abertas.
+As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe decidiu **D5, D6, D7 e D8**. D10 a D16 foram identificadas na revisão das Fases 0 e 1, também em 12/10/2026; em 15/10/2026 a equipe decidiu **D10 a D16** e **D2**, com as recomendações apresentadas na Fase 2. D17 foi aberta em 15/10/2026. D1, D3, D4, D9 e D17 seguem abertas e sem valor.
 
 ### D5. O Administrador acessa o relatório RF-12?
 
@@ -400,6 +408,102 @@ As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe de
   - Testes: rejeição pelo dono, pelo Solicitante ou pelo Administrador recusada com 403; cancelamento pelo dono aceito.
 - **Status:** Decidida (equipe). **Data:** 12/10/2026. **Responsável:** equipe.
 
+### D10. Instante exato de "até o início"
+
+- **Pergunta:** às 14:00:00, numa reserva que começa às 14:00, o dono ainda cancela ou altera (A8, C1)?
+- **Decisão:** "até o início" significa antes do instante de início. Pela convenção [início, fim) de A2, a reserva já começou às 14:00:00: nesse instante e depois dele o dono não cancela nem altera, e uma reserva SOLICITADA sem decisão passa a ser elegível para SEM_DECISAO (C2).
+- **Justificativa:** usa a mesma fronteira semiaberta de A2, sem criar segunda convenção de tempo.
+- **Alternativas consideradas:** incluir o instante de início como ainda alterável; tolerância após o início.
+- **Impacto:**
+  - RF e RN: RF-04, RF-16, RN-18, RN-19, RN-25.
+  - Modelo de dados: nenhum campo novo; a comparação usa o relógio da aplicação (UTC).
+  - Testes: valor limite em trinca (um instante antes, no instante, um instante depois) para cancelamento, alteração e SEM_DECISAO.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D11. O que é "reserva futura" na desativação
+
+- **Pergunta:** em D6, "reserva futura" é a de início posterior ao instante atual ou a de término posterior?
+- **Decisão:** reserva futura é a de **término posterior ao instante atual**, nos estados SOLICITADA, APROVADA e EM_USO. Uma reserva EM_USO em curso impede a desativação.
+- **Justificativa:** D6 já inclui EM_USO, que por definição já começou; só o término identifica reserva que ainda ocupa o recurso.
+- **Alternativas consideradas:** início posterior ao instante atual (deixaria desativar recurso com reserva em curso).
+- **Impacto:**
+  - RF e RN: RF-02, RN-32.
+  - Modelo de dados: a consulta usa o término do período da ocupação.
+  - Testes: partição por estado e valor limite no instante do término.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D12. Recálculo de "exige aprovação" na alteração
+
+- **Pergunta:** quando a alteração de C1 inclui recurso restrito numa reserva que não exigia aprovação, o campo é recalculado?
+- **Decisão:** sempre que a alteração mudar a lista de recursos, "exige aprovação" é recalculado pelo servidor e gravado de novo. Se a reserva passar a exigir aprovação, volta a SOLICITADA, com auditoria. O valor enviado pelo cliente continua ignorado (RN-10). Caso inverso (complemento de 15/10/2026): se a alteração remover o último recurso restrito, o campo passa a falso. Uma reserva SOLICITADA vai a APROVADA pelo ator SISTEMA, como em RN-09, e uma reserva já APROVADA permanece APROVADA, ambas com auditoria da alteração.
+- **Justificativa:** fecha a brecha que permitia contornar RN-06 pela alteração de uma reserva já aprovada automaticamente.
+- **Alternativas consideradas:** manter o valor gravado na criação (mantém a brecha); proibir adicionar recurso restrito na alteração.
+- **Impacto:**
+  - RF e RN: RF-04, RF-07, RN-06, RN-10, RN-19.
+  - Modelo de dados: nenhum campo novo; a atualização de `exige_aprovacao` entra na transação da alteração.
+  - Testes: alteração que adiciona o Projetor P-001 a uma reserva sem recurso restrito volta a SOLICITADA; alteração sem mudar recursos não recalcula.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D13. O Responsável dono opera a própria reserva
+
+- **Pergunta:** o Responsável dono registra início, retirada, devolução e conclusão da própria reserva (B1, D8)?
+- **Decisão:** sim. A segregação de B1 e D8 trata de aprovar e rejeitar, e continua valendo. Início, retirada, devolução e conclusão da própria reserva são permitidos ao Responsável dono, e o ator de cada registro é auditado.
+- **Justificativa:** o Responsável é quem opera a retirada e a devolução (A8); impedi-lo na própria reserva a tornaria inoperável sem outro Responsável presente.
+- **Alternativas consideradas:** exigir outro Responsável para toda operação sobre reserva própria.
+- **Impacto:**
+  - RF e RN: RF-09, RF-16, RN-16, RN-20, RN-23.
+  - Modelo de dados: nenhum campo novo; o ator já é gravado na auditoria.
+  - Testes: Responsável dono registra retirada, devolução e conclusão; aprovar e rejeitar a própria reserva continua 403.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D2. Mecanismo de SEM_DECISAO e de não comparecimento
+
+- **Pergunta:** o cancelamento por SEM_DECISAO e a marcação de não compareceu são feitos por job agendado ou por avaliação sob demanda (C2, A8)?
+- **Decisão:** job agendado, idempotente e com trava, **apenas para SEM_DECISAO**. O executor tem ator SISTEMA e, na mesma transação, faz a atualização condicional, grava a auditoria e a notificação PENDENTE. A marcação de não compareceu continua manual, pelo Responsável (A8); o job automático dela fica fora desta versão. A aprovação de reserva cujo início já foi alcançado é recusada com 409, pelo mesmo relógio (D10), para que ninguém aprove no intervalo até a próxima execução. A frequência do job é configuração, sem valor.
+- **Justificativa:** RN-25 define SEM_DECISAO como ação do sistema, com auditoria e notificação, o que a avaliação sob demanda não garante. O reenvio de notificações (C6) já exige um executor periódico. A8 declara opcional o job de não comparecimento, e a tolerância (D1) ainda não tem valor.
+- **Alternativas consideradas:** avaliação sob demanda; job para as duas transições; marcação manual também para SEM_DECISAO.
+- **Impacto:**
+  - RF e RN: RF-07, RF-16, RN-21, RN-24, RN-25.
+  - Modelo de dados: nenhum campo novo; o índice (`estado`, `inicio`) de `reservas` serve à busca do job.
+  - Testes: relógio controlado; duas execuções seguidas geram um único evento; reserva APROVADA não é cancelada; aprovação no instante de início é recusada.
+- **Status:** Decidida (equipe), com a suposição S6 mantida. **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D14. Desativação de usuário
+
+- **Pergunta:** o que acontece com reservas e aprovações pendentes quando um usuário é desativado, em especial um Responsável?
+- **Decisão:** desativar usuário é recusado com 409, listando as pendências, se (a) a desativação deixar menos de dois Responsáveis ativos (B1) ou (b) o usuário tiver reserva futura em SOLICITADA, APROVADA ou EM_USO, com o mesmo sentido de "futura" de D11. Não há cancelamento automático. Aprovações pendentes não pertencem a um Responsável: a fila é global (B3). A desativação revoga as sessões do usuário e é auditada (C7).
+- **Justificativa:** repete o padrão de D6, que recusa em vez de cancelar sem decisão humana, e preserva a restrição de operação de B1.
+- **Alternativas consideradas:** cancelar automaticamente as reservas do usuário; desativar e manter as reservas órfãs.
+- **Impacto:**
+  - RF e RN: RF-15, RF-10, RN-16, RN-29.
+  - Modelo de dados: usa `usuarios.ativo` e as sessões revogadas.
+  - Testes: desativação do penúltimo Responsável recusada; usuário com reserva futura recusado; usuário sem pendência desativado e sessão revogada.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D15. Levantamento de bloqueio de manutenção
+
+- **Pergunta:** como se levanta um bloqueio: quem, quando e o que acontece com o período liberado?
+- **Decisão:** o Administrador levanta o bloqueio (`ativo` falso) informando motivo, com auditoria, antes ou depois do início. As ocupações do bloqueio ficam inativas e o período volta a ser reservável. Reservas já canceladas por MANUTENCAO não são restauradas, porque cancelada é estado terminal.
+- **Justificativa:** o Administrador é quem gerencia bloqueios (RN-17). O DBML já prevê `ativo` no bloqueio para levantar sem apagar, e C7 cita a desativação de bloqueios.
+- **Alternativas consideradas:** restaurar automaticamente as reservas canceladas; levantamento só após o término previsto.
+- **Impacto:**
+  - RF e RN: RF-08, RF-10, RN-22, RN-29.
+  - Modelo de dados: nenhum campo novo.
+  - Testes: período volta a aceitar reserva; reserva cancelada continua cancelada; levantamento por não Administrador recusado com 403; evento de auditoria com motivo.
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
+### D16. Reserva com início no passado
+
+- **Pergunta:** uma reserva pode ter início no passado?
+- **Decisão:** não. A criação é recusada, com erro de validação de código estável, quando o início é anterior ou igual ao instante atual. A alteração de período segue a mesma regra.
+- **Justificativa:** pela convenção de D10, a reserva que começa no instante atual já começou e não admite cancelamento nem alteração; criar reserva retroativa seria incoerente com RN-18, RN-19 e RN-25. Nenhum RF descreve registro retroativo.
+- **Alternativas consideradas:** aceitar reserva retroativa, sem controle; aceitar só para o Administrador (B2 já o impede de reservar).
+- **Impacto:**
+  - RF e RN: RF-04, RN-01, RN-18, RN-19.
+  - Modelo de dados: nenhum campo novo.
+  - Testes: valor limite em trinca (um instante antes, no instante, um instante depois do instante atual).
+- **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
+
 ### Lacunas que seguem abertas
 
 **Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica registrada, com validação pendente. Responsável pela validação: equipe. Prazo: TODO, a definir pela equipe.
@@ -407,14 +511,7 @@ As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe de
 | ID | Pergunta | Afeta | Impacto se assumir errado | Estado |
 | --- | --- | --- | --- | --- |
 | D1 | Qual o valor padrão da tolerância de não comparecimento (S4)? | A8, RN-21 | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais | Aberta, valor sem definição |
-| D2 | Qual o mecanismo do cancelamento por SEM_DECISAO e do não comparecimento automático: job agendado ou avaliação sob demanda? (S6) | C2, A8, RN-25 | Cancelamentos atrasados ou duplicados; estado inconsistente na consulta | Aberta |
 | D3 | Qual o valor padrão de tentativas e de intervalo do reenvio de notificação (S7)? | C6, RF-11, RN-28 | Notificações perdidas ou carga sobre o provedor | Aberta, valor sem definição |
 | D4 | Qual o tamanho da página do relatório RF-12? | C5, RF-12, RN-31 | Relatório lento ou incômodo de navegar | Aberta, valor sem definição |
 | D9 | Qual a retenção da auditoria e das notificações, e o tratamento de dados pessoais nelas? | RF-10, RF-11, C6, C7 | Dado pessoal guardado além do necessário | Aberta |
-| D10 | Qual é o instante exato de "até o início" em A8 e C1? Às 14:00:00, numa reserva que começa às 14:00, o dono ainda cancela ou altera? | A8, C1, C2, RN-18, RN-19, RN-25 | Cancelamento ou alteração aceitos depois do início, ou recusados antes dele; SEM_DECISAO no instante errado | Aberta |
-| D11 | O que é "reserva futura" em D6: início posterior ao instante atual ou término posterior? EM_USO já começou, o que sugere o término | D6, RN-32 | Desativação indevida de recurso com reserva em curso, ou recusa por reserva já encerrada | Aberta |
-| D12 | Quando a alteração de C1 inclui um recurso restrito numa reserva que não exigia aprovação, "exige aprovação" é recalculado? | C1, A1, RN-10, RN-19 | Reserva com recurso restrito sem decisão de Responsável, contornando RN-06 | Aberta |
-| D13 | O Responsável dono pode registrar início, retirada, devolução e conclusão da própria reserva? B1 e D8 tratam só de aprovar e rejeitar | A8, B1, D8, RN-16, RN-20, RN-23 | Segregação de funções incompleta, ou impossibilidade de operar a própria reserva | Aberta |
-| D14 | O que acontece com reservas e aprovações pendentes quando um usuário é desativado, em especial um Responsável? C7 só exige auditar | C7, B1, RF-15, RN-29 | Reservas órfãs, fila sem aprovador ou menos de dois Responsáveis | Aberta |
-| D15 | Como se levanta um bloqueio de manutenção: quem, quando e o que acontece com o período liberado? C7 cita a desativação de bloqueios | A7, C7, RF-08, RN-22, RN-29 | Recurso preso em manutenção, ou liberado sem rastro | Aberta |
-| D16 | Uma reserva pode ter início no passado? RN-01 trata só da ordem entre início e término | RN-01, RF-04 | Reserva retroativa aceita sem controle, ou registro tardio recusado indevidamente | Aberta |
+| D17 | Qual a duração e a expiração do token de acesso (sessão)? A decisão de token opaco com revogação exige um prazo | RF-01, RN-17, RNF-06 | Sessão que nunca expira, ou que expira cedo demais para o uso | Aberta, valor sem definição |

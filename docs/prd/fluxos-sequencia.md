@@ -8,7 +8,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 - Os atores são o usuário, o Frontend, a API, o Banco e, onde cabe, o Provedor de notificação.
 - Os códigos HTTP (200, 201, 400, 401, 403, 404, 409, 422) são **propostas** coerentes com as decisões e a confirmar na Fase 2. A especificação não os define.
 - Mensagens sem ponto e vírgula, para não quebrar a renderização do Mermaid.
-- Valores em aberto aparecem como lacuna, sem número: tolerância de não comparecimento (D1), mecanismo do gatilho (D2), reenvio de notificação (D3) e tamanho de página (D4).
+- Valores em aberto aparecem como lacuna, sem número: tolerância de não comparecimento (D1), reenvio de notificação (D3) e tamanho de página (D4).
 
 ## Índice
 
@@ -423,7 +423,7 @@ sequenceDiagram
 - **Desfechos:**
   - Sucesso: não compareceu ou cancelada com SEM_DECISAO, com auditoria
   - Erro: 409 por tolerância não encerrada ou estado inválido
-  - Em aberto: valor da tolerância (D1) e mecanismo de disparo (D2)
+  - Em aberto: valor da tolerância (D1). O mecanismo de disparo foi decidido em D2: job agendado, idempotente e com trava, só para SEM_DECISAO
 
 ```mermaid
 sequenceDiagram
@@ -449,7 +449,7 @@ sequenceDiagram
     else reserva em outro estado
         A-->>F: 409 transição proibida
     end
-    Note over G,A: O mecanismo do gatilho é lacuna D2 e o valor da tolerância é lacuna D1
+    Note over G,A: O gatilho é o job agendado de D2 e o valor da tolerância é lacuna D1
     G->>A: Chegou o início de reserva SOLICITADA
     A->>B: Reavalia o estado da reserva
     alt continua SOLICITADA sem decisão

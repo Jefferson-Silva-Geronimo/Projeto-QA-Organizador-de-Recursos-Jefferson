@@ -280,7 +280,7 @@ As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da esp
   1. Registrar o início de uso em reserva APROVADA a leva a EM_USO; em qualquer outro estado é recusado.
   2. Concluir só é aceito a partir de EM_USO e com a regra de devolução cumprida; caso contrário é recusado.
   3. Marcar não compareceu só é aceito em reserva APROVADA após o início mais a tolerância; antes da tolerância é recusado. O valor da tolerância é configuração, hoje sem valor definido (D1).
-  4. Reserva SOLICITADA sem decisão ao chegar o início vai a cancelada com motivo SEM_DECISAO; o mecanismo é lacuna (D2).
+  4. Reserva SOLICITADA sem decisão ao chegar o início vai a cancelada com motivo SEM_DECISAO; o mecanismo é o job agendado de D2.
   5. Toda transição proibida da seção 3.2 de regras-negocio.md retorna recusa e não altera o estado.
   6. Cada transição gera exatamente 1 evento de auditoria.
 
@@ -398,14 +398,6 @@ Ver [perguntas-abertas.md](perguntas-abertas.md), seção D. Nenhuma foi decidid
 | ID | Lacuna | RF afetado |
 | --- | --- | --- |
 | D1 | Valor padrão da tolerância de não comparecimento | RF-16 |
-| D2 | Mecanismo do cancelamento SEM_DECISAO e da marcação automática | RF-07, RF-16 |
 | D3 | Valor padrão de tentativas e intervalo do reenvio de notificação | RF-11 |
 | D4 | Tamanho da página do relatório | RF-12 |
 | D9 | Retenção da auditoria e das notificações | RF-10, RF-11 |
-| D10 | Instante exato de "até o início" | RF-04, RF-16 |
-| D11 | Significado de "reserva futura" na desativação de recurso | RF-02 |
-| D12 | Recálculo de "exige aprovação" quando a alteração inclui recurso restrito | RF-04, RF-07 |
-| D13 | Início, retirada, devolução e conclusão pelo dono Responsável | RF-09, RF-16 |
-| D14 | Desativação de usuário, reservas e aprovações pendentes | RF-15, RF-10 |
-| D15 | Levantamento de bloqueio de manutenção | RF-08, RF-10 |
-| D16 | Reserva com início no passado | RF-04 |

@@ -51,7 +51,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 - **Aceita:** Sala A, 20/10/2026, das 14:00 às 16:00.
 - **Rejeita:** das 14:00 às 14:00 (duração zero); das 16:00 às 14:00 (término antes do início).
 - **Técnica:** valor limite, com término antes, igual e depois do início.
-- **Depende de lacuna aberta:** D16 (reserva com início no passado não está definida).
+- **Decisão relacionada:** D16. A criação é recusada quando o início é anterior ou igual ao instante atual.
 
 ### RN-02. Reservas do mesmo recurso não podem se sobrepor
 
@@ -124,11 +124,10 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-10. Aprovação exigida e valor gravado na criação
 
 - **Marca:** decisão da equipe. **Origem:** A1.
-- **Texto:** reserva com ao menos um recurso restrito exige aprovação de um Responsável. O campo "exige aprovação" é calculado pelo servidor e gravado na reserva no momento da criação. Mudar o atributo "restrito" depois não altera reservas existentes.
+- **Texto:** reserva com ao menos um recurso restrito exige aprovação de um Responsável. O campo "exige aprovação" é calculado pelo servidor e gravado na reserva no momento da criação. Mudar o atributo "restrito" depois não altera reservas existentes. Quando a alteração da reserva muda a lista de recursos, o campo é recalculado e a reserva que passa a exigir aprovação volta a SOLICITADA (D12).
 - **Aceita:** reserva criada em 12/10/2026 com o Projetor P-001 (restrito) exige aprovação; o Administrador 1 desmarca o projetor em 13/10/2026 e a reserva continua exigindo aprovação.
 - **Rejeita:** requisição que envia "exige aprovação" falso: o valor do cliente é ignorado.
 - **Técnica:** partição (com e sem recurso restrito) e teste de que a mudança do atributo não afeta reserva existente.
-- **Depende de lacuna aberta:** D12 (recálculo de "exige aprovação" quando a alteração inclui recurso restrito).
 
 ### RN-11. Intervalos semiabertos [início, fim)
 
@@ -173,11 +172,10 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-16. Segregação de funções
 
 - **Marca:** decisão da equipe. **Origem:** B1.
-- **Texto:** o Responsável também cria reservas, com as permissões do Solicitante, mas ninguém aprova a própria reserva. Restrição de operação: são necessários ao menos dois Responsáveis.
+- **Texto:** o Responsável também cria reservas, com as permissões do Solicitante, mas ninguém aprova a própria reserva. Restrição de operação: são necessários ao menos dois Responsáveis. O Responsável dono registra início, retirada, devolução e conclusão da própria reserva, com o ator auditado (D13); aprovar e rejeitar a própria reserva continua proibido. A desativação de usuário é recusada com 409 se deixar menos de dois Responsáveis ativos ou se o usuário tiver reserva futura em SOLICITADA, APROVADA ou EM_USO, e revoga as sessões (D14).
 - **Aceita:** Responsável 1 cria reserva com o Projetor P-001 e o Responsável 2 a aprova.
 - **Rejeita:** Responsável 1 aprova a própria reserva (403).
 - **Técnica:** tabela de decisão aprovador × dono da reserva.
-- **Depende de lacuna aberta:** D13 (início, retirada e conclusão pelo dono Responsável) e D14 (desativação de usuário e mínimo de dois Responsáveis).
 
 ### RN-17. Administrador não reserva nem aprova; um perfil por usuário
 
@@ -190,20 +188,18 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-18. Cancelamento por estado e perfil
 
 - **Marca:** decisão da equipe. **Origem:** A8.
-- **Texto:** SOLICITADA é cancelada pelo dono, sem motivo, ou pelo Administrador, com motivo obrigatório. APROVADA é cancelada pelo dono até o início, ou por Responsável ou Administrador, com motivo. EM_USO não é cancelada por ninguém; só é concluída pelo Responsável. Estados terminais não são cancelados. Não há antecedência mínima.
+- **Texto:** SOLICITADA é cancelada pelo dono, sem motivo, ou pelo Administrador, com motivo obrigatório. APROVADA é cancelada pelo dono até o início (antes do instante de início, D10), ou por Responsável ou Administrador, com motivo. EM_USO não é cancelada por ninguém; só é concluída pelo Responsável. Estados terminais não são cancelados. Não há antecedência mínima.
 - **Aceita:** Solicitante 1 cancela a própria reserva APROVADA em 20/10/2026 às 13:00, para início às 14:00; em outra reserva APROVADA, Responsável 2 cancela com motivo informado.
-- **Rejeita:** Solicitante 1 cancela a própria reserva às 14:01 de 20/10/2026, depois do início das 14:00; Responsável 1 cancela reserva SOLICITADA de outro usuário; qualquer cancelamento de EM_USO. O instante exato do início (14:00:00) é a lacuna D10.
+- **Rejeita:** Solicitante 1 cancela a própria reserva às 14:01 de 20/10/2026, depois do início das 14:00; Responsável 1 cancela reserva SOLICITADA de outro usuário; qualquer cancelamento de EM_USO. Às 14:00:00 a reserva já começou e o cancelamento pelo dono é recusado (D10).
 - **Técnica:** tabela de decisão estado × perfil e valor limite no instante de início.
-- **Depende de lacuna aberta:** D10 (instante exato de "até o início").
 
 ### RN-19. Alteração por estado e perfil
 
 - **Marca:** decisão da equipe. **Origem:** C1.
-- **Texto:** o dono altera em SOLICITADA e em APROVADA até o início. Mudança de período ou de recurso reavalia RN-01, RN-02 e RN-04 e é atômica: troca as ocupações na mesma transação e, em caso de conflito, responde 409 e nada muda. Se a reserva exigia aprovação, volta a SOLICITADA com nova aprovação e auditoria. Mudança apenas de título ou descrição não reaprova. EM_USO e estados terminais não se alteram.
+- **Texto:** o dono altera em SOLICITADA e em APROVADA até o início (antes do instante de início, D10). Mudança de período ou de recurso reavalia RN-01, RN-02 e RN-04 e é atômica: troca as ocupações na mesma transação e, em caso de conflito, responde 409 e nada muda. Se a reserva exigia aprovação, volta a SOLICITADA com nova aprovação e auditoria. Quando a alteração muda a lista de recursos, "exige aprovação" é recalculado e a reserva que passa a exigir aprovação volta a SOLICITADA (D12). Mudança apenas de título ou descrição não reaprova. EM_USO e estados terminais não se alteram.
 - **Aceita:** reserva APROVADA com o Projetor P-001 muda de 14:00–16:00 para 15:00–17:00 sem conflito: volta a SOLICITADA e gera evento de auditoria.
 - **Rejeita:** mudança para 15:00–17:00 com a Sala A ocupada nesse horário (409, ocupação anterior preservada); alteração de reserva EM_USO.
 - **Técnica:** transição de estados, partição por tipo de mudança (título versus período ou recurso) e teste de atomicidade com banco real.
-- **Depende de lacuna aberta:** D10 (instante exato de "até o início") e D12 (recálculo de "exige aprovação").
 
 ### RN-20. Início de uso
 
@@ -212,16 +208,15 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** Responsável 1 registra a retirada do Projetor P-001 e a reserva vai a EM_USO.
 - **Rejeita:** Solicitante 1 tenta registrar o início; registro de início em reserva SOLICITADA.
 - **Técnica:** transição de estados e tabela de decisão por perfil.
-- **Depende de lacuna aberta:** D13 (início e retirada pelo dono Responsável).
 
 ### RN-21. Não compareceu
 
 - **Marca:** decisão da equipe. **Origem:** A8.
-- **Texto:** o Responsável marca como não compareceu a reserva APROVADA que não entrou em uso após o início mais uma tolerância configurável. O job automático é opcional. O valor padrão da tolerância segue como suposição S4 (lacuna D1).
+- **Texto:** o Responsável marca como não compareceu a reserva APROVADA que não entrou em uso após o início mais uma tolerância configurável. A marcação automática por job fica fora desta versão (D2). O valor padrão da tolerância segue como suposição S4 (lacuna D1).
 - **Aceita:** reserva com início às 14:00, sem uso, marcada pelo Responsável depois de passada a tolerância configurada.
 - **Rejeita:** marcação antes de terminar a tolerância; marcação de reserva SOLICITADA ou EM_USO.
 - **Técnica:** valor limite no fim da tolerância e transição de estados.
-- **Depende de lacuna aberta:** D1 (valor da tolerância) e D2 (mecanismo da marcação automática).
+- **Depende de lacuna aberta:** D1 (valor da tolerância).
 
 ### RN-22. Bloqueio de manutenção sobre reservas existentes
 
@@ -230,7 +225,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** bloqueio da Sala A em 21/10/2026, das 08:00 às 12:00, com duas reservas APROVADA, uma delas com a Sala A e o Projetor P-001: 409 com a lista; após confirmar, ambas são canceladas por inteiro com motivo MANUTENCAO, e o Projetor P-001 volta a ficar livre. Reserva da Sala A das 07:00 às 08:00 não conflita com o bloqueio e não entra na lista (RN-11).
 - **Rejeita:** o mesmo bloqueio com uma reserva EM_USO no período; confirmação sem ter recebido a lista.
 - **Técnica:** partição por estado das reservas conflitantes e transição de estados.
-- **Depende de lacuna aberta:** D15 (levantamento de bloqueio).
+- **Levantamento (D15):** o Administrador levanta o bloqueio com motivo e auditoria. As ocupações do bloqueio ficam inativas e o período volta a ser reservável. Reservas já canceladas por MANUTENCAO não são restauradas.
 
 ### RN-23. Conclusão condicionada à devolução
 
@@ -239,7 +234,6 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** reserva com Projetor P-001 e Notebook N-001, ambos retirados e devolvidos, é concluída; reserva com o projetor reservado e nunca retirado é concluída.
 - **Rejeita:** conclusão com o projetor retirado e não devolvido.
 - **Técnica:** tabela de decisão (retirado × devolvido) e transição de estados.
-- **Depende de lacuna aberta:** D13 (conclusão pelo dono Responsável).
 
 ### RN-24. Decisão do Responsável
 
@@ -252,11 +246,11 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-25. Cancelamento por falta de decisão
 
 - **Marca:** decisão da equipe. **Origem:** C2 (suposição S6, a validar).
-- **Texto:** reserva SOLICITADA cujo início chega sem decisão é cancelada pelo sistema com motivo SEM_DECISAO, com auditoria e notificação.
+- **Texto:** reserva SOLICITADA cujo início chega sem decisão (a partir do instante de início, D10) é cancelada pelo sistema com motivo SEM_DECISAO, com auditoria e notificação.
 - **Aceita:** reserva SOLICITADA para 20/10/2026 às 14:00, sem decisão até as 14:00, é cancelada pelo sistema.
 - **Rejeita:** cancelamento por SEM_DECISAO de reserva já APROVADA ou antes do início.
-- **Técnica:** valor limite no instante de início e transição de estados. O mecanismo está em aberto (D2).
-- **Depende de lacuna aberta:** D2 (mecanismo) e D10 (instante do início).
+- **Técnica:** valor limite no instante de início e transição de estados. O mecanismo é um job agendado, idempotente e com trava (D2).
+- **Mecanismo (D2):** job agendado, com ator SISTEMA e atualização condicional ao estado SOLICITADA. Auditoria e notificação PENDENTE na mesma transação. A aprovação de reserva cujo início já foi alcançado é recusada com 409. A marcação de não compareceu continua manual (RN-21).
 
 ### RN-26. Visibilidade por perfil
 
@@ -290,7 +284,7 @@ Todas as regras desta seção são **decisão da equipe**.
 - **Aceita:** o Administrador 1 altera o perfil de um usuário e um evento registra ator, entidade, valor anterior e valor novo.
 - **Rejeita:** alteração de cadastro sem evento.
 - **Técnica:** teste de integração com banco real, um caso por tipo de entidade.
-- **Depende de lacuna aberta:** D9 (retenção), D14 (desativação de usuário) e D15 (levantamento de bloqueio).
+- **Depende de lacuna aberta:** D9 (retenção).
 
 ### RN-30. Conflitos evitados são registrados
 
@@ -316,11 +310,10 @@ Todas as regras desta seção são **decisão da equipe**.
 ### RN-32. Desativação de recurso
 
 - **Marca:** decisão da equipe. **Origem:** D6.
-- **Texto:** desativar um recurso é recusado com 409, listando as reservas, se houver reservas futuras em SOLICITADA, APROVADA ou EM_USO. Não há cancelamento automático. Sem reservas futuras nesses estados, o recurso é desativado e deixa de aparecer em novas buscas.
+- **Texto:** desativar um recurso é recusado com 409, listando as reservas, se houver reservas futuras em SOLICITADA, APROVADA ou EM_USO, entendida como reserva futura a de término posterior ao instante atual, o que inclui EM_USO em curso (D11). Não há cancelamento automático. Sem reservas futuras nesses estados, o recurso é desativado e deixa de aparecer em novas buscas.
 - **Aceita:** Notebook N-001 sem reservas futuras é desativado em 13/10/2026; o histórico de reservas CONCLUÍDA continua consultável.
 - **Rejeita:** desativar a Sala A com uma reserva APROVADA em 20/10/2026: 409 com a lista, e o recurso permanece ativo.
 - **Técnica:** partição por estado das reservas futuras (SOLICITADA, APROVADA, EM_USO, terminais) e valor limite na data de início da reserva.
-- **Depende de lacuna aberta:** D11 (significado de "reserva futura").
 
 ### RN-33. Quem rejeita uma solicitação
 
@@ -409,19 +402,11 @@ A reserva exige aprovação se **ao menos um** dos recursos é restrito (RN-10).
 
 ## 5. Lacunas que continuam abertas
 
-Detalhe em [perguntas-abertas.md](perguntas-abertas.md), seção D. **Nenhuma foi decidida e nenhum valor foi inventado.** D5 a D8 foram decididas em 12/10/2026 e deram origem a RN-32 e RN-33 e às atualizações de RN-22 e RN-26.
+Detalhe em [perguntas-abertas.md](perguntas-abertas.md), seção D. **Nenhuma foi decidida e nenhum valor foi inventado.** D5 a D8 foram decididas em 12/10/2026 e deram origem a RN-32 e RN-33 e às atualizações de RN-22 e RN-26. D2 e D10 a D16 foram decididas em 15/10/2026 e atualizaram RN-01, RN-10, RN-16, RN-18, RN-19, RN-21, RN-22, RN-25 e RN-32.
 
 | ID | Lacuna | Regra afetada |
 | --- | --- | --- |
 | D1 | Valor padrão da tolerância de não comparecimento (S4) | RN-21 |
-| D2 | Mecanismo do cancelamento por SEM_DECISAO e da marcação automática: job agendado ou avaliação sob demanda (S6) | RN-21, RN-25 |
 | D3 | Valor padrão de tentativas e de intervalo de reenvio da notificação (S7) | RN-28 |
 | D4 | Tamanho da página do relatório | RN-31 |
 | D9 | Retenção da auditoria e das notificações e tratamento de dados pessoais | RN-28, RN-29 |
-| D10 | Instante exato de "até o início" | RN-18, RN-19, RN-25 |
-| D11 | Significado de "reserva futura" na desativação de recurso | RN-32 |
-| D12 | Recálculo de "exige aprovação" quando a alteração inclui recurso restrito | RN-10, RN-19 |
-| D13 | Início, retirada, devolução e conclusão pelo dono Responsável | RN-16, RN-20, RN-23 |
-| D14 | Desativação de usuário: reservas, aprovações pendentes e mínimo de dois Responsáveis | RN-16, RN-29 |
-| D15 | Levantamento de bloqueio de manutenção | RN-22, RN-29 |
-| D16 | Reserva com início no passado | RN-01 |

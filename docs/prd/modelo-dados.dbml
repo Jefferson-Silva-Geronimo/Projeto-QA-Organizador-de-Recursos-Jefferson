@@ -28,9 +28,12 @@
 // (dbml2sql --postgres), o esquema gerado foi aplicado em PostgreSQL 17 e a constraint de
 // exclusão, os CHECKs e as unicidades foram exercitados com dados fictícios descartáveis.
 //
-// Lacunas que NÃO foram decididas aqui: D1 (tolerância), D2 (mecanismo de
-// SEM_DECISAO), D3 (tentativas e intervalo de reenvio), D4 (tamanho de página do
-// relatório) e D9 (retenção de auditoria e notificações).
+// Lacunas que NÃO foram decididas aqui: D1 (tolerância), D3 (tentativas e intervalo de
+// reenvio), D4 (tamanho de página do relatório), D9 (retenção de auditoria e notificações)
+// e D17 (duração da sessão).
+//
+// ALTERAÇÃO DE 15/10/2026 (Fase 2): tabela sessoes, para o token opaco com revogação
+// (RF-01, RF-15, RNF-06). D2, D14, D15 e D16 foram decididas e não alteram colunas.
 // ============================================================================
 
 Project organizacao_recursos {
@@ -134,6 +137,21 @@ Table usuarios {
   Decisões: B1, B2, C4, C7, D5.
   Pelo menos dois usuários RESPONSAVEL são necessários na operação (B1). Isso é restrição de
   operação, não constraint do banco.
+  '''
+}
+
+Table sessoes {
+  id bigint [pk, increment]
+  usuario_id bigint [not null]
+  token_hash varchar [not null, unique, note: 'Somente o hash do token opaco. Nenhum token em texto.']
+  criada_em timestamptz [not null]
+  expira_em timestamptz [not null, note: 'Calculado com a duração configurada. SEM VALOR: lacuna D17. Nenhum valor inventado.']
+  revogada_em timestamptz [note: 'Preenchida na revogação: desativação de usuário (D14), troca de perfil ou saída. Sessão revogada deixa de valer de imediato.']
+
+  Note: '''
+  ESCOLHA ALÉM DO PEDIDO: tabela necessária para o token opaco com revogação, decisão de arquitetura
+  de 15/10/2026. RF-01, RF-15. RN-17, RN-29. Decisões: D14. Lacuna: D17.
+  A alteração de perfil ou a desativação do usuário precisa valer de imediato (RNF-06).
   '''
 }
 
@@ -314,12 +332,12 @@ Table bloqueios_manutencao {
   motivo text [not null]
   criado_por_id bigint [not null, note: 'Administrador.']
   criado_em timestamptz [not null]
-  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: levantamento do bloqueio sem apagar. Como se levanta um bloqueio é a lacuna D15.']
+  ativo boolean [not null, default: true, note: 'ESCOLHA ALÉM DO PEDIDO: levantamento do bloqueio sem apagar. Levantamento do bloqueio pelo Administrador, com motivo e auditoria (D15).']
 
   Note: '''
   ESCOLHA ALÉM DO PEDIDO: tabela necessária porque ocupacoes referencia o bloqueio por bloqueio_id e
   nenhuma entidade pedida listava onde o bloqueio é guardado.
-  RF-08. RN-04, RN-22, RN-29. Decisões: A7, D7, C7. Lacuna: D15.
+  RF-08. RN-04, RN-22, RN-29. Decisões: A7, D7, C7, D15.
   CHECK a criar por migração: fim > inicio (A2).
   Bloqueio sobre reserva EM_USO é recusado (A7, RN-07).
   '''
@@ -464,6 +482,7 @@ Ref: usuarios.id - professores.usuario_id
 Ref: professor_competencias.professor_id > professores.recurso_id
 Ref: professor_competencias.competencia_id > competencias.id
 
+Ref: sessoes.usuario_id > usuarios.id
 Ref: reservas.solicitante_id > usuarios.id
 Ref: ocupacoes.recurso_id > recursos.id
 Ref: ocupacoes.reserva_id > reservas.id
