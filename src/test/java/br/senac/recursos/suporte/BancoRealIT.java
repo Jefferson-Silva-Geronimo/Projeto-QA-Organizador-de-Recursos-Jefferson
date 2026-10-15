@@ -26,6 +26,8 @@ public abstract class BancoRealIT {
         registro.add("spring.datasource.url", POSTGRES::getJdbcUrl);
         registro.add("spring.datasource.username", POSTGRES::getUsername);
         registro.add("spring.datasource.password", POSTGRES::getPassword);
+        // Valor de teste. A duração real da sessão é a lacuna D17 e não tem valor definido.
+        registro.add("app.sessao.duracao", () -> "PT1H");
     }
 
     @Autowired
