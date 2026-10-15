@@ -181,7 +181,7 @@ class UsuariosApiIT extends ApiIT {
         mvc.perform(put("/api/usuarios/" + id + "/perfil")
                         .header(HttpHeaders.AUTHORIZATION, bearer(token))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"perfil\":\"RESPONSAVEL\"}"))
+                        .content("{\"perfil\":\"ADMINISTRADOR\"}"))
                 .andExpect(status().isOk());
         desativar(token, id).andExpect(status().isOk());
 
@@ -190,7 +190,7 @@ class UsuariosApiIT extends ApiIT {
         assertThat(contar("select count(*) from auditoria_eventos where acao = 'USUARIO_CRIADO' and ator_id = ?", admin))
                 .isEqualTo(1);
         assertThat(contar("select count(*) from auditoria_eventos where acao = 'USUARIO_PERFIL_ALTERADO' "
-                + "and valores_antes ->> 'perfil' = 'SOLICITANTE' and valores_depois ->> 'perfil' = 'RESPONSAVEL'"))
+                + "and valores_antes ->> 'perfil' = 'SOLICITANTE' and valores_depois ->> 'perfil' = 'ADMINISTRADOR'"))
                 .isEqualTo(1);
         assertThat(contar("select count(*) from auditoria_eventos where acao = 'USUARIO_DESATIVADO'"))
                 .isEqualTo(1);
