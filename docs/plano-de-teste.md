@@ -10,8 +10,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | --- | --- |
 | Projeto | Organização de Recursos |
 | Documento | Plano de teste |
-| Versão e estado | 0.1, esqueleto (fim da Etapa 1 da Fase 1) |
-| Data | 12/10/2026 |
+| Versão e estado | 0.2, completado na fatia 4.0 da Fase 4 |
+| Data | 15/10/2026 |
 | Responsável | Equipe. Nomes: TODO |
 | Aprovação | TODO: professor e equipe |
 
@@ -67,8 +67,8 @@ Níveis exigidos pela especificação (seção 5). Ferramentas e versões são d
 | --- | --- | --- | --- |
 | Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
 | Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção 5): persistência verificada em ambiente real, não com mock |
-| API em caixa-preta | Contrato, autorização por perfil, códigos de erro | TODO: ferramenta | Matriz perfil × operação |
-| Ponta a ponta | Jornadas das personas | TODO: ferramenta | Depende do front end (Fase 6) |
+| API em caixa-preta | Contrato, autorização por perfil, códigos de erro | MockMvc sobre o contexto completo, com PostgreSQL real | Matriz perfil × operação. Escolha sem requisito da especificação: a exigência é "API em caixa-preta" |
+| Ponta a ponta | Jornadas das personas | TODO: ferramenta, decidida na Fase 6 | Depende do front end (Fase 6) |
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
 | Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
 | Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: TODO |
@@ -99,8 +99,8 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Critério | Estado |
 | --- | --- |
 | Requisitos, regras, modelo de dados e fluxos versionados e verificados pela skill analyze-docs | Atendido ao fim da Etapa 1 |
-| Cenários de qualidade e arquitetura definidos | TODO (Fase 2) |
-| Casca do projeto, integração contínua e processo de defeitos | TODO (Fase 3) |
+| Cenários de qualidade e arquitetura definidos | Atendido: CEN-01 a CEN-11 em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md) |
+| Casca do projeto, integração contínua e processo de defeitos | Atendido na Fase 3 (PR 1): `./mvnw -B verify` e workflow `qualidade`; defeitos em [docs/defeitos](defeitos/README.md) |
 | Decisões A1, A3 e A5 confirmadas com o professor | TODO |
 | Lacunas D2 e D10 a D16 decididas em 15/10/2026 | Atendido |
 
@@ -136,7 +136,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | Entregável | Origem | Estado |
 | --- | --- | --- |
 | Este plano de teste | Especificação, seção 7 | Esqueleto |
-| Casos de teste identificados por CT-xxx | Fase 4 | TODO |
+| Casos de teste identificados por CT-xxx | [casos-de-teste.md](testes/casos-de-teste.md) | Feito na fatia 4.0; execução por fatia |
 | RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Esqueleto |
 | Suíte automatizada e relatório de testes | Especificação, seção 7 | TODO |
 | Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | TODO |
@@ -157,7 +157,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | Cobertura | JaCoCo | Exigido pela especificação |
 | Carga | JMeter | Exigido pela especificação |
 | Fuso | Configurável, padrão America/Sao_Paulo | Decisão A6 |
-| Versões e configuração de máquina | TODO | Fase 3 |
+| Versões | Java 21, Spring Boot 3.5.16, PostgreSQL 17 em container, JaCoCo 0.8.15, ArchUnit 1.5.1, springdoc 2.8.17, runner ubuntu-24.04 | Fixadas no `pom.xml` e no workflow |
 | Segredos | Em variáveis de ambiente e no repositório de segredos da CI, nunca no repositório | Regra do projeto |
 
 ## 8. Riscos
