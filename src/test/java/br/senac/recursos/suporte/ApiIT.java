@@ -58,6 +58,41 @@ public abstract class ApiIT extends BancoRealIT {
         return no.get("token").asText();
     }
 
+    protected long salaSql(String nome, boolean restrito) {
+        long id = jdbc.queryForObject(
+                "insert into recursos (tipo, nome, restrito, criado_em) values ('SALA', ?, ?, now()) returning id",
+                Long.class, nome, restrito);
+        jdbc.update("insert into salas (recurso_id, tipo, capacidade, localizacao, tipo_sala, hora_abertura, hora_fechamento) "
+                + "values (?, 'SALA', 30, 'Bloco A', 'AULA', '07:00', '22:00')", id);
+        for (int dia = 1; dia <= 5; dia++) {
+            jdbc.update("insert into sala_dias_funcionamento (sala_id, dia_semana) values (?, ?)", id, (short) dia);
+        }
+        return id;
+    }
+
+    protected long materialSql(String nome, String patrimonio, boolean restrito) {
+        long id = jdbc.queryForObject(
+                "insert into recursos (tipo, nome, restrito, criado_em) values ('MATERIAL', ?, ?, now()) returning id",
+                Long.class, nome, restrito);
+        jdbc.update("insert into materiais (recurso_id, tipo, codigo_patrimonio) values (?, 'MATERIAL', ?)",
+                id, patrimonio);
+        return id;
+    }
+
+    protected long professorSql(String nome, Long usuarioId) {
+        long id = jdbc.queryForObject(
+                "insert into recursos (tipo, nome, criado_em) values ('PROFESSOR', ?, now()) returning id",
+                Long.class, nome);
+        jdbc.update("insert into professores (recurso_id, tipo, usuario_id) values (?, 'PROFESSOR', ?)", id, usuarioId);
+        return id;
+    }
+
+    /** Instante UTC de um horário local de America/Sao_Paulo, em ISO-8601. */
+    protected static String local(String dataHoraLocal) {
+        return java.time.LocalDateTime.parse(dataHoraLocal)
+                .atZone(java.time.ZoneId.of("America/Sao_Paulo")).toInstant().toString();
+    }
+
     protected static String bearer(String token) {
         return "Bearer " + token;
     }
