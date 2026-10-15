@@ -50,6 +50,39 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 
 A suíte cresce a partir da Fase 4. O gate de cobertura (80% de linhas e 70% de branches) liga na primeira fatia de domínio (ADR-011).
 
+## Integração contínua
+
+O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda `./mvnw -B verify` em todo pull request e em push na `main`. Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem segredos no build, sem `continue-on-error` e sem `pull_request_target`. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact.
+
+### Execuções registradas
+
+| Run | Resultado | O que mostra |
+| --- | --- | --- |
+| `38785819928` | Vermelho, defeito real | `mvnw` sem permissão de execução, exit 126 (BUG-006) |
+| `38786037634` | Verde | Build verde depois da correção |
+| `38786300308` | Vermelho, intencional | Asserção de `ContextoIT` quebrada de propósito (commit `test(red)`) |
+| `38786508100` | Verde | Recuperação depois do `revert` |
+| `38786781324` | Verde | JaCoCo publicado e SonarCloud ignorado com aviso, por falta do token |
+
+### SonarCloud (passos da equipe)
+
+O agente não vê nem grava o token. Quem administra a organização faz:
+
+1. Importar o repositório em https://sonarcloud.io e anotar o identificador da organização e a chave do projeto.
+2. No GitHub, em *Settings → Secrets and variables → Actions*, cadastrar o secret `SONAR_TOKEN` e as variáveis `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY`.
+3. Abrir ou atualizar um pull request: o passo "Análise do SonarCloud" passa a executar e a esperar o Quality Gate.
+
+Enquanto isso não for feito, o passo apenas avisa e o build segue.
+
+### Proteção da `main` (passos de quem administra o repositório)
+
+Em *Settings → Branches → Add branch ruleset* (ou regra de proteção) para `main`:
+
+1. Exigir pull request antes do merge, com ao menos uma aprovação (revisão por par, exigência da especificação, seção 7).
+2. Exigir o check de status `test` do workflow `qualidade`, com a branch atualizada.
+3. Bloquear push direto e force push.
+4. Não permitir contornar a regra como rotina (sem merge administrativo).
+
 ## Estrutura de pastas
 
 Itens marcados como *vazio* ou *previsto* ainda não têm conteúdo.
@@ -73,7 +106,7 @@ docs/
   adr/                 ADR-001 a ADR-012 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11)
   testes/              (vazio)
-  defeitos/            (vazio)
+  defeitos/            README.md: processo, labels e índice BUG-xxx
   performance/         (vazio)
 perf/                  testes de carga com JMeter (vazio)
 frontend/              React + Vite (vazio)
