@@ -20,6 +20,16 @@ public enum CodigoErro {
     VINCULO_JA_EXISTE(Categoria.CONFLITO, "O usuário já está vinculado a outro professor."),
     RECURSO_COM_RESERVA_FUTURA(Categoria.CONFLITO,
             "O recurso tem reservas futuras e não pode ser desativado."),
+    PERIODO_INVALIDO(Categoria.VALIDACAO, "O término deve ser posterior ao início."),
+    INICIO_NO_PASSADO(Categoria.VALIDACAO, "O início da reserva deve ser posterior ao instante atual."),
+    FORA_DA_JANELA(Categoria.VALIDACAO, "O horário está fora da janela de funcionamento da sala."),
+    DIA_SEM_FUNCIONAMENTO(Categoria.VALIDACAO, "A sala não funciona neste dia da semana."),
+    CRUZA_MEIA_NOITE(Categoria.VALIDACAO, "A reserva não pode cruzar a meia-noite."),
+    MOTIVO_OBRIGATORIO(Categoria.VALIDACAO, "Informe o motivo."),
+    CONFLITO_DE_ALOCACAO(Categoria.CONFLITO, "O recurso já está reservado neste horário."),
+    RECURSO_EM_MANUTENCAO(Categoria.CONFLITO, "O recurso está em manutenção neste horário."),
+    TRANSICAO_PROIBIDA(Categoria.CONFLITO, "A reserva não está em um estado que permita esta operação."),
+    RESERVA_JA_INICIADA(Categoria.CONFLITO, "A reserva já começou e não pode ser alterada ou cancelada pelo dono."),
     ERRO_INTERNO(Categoria.INTERNO, "Não foi possível concluir a operação. Tente novamente mais tarde.");
 
     /** Categoria de recusa, independente de protocolo. */
