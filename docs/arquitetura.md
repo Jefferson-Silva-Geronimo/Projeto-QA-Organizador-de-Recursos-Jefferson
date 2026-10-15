@@ -3,8 +3,8 @@
 | Campo | Valor |
 | --- | --- |
 | Projeto | Organização de Recursos (Qualidade de Software, TADS, 2026.2) |
-| Documento | Descoberta, drivers e arquitetura C4 (Prompts 2.1 e 2.2 da Fase 2) |
-| Estado | Rascunho de 15/10/2026. ATAM e ADR entram nos Prompts 2.3 e 2.4 |
+| Documento | Descoberta, drivers, arquitetura C4, ATAM e ADR (Prompts 2.1 a 2.4 da Fase 2) |
+| Estado | Fase 2 concluída em 15/10/2026, com pendências externas listadas na seção 23 |
 | Fonte de verdade | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), lida em 12/10/2026 |
 | Responsável | Equipe. Nomes: TODO |
 
@@ -75,7 +75,7 @@ Critério de seleção: requisito ou regra cujo cumprimento restringe a estrutur
 | 13 | Erros previsíveis e sem vazamento | Mensagens compreensíveis, códigos estáveis para o front end, nenhum detalhe interno ou segredo exposto | RF-13; especificação, seção 5 | R-12 | — |
 | 14 | Desativação e integridade do catálogo | Recurso com reservas futuras não é desativado; reservas nunca são apagadas fisicamente | RN-07, RN-27, RN-32; D6 | R-05, R-08 | D11 |
 
-**Observação do analista (inferência, a confrontar no Prompt 2.2):** a tentativa de conflito (item 11) precisa ser gravada exatamente quando a reserva é recusada. Se o registro estiver na mesma transação que a tentativa de reserva e a transação for desfeita, a tentativa se perde e RN-30 não se cumpre. Isso interage com o item 6. Não é fato da especificação: é uma consequência a verificar no desenho.
+**Observação do analista (inferência; decidida em 15/10/2026, ver [ADR-003](adr/ADR-003-dupla-reserva-constraint-de-exclusao.md)):** a tentativa de conflito (item 11) precisa ser gravada exatamente quando a reserva é recusada. Se o registro estiver na mesma transação que a tentativa de reserva e a transação for desfeita, a tentativa se perde e RN-30 não se cumpre. Isso interage com o item 6. Não é fato da especificação: é uma consequência a verificar no desenho.
 
 ## 5. Requisitos não funcionais
 
@@ -316,6 +316,9 @@ flowchart TB
     uc_aprov --> estados
     uc_bloq --> regras
     agend --> estados
+    agend --> audit
+    agend --> repo
+    seg --> repo
     desp --> portas
     regras --> portas
     portas -.-> repo
@@ -533,7 +536,7 @@ Resumo das marcas da seção 14, para o painel do Prompt 2.4:
 
 ## 17. Pontos para a avaliação ATAM
 
-Itens que o Prompt 2.3 deve **analisar**, sem conclusão antecipada:
+Itens que o Prompt 2.3 analisou, com o resultado em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md):
 
 1. Constraint de exclusão contra latência sob contenção, em reserva com vários recursos (itens 1 e 3 da seção 4).
 2. Registro da tentativa de conflito fora da transação desfeita contra auditoria atômica (seção 13.2).
@@ -557,6 +560,8 @@ Detalhe completo, com as seis partes de cada cenário, tática, custo e evidênc
 | Desempenho | CEN-04 p95 sob carga (hipótese) | (A, A) | Constraint com índice GiST | Increase Resource Efficiency |
 | Disponibilidade | CEN-05 provedor com falha | (A, M) | Linha PENDENTE na transação | Retry idempotente |
 | Auditabilidade | CEN-06 auditoria atômica | (A, M) | Auditoria na mesma transação | Audit |
+| Confiabilidade e integridade | CEN-10 execução única do job | (A, M) | Job agendado com trava | Retry idempotente |
+| Segurança | CEN-11 alteração com recurso restrito | (A, M) | Recálculo de "exige aprovação" | Transactions |
 | Modificabilidade | CEN-08 troca do provedor | (M, B) | Porta e adaptador | Use an Intermediary |
 
 Descobertas do ciclo 00:
@@ -564,12 +569,155 @@ Descobertas do ciclo 00:
 - **Trade-offs:** TO-01 a TO-05, entre eles a constraint de exclusão contra a latência (CEN-01 e CEN-04) e a notificação transacional contra o tempo da reserva (CEN-02 e CEN-05).
 - **Riscos novos:** R-17 a R-24, definidos em [plano-de-teste.md](plano-de-teste.md). Dois são confirmados pelos artefatos (R-18 e R-24); os demais são dúvidas não investigadas.
 - **Temas de risco:** medidas sem origem (TR-01), três fluxos fora da transação principal (TR-02) e garantias que só existem no PostgreSQL real (TR-03).
-- **Pendências:** cenário próprio para o job de SEM_DECISAO e para D12; validação das hipóteses com o professor.
+- **Pendências:** validação das hipóteses com o professor. CEN-10 (job) e CEN-11 (D12) foram acrescentados no Prompt 2.4.
 
-## 19. Próximos passos desta fase
+## 19. Mapa das doze decisões iniciais para os ADR
+
+As doze decisões iniciais da equipe e os doze ADR do plano não são um para um. A tabela mostra onde cada decisão foi registrada.
+
+| # | Decisão inicial | ADR |
+| --- | --- | --- |
+| 1 | Recurso como supertipo | [ADR-002](adr/ADR-002-recursos-supertipo-e-ocupacoes.md) |
+| 2 | Dupla reserva barrada no banco | [ADR-003](adr/ADR-003-dupla-reserva-constraint-de-exclusao.md) |
+| 3 | Relógio injetável | [ADR-005](adr/ADR-005-relogio-injetavel-e-tempo-em-utc.md) |
+| 4 | Máquina de estados e auditoria na mesma transação | [ADR-006](adr/ADR-006-maquina-de-estados-e-auditoria-transacional.md) |
+| 5 | Autorização em duas camadas | [ADR-004](adr/ADR-004-autenticacao-e-autorizacao.md) |
+| 6 | Integrações por porta e adaptador | [ADR-007](adr/ADR-007-notificacao-por-porta-e-adaptador.md) |
+| 7 | Erros com códigos estáveis | [ADR-008](adr/ADR-008-erros-padronizados-e-consultas-parametrizadas.md) |
+| 8 | Migrações e PostgreSQL real nos testes | [ADR-009](adr/ADR-009-flyway-e-postgresql-real-nos-testes.md) |
+| 9 | Contrato OpenAPI | [ADR-010](adr/ADR-010-contrato-openapi-e-front-end-react-vite.md) |
+| 10 | Camadas que espelham o C4 | [ADR-001](adr/ADR-001-monolito-modular-hexagonal.md) |
+| 11 | Tempo em UTC | [ADR-005](adr/ADR-005-relogio-injetavel-e-tempo-em-utc.md) |
+| 12 | Consultas parametrizadas e paginação | [ADR-008](adr/ADR-008-erros-padronizados-e-consultas-parametrizadas.md) |
+| — | Estratégia de testes e metas | [ADR-011](adr/ADR-011-estrategia-de-testes-e-metas-de-cobertura.md) |
+| — | Job de SEM_DECISAO (D2) | [ADR-012](adr/ADR-012-job-agendado-de-sem-decisao.md) |
+
+Status: ADR-004, ADR-006, ADR-007 e ADR-012 estão **Aceitos** por aprovação do usuário em 15/10/2026. Os demais estão **Propostos**, aguardando aceite da equipe.
+
+## 20. Revisão cruzada: painel de seis papéis
+
+O painel foi conduzido pelo mesmo analista que escreveu a arquitetura, assumindo um papel por vez. Isso **não substitui** a leitura por pessoas da equipe: cada objeção abaixo precisa ser confirmada ou rejeitada por quem decide. As divergências indicam se foram resolvidas ou seguem abertas.
+
+| Papel | Objeção | Base | Resolução |
+| --- | --- | --- | --- |
+| Arquiteto | Quatro camadas e mapeamento custam tempo com entrega na semana 46 | Especificação, seção 1; TO-05 | **Resolvida**: portas só onde há substituição em teste (ADR-001). Revisão após a Fase 4 |
+| Arquiteto | O agendador roda no mesmo processo e a topologia de implantação não tem fonte | R-22; ADR-012 | **Aberta**: a trava continua obrigatória por precaução |
+| Dados | `ativa` é redundante e pode divergir do estado | R-18; RN-02 | **Resolvida com risco**: a constraint exige a coluna na mesma tabela; grava-se `ativa` na mesma transação e testa-se por transição |
+| Dados | Nada impede sala apontar para recurso PROFESSOR | Nota de `recursos` no DBML | **Resolvida**: chave composta (`id`, `tipo`) proposta no ADR-002, por migração |
+| Dados | `auditoria_eventos` e `tentativas_conflito` crescem sem retenção definida | D9 | **Aberta** |
+| Segurança | Consulta de sessão a cada requisição pode degradar o p95 | R-21; TO-04; CEN-04 | **Resolvida provisoriamente**: sem cache na primeira versão e medição em CEN-04 (ADR-004) |
+| Segurança | O gatilho não protege contra o papel que migra o esquema | R-23 | **Parcial**: papel de migração distinto do papel da aplicação, com revogação no segundo (ADR-006). Risco residual aceito para o dono do esquema |
+| Segurança | Não há limite de tentativas de login nem exigência de transporte cifrado | Catálogo: **Lock Computer** e **Encrypt Data**; nenhum requisito na especificação | **Aberta**: sem requisito, nada é implementado ou inventado; vai ao professor |
+| Operações | Pool, limites de tempo e frequência do job não têm valor | PS-01, PS-02, PS-03; TR-01 | **Aberta**: precisam de valor antes da Fase 5 |
+| Operações | Não há requisito de monitoramento, só de log (RNF-12) | Catálogo: **Monitor** | **Aberta**: registrada como decisão sem requisito |
+| Qualidade | Metas de CEN-01, CEN-04, CEN-05 e CEN-08 são hipóteses | TR-01; RNF-08 | **Aberta**: validação com o professor |
+| Qualidade | Job e recálculo de D12 não tinham cenário | [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md), seção 7 | **Resolvida**: CEN-10 e CEN-11 acrescentados |
+| Facilitador ATAM | Diagrama de componentes sem aresta do agendador para auditoria e persistência | Seção 10.3 contra seção 13.7 | **Resolvida**: arestas acrescentadas e diagrama renderizado de novo |
+| Facilitador ATAM | A observação sobre a tentativa de conflito seguia como "a confrontar" depois da decisão | Seção 4 contra seção 13.2 | **Resolvida**: texto atualizado |
+| Facilitador ATAM | As doze decisões e os doze ADR não coincidem | Seção 12 contra plano de ADR | **Resolvida**: mapa na seção 19 |
+
+Consistência verificada entre texto, diagramas, utility tree e matriz: nomes de componentes iguais nos diagramas e nas seções 13 e 21; CEN-01 a CEN-11 presentes na utility tree, no anexo da seção 18 e em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md).
+
+## 21. Matriz requisito → decisão → componente → evidência
+
+Linha para todo requisito crítico (RF-01, RF-03 a RF-10, RF-12, RF-13, RF-16 e RN-01 a RN-08) e para os demais RF. Evidência é o cenário e o teste previstos. Casos de teste CT-xxx nascem na Fase 4.
+
+| Requisito | Decisão | Componente | Evidência prevista |
+| --- | --- | --- | --- |
+| RF-01 | [ADR-004](adr/ADR-004-autenticacao-e-autorizacao.md) | Autenticação e autorização por perfil; Política de autorização por posse | CEN-02; matriz perfil × operação |
+| RF-02 | ADR-002, ADR-006, ADR-008 | Casos de uso de bloqueio e cadastro | Sem cenário próprio; CT na Fase 4 (RN-32, D6, D11) |
+| RF-03 | ADR-002, ADR-003, ADR-008 | Consulta de disponibilidade e relatório; Repositórios PostgreSQL | CEN-04 (hipótese) |
+| RF-04 | ADR-003, ADR-005, ADR-006 | Casos de uso de reserva; Regras de período, janela e conflito; Máquina de estados da reserva | CEN-01, CEN-03, CEN-07, CEN-11 |
+| RF-05 | ADR-002, ADR-003 | Regras de período, janela e conflito; Repositórios PostgreSQL | CEN-03 |
+| RF-06 | ADR-003, ADR-009 | Repositórios PostgreSQL (constraint); Casos de uso de reserva | CEN-01 |
+| RF-07 | ADR-004, ADR-006, ADR-012 | Casos de uso de aprovação e uso; Política de autorização por posse; Máquina de estados da reserva | CEN-02, CEN-10 |
+| RF-08 | ADR-003, ADR-006 | Casos de uso de bloqueio e cadastro; Repositórios PostgreSQL | CEN-07 |
+| RF-09 | ADR-006 | Casos de uso de aprovação e uso; Máquina de estados da reserva | Sem cenário próprio; CT na Fase 4 (RN-23) |
+| RF-10 | ADR-006 | Auditoria somente inserção | CEN-06 |
+| RF-11 | ADR-007 | Despachante de notificações; Adaptador de webhook | CEN-05, CEN-08, CEN-09 |
+| RF-12 | ADR-002, ADR-008 | Consulta de disponibilidade e relatório | Sem cenário próprio; CT com dados semeados (R-11) |
+| RF-13 | ADR-008, ADR-010 | Tradutor de erros com códigos estáveis; Front end (React + Vite) | CEN-09; RNF-10 |
+| RF-14 | ADR-010 | Controladores REST | Teste de contrato (R-15) |
+| RF-15 | ADR-004, ADR-006 | Casos de uso de bloqueio e cadastro; Autenticação e autorização por perfil | CEN-02, CEN-06 |
+| RF-16 | ADR-006, ADR-012 | Máquina de estados da reserva; Agendador de transições automáticas | CEN-06, CEN-10 |
+| RN-01 | ADR-005 | Regras de período, janela e conflito | CEN-07; valor limite |
+| RN-02 | ADR-002, ADR-003 | Regras de período, janela e conflito; Repositórios PostgreSQL | CEN-01, CEN-03, CEN-07 |
+| RN-03 | ADR-003 | Repositórios PostgreSQL (constraint) | CEN-01 |
+| RN-04 | ADR-002, ADR-003 | Repositórios PostgreSQL (constraint); Casos de uso de bloqueio e cadastro | CEN-07 |
+| RN-05 | ADR-006 | Máquina de estados da reserva | CEN-06; tabela de transição de estados |
+| RN-06 | ADR-004 | Política de autorização por posse | CEN-02 |
+| RN-07 | ADR-006 | Máquina de estados da reserva | Sem cenário próprio; teste de que não existe exclusão (RN-27) |
+| RN-08 | ADR-006 | Auditoria somente inserção | CEN-06 |
+
+## 22. Listas de fechamento
+
+### 22.1 Requisitos sem cobertura de cenário de qualidade
+
+Cobertos apenas por caso de teste funcional na Fase 4: RF-02, RF-09, RF-12 e RN-07. Nenhum requisito crítico fica sem linha na matriz.
+
+### 22.2 Decisões sem requisito correspondente
+
+| Decisão | Observação |
+| --- | --- |
+| Maven | Decisão da equipe |
+| React + Vite | Decisão da equipe; RF-13 exige interface responsiva, não a tecnologia |
+| Flyway entre as ferramentas de migração | Exigência é migração versionada com banco real |
+| OpenAPI entre as formas de documentar | RF-14 aceita documentação de API ou dos fluxos |
+| Camadas hexagonais | Proposta derivada de RNF-11, que também não vem da especificação |
+| RNF-11 e RNF-12 | Propostas da equipe |
+| Convenção do dia da semana em `sala_dias_funcionamento` | Proposta do analista |
+| Monitoramento de saúde | Nenhum requisito pede |
+
+### 22.3 Suposições
+
+S1 a S7 de [prd.md](prd.md), seção 9, mais as hipóteses de medida: 20 solicitações e 5 repetições (CEN-01), 50 usuários, p95 de 300 ms e 1% de erros (CEN-04, RNF-08), limite de tempo do envio (CEN-05), um componente alterado (CEN-08), ausência de cache de sessão na primeira versão.
+
+### 22.4 Perguntas abertas
+
+| Quem responde | Pergunta |
+| --- | --- |
+| Professor | Confirmar A1, A3 e A5, e se o endpoint de teste basta como API externa (S5) |
+| Professor | Validar as hipóteses de desempenho e de repetição e o critério de aceite de CEN-04 |
+| Professor | Há exigência de limite de tentativas de login e de transporte cifrado? |
+| Equipe | Quantas pessoas formam a equipe e quem administra o repositório e o SonarCloud |
+| Equipe | Valores de D1, D3, D4, D9 e D17, e do pool, dos limites de tempo e da frequência do job |
+| Equipe | Quantas instâncias da aplicação rodam na demonstração |
+
+### 22.5 Riscos aceitos
+
+| Risco | Aceite |
+| --- | --- |
+| R-19, perda de tentativa de conflito se a gravação separada falhar | Decisão aprovada em 15/10/2026 (ADR-003). O motivo é manter o 409 já devido ao solicitante sem desfazer a decisão |
+
+Nenhum outro risco foi aceito: os demais aguardam teste ou decisão.
+
+### 22.6 Próximos experimentos
+
+| Experimento | Risco ou decisão | Fase |
+| --- | --- | --- |
+| Concorrência com sala e projetor em ordens opostas | R-17; ADR-003 | 4 |
+| Custo da consulta de sessão por requisição | R-21; ADR-004 | 4 e 5 |
+| Job com duas instâncias e técnica de trava | R-22; ADR-012 | 4 |
+| Gatilho de auditoria contra os papéis de migração e de aplicação | R-23; ADR-006 | 3 e 4 |
+| Falha injetada entre commit e envio | R-20; ADR-007 | 4 |
+| Linha de base do p95 sem e com contenção | CEN-04; ADR-003 | 5 |
+| Mapeamento de `tstzrange` no acesso a dados | Escolha de acesso a dados em aberto | 4 |
+
+## 23. Porta de saída da Fase 2
+
+| Critério | Estado |
+| --- | --- |
+| ADR para cada uma das 12 decisões, com alternativa descartada e motivo | **Atendido** (seção 19 e pasta `docs/adr/`) |
+| Todo cenário com as seis partes e medida; medidas sem origem como hipótese | **Atendido** (CEN-01 a CEN-11) |
+| Ao menos um trade-off nomeado e matriz com linha para todo requisito crítico | **Atendido** (TO-01 a TO-05; seção 21) |
+| Outra equipe entende, rastreia e contesta sem explicação oral | **Parcial**: falta leitura por pessoa da equipe fora da autoria |
+| `analyze-docs` sem pendências | **Verificado por script** em colunas, links, fences, IDs e Mermaid; skill completa pendente de execução pela equipe |
+| Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1, A3 e A5 e as hipóteses dependem do professor |
+
+## 24. Próximos passos
 
 | Passo | Entrega | Depende de |
 | --- | --- | --- |
-| Prompt 2.2 | Concluído neste documento, seções 10 a 17 | — |
-| Prompt 2.3 | Concluído: utility tree e análise em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md), com o catálogo [taticas-arquiteturais-len-bass.md](taticas-arquiteturais-len-bass.md) | — |
-| Prompt 2.4 | Os doze ADR em `docs/adr/` e a matriz requisito → decisão → componente → evidência | Prompts 2.2 e 2.3; respostas das perguntas 2, 3 e 5 da seção 8.5 |
+| Aceite dos ADR propostos | ADR-001, 002, 003, 005, 008, 009, 010 e 011 com status Aceito | Equipe |
+| Respostas do professor | A1, A3, A5, hipóteses e perguntas da seção 22.4 | Professor |
+| Fase 3 | Casca Maven, pipeline em pull requests, JaCoCo, SonarCloud e processo de defeitos | Aceite do ADR-009 e do ADR-011 |

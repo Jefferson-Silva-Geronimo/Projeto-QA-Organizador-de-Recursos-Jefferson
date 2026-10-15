@@ -5,7 +5,7 @@
 | Projeto | Organização de Recursos |
 | Documento | Ciclo 00 da avaliação arquitetural (Prompt 2.3 da Fase 2) |
 | Data | 15/10/2026 |
-| Estado | Rascunho para o painel do Prompt 2.4. Nenhum teste foi executado: toda constatação abaixo vem da leitura dos artefatos |
+| Estado | Revisto no Prompt 2.4, com CEN-10 e CEN-11 acrescentados. Nenhum teste foi executado: toda constatação abaixo vem da leitura dos artefatos |
 | Arquitetura avaliada | [arquitetura.md](../arquitetura.md), seções 10 a 17 |
 | Catálogo de táticas | [taticas-arquiteturais-len-bass.md](../taticas-arquiteturais-len-bass.md) |
 | Fonte dos requisitos | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) |
@@ -39,6 +39,8 @@ Atributo → refinamento → cenário. O valor ao lado do cenário é (I, D).
 | Desempenho | Latência sob carga concorrente | CEN-04 | (A, A) |
 | Disponibilidade | Degradação com provedor de notificação falho | CEN-05 | (A, M) |
 | Auditabilidade | Trilha completa e atômica | CEN-06 | (A, M) |
+| Confiabilidade e integridade | Execução única das transições automáticas | CEN-10 | (A, M) |
+| Segurança | Aprovação não contornável pela alteração | CEN-11 | (A, M) |
 | Modificabilidade | Troca do provedor de notificação | CEN-08 | (M, B) |
 
 ## 3. Cenários de seis partes
@@ -144,6 +146,32 @@ Cada cenário traz fonte, estímulo, ambiente, artefato, resposta e medida. Núm
 | Resposta | O corpo não atravessa a API nem entra no log. Só o status é registrado (RNF-07, RNF-12) |
 | Medida | 0 ocorrências do valor sensível na resposta da API e nos logs. Origem do cenário: Aula 08 |
 
+### CEN-10. Execução única do cancelamento por SEM_DECISAO
+
+Acrescentado no Prompt 2.4, para a decisão D2 e o risco R-22. (I, D) é proposta do analista.
+
+| Parte | Conteúdo |
+| --- | --- |
+| Fonte | Agendador de transições automáticas, ator SISTEMA |
+| Estímulo | Duas execuções, seguidas ou simultâneas, com uma reserva SOLICITADA cujo início foi alcançado |
+| Ambiente | Relógio controlado, duas instâncias da aplicação, PostgreSQL real |
+| Artefato | Job de SEM_DECISAO, `reservas`, `auditoria_eventos` e `notificacoes` |
+| Resposta | A reserva vai a cancelada com motivo SEM_DECISAO uma única vez, com um evento de auditoria e uma notificação PENDENTE. Reserva APROVADA não é alterada |
+| Medida | 1 evento e 1 notificação por reserva cancelada; 0 reservas APROVADA alteradas |
+
+### CEN-11. Alteração que inclui recurso restrito
+
+Acrescentado no Prompt 2.4, para a decisão D12. (I, D) é proposta do analista.
+
+| Parte | Conteúdo |
+| --- | --- |
+| Fonte | Solicitante dono de uma reserva APROVADA sem recurso restrito |
+| Estímulo | Alteração que acrescenta um recurso restrito, inclusive com "exige aprovação" falso no corpo da requisição |
+| Ambiente | Operação normal, antes do início da reserva |
+| Artefato | Caso de uso de alteração, máquina de estados e `ocupacoes` |
+| Resposta | O servidor recalcula "exige aprovação" e ignora o valor do cliente. A reserva volta a SOLICITADA, com as ocupações trocadas na mesma transação e auditoria |
+| Medida | 0 reservas com recurso restrito sem decisão de Responsável; 100% das alterações que incluem recurso restrito voltam a SOLICITADA |
+
 ## 4. Decisão, tática e evidência por cenário
 
 As táticas usam os nomes exatos do catálogo ([seção 4](../taticas-arquiteturais-len-bass.md)). "Custo" é o que a tática impõe, e a evidência é o que provará o resultado.
@@ -159,8 +187,10 @@ As táticas usam os nomes exatos do catálogo ([seção 4](../taticas-arquitetur
 | CEN-07 | Relógio injetável e fronteira semiaberta (seção 13.5) | **Transactions** e **Limit Nondeterminism** | Relógio como dependência em todo caso de uso | Valor limite em trinca com relógio controlado |
 | CEN-08 | Porta e adaptador (seção 13.4) | **Use an Intermediary**, **Encapsulate** e **Restrict Dependencies** | Indireção no caminho do envio | Teste de arquitetura e comparação do contrato OpenAPI |
 | CEN-09 | Adaptador e erros com códigos estáveis (seção 12, itens 6 e 7) | **Tailor Interface**, **Encapsulate** e **Limit Exposure** | Perda de detalhe para diagnóstico | WireMock devolvendo o segredo e teste de log |
+| CEN-10 | Job agendado, idempotente e com trava ([ADR-012](../adr/ADR-012-job-agendado-de-sem-decisao.md)) | **Retry** idempotente e **Transactions** | Componente periódico e trava | Duas execuções, seguidas e simultâneas, com relógio controlado |
+| CEN-11 | Recálculo de "exige aprovação" na alteração (D12; [ADR-006](../adr/ADR-006-maquina-de-estados-e-auditoria-transacional.md)) | **Transactions** e **Authorize Actors** | Uma regra a mais na alteração | Tabela de decisão e teste de integração com banco real |
 
-Decisões **sem cenário que as exerça por inteiro**: o job de SEM_DECISAO (RN-25) não tem cenário próprio, a observabilidade (RNF-12) só é tocada por CEN-09 e o recálculo de "exige aprovação" (D12) só aparece indiretamente em CEN-02. Ficam como pendência da seção 7.
+Decisão **sem cenário que a exerça por inteiro**: a observabilidade (RNF-12) só é tocada por CEN-09. O job de SEM_DECISAO e o recálculo de "exige aprovação" ganharam CEN-10 e CEN-11.
 
 ## 5. Descobertas
 
@@ -200,7 +230,7 @@ Cada risco recebe um identificador R-xx, definido em [plano-de-teste.md](../plan
 | R-19 | A tentativa de conflito se perde quando a gravação separada falha, e o relatório subconta | **Risco aceito por decisão** de 15/10/2026 | CEN-01 | TO-03 |
 | R-20 | Notificação perdida ou duplicada entre o commit e o envio, ou reenvio que nunca executa | Dúvida não investigada | CEN-05 | TO-02 |
 | R-21 | A consulta de sessão a cada requisição degrada o p95, ou um cache deixa token válido após a revogação | Dúvida não investigada | CEN-02, CEN-04 | TO-04 |
-| R-22 | O job de SEM_DECISAO roda em mais de uma instância sem a trava eficaz e gera evento duplicado | Dúvida não investigada | CEN-06 | PS-03; D2 |
+| R-22 | O job de SEM_DECISAO roda em mais de uma instância sem a trava eficaz e gera evento duplicado | Dúvida não investigada | CEN-06, CEN-10 | PS-03; D2 |
 | R-23 | A auditoria é alterada por papel com privilégio, por exemplo o da migração | Dúvida não investigada | CEN-06 | Seção 13.2 |
 | R-24 | Medidas hipotéticas (p95, usuários, repetições, pool, limites de tempo) tornam cenários sem critério de aceite fechado | **Risco confirmado**: a especificação não define critério de desempenho | CEN-01, CEN-04, CEN-05, CEN-08 | RNF-08 |
 
@@ -227,17 +257,17 @@ Padrões que se repetem em várias decisões.
 
 | Item | Estado |
 | --- | --- |
-| Cenários com as seis partes | CEN-01 a CEN-09 |
-| Cenários com decisão, tática e evidência | CEN-01 a CEN-09 |
+| Cenários com as seis partes | CEN-01 a CEN-11 |
+| Cenários com decisão, tática e evidência | CEN-01 a CEN-11 |
 | Medidas marcadas como hipótese | CEN-01, CEN-04, CEN-05, CEN-08 |
 | Trade-offs nomeados | TO-01 a TO-05 |
 | Riscos novos | R-17 a R-24 |
-| Decisão sem cenário próprio | Job de SEM_DECISAO (RN-25) e recálculo de "exige aprovação" (D12). **Pendência para o Prompt 2.4** |
+| Decisão sem cenário próprio | Resolvido no Prompt 2.4 com CEN-10 e CEN-11. Segue sem cenário próprio a observabilidade (RNF-12) |
 
-## 7. Pendências para o Prompt 2.4
+## 7. Pendências do Prompt 2.3 e seu fechamento no Prompt 2.4
 
-1. Decidir se o job de SEM_DECISAO (RN-25) e o recálculo de "exige aprovação" (D12) ganham cenário próprio (por exemplo, idempotência do job com duas instâncias).
-2. Confirmar ou corrigir (I, D) de cada cenário no painel.
+1. **Feito:** CEN-10 (job de SEM_DECISAO) e CEN-11 (recálculo de "exige aprovação") foram acrescentados.
+2. (I, D) de todos os cenários, inclusive CEN-10 e CEN-11, seguem como proposta; a confirmação é da equipe.
 3. Validar com o professor as hipóteses de CEN-01, CEN-04, CEN-05 e CEN-08.
-4. Ligar cada cenário às linhas da [RTM](../../RTM.md), na coluna Cenário.
-5. Fechar os ADR dos pontos de trade-off TO-01 a TO-05.
+4. **Feito:** a coluna Cenário da [RTM](../../RTM.md) foi preenchida.
+5. **Feito:** [ADR-001 a ADR-012](../adr/) criados com status Proposto ou Aceito. O aceite da equipe segue pendente nos propostos.

@@ -50,10 +50,10 @@ docs/
     requisitos-funcionais.md   RF-01 a RF-16 e matrizes RN-RF
     modelo-dados.dbml      modelo de dados, importável no dbdiagram.io
     fluxos-sequencia.md    14 diagramas de sequência
-  arquitetura.md       drivers, C4, decisões de arquitetura (rascunho da Fase 2)
+  arquitetura.md       drivers, C4, painel, matriz e porta de saída da Fase 2
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
-  adr/                 decisões de arquitetura (vazio)
-  avaliacao-arquitetural/   ciclo-00.md (ATAM, rascunho da Fase 2)
+  adr/                 ADR-001 a ADR-012 (decisões de arquitetura)
+  avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11)
   testes/              (vazio)
   defeitos/            (vazio)
   performance/         (vazio)
@@ -71,7 +71,7 @@ src/, pom.xml          back end Maven na raiz (previstos, Fase 3)
 | --- | --- | --- |
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
 | 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
-| 2 | Requisitos não funcionais, arquitetura e ATAM | Em andamento: Prompts 2.1 a 2.3 feitos; faltam revisão cruzada e ADR |
+| 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026, com pendências externas: aceite dos ADR propostos e respostas do professor |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Prevista |
 | 4 | Back end guiado por testes (TDD e BDD) | Prevista |
 | 5 | Testes de carga e concorrência (JMeter) | Prevista |
