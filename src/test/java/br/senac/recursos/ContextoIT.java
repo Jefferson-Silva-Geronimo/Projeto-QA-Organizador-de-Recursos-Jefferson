@@ -45,6 +45,6 @@ class ContextoIT {
         Integer aplicadas = jdbc.queryForObject(
                 "select count(*) from flyway_schema_history where version = '1' and success",
                 Integer.class);
-        assertThat(aplicadas).isEqualTo(2);
+        assertThat(aplicadas).isEqualTo(1);
     }
 }
