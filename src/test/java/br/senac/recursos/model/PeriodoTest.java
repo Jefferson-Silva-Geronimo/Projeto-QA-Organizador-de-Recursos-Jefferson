@@ -1,11 +1,11 @@
 package br.senac.recursos.model;
 
-import br.senac.recursos.exception.CodigoErro;
-import br.senac.recursos.exception.ErroDeNegocio;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.exception.ErroDeNegocio;
 import java.time.Instant;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

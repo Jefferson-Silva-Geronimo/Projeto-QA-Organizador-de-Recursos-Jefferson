@@ -1,8 +1,8 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.repository.SessaoRepository;
 import br.senac.recursos.model.Perfil;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.repository.SessaoRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;

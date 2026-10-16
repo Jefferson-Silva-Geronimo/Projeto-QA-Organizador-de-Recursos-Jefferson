@@ -1,5 +1,6 @@
 package br.senac.recursos.repository;
 
+import br.senac.recursos.model.MotivoConflito;
 import br.senac.recursos.model.Periodo;
 import java.time.Instant;
 
@@ -9,7 +10,5 @@ import java.time.Instant;
  */
 public interface TentativaConflitoRepository {
 
-    enum Motivo { SOBREPOSICAO, CONCORRENCIA, MANUTENCAO }
-
-    void registrar(long recursoId, Periodo periodo, long solicitanteId, Motivo motivo, Instant ocorridaEm);
+    void registrar(long recursoId, Periodo periodo, long solicitanteId, MotivoConflito motivo, Instant ocorridaEm);
 }

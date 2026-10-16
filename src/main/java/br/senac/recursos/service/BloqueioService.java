@@ -1,19 +1,20 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Entidade;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.AuditoriaRepository.TipoAtor;
-import br.senac.recursos.repository.BloqueioRepository;
-import br.senac.recursos.repository.BloqueioRepository.Registro;
-import br.senac.recursos.repository.RecursoRepository;
-import br.senac.recursos.repository.RecursoRepository.Detalhe;
-import br.senac.recursos.repository.ReservaRepository;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.Bloqueio;
+import br.senac.recursos.model.BloqueioCriado;
+import br.senac.recursos.model.EntidadeAuditada;
 import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.model.EventoAuditoria;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.model.Recurso;
+import br.senac.recursos.model.TipoAtor;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.BloqueioRepository;
+import br.senac.recursos.repository.RecursoRepository;
+import br.senac.recursos.repository.ReservaRepository;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Instant;
@@ -40,10 +41,6 @@ public class BloqueioService {
     private static final String SQLSTATE_EXCLUSAO = "23P01";
     private static final String SQLSTATE_IMPASSE = "40P01";
 
-    /** Bloqueio criado e as reservas que ele cancelou por inteiro. */
-    public record Criado(Registro bloqueio, List<Long> reservasCanceladas) {
-    }
-
     private final BloqueioRepository bloqueios;
     private final ReservaRepository reservas;
     private final RecursoRepository recursos;
@@ -60,7 +57,7 @@ public class BloqueioService {
     }
 
     @Transactional
-    public Criado criar(UsuarioAutenticado ator, long recursoId, Periodo periodo, String motivo,
+    public BloqueioCriado criar(UsuarioAutenticado ator, long recursoId, Periodo periodo, String motivo,
                         List<Long> reservasConfirmadas) {
         Instant agora = relogio.instant();
         if (motivo == null || motivo.isBlank()) {
@@ -70,7 +67,7 @@ public class BloqueioService {
         if (!recursos.travar(recursoId)) {
             throw new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO);
         }
-        Detalhe recurso = recursos.buscarPorId(recursoId).orElseThrow();
+        Recurso recurso = recursos.buscarPorId(recursoId).orElseThrow();
         if (!recurso.ativo()) {
             throw new ErroDeNegocio(CodigoErro.RECURSO_INATIVO);
         }
@@ -98,7 +95,7 @@ public class BloqueioService {
                 throw new ErroDeNegocio(CodigoErro.BLOQUEIO_LISTA_DESATUALIZADA);
             }
             reservas.inativarOcupacoes(reserva.id());                               // por inteiro (D7)
-            auditoria.registrar(new Evento(agora, TipoAtor.SISTEMA, null, Entidade.RESERVA, reserva.id(),
+            auditoria.registrar(new EventoAuditoria(agora, TipoAtor.SISTEMA, null, EntidadeAuditada.RESERVA, reserva.id(),
                     "RESERVA_CANCELADA", reserva.estado().name(), EstadoReserva.CANCELADA.name(),
                     null, null, "MANUTENCAO", correlacao));
         }
@@ -119,26 +116,26 @@ public class BloqueioService {
         depois.put("inicio", periodo.inicio().toString());
         depois.put("fim", periodo.fim().toString());
         depois.put("motivo", motivo.trim());
-        auditoria.registrar(new Evento(agora, TipoAtor.USUARIO, ator.id(), Entidade.BLOQUEIO, id,
+        auditoria.registrar(new EventoAuditoria(agora, TipoAtor.USUARIO, ator.id(), EntidadeAuditada.BLOQUEIO, id,
                 "BLOQUEIO_CRIADO", null, null, null, depois, null, correlacao));
-        Registro criado = new Registro(id, recursoId, periodo.inicio(), periodo.fim(), motivo.trim(), true);
-        return new Criado(criado, ids);
+        Bloqueio criado = new Bloqueio(id, recursoId, periodo.inicio(), periodo.fim(), motivo.trim(), true);
+        return new BloqueioCriado(criado, ids);
     }
 
     @Transactional
-    public Registro levantar(UsuarioAutenticado ator, long id, String motivo) {
+    public Bloqueio levantar(UsuarioAutenticado ator, long id, String motivo) {
         if (motivo == null || motivo.isBlank()) {
             throw new ErroDeNegocio(CodigoErro.MOTIVO_OBRIGATORIO);
         }
-        Registro atual = bloqueios.buscarTravando(id)
+        Bloqueio atual = bloqueios.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         if (!atual.ativo()) {
             return atual;
         }
         bloqueios.levantar(id);
-        auditoria.registrar(new Evento(relogio.instant(), TipoAtor.USUARIO, ator.id(), Entidade.BLOQUEIO, id,
+        auditoria.registrar(new EventoAuditoria(relogio.instant(), TipoAtor.USUARIO, ator.id(), EntidadeAuditada.BLOQUEIO, id,
                 "BLOQUEIO_LEVANTADO", null, null, Map.of("ativo", true), Map.of("ativo", false),
                 motivo.trim(), null));
-        return new Registro(atual.id(), atual.recursoId(), atual.inicio(), atual.fim(), atual.motivo(), false);
+        return new Bloqueio(atual.id(), atual.recursoId(), atual.inicio(), atual.fim(), atual.motivo(), false);
     }
 }

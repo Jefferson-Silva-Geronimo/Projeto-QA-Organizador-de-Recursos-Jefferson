@@ -1,14 +1,14 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.ReservaRepository;
-import br.senac.recursos.repository.ReservaRepository.Registro;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
 import br.senac.recursos.model.EstadoReserva;
-import br.senac.recursos.model.regra.MaquinaDeEstados;
+import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.Reserva;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.model.regra.MaquinaDeEstados;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.ReservaRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
@@ -34,9 +34,9 @@ public class AprovacaoService {
     }
 
     @Transactional
-    public Registro aprovar(UsuarioAutenticado ator, long id, String motivo) {
+    public Reserva aprovar(UsuarioAutenticado ator, long id, String motivo) {
         Instant agora = relogio.instant();
-        Registro reserva = reservas.buscarTravando(id)
+        Reserva reserva = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         exigirNaoDono(ator, reserva);
         MaquinaDeEstados.exigir(reserva.estado(), EstadoReserva.APROVADA);
@@ -52,15 +52,15 @@ public class AprovacaoService {
         reservas.atualizar(id, reserva.titulo(), reserva.descricao(), reserva.periodo(), EstadoReserva.APROVADA,
                 reserva.exigeAprovacao(), null, agora);
         reservas.registrarDecisao(id, ator.id(), true, motivoGravado, agora);
-        auditoria.registrar(Evento.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_APROVADA",
+        auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_APROVADA",
                 EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null, null, motivoGravado));
         return reservas.buscar(id).orElseThrow();
     }
 
     @Transactional
-    public Registro rejeitar(UsuarioAutenticado ator, long id, String motivo) {
+    public Reserva rejeitar(UsuarioAutenticado ator, long id, String motivo) {
         Instant agora = relogio.instant();
-        Registro reserva = reservas.buscarTravando(id)
+        Reserva reserva = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         exigirNaoDono(ator, reserva);
         String motivoGravado = vazioParaNulo(motivo);
@@ -72,17 +72,17 @@ public class AprovacaoService {
                 reserva.exigeAprovacao(), motivoGravado, agora);
         reservas.inativarOcupacoes(id);
         reservas.registrarDecisao(id, ator.id(), false, motivoGravado, agora);
-        auditoria.registrar(Evento.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_REJEITADA",
+        auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_REJEITADA",
                 EstadoReserva.SOLICITADA.name(), EstadoReserva.REJEITADA.name(), null, null, motivoGravado));
         return reservas.buscar(id).orElseThrow();
     }
 
     @Transactional(readOnly = true)
-    public List<Registro> fila() {
+    public List<Reserva> fila() {
         return reservas.listarFila();
     }
 
-    private static void exigirNaoDono(UsuarioAutenticado ator, Registro reserva) {
+    private static void exigirNaoDono(UsuarioAutenticado ator, Reserva reserva) {
         if (reserva.solicitanteId() == ator.id()) {
             throw new ErroDeNegocio(CodigoErro.ACESSO_NEGADO);                      // RN-16, RN-33
         }

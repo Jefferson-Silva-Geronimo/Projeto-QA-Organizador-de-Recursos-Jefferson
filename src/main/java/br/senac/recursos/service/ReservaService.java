@@ -1,26 +1,27 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Entidade;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.ConfiguracaoRepository;
-import br.senac.recursos.repository.RecursoRepository;
-import br.senac.recursos.repository.RecursoRepository.Detalhe;
-import br.senac.recursos.repository.ReservaRepository;
-import br.senac.recursos.repository.ReservaRepository.Registro;
-import br.senac.recursos.repository.TentativaConflitoRepository;
-import br.senac.recursos.repository.TentativaConflitoRepository.Motivo;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.AlteracaoDeReserva;
 import br.senac.recursos.model.EstadoReserva;
-import br.senac.recursos.model.regra.JanelaDeFuncionamento;
+import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.MotivoConflito;
+import br.senac.recursos.model.NovaReserva;
 import br.senac.recursos.model.Perfil;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.model.Recurso;
+import br.senac.recursos.model.Reserva;
+import br.senac.recursos.model.TipoRecurso;
+import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.model.regra.JanelaDeFuncionamento;
 import br.senac.recursos.model.regra.PoliticaDeAlteracao;
 import br.senac.recursos.model.regra.PoliticaDeCancelamento;
 import br.senac.recursos.model.regra.RegrasDeReserva;
-import br.senac.recursos.model.TipoRecurso;
-import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.ConfiguracaoRepository;
+import br.senac.recursos.repository.RecursoRepository;
+import br.senac.recursos.repository.ReservaRepository;
+import br.senac.recursos.repository.TentativaConflitoRepository;
 import java.sql.SQLException;
 import java.time.Clock;
 import java.time.DayOfWeek;
@@ -50,23 +51,15 @@ public class ReservaService {
     private static final String SQLSTATE_VIOLACAO_DE_EXCLUSAO = "23P01";
     private static final String SQLSTATE_IMPASSE = "40P01";
 
-    /** Dados para criar uma reserva. */
-    public record NovaReserva(String titulo, String descricao, Periodo periodo, List<Long> recursoIds) {
-    }
-
-    /** Alteração parcial. Campos nulos não mudam. */
-    public record Alteracao(String titulo, String descricao, Instant inicio, Instant fim, List<Long> recursoIds) {
-    }
-
     /** Recusa de alocação detectada dentro da transação. Dispara o desfazer e o registro da tentativa. */
     private static final class ConflitoDeAlocacao extends RuntimeException {
         private static final long serialVersionUID = 1L;
         private final long recursoId;
-        private final transient Motivo motivo;
+        private final transient MotivoConflito motivo;
         private final transient Periodo periodo;
         private final long solicitanteId;
 
-        ConflitoDeAlocacao(long recursoId, Motivo motivo, Periodo periodo, long solicitanteId) {
+        ConflitoDeAlocacao(long recursoId, MotivoConflito motivo, Periodo periodo, long solicitanteId) {
             super(null, null, false, false);
             this.recursoId = recursoId;
             this.motivo = motivo;
@@ -95,7 +88,7 @@ public class ReservaService {
         this.relogio = relogio;
     }
 
-    public Registro criar(UsuarioAutenticado ator, NovaReserva dados) {
+    public Reserva criar(UsuarioAutenticado ator, NovaReserva dados) {
         try {
             return transacao.execute(status -> criarNaTransacao(ator, dados));
         } catch (ConflitoDeAlocacao conflito) {
@@ -103,7 +96,7 @@ public class ReservaService {
         }
     }
 
-    public Registro alterar(UsuarioAutenticado ator, long id, Alteracao alteracao) {
+    public Reserva alterar(UsuarioAutenticado ator, long id, AlteracaoDeReserva alteracao) {
         try {
             return transacao.execute(status -> alterarNaTransacao(ator, id, alteracao));
         } catch (ConflitoDeAlocacao conflito) {
@@ -111,27 +104,27 @@ public class ReservaService {
         }
     }
 
-    public Registro cancelar(UsuarioAutenticado ator, long id, String motivo) {
+    public Reserva cancelar(UsuarioAutenticado ator, long id, String motivo) {
         return transacao.execute(status -> cancelarNaTransacao(ator, id, motivo));
     }
 
-    public Registro obter(UsuarioAutenticado ator, long id) {
-        Registro reserva = reservas.buscar(id).orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
+    public Reserva obter(UsuarioAutenticado ator, long id) {
+        Reserva reserva = reservas.buscar(id).orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         exigirVisibilidade(ator, reserva);
         return reserva;
     }
 
-    public List<Registro> listar(UsuarioAutenticado ator) {
+    public List<Reserva> listar(UsuarioAutenticado ator) {
         return reservas.listar(ator.perfil() == Perfil.SOLICITANTE ? ator.id() : null);
     }
 
     // ---- criação
 
-    private Registro criarNaTransacao(UsuarioAutenticado ator, NovaReserva dados) {
+    private Reserva criarNaTransacao(UsuarioAutenticado ator, NovaReserva dados) {
         Instant agora = relogio.instant();
         RegrasDeReserva.exigirInicioFuturo(dados.periodo(), agora);
-        List<Detalhe> alocados = carregarEValidar(dados.recursoIds(), dados.periodo());
-        boolean exigeAprovacao = alocados.stream().anyMatch(Detalhe::restrito);
+        List<Recurso> alocados = carregarEValidar(dados.recursoIds(), dados.periodo());
+        boolean exigeAprovacao = alocados.stream().anyMatch(Recurso::restrito);
 
         verificarConflitos(alocados, dados.periodo(), null, ator.id());
 
@@ -139,13 +132,13 @@ public class ReservaService {
                 EstadoReserva.SOLICITADA, exigeAprovacao, agora);
         inserirOcupacoes(id, alocados, dados.periodo(), ator.id());
 
-        auditoria.registrar(Evento.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_CRIADA", null,
+        auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_CRIADA", null,
                 EstadoReserva.SOLICITADA.name(), null, visao(dados.titulo(), dados.periodo(), alocados), null));
 
         if (!exigeAprovacao) {
             reservas.atualizar(id, dados.titulo(), dados.descricao(), dados.periodo(), EstadoReserva.APROVADA,
                     false, null, agora);
-            auditoria.registrar(Evento.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
+            auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
                     EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null));
         }
         return reservas.buscar(id).orElseThrow();
@@ -153,9 +146,9 @@ public class ReservaService {
 
     // ---- alteração
 
-    private Registro alterarNaTransacao(UsuarioAutenticado ator, long id, Alteracao alteracao) {
+    private Reserva alterarNaTransacao(UsuarioAutenticado ator, long id, AlteracaoDeReserva alteracao) {
         Instant agora = relogio.instant();
-        Registro atual = reservas.buscarTravando(id)
+        Reserva atual = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         boolean dono = atual.solicitanteId() == ator.id();
         PoliticaDeAlteracao.avaliar(atual.estado(), dono, agora, atual.inicio()).ifPresent(codigo -> {
@@ -173,7 +166,7 @@ public class ReservaService {
         boolean mudouRecursos = !idsNovos.equals(atual.recursoIds());
         boolean exigeAprovacao = atual.exigeAprovacao();
         EstadoReserva estadoNovo = atual.estado();
-        List<Detalhe> alocados = null;
+        List<Recurso> alocados = null;
 
         if (mudouPeriodo || mudouRecursos) {
             if (mudouPeriodo) {
@@ -184,7 +177,7 @@ public class ReservaService {
             reservas.removerOcupacoes(id);
             inserirOcupacoes(id, alocados, periodo, ator.id());
             if (mudouRecursos) {
-                exigeAprovacao = alocados.stream().anyMatch(Detalhe::restrito);   // D12
+                exigeAprovacao = alocados.stream().anyMatch(Recurso::restrito);   // D12
             }
             if (atual.estado() == EstadoReserva.APROVADA && exigeAprovacao) {
                 estadoNovo = EstadoReserva.SOLICITADA;                              // RN-19, D12
@@ -218,12 +211,12 @@ public class ReservaService {
             depois.put("recursoIds", idsNovos);
         }
         boolean mudouEstado = estadoNovo != atual.estado();
-        Evento alterada = Evento.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_ALTERADA",
+        EventoAuditoria alterada = EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_ALTERADA",
                 mudouEstado ? atual.estado().name() : null, mudouEstado ? estadoNovo.name() : null,
                 antes, depois, null);
         auditoria.registrar(alterada);
         if (mudouEstado && estadoNovo == EstadoReserva.APROVADA) {
-            auditoria.registrar(Evento.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
+            auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
                     EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null));
         }
         return reservas.buscar(id).orElseThrow();
@@ -231,9 +224,9 @@ public class ReservaService {
 
     // ---- cancelamento
 
-    private Registro cancelarNaTransacao(UsuarioAutenticado ator, long id, String motivo) {
+    private Reserva cancelarNaTransacao(UsuarioAutenticado ator, long id, String motivo) {
         Instant agora = relogio.instant();
-        Registro atual = reservas.buscarTravando(id)
+        Reserva atual = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
         boolean dono = atual.solicitanteId() == ator.id();
         boolean comMotivo = motivo != null && !motivo.isBlank();
@@ -246,14 +239,14 @@ public class ReservaService {
         reservas.atualizar(id, atual.titulo(), atual.descricao(), atual.periodo(), EstadoReserva.CANCELADA,
                 atual.exigeAprovacao(), motivoGravado, agora);
         reservas.inativarOcupacoes(id);
-        auditoria.registrar(Evento.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_CANCELADA",
+        auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_CANCELADA",
                 atual.estado().name(), EstadoReserva.CANCELADA.name(), null, null, motivoGravado));
         return reservas.buscar(id).orElseThrow();
     }
 
     // ---- apoio
 
-    private List<Detalhe> carregarEValidar(List<Long> ids, Periodo periodo) {
+    private List<Recurso> carregarEValidar(List<Long> ids, Periodo periodo) {
         List<Long> distintos = ordenados(ids);
         if (distintos.isEmpty()) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU, "Informe ao menos um recurso.");
@@ -264,9 +257,9 @@ public class ReservaService {
             throw new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO, "Um dos recursos informados não existe.");
         }
         ZoneId fuso = configuracao.fuso();
-        List<Detalhe> alocados = new ArrayList<>();
+        List<Recurso> alocados = new ArrayList<>();
         for (Long id : distintos) {
-            Detalhe d = recursos.buscarPorId(id).orElseThrow();
+            Recurso d = recursos.buscarPorId(id).orElseThrow();
             if (!d.ativo()) {
                 throw new ErroDeNegocio(CodigoErro.RECURSO_INATIVO);
             }
@@ -281,23 +274,23 @@ public class ReservaService {
     }
 
     /** Verificação prévia, só para devolver uma mensagem clara. A garantia é a constraint do banco. */
-    private void verificarConflitos(List<Detalhe> alocados, Periodo periodo, Long ignorar, long solicitanteId) {
-        for (Detalhe d : alocados) {
+    private void verificarConflitos(List<Recurso> alocados, Periodo periodo, Long ignorar, long solicitanteId) {
+        for (Recurso d : alocados) {
             reservas.buscarConflito(d.id(), periodo, ignorar).ifPresent(c -> {
-                throw new ConflitoDeAlocacao(d.id(), c.manutencao() ? Motivo.MANUTENCAO : Motivo.SOBREPOSICAO,
+                throw new ConflitoDeAlocacao(d.id(), c.manutencao() ? MotivoConflito.MANUTENCAO : MotivoConflito.SOBREPOSICAO,
                         periodo, solicitanteId);
             });
         }
     }
 
     /** Insere as ocupações em ordem de recurso, para que duas transações travem na mesma ordem. */
-    private void inserirOcupacoes(long reservaId, List<Detalhe> alocados, Periodo periodo, long solicitanteId) {
-        for (Detalhe d : alocados) {
+    private void inserirOcupacoes(long reservaId, List<Recurso> alocados, Periodo periodo, long solicitanteId) {
+        for (Recurso d : alocados) {
             try {
                 reservas.inserirOcupacao(reservaId, d.id(), periodo);
             } catch (DataAccessException e) {
                 if (ehConflitoDeConcorrencia(e)) {
-                    throw new ConflitoDeAlocacao(d.id(), Motivo.CONCORRENCIA, periodo, solicitanteId);
+                    throw new ConflitoDeAlocacao(d.id(), MotivoConflito.CONCORRENCIA, periodo, solicitanteId);
                 }
                 throw e;
             }
@@ -322,12 +315,12 @@ public class ReservaService {
     private ErroDeNegocio registrarEConverter(ConflitoDeAlocacao c) {
         // A transação da reserva já foi desfeita. A tentativa é gravada em transação própria (RN-30).
         tentativas.registrar(c.recursoId, c.periodo, c.solicitanteId, c.motivo, relogio.instant());
-        CodigoErro codigo = c.motivo == Motivo.MANUTENCAO
+        CodigoErro codigo = c.motivo == MotivoConflito.MANUTENCAO
                 ? CodigoErro.RECURSO_EM_MANUTENCAO : CodigoErro.CONFLITO_DE_ALOCACAO;
         return new ErroDeNegocio(codigo, codigo.mensagemPadrao(), List.of(String.valueOf(c.recursoId)));
     }
 
-    private void exigirVisibilidade(UsuarioAutenticado ator, Registro reserva) {
+    private void exigirVisibilidade(UsuarioAutenticado ator, Reserva reserva) {
         boolean dono = reserva.solicitanteId() == ator.id();
         if (!dono && ator.perfil() == Perfil.SOLICITANTE) {
             throw new ErroDeNegocio(CodigoErro.ACESSO_NEGADO);
@@ -338,12 +331,12 @@ public class ReservaService {
         return new ArrayList<>(new TreeSet<>(ids));
     }
 
-    private static Map<String, Object> visao(String titulo, Periodo periodo, List<Detalhe> alocados) {
+    private static Map<String, Object> visao(String titulo, Periodo periodo, List<Recurso> alocados) {
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("titulo", titulo);
         m.put("inicio", periodo.inicio().toString());
         m.put("fim", periodo.fim().toString());
-        m.put("recursoIds", alocados.stream().map(Detalhe::id).toList());
+        m.put("recursoIds", alocados.stream().map(Recurso::id).toList());
         return m;
     }
 }

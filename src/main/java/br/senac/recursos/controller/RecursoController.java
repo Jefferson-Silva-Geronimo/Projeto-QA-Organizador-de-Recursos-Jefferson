@@ -1,24 +1,20 @@
 package br.senac.recursos.controller;
 
-import br.senac.recursos.service.RecursoService;
-import br.senac.recursos.repository.RecursoRepository.Detalhe;
-import br.senac.recursos.repository.RecursoRepository.Filtro;
-import br.senac.recursos.repository.RecursoRepository.Intervalo;
-import br.senac.recursos.repository.RecursoRepository.NovaSala;
-import br.senac.recursos.repository.RecursoRepository.NovoMaterial;
-import br.senac.recursos.repository.RecursoRepository.NovoProfessor;
+import br.senac.recursos.dto.IntervaloResposta;
+import br.senac.recursos.dto.NovaSalaRequisicao;
+import br.senac.recursos.dto.NovoMaterialRequisicao;
+import br.senac.recursos.dto.NovoProfessorRequisicao;
+import br.senac.recursos.dto.RecursoResposta;
+import br.senac.recursos.dto.RestritoRequisicao;
+import br.senac.recursos.model.FiltroDeRecursos;
+import br.senac.recursos.model.NovaSala;
+import br.senac.recursos.model.NovoMaterial;
+import br.senac.recursos.model.NovoProfessor;
 import br.senac.recursos.model.TipoRecurso;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.service.RecursoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import java.time.Instant;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,52 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 class RecursoController {
-
-    private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
-
-    record NovaSalaRequisicao(@NotBlank @Size(max = 200) String nome,
-                              @NotNull @Min(1) Integer capacidade,
-                              @NotBlank @Size(max = 200) String localizacao,
-                              @Size(max = 100) String tipoSala,
-                              @NotNull LocalTime horaAbertura,
-                              @NotNull LocalTime horaFechamento,
-                              @NotEmpty List<@NotNull @Min(1) @Max(7) Integer> diasFuncionamento,
-                              boolean restrito) {
-    }
-
-    record NovoProfessorRequisicao(@NotBlank @Size(max = 200) String nome,
-                                   Long usuarioId,
-                                   List<@NotBlank @Size(max = 100) String> competencias,
-                                   boolean restrito) {
-    }
-
-    record NovoMaterialRequisicao(@NotBlank @Size(max = 200) String nome,
-                                  @NotBlank @Size(max = 100) String codigoPatrimonio,
-                                  @Size(max = 500) String descricao,
-                                  boolean restrito) {
-    }
-
-    record RestritoRequisicao(boolean restrito) {
-    }
-
-    record RecursoResposta(long id, TipoRecurso tipo, String nome, boolean restrito, boolean ativo,
-                           Integer capacidade, String localizacao, String tipoSala,
-                           String horaAbertura, String horaFechamento, List<Integer> diasFuncionamento,
-                           String codigoPatrimonio, String descricao, Long usuarioId, List<String> competencias) {
-        static RecursoResposta de(Detalhe d) {
-            return new RecursoResposta(d.id(), d.tipo(), d.nome(), d.restrito(), d.ativo(), d.capacidade(),
-                    d.localizacao(), d.tipoSala(),
-                    d.horaAbertura() == null ? null : d.horaAbertura().format(HORA),
-                    d.horaFechamento() == null ? null : d.horaFechamento().format(HORA),
-                    d.diasFuncionamento(), d.codigoPatrimonio(), d.descricao(), d.usuarioId(), d.competencias());
-        }
-    }
-
-    record IntervaloResposta(Instant inicio, Instant fim) {
-        static IntervaloResposta de(Intervalo i) {
-            return new IntervaloResposta(i.inicio(), i.fim());
-        }
-    }
 
     private final RecursoService recursos;
 
@@ -144,7 +94,7 @@ class RecursoController {
                                     @RequestParam(required = false) String competencia,
                                     @RequestParam(required = false) Instant inicio,
                                     @RequestParam(required = false) Instant fim) {
-        Filtro filtro = new Filtro(tipo, capacidadeMinima, vazioParaNulo(localizacao), vazioParaNulo(competencia),
+        FiltroDeRecursos filtro = new FiltroDeRecursos(tipo, capacidadeMinima, vazioParaNulo(localizacao), vazioParaNulo(competencia),
                 inicio, fim);
         return recursos.pesquisar(filtro).stream().map(RecursoResposta::de).toList();
     }

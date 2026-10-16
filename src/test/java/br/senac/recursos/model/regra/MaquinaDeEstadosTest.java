@@ -1,8 +1,5 @@
 package br.senac.recursos.model.regra;
 
-import br.senac.recursos.exception.CodigoErro;
-import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.EstadoReserva;
 import static br.senac.recursos.model.EstadoReserva.APROVADA;
 import static br.senac.recursos.model.EstadoReserva.CANCELADA;
 import static br.senac.recursos.model.EstadoReserva.CONCLUIDA;
@@ -14,6 +11,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.EstadoReserva;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;

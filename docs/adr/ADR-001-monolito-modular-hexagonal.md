@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Aceito em 15/10/2026 (aprovação do usuário) |
+| Status | Aceito em 15/10/2026 (aprovação do usuário). A **estrutura de pacotes** foi substituída pelo [ADR-014](ADR-014-estrutura-mvc.md); o restante segue valendo |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 10 da equipe, revisada em [arquitetura.md](../arquitetura.md), seções 10 e 12 |
 | Decisores | Equipe, com aprovação do usuário. Nomes: TODO |

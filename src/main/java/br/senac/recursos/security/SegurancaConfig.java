@@ -1,10 +1,8 @@
 package br.senac.recursos.security;
 
 import br.senac.recursos.config.SessaoProperties;
-import br.senac.recursos.repository.SessaoRepository;
-import br.senac.recursos.repository.UsuarioRepository;
-import br.senac.recursos.service.AutenticacaoService;
 import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.service.AutenticacaoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Clock;

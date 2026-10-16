@@ -1,12 +1,11 @@
 package br.senac.recursos.controller;
 
-import br.senac.recursos.service.AutenticacaoService;
-import br.senac.recursos.model.Perfil;
+import br.senac.recursos.dto.LoginRequisicao;
+import br.senac.recursos.dto.LoginResposta;
+import br.senac.recursos.dto.UsuarioAtualResposta;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.service.AutenticacaoService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,16 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 class AutenticacaoController {
-
-    record LoginRequisicao(@NotBlank @Size(max = 254) String email,
-                           @NotBlank @Size(max = 72) String senha) {
-    }
-
-    record LoginResposta(String token, Perfil perfil, Instant expiraEm) {
-    }
-
-    record QuemSou(long id, String email, Perfil perfil) {
-    }
 
     private final AutenticacaoService autenticacao;
 
@@ -52,7 +41,7 @@ class AutenticacaoController {
     }
 
     @GetMapping("/eu")
-    QuemSou eu(@AuthenticationPrincipal UsuarioAutenticado usuario) {
-        return new QuemSou(usuario.id(), usuario.email(), usuario.perfil());
+    UsuarioAtualResposta eu(@AuthenticationPrincipal UsuarioAutenticado usuario) {
+        return new UsuarioAtualResposta(usuario.id(), usuario.email(), usuario.perfil());
     }
 }

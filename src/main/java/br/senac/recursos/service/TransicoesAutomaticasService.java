@@ -1,9 +1,9 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.ReservaRepository;
 import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.ReservaRepository;
 import java.time.Clock;
 import java.time.Instant;
 import org.springframework.stereotype.Service;
@@ -46,7 +46,7 @@ public class TransicoesAutomaticasService {
             for (Long id : reservas.idsSemDecisao(agora)) {
                 if (reservas.cancelarPeloSistema(id, EstadoReserva.SOLICITADA, "SEM_DECISAO", agora)) {
                     reservas.inativarOcupacoes(id);
-                    auditoria.registrar(Evento.transicaoDoSistema(agora, id, "RESERVA_CANCELADA",
+                    auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_CANCELADA",
                             EstadoReserva.SOLICITADA.name(), EstadoReserva.CANCELADA.name(), "SEM_DECISAO"));
                     total++;
                 }

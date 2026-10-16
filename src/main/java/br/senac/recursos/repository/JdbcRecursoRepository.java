@@ -1,7 +1,13 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.repository.RecursoRepository;
+import br.senac.recursos.model.FiltroDeRecursos;
+import br.senac.recursos.model.IntervaloOcupado;
+import br.senac.recursos.model.NovaSala;
+import br.senac.recursos.model.NovoMaterial;
+import br.senac.recursos.model.NovoProfessor;
+import br.senac.recursos.model.Recurso;
 import br.senac.recursos.model.TipoRecurso;
+import br.senac.recursos.repository.RecursoRepository;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -15,7 +21,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 class JdbcRecursoRepository implements RecursoRepository {
 
-    /** Detalhe de um recurso com os atributos de todos os tipos. Dias e competências vêm em arrays. */
+    /** Recurso de um recurso com os atributos de todos os tipos. Dias e competências vêm em arrays. */
     private static final String SELECT_DETALHE = """
             select r.id, r.tipo::text as tipo, r.nome, r.restrito, r.ativo,
                    s.capacidade, s.localizacao, s.tipo_sala, s.hora_abertura, s.hora_fechamento,
@@ -32,7 +38,7 @@ class JdbcRecursoRepository implements RecursoRepository {
               left join professores p on p.recurso_id = r.id
             """;
 
-    private static final RowMapper<Detalhe> MAPEADOR = (rs, n) -> {
+    private static final RowMapper<Recurso> MAPEADOR = (rs, n) -> {
         TipoRecurso tipo = TipoRecurso.valueOf(rs.getString("tipo"));
         int capacidade = rs.getInt("capacidade");
         Integer capacidadeNula = rs.wasNull() ? null : capacidade;
@@ -40,7 +46,7 @@ class JdbcRecursoRepository implements RecursoRepository {
         Long usuarioNulo = rs.wasNull() ? null : usuario;
         java.sql.Time abertura = rs.getTime("hora_abertura");
         java.sql.Time fechamento = rs.getTime("hora_fechamento");
-        return new Detalhe(
+        return new Recurso(
                 rs.getLong("id"), tipo, rs.getString("nome"), rs.getBoolean("restrito"), rs.getBoolean("ativo"),
                 capacidadeNula, rs.getString("localizacao"), rs.getString("tipo_sala"),
                 abertura == null ? null : abertura.toLocalTime(),
@@ -109,12 +115,12 @@ class JdbcRecursoRepository implements RecursoRepository {
     }
 
     @Override
-    public Optional<Detalhe> buscarPorId(long id) {
+    public Optional<Recurso> buscarPorId(long id) {
         return jdbc.sql(SELECT_DETALHE + " where r.id = :id").param("id", id).query(MAPEADOR).optional();
     }
 
     @Override
-    public List<Detalhe> pesquisar(Filtro f) {
+    public List<Recurso> pesquisar(FiltroDeRecursos f) {
         return jdbc.sql(SELECT_DETALHE + """
                          where r.ativo
                            and (cast(:tipo as text) is null or r.tipo::text = :tipo)
@@ -142,7 +148,7 @@ class JdbcRecursoRepository implements RecursoRepository {
     }
 
     @Override
-    public List<Intervalo> ocupacoes(long recursoId, Instant inicio, Instant fim) {
+    public List<IntervaloOcupado> ocupacoes(long recursoId, Instant inicio, Instant fim) {
         return jdbc.sql("""
                         select lower(periodo) as inicio, upper(periodo) as fim
                           from ocupacoes
@@ -153,7 +159,7 @@ class JdbcRecursoRepository implements RecursoRepository {
                 .param("recurso", recursoId)
                 .param("inicio", JdbcSessaoRepository.utc(inicio))
                 .param("fim", JdbcSessaoRepository.utc(fim))
-                .query((rs, n) -> new Intervalo(
+                .query((rs, n) -> new IntervaloOcupado(
                         rs.getObject("inicio", java.time.OffsetDateTime.class).toInstant(),
                         rs.getObject("fim", java.time.OffsetDateTime.class).toInstant()))
                 .list();

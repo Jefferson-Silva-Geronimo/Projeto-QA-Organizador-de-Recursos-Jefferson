@@ -1,7 +1,8 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.repository.UsuarioRepository;
 import br.senac.recursos.model.Perfil;
+import br.senac.recursos.model.Usuario;
+import br.senac.recursos.repository.UsuarioRepository;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 class JdbcUsuarioRepository implements UsuarioRepository {
 
-    private static final RowMapper<Registro> MAPEADOR = (rs, n) -> new Registro(
+    private static final RowMapper<Usuario> MAPEADOR = (rs, n) -> new Usuario(
             rs.getLong("id"),
             rs.getString("nome"),
             rs.getString("email"),
@@ -29,19 +30,19 @@ class JdbcUsuarioRepository implements UsuarioRepository {
     }
 
     @Override
-    public Optional<Registro> buscarPorEmail(String email) {
+    public Optional<Usuario> buscarPorEmail(String email) {
         return jdbc.sql("select " + COLUNAS + " from usuarios where email = :email")
                 .param("email", email).query(MAPEADOR).optional();
     }
 
     @Override
-    public Optional<Registro> buscarPorId(long id) {
+    public Optional<Usuario> buscarPorId(long id) {
         return jdbc.sql("select " + COLUNAS + " from usuarios where id = :id")
                 .param("id", id).query(MAPEADOR).optional();
     }
 
     @Override
-    public List<Registro> listar() {
+    public List<Usuario> listar() {
         return jdbc.sql("select " + COLUNAS + " from usuarios order by id").query(MAPEADOR).list();
     }
 

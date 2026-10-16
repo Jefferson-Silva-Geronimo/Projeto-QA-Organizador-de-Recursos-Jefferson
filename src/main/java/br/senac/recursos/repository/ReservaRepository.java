@@ -1,26 +1,15 @@
 package br.senac.recursos.repository;
 
 import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.model.OcupacaoConflitante;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.model.Reserva;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 /** Porta de persistência de reservas e ocupações (ADR-002, ADR-003). Nenhuma reserva é apagada (RN-27). */
 public interface ReservaRepository {
-
-    /** Reserva como gravada, com os recursos que ela ocupa. */
-    record Registro(long id, long solicitanteId, String titulo, String descricao, Instant inicio, Instant fim,
-                    EstadoReserva estado, boolean exigeAprovacao, String motivo, List<Long> recursoIds) {
-
-        public Periodo periodo() {
-            return new Periodo(inicio, fim);
-        }
-    }
-
-    /** Ocupação ativa que impede a alocação. {@code manutencao} é verdadeiro se vem de um bloqueio. */
-    record Conflito(boolean manutencao) {
-    }
 
     long inserir(long solicitanteId, String titulo, String descricao, Periodo periodo, EstadoReserva estado,
                  boolean exigeAprovacao, Instant agora);
@@ -31,20 +20,20 @@ public interface ReservaRepository {
      */
     void inserirOcupacao(long reservaId, long recursoId, Periodo periodo);
 
-    Optional<Registro> buscar(long id);
+    Optional<Reserva> buscar(long id);
 
     /** Mesma busca, travando a linha da reserva até o fim da transação. */
-    Optional<Registro> buscarTravando(long id);
+    Optional<Reserva> buscarTravando(long id);
 
-    List<Registro> listar(Long solicitanteId);
+    List<Reserva> listar(Long solicitanteId);
 
-    Optional<Conflito> buscarConflito(long recursoId, Periodo periodo, Long ignorarReservaId);
+    Optional<OcupacaoConflitante> buscarConflito(long recursoId, Periodo periodo, Long ignorarReservaId);
 
     void atualizar(long id, String titulo, String descricao, Periodo periodo, EstadoReserva estado,
                    boolean exigeAprovacao, String motivo, Instant agora);
 
     /** Fila de aprovações: reservas SOLICITADA que exigem aprovação (RF-07). */
-    List<Registro> listarFila();
+    List<Reserva> listarFila();
 
     /** Registra a decisão humana de aprovar ou rejeitar (tabela aprovacoes). */
     void registrarDecisao(long reservaId, long responsavelId, boolean aprovada, String motivo, Instant agora);
@@ -53,7 +42,7 @@ public interface ReservaRepository {
      * Reservas SOLICITADA, APROVADA ou EM_USO com ocupação ativa do recurso que toca o período,
      * travadas até o fim da transação e ordenadas por identificador.
      */
-    List<Registro> reservasAtivasQueTocam(long recursoId, Periodo periodo);
+    List<Reserva> reservasAtivasQueTocam(long recursoId, Periodo periodo);
 
     /** Cancela pelo SISTEMA com motivo MANUTENCAO ou SEM_DECISAO, só se ainda estiver no estado esperado. */
     boolean cancelarPeloSistema(long id, EstadoReserva esperado, String motivoSistema, Instant agora);

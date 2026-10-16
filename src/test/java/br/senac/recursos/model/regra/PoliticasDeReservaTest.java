@@ -1,10 +1,5 @@
 package br.senac.recursos.model.regra;
 
-import br.senac.recursos.exception.CodigoErro;
-import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.EstadoReserva;
-import br.senac.recursos.model.Perfil;
-import br.senac.recursos.model.Periodo;
 import static br.senac.recursos.exception.CodigoErro.ACESSO_NEGADO;
 import static br.senac.recursos.exception.CodigoErro.MOTIVO_OBRIGATORIO;
 import static br.senac.recursos.exception.CodigoErro.RESERVA_JA_INICIADA;
@@ -23,6 +18,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.model.Perfil;
+import br.senac.recursos.model.Periodo;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;

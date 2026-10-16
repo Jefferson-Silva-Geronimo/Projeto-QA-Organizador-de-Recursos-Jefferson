@@ -1,19 +1,17 @@
 package br.senac.recursos.controller;
 
-import br.senac.recursos.service.AprovacaoService;
-import br.senac.recursos.service.ReservaService;
-import br.senac.recursos.service.ReservaService.Alteracao;
-import br.senac.recursos.service.ReservaService.NovaReserva;
-import br.senac.recursos.repository.ReservaRepository.Registro;
-import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.dto.AlteracaoReservaRequisicao;
+import br.senac.recursos.dto.CancelamentoRequisicao;
+import br.senac.recursos.dto.DecisaoRequisicao;
+import br.senac.recursos.dto.NovaReservaRequisicao;
+import br.senac.recursos.dto.ReservaResposta;
+import br.senac.recursos.model.AlteracaoDeReserva;
+import br.senac.recursos.model.NovaReserva;
 import br.senac.recursos.model.Periodo;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.service.AprovacaoService;
+import br.senac.recursos.service.ReservaService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import java.time.Instant;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,35 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/reservas")
 class ReservaController {
-
-    record NovaReservaRequisicao(@NotBlank @Size(max = 200) String titulo,
-                                 @Size(max = 2000) String descricao,
-                                 @NotNull Instant inicio,
-                                 @NotNull Instant fim,
-                                 @NotEmpty List<@NotNull Long> recursoIds) {
-    }
-
-    record AlteracaoRequisicao(@Size(min = 1, max = 200) String titulo,
-                               @Size(max = 2000) String descricao,
-                               Instant inicio,
-                               Instant fim,
-                               List<@NotNull Long> recursoIds) {
-    }
-
-    record CancelamentoRequisicao(@Size(max = 1000) String motivo) {
-    }
-
-    record ReservaResposta(long id, long solicitanteId, String titulo, String descricao, Instant inicio,
-                           Instant fim, EstadoReserva estado, boolean exigeAprovacao, String motivo,
-                           List<Long> recursoIds) {
-        static ReservaResposta de(Registro r) {
-            return new ReservaResposta(r.id(), r.solicitanteId(), r.titulo(), r.descricao(), r.inicio(), r.fim(),
-                    r.estado(), r.exigeAprovacao(), r.motivo(), r.recursoIds());
-        }
-    }
-
-    record DecisaoRequisicao(@Size(max = 1000) String motivo) {
-    }
 
     private final ReservaService reservas;
     private final AprovacaoService aprovacoes;
@@ -105,9 +74,9 @@ class ReservaController {
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('SOLICITANTE', 'RESPONSAVEL')")
     ReservaResposta alterar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
-                            @Valid @RequestBody AlteracaoRequisicao c) {
+                            @Valid @RequestBody AlteracaoReservaRequisicao c) {
         return ReservaResposta.de(reservas.alterar(ator, id,
-                new Alteracao(c.titulo() == null ? null : c.titulo().trim(), c.descricao(), c.inicio(), c.fim(),
+                new AlteracaoDeReserva(c.titulo() == null ? null : c.titulo().trim(), c.descricao(), c.inicio(), c.fim(),
                         c.recursoIds())));
     }
 

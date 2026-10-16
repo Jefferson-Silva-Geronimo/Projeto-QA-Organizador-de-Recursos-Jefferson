@@ -1,8 +1,5 @@
 package br.senac.recursos.model.regra;
 
-import br.senac.recursos.exception.CodigoErro;
-import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.EstadoReserva;
 import static br.senac.recursos.model.EstadoReserva.APROVADA;
 import static br.senac.recursos.model.EstadoReserva.CANCELADA;
 import static br.senac.recursos.model.EstadoReserva.CONCLUIDA;
@@ -11,6 +8,9 @@ import static br.senac.recursos.model.EstadoReserva.NAO_COMPARECEU;
 import static br.senac.recursos.model.EstadoReserva.REJEITADA;
 import static br.senac.recursos.model.EstadoReserva.SOLICITADA;
 
+import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.EstadoReserva;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;

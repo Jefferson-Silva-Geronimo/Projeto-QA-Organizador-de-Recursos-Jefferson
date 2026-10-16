@@ -1,7 +1,8 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.repository.BloqueioRepository;
+import br.senac.recursos.model.Bloqueio;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.repository.BloqueioRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -44,13 +45,13 @@ class JdbcBloqueioRepository implements BloqueioRepository {
     }
 
     @Override
-    public Optional<Registro> buscarTravando(long id) {
+    public Optional<Bloqueio> buscarTravando(long id) {
         return jdbc.sql("""
                         select id, recurso_id, inicio, fim, motivo, ativo
                           from bloqueios_manutencao where id = :id for update
                         """)
                 .param("id", id)
-                .query((rs, n) -> new Registro(rs.getLong("id"), rs.getLong("recurso_id"),
+                .query((rs, n) -> new Bloqueio(rs.getLong("id"), rs.getLong("recurso_id"),
                         rs.getObject("inicio", OffsetDateTime.class).toInstant(),
                         rs.getObject("fim", OffsetDateTime.class).toInstant(),
                         rs.getString("motivo"), rs.getBoolean("ativo")))

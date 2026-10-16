@@ -334,6 +334,21 @@ flowchart TB
 
 O **Agendador de transições automáticas** está desenhado porque o reenvio de notificações (C6) já exige um executor periódico. Ele executa o cancelamento por SEM_DECISAO (D2); a marcação de não compareceu segue manual. Detalhe na seção 13.7.
 
+### 10.4 Estrutura MVC (ADR-014)
+
+Por determinação do usuário na Fase 4, o código segue o padrão MVC. Os diagramas desta seção usam os nomes
+de componente da arquitetura original; a tabela mostra onde cada um está no código.
+
+| Componente do diagrama | Camada MVC | Pacote |
+| --- | --- | --- |
+| Controladores REST, tradutor de erros | Controller | `controller` |
+| Objetos de requisição e resposta | DTO | `dto` |
+| Casos de uso, despachante e agendador | Service | `service`, `config` (agendador) |
+| Repositórios PostgreSQL, auditoria somente inserção | Repository | `repository` |
+| Regras de período, janela e conflito, máquina de estados, política de autorização | Model | `model`, `model.regra` |
+| Autenticação e autorização por perfil | Controller e Security | `controller`, `security` |
+| Front end (React + Vite) | View | `frontend/` |
+
 ## 11. Sequências críticas
 
 ### 11.1 Duas solicitações simultâneas para o mesmo recurso e horário

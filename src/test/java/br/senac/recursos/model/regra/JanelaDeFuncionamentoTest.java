@@ -1,12 +1,12 @@
 package br.senac.recursos.model.regra;
 
-import br.senac.recursos.exception.CodigoErro;
-import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.Periodo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import br.senac.recursos.exception.CodigoErro;
+import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.Periodo;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.time.LocalTime;

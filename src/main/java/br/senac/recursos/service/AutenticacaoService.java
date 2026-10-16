@@ -1,11 +1,12 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.SessaoRepository;
-import br.senac.recursos.repository.UsuarioRepository;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.Perfil;
+import br.senac.recursos.model.SessaoAberta;
+import br.senac.recursos.model.Usuario;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.repository.SessaoRepository;
+import br.senac.recursos.repository.UsuarioRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -23,10 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * O tempo vem sempre do relógio injetado (ADR-005).
  */
 public class AutenticacaoService {
-
-    /** Sessão recém-aberta. {@code token} só existe em memória e na resposta ao cliente. */
-    public record SessaoAberta(String token, Perfil perfil, Instant expiraEm) {
-    }
 
     private static final SecureRandom ALEATORIO = new SecureRandom();
 
@@ -49,13 +46,13 @@ public class AutenticacaoService {
     }
 
     public SessaoAberta entrar(String email, String senha) {
-        Optional<UsuarioRepository.Registro> encontrado = usuarios.buscarPorEmail(normalizar(email));
-        String hash = encontrado.map(UsuarioRepository.Registro::senhaHash).orElse(hashParaTempoConstante);
+        Optional<Usuario> encontrado = usuarios.buscarPorEmail(normalizar(email));
+        String hash = encontrado.map(Usuario::senhaHash).orElse(hashParaTempoConstante);
         boolean confere = codificador.matches(senha, hash);
         if (encontrado.isEmpty() || !confere || !encontrado.get().ativo()) {
             throw new ErroDeNegocio(CodigoErro.CREDENCIAIS_INVALIDAS);
         }
-        UsuarioRepository.Registro usuario = encontrado.get();
+        Usuario usuario = encontrado.get();
         String token = novoToken();
         Instant agora = relogio.instant();
         Instant expiraEm = agora.plus(duracaoDaSessao);

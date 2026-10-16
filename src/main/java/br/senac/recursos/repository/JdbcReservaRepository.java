@@ -1,8 +1,10 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.repository.ReservaRepository;
 import br.senac.recursos.model.EstadoReserva;
+import br.senac.recursos.model.OcupacaoConflitante;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.model.Reserva;
+import br.senac.recursos.repository.ReservaRepository;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -25,7 +27,7 @@ class JdbcReservaRepository implements ReservaRepository {
               from reservas r
             """;
 
-    private static final RowMapper<Registro> MAPEADOR = (rs, n) -> new Registro(
+    private static final RowMapper<Reserva> MAPEADOR = (rs, n) -> new Reserva(
             rs.getLong("id"), rs.getLong("solicitante_id"), rs.getString("titulo"), rs.getString("descricao"),
             rs.getObject("inicio", OffsetDateTime.class).toInstant(),
             rs.getObject("fim", OffsetDateTime.class).toInstant(),
@@ -73,18 +75,18 @@ class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
-    public Optional<Registro> buscar(long id) {
+    public Optional<Reserva> buscar(long id) {
         return jdbc.sql(SELECT + " where r.id = :id").param("id", id).query(MAPEADOR).optional();
     }
 
     @Override
-    public Optional<Registro> buscarTravando(long id) {
+    public Optional<Reserva> buscarTravando(long id) {
         // Trava só a linha da reserva. O "for update of r" evita travar linhas de outras tabelas.
         return jdbc.sql(SELECT + " where r.id = :id for update of r").param("id", id).query(MAPEADOR).optional();
     }
 
     @Override
-    public List<Registro> listar(Long solicitanteId) {
+    public List<Reserva> listar(Long solicitanteId) {
         return jdbc.sql(SELECT + " where (cast(:solicitante as bigint) is null or r.solicitante_id = :solicitante) "
                         + "order by r.inicio, r.id")
                 .param("solicitante", solicitanteId)
@@ -92,7 +94,7 @@ class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
-    public Optional<Conflito> buscarConflito(long recursoId, Periodo periodo, Long ignorarReservaId) {
+    public Optional<OcupacaoConflitante> buscarConflito(long recursoId, Periodo periodo, Long ignorarReservaId) {
         return jdbc.sql("""
                         select (o.bloqueio_id is not null) as manutencao
                           from ocupacoes o
@@ -106,7 +108,7 @@ class JdbcReservaRepository implements ReservaRepository {
                 .param("inicio", JdbcSessaoRepository.utc(periodo.inicio()))
                 .param("fim", JdbcSessaoRepository.utc(periodo.fim()))
                 .param("ignorar", ignorarReservaId)
-                .query((rs, n) -> new Conflito(rs.getBoolean("manutencao")))
+                .query((rs, n) -> new OcupacaoConflitante(rs.getBoolean("manutencao")))
                 .optional();
     }
 
@@ -133,7 +135,7 @@ class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
-    public List<Registro> listarFila() {
+    public List<Reserva> listarFila() {
         return jdbc.sql(SELECT + " where r.estado = 'SOLICITADA' and r.exige_aprovacao order by r.inicio, r.id")
                 .query(MAPEADOR).list();
     }
@@ -153,7 +155,7 @@ class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
-    public List<Registro> reservasAtivasQueTocam(long recursoId, Periodo periodo) {
+    public List<Reserva> reservasAtivasQueTocam(long recursoId, Periodo periodo) {
         List<Long> ids = jdbc.sql("""
                         select distinct r.id
                           from reservas r
@@ -166,7 +168,7 @@ class JdbcReservaRepository implements ReservaRepository {
                 .param("inicio", JdbcSessaoRepository.utc(periodo.inicio()))
                 .param("fim", JdbcSessaoRepository.utc(periodo.fim()))
                 .query(Long.class).list();
-        List<Registro> travadas = new ArrayList<>();
+        List<Reserva> travadas = new ArrayList<>();
         for (Long id : ids) {
             buscarTravando(id).ifPresent(travadas::add);
         }

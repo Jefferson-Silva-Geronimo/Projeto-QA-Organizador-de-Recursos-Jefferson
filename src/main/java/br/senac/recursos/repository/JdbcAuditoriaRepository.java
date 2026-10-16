@@ -1,5 +1,6 @@
 package br.senac.recursos.repository;
 
+import br.senac.recursos.model.EventoAuditoria;
 import br.senac.recursos.repository.AuditoriaRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +20,7 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
     }
 
     @Override
-    public void registrar(Evento e) {
+    public void registrar(EventoAuditoria e) {
         jdbc.sql("""
                         insert into auditoria_eventos
                                (ocorrido_em, ator_tipo, ator_id, entidade, entidade_id, acao,

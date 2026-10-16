@@ -45,7 +45,7 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 
 | Teste | O que prova |
 | --- | --- |
-| `ArquiteturaTest` | O domínio não depende de Spring, JPA nem das outras camadas (ADR-001) |
+| `ArquiteturaTest` | Seis regras de camada MVC: o model não depende de Spring, persistência nem das outras camadas, o controller não acessa repository, o service não depende de controller nem de DTO (ADR-014) |
 | `ContextoIT` | A aplicação sobe com PostgreSQL real, o Flyway aplica a baseline e o relógio é UTC (ADR-005, ADR-009) |
 
 A suíte cresce a partir da Fase 4. O gate de cobertura (80% de linhas e 70% de branches) liga na primeira fatia de domínio (ADR-011).
@@ -112,7 +112,7 @@ perf/                  testes de carga com JMeter (vazio)
 frontend/              React + Vite (vazio)
 pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrapper
 compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
-src/main/java/br/senac/recursos/   dominio, aplicacao, api e infra (ADR-001)
+src/main/java/br/senac/recursos/   MVC (ADR-014): controller, dto, service, repository, model, exception, config, security
 src/main/resources/    application.yml (só variáveis de ambiente) e db/migration (Flyway)
 src/test/java/         ArquiteturaTest e ContextoIT
 .github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md e workflows/ci.yml (Fase 3)

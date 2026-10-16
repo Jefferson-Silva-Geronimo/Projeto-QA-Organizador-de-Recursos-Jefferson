@@ -1,6 +1,7 @@
 package br.senac.recursos.repository;
 
 import br.senac.recursos.model.Perfil;
+import br.senac.recursos.model.Usuario;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -8,15 +9,11 @@ import java.util.Optional;
 /** Porta de persistência de usuários (ADR-001). */
 public interface UsuarioRepository {
 
-    /** Usuário como gravado. A senha é sempre o hash. */
-    record Registro(long id, String nome, String email, String senhaHash, Perfil perfil, boolean ativo) {
-    }
+    Optional<Usuario> buscarPorEmail(String email);
 
-    Optional<Registro> buscarPorEmail(String email);
+    Optional<Usuario> buscarPorId(long id);
 
-    Optional<Registro> buscarPorId(long id);
-
-    List<Registro> listar();
+    List<Usuario> listar();
 
     long contar();
 

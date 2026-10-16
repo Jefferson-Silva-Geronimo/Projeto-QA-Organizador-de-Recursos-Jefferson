@@ -1,22 +1,22 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Entidade;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.ConfiguracaoRepository;
-import br.senac.recursos.repository.RecursoRepository;
-import br.senac.recursos.repository.RecursoRepository.Detalhe;
-import br.senac.recursos.repository.RecursoRepository.Filtro;
-import br.senac.recursos.repository.RecursoRepository.Intervalo;
-import br.senac.recursos.repository.RecursoRepository.NovaSala;
-import br.senac.recursos.repository.RecursoRepository.NovoMaterial;
-import br.senac.recursos.repository.RecursoRepository.NovoProfessor;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
-import br.senac.recursos.model.regra.JanelaDeFuncionamento;
+import br.senac.recursos.model.EntidadeAuditada;
+import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.FiltroDeRecursos;
+import br.senac.recursos.model.IntervaloOcupado;
+import br.senac.recursos.model.NovaSala;
+import br.senac.recursos.model.NovoMaterial;
+import br.senac.recursos.model.NovoProfessor;
 import br.senac.recursos.model.Periodo;
+import br.senac.recursos.model.Recurso;
 import br.senac.recursos.model.TipoRecurso;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.model.regra.JanelaDeFuncionamento;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.ConfiguracaoRepository;
+import br.senac.recursos.repository.RecursoRepository;
 import java.time.Clock;
 import java.time.DayOfWeek;
 import java.time.Instant;
@@ -50,7 +50,7 @@ public class RecursoService {
     }
 
     @Transactional
-    public Detalhe criarSala(UsuarioAutenticado ator, NovaSala sala) {
+    public Recurso criarSala(UsuarioAutenticado ator, NovaSala sala) {
         if (!sala.horaFechamento().isAfter(sala.horaAbertura())) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU,
                     "A hora de fechamento deve ser posterior à de abertura. A reserva não cruza a meia-noite.");
@@ -61,7 +61,7 @@ public class RecursoService {
     }
 
     @Transactional
-    public Detalhe criarProfessor(UsuarioAutenticado ator, NovoProfessor professor) {
+    public Recurso criarProfessor(UsuarioAutenticado ator, NovoProfessor professor) {
         Instant agora = relogio.instant();
         long id;
         try {
@@ -75,7 +75,7 @@ public class RecursoService {
     }
 
     @Transactional
-    public Detalhe criarMaterial(UsuarioAutenticado ator, NovoMaterial material) {
+    public Recurso criarMaterial(UsuarioAutenticado ator, NovoMaterial material) {
         Instant agora = relogio.instant();
         long id;
         try {
@@ -87,23 +87,23 @@ public class RecursoService {
     }
 
     @Transactional
-    public Detalhe alterarRestrito(UsuarioAutenticado ator, long id, boolean restrito) {
+    public Recurso alterarRestrito(UsuarioAutenticado ator, long id, boolean restrito) {
         recursos.travar(id);
-        Detalhe antes = obter(id);
+        Recurso antes = obter(id);
         if (antes.restrito() == restrito) {
             return antes;
         }
         recursos.alterarRestrito(id, restrito);
-        auditoria.registrar(Evento.deUsuario(relogio.instant(), ator.id(), Entidade.RECURSO, id,
+        auditoria.registrar(EventoAuditoria.deUsuario(relogio.instant(), ator.id(), EntidadeAuditada.RECURSO, id,
                 "RECURSO_RESTRICAO_ALTERADA",
                 Map.of("restrito", antes.restrito()), Map.of("restrito", restrito)));
         return obter(id);
     }
 
     @Transactional
-    public Detalhe desativar(UsuarioAutenticado ator, long id) {
+    public Recurso desativar(UsuarioAutenticado ator, long id) {
         recursos.travar(id);
-        Detalhe antes = obter(id);
+        Recurso antes = obter(id);
         if (!antes.ativo()) {
             return antes;
         }
@@ -115,25 +115,25 @@ public class RecursoService {
                     futuras.stream().map(String::valueOf).toList());
         }
         recursos.desativar(id);
-        auditoria.registrar(Evento.deUsuario(agora, ator.id(), Entidade.RECURSO, id, "RECURSO_DESATIVADO",
+        auditoria.registrar(EventoAuditoria.deUsuario(agora, ator.id(), EntidadeAuditada.RECURSO, id, "RECURSO_DESATIVADO",
                 Map.of("ativo", true), Map.of("ativo", false)));
         return obter(id);
     }
 
     @Transactional(readOnly = true)
-    public Detalhe obter(long id) {
+    public Recurso obter(long id) {
         return recursos.buscarPorId(id).orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
     }
 
     @Transactional(readOnly = true)
-    public List<Detalhe> pesquisar(Filtro filtro) {
+    public List<Recurso> pesquisar(FiltroDeRecursos filtro) {
         if ((filtro.inicio() == null) != (filtro.fim() == null)) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU, "Informe início e fim juntos.");
         }
         if (filtro.inicio() != null && !filtro.fim().isAfter(filtro.inicio())) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU, "O fim deve ser posterior ao início.");
         }
-        List<Detalhe> encontrados = recursos.pesquisar(filtro);
+        List<Recurso> encontrados = recursos.pesquisar(filtro);
         if (filtro.inicio() == null) {
             return encontrados;
         }
@@ -144,7 +144,7 @@ public class RecursoService {
                 .toList();
     }
 
-    private static boolean cabeNaJanela(Detalhe sala, Periodo periodo, ZoneId fuso) {
+    private static boolean cabeNaJanela(Recurso sala, Periodo periodo, ZoneId fuso) {
         JanelaDeFuncionamento janela = new JanelaDeFuncionamento(sala.horaAbertura(), sala.horaFechamento(),
                 sala.diasFuncionamento().stream().map(DayOfWeek::of).collect(java.util.stream.Collectors.toSet()));
         try {
@@ -156,7 +156,7 @@ public class RecursoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Intervalo> ocupacoes(long recursoId, Instant inicio, Instant fim) {
+    public List<IntervaloOcupado> ocupacoes(long recursoId, Instant inicio, Instant fim) {
         obter(recursoId);
         if (!fim.isAfter(inicio)) {
             throw new ErroDeNegocio(CodigoErro.VALIDACAO_FALHOU, "O fim deve ser posterior ao início.");
@@ -164,14 +164,14 @@ public class RecursoService {
         return recursos.ocupacoes(recursoId, inicio, fim);
     }
 
-    private Detalhe registrarCriacao(UsuarioAutenticado ator, long id, Instant agora) {
-        Detalhe criado = obter(id);
+    private Recurso registrarCriacao(UsuarioAutenticado ator, long id, Instant agora) {
+        Recurso criado = obter(id);
         Map<String, Object> visao = new LinkedHashMap<>();
         visao.put("tipo", criado.tipo().name());
         visao.put("nome", criado.nome());
         visao.put("restrito", criado.restrito());
         visao.put("ativo", criado.ativo());
-        auditoria.registrar(Evento.deUsuario(agora, ator.id(), Entidade.RECURSO, id, "RECURSO_CRIADO", null, visao));
+        auditoria.registrar(EventoAuditoria.deUsuario(agora, ator.id(), EntidadeAuditada.RECURSO, id, "RECURSO_CRIADO", null, visao));
         return criado;
     }
 }

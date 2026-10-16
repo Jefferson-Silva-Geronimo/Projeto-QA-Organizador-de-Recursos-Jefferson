@@ -1,42 +1,17 @@
 package br.senac.recursos.repository;
 
-import br.senac.recursos.model.TipoRecurso;
+import br.senac.recursos.model.FiltroDeRecursos;
+import br.senac.recursos.model.IntervaloOcupado;
+import br.senac.recursos.model.NovaSala;
+import br.senac.recursos.model.NovoMaterial;
+import br.senac.recursos.model.NovoProfessor;
+import br.senac.recursos.model.Recurso;
 import java.time.Instant;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 /** Porta de persistência dos recursos: salas, professores e materiais (ADR-002). */
 public interface RecursoRepository {
-
-    /**
-     * Recurso com os atributos do seu tipo. Campos de outros tipos ficam nulos.
-     * Professor: {@code usuarioId} é o vínculo opcional e {@code competencias} a lista de nomes.
-     */
-    record Detalhe(long id, TipoRecurso tipo, String nome, boolean restrito, boolean ativo,
-                   Integer capacidade, String localizacao, String tipoSala,
-                   LocalTime horaAbertura, LocalTime horaFechamento, List<Integer> diasFuncionamento,
-                   String codigoPatrimonio, String descricao,
-                   Long usuarioId, List<String> competencias) {
-    }
-
-    record NovaSala(String nome, boolean restrito, int capacidade, String localizacao, String tipoSala,
-                    LocalTime horaAbertura, LocalTime horaFechamento, List<Integer> diasFuncionamento) {
-    }
-
-    record NovoProfessor(String nome, boolean restrito, Long usuarioId, List<String> competencias) {
-    }
-
-    record NovoMaterial(String nome, boolean restrito, String codigoPatrimonio, String descricao) {
-    }
-
-    /** Filtros da pesquisa. Campos nulos não filtram. O intervalo é semiaberto [inicio, fim). */
-    record Filtro(TipoRecurso tipo, Integer capacidadeMinima, String localizacao, String competencia,
-                  Instant inicio, Instant fim) {
-    }
-
-    record Intervalo(Instant inicio, Instant fim) {
-    }
 
     long criarSala(NovaSala sala, Instant criadoEm);
 
@@ -44,12 +19,12 @@ public interface RecursoRepository {
 
     long criarMaterial(NovoMaterial material, Instant criadoEm);
 
-    Optional<Detalhe> buscarPorId(long id);
+    Optional<Recurso> buscarPorId(long id);
 
-    List<Detalhe> pesquisar(Filtro filtro);
+    List<Recurso> pesquisar(FiltroDeRecursos filtro);
 
     /** Ocupações ativas do recurso que tocam o intervalo, sem qualquer dado do dono. */
-    List<Intervalo> ocupacoes(long recursoId, Instant inicio, Instant fim);
+    List<IntervaloOcupado> ocupacoes(long recursoId, Instant inicio, Instant fim);
 
     void alterarRestrito(long id, boolean restrito);
 

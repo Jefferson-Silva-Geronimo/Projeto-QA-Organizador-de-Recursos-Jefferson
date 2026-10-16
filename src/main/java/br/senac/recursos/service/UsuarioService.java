@@ -1,15 +1,15 @@
 package br.senac.recursos.service;
 
-import br.senac.recursos.repository.AuditoriaRepository;
-import br.senac.recursos.repository.AuditoriaRepository.Entidade;
-import br.senac.recursos.repository.AuditoriaRepository.Evento;
-import br.senac.recursos.repository.SessaoRepository;
-import br.senac.recursos.repository.UsuarioRepository;
-import br.senac.recursos.repository.UsuarioRepository.Registro;
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
+import br.senac.recursos.model.EntidadeAuditada;
+import br.senac.recursos.model.EventoAuditoria;
 import br.senac.recursos.model.Perfil;
+import br.senac.recursos.model.Usuario;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.repository.SessaoRepository;
+import br.senac.recursos.repository.UsuarioRepository;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -46,7 +46,7 @@ public class UsuarioService {
     }
 
     @Transactional
-    public Registro criar(UsuarioAutenticado ator, String nome, String email, String senha, Perfil perfil) {
+    public Usuario criar(UsuarioAutenticado ator, String nome, String email, String senha, Perfil perfil) {
         String normalizado = AutenticacaoService.normalizar(email);
         Instant agora = relogio.instant();
         long id;
@@ -55,29 +55,29 @@ public class UsuarioService {
         } catch (DuplicateKeyException e) {
             throw new ErroDeNegocio(CodigoErro.USUARIO_JA_EXISTE);
         }
-        auditoria.registrar(Evento.deUsuario(agora, ator.id(), Entidade.USUARIO, id, "USUARIO_CRIADO",
+        auditoria.registrar(EventoAuditoria.deUsuario(agora, ator.id(), EntidadeAuditada.USUARIO, id, "USUARIO_CRIADO",
                 null, visao(nome.trim(), normalizado, perfil, true)));
         return usuarios.buscarPorId(id).orElseThrow();
     }
 
     @Transactional
-    public Registro alterarPerfil(UsuarioAutenticado ator, long id, Perfil novo) {
-        Registro antes = obter(id);
+    public Usuario alterarPerfil(UsuarioAutenticado ator, long id, Perfil novo) {
+        Usuario antes = obter(id);
         if (antes.perfil() == novo) {
             return antes;
         }
         usuarios.alterarPerfil(id, novo);
-        auditoria.registrar(Evento.deUsuario(relogio.instant(), ator.id(), Entidade.USUARIO, id,
+        auditoria.registrar(EventoAuditoria.deUsuario(relogio.instant(), ator.id(), EntidadeAuditada.USUARIO, id,
                 "USUARIO_PERFIL_ALTERADO",
                 Map.of("perfil", antes.perfil().name()), Map.of("perfil", novo.name())));
         return obter(id);
     }
 
     @Transactional
-    public Registro desativar(UsuarioAutenticado ator, long id) {
+    public Usuario desativar(UsuarioAutenticado ator, long id) {
         // Trava os Responsáveis ativos antes de contar, para serializar desativações simultâneas.
         List<Long> responsaveis = usuarios.travarResponsaveisAtivos();
-        Registro alvo = obter(id);
+        Usuario alvo = obter(id);
         if (!alvo.ativo()) {
             return alvo;
         }
@@ -93,7 +93,7 @@ public class UsuarioService {
         }
         usuarios.desativar(id);
         sessoes.revogarTodas(id, agora);
-        auditoria.registrar(Evento.deUsuario(agora, ator.id(), Entidade.USUARIO, id, "USUARIO_DESATIVADO",
+        auditoria.registrar(EventoAuditoria.deUsuario(agora, ator.id(), EntidadeAuditada.USUARIO, id, "USUARIO_DESATIVADO",
                 Map.of("ativo", true), Map.of("ativo", false)));
         return obter(id);
     }
@@ -110,17 +110,17 @@ public class UsuarioService {
         String normalizado = AutenticacaoService.normalizar(email);
         Instant agora = relogio.instant();
         long id = usuarios.criar(nome.trim(), normalizado, codificador.encode(senha), Perfil.ADMINISTRADOR, agora);
-        auditoria.registrar(Evento.deSistema(agora, Entidade.USUARIO, id, "USUARIO_CRIADO",
+        auditoria.registrar(EventoAuditoria.deSistema(agora, EntidadeAuditada.USUARIO, id, "USUARIO_CRIADO",
                 null, visao(nome.trim(), normalizado, Perfil.ADMINISTRADOR, true)));
         return true;
     }
 
     @Transactional(readOnly = true)
-    public List<Registro> listar() {
+    public List<Usuario> listar() {
         return usuarios.listar();
     }
 
-    private Registro obter(long id) {
+    private Usuario obter(long id) {
         return usuarios.buscarPorId(id).orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
     }
 
