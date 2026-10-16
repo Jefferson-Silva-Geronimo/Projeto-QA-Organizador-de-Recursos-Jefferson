@@ -234,15 +234,22 @@ class ConcorrenciaApiIT extends ApiIT {
             }
             assertThat(duplicou).as("sem a constraint, mais de uma reserva é aceita").isTrue();
         } finally {
-            limparOcupacoes();
-            jdbc.execute("alter table ocupacoes add constraint ocupacoes_sem_sobreposicao "
-                    + "exclude using gist (recurso_id with =, periodo with &&) where (ativa)");
+            try {
+                limparOcupacoes();
+            } finally {
+                // A constraint é sempre restaurada, mesmo se a limpeza falhar: os outros testes dependem dela.
+                jdbc.execute("alter table ocupacoes add constraint ocupacoes_sem_sobreposicao "
+                        + "exclude using gist (recurso_id with =, periodo with &&) where (ativa)");
+            }
         }
         assertThat(contar("select count(*) from pg_constraint where conname = 'ocupacoes_sem_sobreposicao'"))
                 .isEqualTo(1);
     }
 
     private void limparOcupacoes() {
+        jdbc.execute("delete from notificacoes");
+        jdbc.execute("delete from aprovacoes");
+        jdbc.execute("delete from movimentacoes_material");
         jdbc.execute("delete from ocupacoes");
         jdbc.execute("delete from tentativas_conflito");
         jdbc.execute("alter table auditoria_eventos disable trigger user");
