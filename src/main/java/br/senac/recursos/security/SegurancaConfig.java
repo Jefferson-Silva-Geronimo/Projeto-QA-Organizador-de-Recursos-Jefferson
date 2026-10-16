@@ -45,6 +45,24 @@ class SegurancaConfig {
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/actuator/health", "/actuator/health/**").permitAll()
+                        // Camada 1 da autorização (ADR-004): o perfil é decidido antes de o corpo ser lido e
+                        // validado, para o perfil sem permissão sempre receber 403, nunca 400.
+                        .requestMatchers("/api/usuarios", "/api/usuarios/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/salas", "/api/professores", "/api/materiais")
+                                .hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/recursos/*/restrito").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/recursos/*/desativacao").hasRole("ADMINISTRADOR")
+                        .requestMatchers("/api/bloqueios", "/api/bloqueios/**").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.GET, "/api/auditoria").hasRole("ADMINISTRADOR")
+                        .requestMatchers(HttpMethod.POST, "/api/reservas").hasAnyRole("SOLICITANTE", "RESPONSAVEL")
+                        .requestMatchers(HttpMethod.PUT, "/api/reservas/*").hasAnyRole("SOLICITANTE", "RESPONSAVEL")
+                        .requestMatchers(HttpMethod.POST, "/api/reservas/*/aprovacao", "/api/reservas/*/rejeicao",
+                                "/api/reservas/*/inicio", "/api/reservas/*/retiradas",
+                                "/api/reservas/*/devolucoes", "/api/reservas/*/conclusao",
+                                "/api/reservas/*/nao-comparecimento").hasRole("RESPONSAVEL")
+                        .requestMatchers(HttpMethod.GET, "/api/reservas/fila").hasRole("RESPONSAVEL")
+                        .requestMatchers("/api/relatorios", "/api/relatorios/**")
+                                .hasAnyRole("RESPONSAVEL", "ADMINISTRADOR")
                         .anyRequest().authenticated())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
