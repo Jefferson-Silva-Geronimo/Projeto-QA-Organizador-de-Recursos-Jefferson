@@ -32,6 +32,14 @@ public enum CodigoErro {
     RESERVA_JA_INICIADA(Categoria.CONFLITO, "A reserva já começou e não pode ser alterada ou cancelada pelo dono."),
     RECURSO_INATIVO(Categoria.CONFLITO, "Um dos recursos está desativado e não pode ser reservado."),
     METODO_NAO_PERMITIDO(Categoria.VALIDACAO, "Esta operação não existe para este endereço."),
+    APROVACAO_APOS_INICIO(Categoria.CONFLITO,
+            "O início da reserva já foi alcançado e ela não pode mais ser aprovada."),
+    BLOQUEIO_PENDE_CONFIRMACAO(Categoria.CONFLITO,
+            "Há reservas no período do bloqueio. Confirme informando a lista para cancelá-las."),
+    BLOQUEIO_LISTA_DESATUALIZADA(Categoria.CONFLITO,
+            "A lista de reservas afetadas mudou. Revise a lista e confirme novamente."),
+    BLOQUEIO_COM_RESERVA_EM_USO(Categoria.CONFLITO,
+            "Há reserva em uso no período. O bloqueio não pode ser criado."),
     ERRO_INTERNO(Categoria.INTERNO, "Não foi possível concluir a operação. Tente novamente mais tarde.");
 
     /** Categoria de recusa, independente de protocolo. */

@@ -1,5 +1,6 @@
 package br.senac.recursos.api;
 
+import br.senac.recursos.aplicacao.AprovacaoServico;
 import br.senac.recursos.aplicacao.ReservaServico;
 import br.senac.recursos.aplicacao.ReservaServico.Alteracao;
 import br.senac.recursos.aplicacao.ReservaServico.NovaReserva;
@@ -60,10 +61,35 @@ class ReservaController {
         }
     }
 
-    private final ReservaServico reservas;
+    record DecisaoRequisicao(@Size(max = 1000) String motivo) {
+    }
 
-    ReservaController(ReservaServico reservas) {
+    private final ReservaServico reservas;
+    private final AprovacaoServico aprovacoes;
+
+    ReservaController(ReservaServico reservas, AprovacaoServico aprovacoes) {
         this.reservas = reservas;
+        this.aprovacoes = aprovacoes;
+    }
+
+    @PostMapping("/{id}/aprovacao")
+    @PreAuthorize("hasRole('RESPONSAVEL')")
+    ReservaResposta aprovar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
+                            @Valid @RequestBody(required = false) DecisaoRequisicao c) {
+        return ReservaResposta.de(aprovacoes.aprovar(ator, id, c == null ? null : c.motivo()));
+    }
+
+    @PostMapping("/{id}/rejeicao")
+    @PreAuthorize("hasRole('RESPONSAVEL')")
+    ReservaResposta rejeitar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
+                             @Valid @RequestBody(required = false) DecisaoRequisicao c) {
+        return ReservaResposta.de(aprovacoes.rejeitar(ator, id, c == null ? null : c.motivo()));
+    }
+
+    @GetMapping("/fila")
+    @PreAuthorize("hasRole('RESPONSAVEL')")
+    List<ReservaResposta> fila() {
+        return aprovacoes.fila().stream().map(ReservaResposta::de).toList();
     }
 
     @PostMapping

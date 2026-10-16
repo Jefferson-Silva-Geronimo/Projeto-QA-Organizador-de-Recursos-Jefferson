@@ -133,6 +133,79 @@ class JdbcReservaRepositorio implements ReservaRepositorio {
     }
 
     @Override
+    public List<Registro> listarFila() {
+        return jdbc.sql(SELECT + " where r.estado = 'SOLICITADA' and r.exige_aprovacao order by r.inicio, r.id")
+                .query(MAPEADOR).list();
+    }
+
+    @Override
+    public void registrarDecisao(long reservaId, long responsavelId, boolean aprovada, String motivo, Instant agora) {
+        jdbc.sql("""
+                        insert into aprovacoes (reserva_id, responsavel_id, decisao, motivo, decidida_em)
+                        values (:reserva, :responsavel, cast(:decisao as decisao_aprovacao), :motivo, :agora)
+                        """)
+                .param("reserva", reservaId)
+                .param("responsavel", responsavelId)
+                .param("decisao", aprovada ? "APROVADA" : "REJEITADA")
+                .param("motivo", motivo)
+                .param("agora", JdbcSessaoRepositorio.utc(agora))
+                .update();
+    }
+
+    @Override
+    public List<Registro> reservasAtivasQueTocam(long recursoId, Periodo periodo) {
+        List<Long> ids = jdbc.sql("""
+                        select distinct r.id
+                          from reservas r
+                          join ocupacoes o on o.reserva_id = r.id
+                         where o.recurso_id = :recurso and o.ativa
+                           and o.periodo && tstzrange(:inicio, :fim, '[)')
+                         order by r.id
+                        """)
+                .param("recurso", recursoId)
+                .param("inicio", JdbcSessaoRepositorio.utc(periodo.inicio()))
+                .param("fim", JdbcSessaoRepositorio.utc(periodo.fim()))
+                .query(Long.class).list();
+        List<Registro> travadas = new ArrayList<>();
+        for (Long id : ids) {
+            buscarTravando(id).ifPresent(travadas::add);
+        }
+        return travadas;
+    }
+
+    @Override
+    public boolean cancelarPeloSistema(long id, EstadoReserva esperado, String motivoSistema, Instant agora) {
+        return jdbc.sql("""
+                        update reservas
+                           set estado = 'CANCELADA', motivo_sistema = cast(:motivo as motivo_sistema),
+                               atualizada_em = :agora
+                         where id = :id and estado = cast(:esperado as estado_reserva)
+                        """)
+                .param("motivo", motivoSistema)
+                .param("agora", JdbcSessaoRepositorio.utc(agora))
+                .param("id", id)
+                .param("esperado", esperado.name())
+                .update() == 1;
+    }
+
+    @Override
+    public List<Long> idsSemDecisao(Instant agora) {
+        return jdbc.sql("""
+                        select id from reservas
+                         where estado = 'SOLICITADA' and exige_aprovacao and inicio <= :agora
+                         order by id
+                        """)
+                .param("agora", JdbcSessaoRepositorio.utc(agora))
+                .query(Long.class).list();
+    }
+
+    @Override
+    public boolean tentarTravarJob(long chave) {
+        return Boolean.TRUE.equals(jdbc.sql("select pg_try_advisory_xact_lock(:chave)")
+                .param("chave", chave).query(Boolean.class).single());
+    }
+
+    @Override
     public void removerOcupacoes(long reservaId) {
         jdbc.sql("delete from ocupacoes where reserva_id = :reserva").param("reserva", reservaId).update();
     }
