@@ -133,8 +133,13 @@ class RelatorioApiIT extends ApiIT {
         // Semana de segunda 19/10 a domingo 25/10: cinco dias úteis de 15 h = 75 h de funcionamento.
         reserva(salaA, "APROVADA", "2026-10-20T09:00", "2026-10-20T16:00");
 
-        relatorio(r1, "2026-10-19T00:00", "2026-10-26T00:00", "&recursoId=" + salaA)
-                .andExpect(jsonPath("$.itens[0].utilizacao").value(closeTo(7.0 / 75.0, 0.001)));
+        String corpo = relatorio(r1, "2026-10-19T00:00", "2026-10-26T00:00", "&recursoId=" + salaA)
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+
+        // O valor decimal longo volta como BigDecimal no JsonPath; a comparação é feita como double.
+        double utilizacao = json.readTree(corpo).get("itens").get(0).get("utilizacao").asDouble();
+        org.assertj.core.api.Assertions.assertThat(utilizacao)
+                .isCloseTo(7.0 / 75.0, org.assertj.core.api.Assertions.within(0.001));
     }
 
     // ---- conflitos evitados
