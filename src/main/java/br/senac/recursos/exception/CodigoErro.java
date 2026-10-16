@@ -40,6 +40,13 @@ public enum CodigoErro {
             "A lista de reservas afetadas mudou. Revise a lista e confirme novamente."),
     BLOQUEIO_COM_RESERVA_EM_USO(Categoria.CONFLITO,
             "Há reserva em uso no período. O bloqueio não pode ser criado."),
+    MATERIAL_FORA_DA_RESERVA(Categoria.VALIDACAO, "O material informado não faz parte desta reserva."),
+    MATERIAL_JA_RETIRADO(Categoria.CONFLITO, "Esta unidade já foi retirada e ainda não foi devolvida."),
+    DEVOLUCAO_SEM_RETIRADA(Categoria.CONFLITO, "Esta unidade não foi retirada e não pode ser devolvida."),
+    MATERIAL_PENDENTE(Categoria.CONFLITO, "Há material retirado e não devolvido. A reserva não pode ser concluída."),
+    TOLERANCIA_NAO_CONFIGURADA(Categoria.CONFLITO,
+            "A tolerância de não comparecimento ainda não foi configurada."),
+    TOLERANCIA_NAO_ENCERRADA(Categoria.CONFLITO, "A tolerância de não comparecimento ainda não terminou."),
     ERRO_INTERNO(Categoria.INTERNO, "Não foi possível concluir a operação. Tente novamente mais tarde.");
 
     /** Categoria de recusa, independente de protocolo. */
