@@ -128,6 +128,13 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
+                <configuration>
+                    <!-- Mede só o código do projeto. Sem isso, o agente instrumenta bibliotecas e o relatório
+                         falha com "Incompatible execution data" quando as classes mudam entre execuções. -->
+                    <includes>
+                        <include>br/senac/recursos/**</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>

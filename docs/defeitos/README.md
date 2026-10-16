@@ -100,9 +100,11 @@ Registra apenas defeitos **reais** encontrados até aqui. A coluna Issue ou PR f
 | BUG-004 | Brecha em C1: alteração que incluía recurso restrito numa reserva aprovada automaticamente contornava RN-06 | — | Crítica: contorna aprovação obrigatória | Alta | Fechado | `d843f34` (decisão D12) | CEN-11 em [ciclo-00.md](../avaliacao-arquitetural/ciclo-00.md), a executar na Fase 4 |
 | BUG-005 | Diagrama de componentes sem aresta do agendador para a auditoria e a persistência, divergindo do texto da seção 13.7 | — | Baixa: diagrama incompleto | Baixa | Fechado | `beb9fa1` | Diagrama renderizado de novo e revisão pelo facilitador ATAM |
 | BUG-006 | `mvnw` commitado sem permissão de execução no Windows. A CI falhou com exit 126 | [PR 1](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/pull/1) | Alta: pipeline não executa o build | Alta: bloqueia toda a CI | Fechado | `af89f13` | Run da CI `38786037634` verde, que executa `./mvnw -B verify` |
+| BUG-007 | Impasse do PostgreSQL (`deadlock detected`, SQLState 40P01) quando duas transações inserem ocupações sobrepostas ao mesmo tempo. A aplicação respondia com erro interno em vez de 409. Achado pelo teste de concorrência CT-064 (risco R-17 materializado) | — | Alta: viola o tratamento seguro de erros e a resposta de RF-06 | Alta | Fechado | `eb7f5b1` | CT-064 em `ConcorrenciaApiIT`, vermelho em `test(red)` e verde em `fix(green)` |
 
 Observações:
 
 - BUG-006 é o único defeito achado pela CI. Run vermelho `38785819928`, run verde `38786037634`.
+- BUG-007 é o primeiro defeito achado por teste de concorrência na Fase 4. A causa está no comportamento da constraint de exclusão: cada transação insere a entrada do índice antes de verificar o conflito e, se cada uma encontra a outra em andamento, o banco derruba uma por impasse. ADR-003 já previa o tratamento; faltava implementá-lo.
 - Um número sem origem em ADR-008 (contagem de regras ligadas a RF-13) foi apontado na revisão e corrigido **antes** do commit, por isso não entra no índice.
 - Defeitos escapados por etapa: BUG-001 a BUG-005 nasceram em documentação e foram achados em revisão; BUG-006 nasceu na casca do projeto e foi achado na CI.
