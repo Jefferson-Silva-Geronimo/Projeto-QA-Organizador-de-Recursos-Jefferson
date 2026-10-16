@@ -101,6 +101,7 @@ Registra apenas defeitos **reais** encontrados até aqui. A coluna Issue ou PR f
 | BUG-005 | Diagrama de componentes sem aresta do agendador para a auditoria e a persistência, divergindo do texto da seção 13.7 | — | Baixa: diagrama incompleto | Baixa | Fechado | `beb9fa1` | Diagrama renderizado de novo e revisão pelo facilitador ATAM |
 | BUG-006 | `mvnw` commitado sem permissão de execução no Windows. A CI falhou com exit 126 | [PR 1](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/pull/1) | Alta: pipeline não executa o build | Alta: bloqueia toda a CI | Fechado | `af89f13` | Run da CI `38786037634` verde, que executa `./mvnw -B verify` |
 | BUG-007 | Impasse do PostgreSQL (`deadlock detected`, SQLState 40P01) quando duas transações inserem ocupações sobrepostas ao mesmo tempo. A aplicação respondia com erro interno em vez de 409. Achado pelo teste de concorrência CT-064 (risco R-17 materializado) | — | Alta: viola o tratamento seguro de erros e a resposta de RF-06 | Alta | Fechado | `eb7f5b1` | CT-064 em `ConcorrenciaApiIT`, vermelho em `test(red)` e verde em `fix(green)` |
+| BUG-008 | A validação do corpo da requisição rodava antes da autorização por perfil: um perfil sem permissão recebia 400 em vez de 403 e via as regras de validação. Achado pela matriz perfil × operação (CT-117, 18 casos) | — | Alta: falha de autorização é limitador de nota (especificação, seção 8) | Alta | Fechado | `73488e5` | CT-117 em `AutorizacaoApiIT`, 137 casos, vermelho em `test(red)` e verde em `fix(green)` |
 
 Observações:
 
