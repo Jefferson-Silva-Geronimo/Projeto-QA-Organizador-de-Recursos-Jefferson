@@ -35,6 +35,13 @@ server:
     include-stacktrace: never
     include-exception: false
 
+springdoc:
+  # Só os controladores da aplicação entram no contrato. A interface Swagger UI fica desligada: o contrato
+  # é o JSON em /v3/api-docs, que exige autenticação.
+  packages-to-scan: br.senac.recursos.controller
+  swagger-ui:
+    enabled: false
+
 management:
   endpoints:
     web:
