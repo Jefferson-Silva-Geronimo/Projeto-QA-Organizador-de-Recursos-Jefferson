@@ -1,10 +1,15 @@
 package br.senac.recursos.repository;
 
+import br.senac.recursos.model.EntidadeAuditada;
 import br.senac.recursos.model.EventoAuditoria;
-import br.senac.recursos.repository.AuditoriaRepository;
+import br.senac.recursos.model.RegistroDeAuditoria;
+import br.senac.recursos.model.TipoAtor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -44,6 +49,33 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
                 .update();
     }
 
+    @Override
+    public List<RegistroDeAuditoria> listar(EntidadeAuditada entidade, Long entidadeId) {
+        return jdbc.sql("""
+                        select id, ocorrido_em, ator_tipo::text as ator_tipo, ator_id, entidade::text as entidade,
+                               entidade_id, acao, estado_anterior, estado_novo,
+                               valores_antes::text as antes, valores_depois::text as depois, motivo, correlacao_id
+                          from auditoria_eventos
+                         where (cast(:entidade as text) is null or entidade::text = :entidade)
+                           and (cast(:entidadeId as bigint) is null or entidade_id = :entidadeId)
+                         order by ocorrido_em, id
+                        """)
+                .param("entidade", entidade == null ? null : entidade.name())
+                .param("entidadeId", entidadeId)
+                .query((rs, n) -> {
+                    long ator = rs.getLong("ator_id");
+                    Long atorId = rs.wasNull() ? null : ator;
+                    return new RegistroDeAuditoria(rs.getLong("id"), new EventoAuditoria(
+                            rs.getObject("ocorrido_em", OffsetDateTime.class).toInstant(),
+                            TipoAtor.valueOf(rs.getString("ator_tipo")), atorId,
+                            EntidadeAuditada.valueOf(rs.getString("entidade")), rs.getLong("entidade_id"),
+                            rs.getString("acao"), rs.getString("estado_anterior"), rs.getString("estado_novo"),
+                            ler(rs.getString("antes")), ler(rs.getString("depois")), rs.getString("motivo"),
+                            (UUID) rs.getObject("correlacao_id")));
+                })
+                .list();
+    }
+
     private String serializar(Map<String, Object> valores) {
         if (valores == null) {
             return null;
@@ -52,6 +84,18 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
             return json.writeValueAsString(valores);
         } catch (JsonProcessingException ex) {
             throw new IllegalStateException("Valores de auditoria não serializáveis", ex);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> ler(String texto) {
+        if (texto == null) {
+            return null;
+        }
+        try {
+            return json.readValue(texto, Map.class);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalStateException("Valores de auditoria ilegíveis", ex);
         }
     }
 }
