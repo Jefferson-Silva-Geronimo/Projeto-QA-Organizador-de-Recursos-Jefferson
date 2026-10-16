@@ -130,8 +130,7 @@
                 </executions>
             </plugin>
 
-            <!-- ADR-011: relatório desde a Fase 3, sem regra de falha.
-                 O gate de 80% de linhas e 70% de branches liga na primeira fatia de domínio da Fase 4. -->
+            <!-- ADR-011: relatório desde a Fase 3; gate de cobertura ligado na Fase 4 (execução "gate"). -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -156,6 +155,34 @@
                         <goals>
                             <goal>report</goal>
                         </goals>
+                    </execution>
+                    <!-- Gate da ADR-011: 80% de linhas e 70% de branches no conjunto.
+                         Falha o verify, e portanto o CI, quando a cobertura cai abaixo do piso. -->
+                    <execution>
+                        <id>gate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.70</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
