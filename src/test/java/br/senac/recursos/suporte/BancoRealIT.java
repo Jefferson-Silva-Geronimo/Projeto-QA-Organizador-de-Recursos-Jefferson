@@ -15,7 +15,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @SpringBootTest
 public abstract class BancoRealIT {
 
-    static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17");
+    protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17");
 
     static {
         POSTGRES.start();
