@@ -19,5 +19,8 @@ public interface NotificadorExterno {
         FALHA_TEMPORARIA
     }
 
+    /** Falso enquanto o endereço do provedor não estiver configurado. Nesse caso nada é enviado. */
+    boolean disponivel();
+
     Resultado enviar(Notificacao notificacao, Instant instante);
 }

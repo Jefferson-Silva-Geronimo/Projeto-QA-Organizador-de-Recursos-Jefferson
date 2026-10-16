@@ -4,6 +4,7 @@ import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
 import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.model.Reserva;
 import br.senac.recursos.model.UsuarioAutenticado;
 import br.senac.recursos.model.regra.MaquinaDeEstados;
@@ -25,11 +26,13 @@ public class AprovacaoService {
 
     private final ReservaRepository reservas;
     private final AuditoriaRepository auditoria;
+    private final NotificacaoService notificacoes;
     private final Clock relogio;
 
-    public AprovacaoService(ReservaRepository reservas, AuditoriaRepository auditoria, Clock relogio) {
+    public AprovacaoService(ReservaRepository reservas, AuditoriaRepository auditoria, NotificacaoService notificacoes, Clock relogio) {
         this.reservas = reservas;
         this.auditoria = auditoria;
+        this.notificacoes = notificacoes;
         this.relogio = relogio;
     }
 
@@ -54,6 +57,7 @@ public class AprovacaoService {
         reservas.registrarDecisao(id, ator.id(), true, motivoGravado, agora);
         auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_APROVADA",
                 EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null, null, motivoGravado));
+        notificacoes.aoSolicitante(id, reserva.solicitanteId(), EventoNotificacao.RESERVA_APROVADA);
         return reservas.buscar(id).orElseThrow();
     }
 
@@ -74,6 +78,7 @@ public class AprovacaoService {
         reservas.registrarDecisao(id, ator.id(), false, motivoGravado, agora);
         auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_REJEITADA",
                 EstadoReserva.SOLICITADA.name(), EstadoReserva.REJEITADA.name(), null, null, motivoGravado));
+        notificacoes.aoSolicitante(id, reserva.solicitanteId(), EventoNotificacao.RESERVA_REJEITADA);
         return reservas.buscar(id).orElseThrow();
     }
 

@@ -2,6 +2,7 @@ package br.senac.recursos.service;
 
 import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.repository.AuditoriaRepository;
 import br.senac.recursos.repository.ReservaRepository;
 import java.time.Clock;
@@ -25,13 +26,15 @@ public class TransicoesAutomaticasService {
     private final ReservaRepository reservas;
     private final AuditoriaRepository auditoria;
     private final TransactionTemplate transacao;
+    private final NotificacaoService notificacoes;
     private final Clock relogio;
 
     public TransicoesAutomaticasService(ReservaRepository reservas, AuditoriaRepository auditoria,
-                                        TransactionTemplate transacao, Clock relogio) {
+                                        TransactionTemplate transacao, NotificacaoService notificacoes, Clock relogio) {
         this.reservas = reservas;
         this.auditoria = auditoria;
         this.transacao = transacao;
+        this.notificacoes = notificacoes;
         this.relogio = relogio;
     }
 
@@ -44,7 +47,10 @@ public class TransicoesAutomaticasService {
             Instant agora = relogio.instant();
             int total = 0;
             for (Long id : reservas.idsSemDecisao(agora)) {
-                if (reservas.cancelarPeloSistema(id, EstadoReserva.SOLICITADA, "SEM_DECISAO", agora)) {
+                var reserva = reservas.buscar(id).orElse(null);
+                if (reserva != null
+                        && reservas.cancelarPeloSistema(id, EstadoReserva.SOLICITADA, "SEM_DECISAO", agora)) {
+                    notificacoes.aoSolicitante(id, reserva.solicitanteId(), EventoNotificacao.RESERVA_CANCELADA);
                     reservas.inativarOcupacoes(id);
                     auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_CANCELADA",
                             EstadoReserva.SOLICITADA.name(), EstadoReserva.CANCELADA.name(), "SEM_DECISAO"));

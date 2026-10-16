@@ -30,4 +30,24 @@ class JdbcConfiguracaoRepository implements ConfiguracaoRepository {
                 })
                 .optional();
     }
+
+    @Override
+    public Optional<Integer> tentativasReenvio() {
+        return jdbc.sql("select tentativas_reenvio from configuracao where id = 1")
+                .query((rs, n) -> {
+                    int valor = rs.getInt(1);
+                    return rs.wasNull() ? null : valor;
+                })
+                .optional();
+    }
+
+    @Override
+    public Optional<Duration> intervaloReenvioInicial() {
+        return jdbc.sql("select extract(epoch from intervalo_reenvio_inicial) from configuracao where id = 1")
+                .query((rs, n) -> {
+                    double segundos = rs.getDouble(1);
+                    return rs.wasNull() ? null : Duration.ofMillis(Math.round(segundos * 1000));
+                })
+                .optional();
+    }
 }

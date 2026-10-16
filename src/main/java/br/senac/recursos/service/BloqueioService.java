@@ -7,6 +7,7 @@ import br.senac.recursos.model.BloqueioCriado;
 import br.senac.recursos.model.EntidadeAuditada;
 import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.model.Periodo;
 import br.senac.recursos.model.Recurso;
 import br.senac.recursos.model.TipoAtor;
@@ -45,14 +46,16 @@ public class BloqueioService {
     private final ReservaRepository reservas;
     private final RecursoRepository recursos;
     private final AuditoriaRepository auditoria;
+    private final NotificacaoService notificacoes;
     private final Clock relogio;
 
     public BloqueioService(BloqueioRepository bloqueios, ReservaRepository reservas, RecursoRepository recursos,
-                           AuditoriaRepository auditoria, Clock relogio) {
+                           AuditoriaRepository auditoria, NotificacaoService notificacoes, Clock relogio) {
         this.bloqueios = bloqueios;
         this.reservas = reservas;
         this.recursos = recursos;
         this.auditoria = auditoria;
+        this.notificacoes = notificacoes;
         this.relogio = relogio;
     }
 
@@ -98,6 +101,7 @@ public class BloqueioService {
             auditoria.registrar(new EventoAuditoria(agora, TipoAtor.SISTEMA, null, EntidadeAuditada.RESERVA, reserva.id(),
                     "RESERVA_CANCELADA", reserva.estado().name(), EstadoReserva.CANCELADA.name(),
                     null, null, "MANUTENCAO", correlacao));
+            notificacoes.aoSolicitante(reserva.id(), reserva.solicitanteId(), EventoNotificacao.RESERVA_CANCELADA);
         }
 
         long id;

@@ -5,6 +5,7 @@ import br.senac.recursos.exception.ErroDeNegocio;
 import br.senac.recursos.model.AlteracaoDeReserva;
 import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.EventoAuditoria;
+import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.model.MotivoConflito;
 import br.senac.recursos.model.NovaReserva;
 import br.senac.recursos.model.Perfil;
@@ -74,17 +75,19 @@ public class ReservaService {
     private final TentativaConflitoRepository tentativas;
     private final ConfiguracaoRepository configuracao;
     private final TransactionTemplate transacao;
+    private final NotificacaoService notificacoes;
     private final Clock relogio;
 
     public ReservaService(ReservaRepository reservas, RecursoRepository recursos, AuditoriaRepository auditoria,
                           TentativaConflitoRepository tentativas, ConfiguracaoRepository configuracao,
-                          TransactionTemplate transacao, Clock relogio) {
+                          TransactionTemplate transacao, NotificacaoService notificacoes, Clock relogio) {
         this.reservas = reservas;
         this.recursos = recursos;
         this.auditoria = auditoria;
         this.tentativas = tentativas;
         this.configuracao = configuracao;
         this.transacao = transacao;
+        this.notificacoes = notificacoes;
         this.relogio = relogio;
     }
 
@@ -140,6 +143,11 @@ public class ReservaService {
                     false, null, agora);
             auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
                     EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null));
+        }
+        if (exigeAprovacao) {
+            notificacoes.solicitacaoPendente(id, ator.id());
+        } else {
+            notificacoes.aoSolicitante(id, ator.id(), EventoNotificacao.RESERVA_APROVADA);
         }
         return reservas.buscar(id).orElseThrow();
     }
@@ -219,6 +227,11 @@ public class ReservaService {
             auditoria.registrar(EventoAuditoria.transicaoDoSistema(agora, id, "RESERVA_APROVADA",
                     EstadoReserva.SOLICITADA.name(), EstadoReserva.APROVADA.name(), null));
         }
+        if (mudouEstado && estadoNovo == EstadoReserva.SOLICITADA) {
+            notificacoes.solicitacaoPendente(id, atual.solicitanteId());
+        } else if (mudouEstado && estadoNovo == EstadoReserva.APROVADA) {
+            notificacoes.aoSolicitante(id, atual.solicitanteId(), EventoNotificacao.RESERVA_APROVADA);
+        }
         return reservas.buscar(id).orElseThrow();
     }
 
@@ -241,6 +254,7 @@ public class ReservaService {
         reservas.inativarOcupacoes(id);
         auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "RESERVA_CANCELADA",
                 atual.estado().name(), EstadoReserva.CANCELADA.name(), null, null, motivoGravado));
+        notificacoes.aoSolicitante(id, atual.solicitanteId(), EventoNotificacao.RESERVA_CANCELADA);
         return reservas.buscar(id).orElseThrow();
     }
 

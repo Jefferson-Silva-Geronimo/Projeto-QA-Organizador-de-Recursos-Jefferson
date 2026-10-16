@@ -12,4 +12,10 @@ public interface ConfiguracaoRepository {
 
     /** Tolerância de não comparecimento. Vazia enquanto a lacuna D1 não tiver valor (A8, RN-21). */
     Optional<Duration> toleranciaNaoComparecimento();
+
+    /** Número máximo de tentativas de envio. Vazio enquanto a lacuna D3 não tiver valor. */
+    Optional<Integer> tentativasReenvio();
+
+    /** Intervalo inicial do reenvio, que cresce a cada tentativa (C6). Vazio enquanto D3 não tiver valor. */
+    Optional<Duration> intervaloReenvioInicial();
 }

@@ -17,6 +17,9 @@ public interface UsuarioRepository {
 
     long contar();
 
+    /** Identificadores dos Responsáveis ativos, em ordem. */
+    List<Long> idsDeResponsaveisAtivos();
+
     /** Cria o usuário. Falha com {@code DuplicateKeyException} se o e-mail já existe. */
     long criar(String nome, String email, String senhaHash, Perfil perfil, Instant criadoEm);
 

@@ -47,6 +47,12 @@ class JdbcUsuarioRepository implements UsuarioRepository {
     }
 
     @Override
+    public List<Long> idsDeResponsaveisAtivos() {
+        return jdbc.sql("select id from usuarios where perfil = 'RESPONSAVEL' and ativo order by id")
+                .query(Long.class).list();
+    }
+
+    @Override
     public long contar() {
         return jdbc.sql("select count(*) from usuarios").query(Long.class).single();
     }
