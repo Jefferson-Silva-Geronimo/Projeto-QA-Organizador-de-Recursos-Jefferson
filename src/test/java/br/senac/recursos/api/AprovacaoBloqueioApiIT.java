@@ -190,13 +190,15 @@ class AprovacaoBloqueioApiIT extends ApiIT {
     void ct071_aprovacaoNoInstanteDeInicioEhRecusada() throws Exception {
         long id = reservar(s1, "2026-10-21T14:00", "2026-10-21T16:00", salaA, projetor);   // início 17:00Z
 
+        // A sessão de teste dura PT1H; ao avançar o relógio é preciso entrar de novo.
         agora("2026-10-21T17:00:00Z");
-        acao(r1, id, "aprovacao", Map.of()).andExpect(status().isConflict())
+        String tokenNoInicio = login("r1@exemplo.test");
+        acao(tokenNoInicio, id, "aprovacao", Map.of()).andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("APROVACAO_APOS_INICIO"));
         assertThat(estado(id)).isEqualTo("SOLICITADA");
 
         agora("2026-10-21T16:59:59.999Z");
-        acao(r1, id, "aprovacao", Map.of()).andExpect(status().isOk());
+        acao(tokenNoInicio, id, "aprovacao", Map.of()).andExpect(status().isOk());
     }
 
     // ---- SEM_DECISAO
@@ -342,7 +344,7 @@ class AprovacaoBloqueioApiIT extends ApiIT {
         reservar(s1, "2026-10-21T07:00", "2026-10-21T08:00", salaA);          // termina na abertura do bloqueio
         reservar(s1, "2026-10-21T12:00", "2026-10-21T14:00", salaA);          // começa no fim do bloqueio
         long cruza = reservar(s2, "2026-10-21T11:00", "2026-10-21T13:00", salaB, notebook);
-        long naSala = reservar(s2, "2026-10-21T11:00", "2026-10-21T13:00", salaA);
+        long naSala = reservar(s2, "2026-10-21T11:00", "2026-10-21T12:00", salaA);
 
         bloquear(adm, salaA, "2026-10-21T08:00", "2026-10-21T12:00", null)
                 .andExpect(status().isConflict())
