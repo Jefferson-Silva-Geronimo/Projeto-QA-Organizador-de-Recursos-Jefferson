@@ -114,3 +114,27 @@ com alternativas e escolhida por Jefferson.
 | ID | Apontamento | Análise | Tratamento |
 | --- | --- | --- | --- |
 | SQ-04 | `githubactions:S6506`, `ci.yml:87`: o `curl` que baixa o gitleaks não impõe HTTPS | Procedente: um redirecionamento poderia levar a um destino sem TLS. O checksum SHA-256 conferido depois já barraria um binário adulterado, mas a defesa em profundidade é barata | **Corrigido:** `curl --proto '=https' --tlsv1.2` |
+
+## 6. SEC-01: limite de tentativas de login (17/10/2026)
+
+**Decisão da equipe (Jefferson), 17/10/2026**, ao aceitar todas as recomendações apresentadas. Origem: achado SEC-01 de
+[revisao-seguranca.md](testes/revisao-seguranca.md) (OWASP A07:2025). **A especificação não pede este controle nem define
+valores:** é decisão da equipe, e todo número é proposta.
+
+| ID | Decisão | Alternativas descartadas |
+| --- | --- | --- |
+| P5-10 | **Opção A:** limite por conta, guardado no banco, usando o `Clock` injetado | B (por IP, na memória); C (atraso progressivo); D (não implementar, risco aceito) |
+| P5-10a | Os valores do limite são configuração **sem valor padrão no código** (lacuna D18, abaixo). A configuração é **obrigatória**: sem ela a aplicação não sobe | Desligado quando não configurado |
+| P5-10b | Durante o bloqueio a resposta é **idêntica** à de credencial inválida (mesmo código `CREDENCIAIS_INVALIDAS`, mesma mensagem), para não revelar quais contas existem nem quais estão bloqueadas | Resposta 429 distinta |
+
+**Refinamento de implementação (declarado por Claude, a ratificar):** em vez de três parâmetros (N, janela e tempo de
+bloqueio), a regra é uma **janela deslizante com dois**: `tentativas` falhas dentro de `janela` bloqueiam a conta até a mais
+antiga dessas falhas sair da janela. Um tempo de bloqueio separado criaria liberação antecipada quando as falhas saem da
+janela antes do fim do bloqueio. Tentativas feitas durante o bloqueio não são registradas (não estendem o bloqueio).
+
+**Lacuna D18 (nova):** quantas tentativas e qual janela? Sem valor da especificação. Os testes usam 5 tentativas em 10
+minutos, **só em teste**. O valor real é decisão de Jefferson e entra por `LOGIN_TENTATIVAS` e `LOGIN_JANELA`.
+
+Limitações conhecidas: (1) o e-mail da tentativa falha é guardado durante a janela (dado pessoal de vida curta; ligado à
+lacuna D9); (2) um atacante pode bloquear a conta de outra pessoa de propósito (risco inerente à opção A); (3) tentativas
+simultâneas podem passar de N por pouco, porque a checagem e o registro não são atômicos.
