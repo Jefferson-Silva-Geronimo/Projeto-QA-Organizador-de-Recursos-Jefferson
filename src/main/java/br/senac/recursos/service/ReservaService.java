@@ -33,6 +33,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedExceptionUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -48,6 +50,8 @@ import org.springframework.transaction.support.TransactionTemplate;
  */
 @Service
 public class ReservaService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ReservaService.class);
 
     private static final String SQLSTATE_VIOLACAO_DE_EXCLUSAO = "23P01";
     private static final String SQLSTATE_IMPASSE = "40P01";
@@ -328,7 +332,13 @@ public class ReservaService {
 
     private ErroDeNegocio registrarEConverter(ConflitoDeAlocacao c) {
         // A transação da reserva já foi desfeita. A tentativa é gravada em transação própria (RN-30).
-        tentativas.registrar(c.recursoId, c.periodo, c.solicitanteId, c.motivo, relogio.instant());
+        try {
+            tentativas.registrar(c.recursoId, c.periodo, c.solicitanteId, c.motivo, relogio.instant());
+        } catch (RuntimeException falha) {
+            // Decisão de 15/10/2026 (ADR-003): a perda da contagem é aceita e o 409 é mantido.
+            LOG.error("Tentativa de conflito não gravada (recurso {}, motivo {}): {}", c.recursoId, c.motivo,
+                    falha.getClass().getSimpleName());
+        }
         CodigoErro codigo = c.motivo == MotivoConflito.MANUTENCAO
                 ? CodigoErro.RECURSO_EM_MANUTENCAO : CodigoErro.CONFLITO_DE_ALOCACAO;
         return new ErroDeNegocio(codigo, codigo.mensagemPadrao(), List.of(String.valueOf(c.recursoId)));
