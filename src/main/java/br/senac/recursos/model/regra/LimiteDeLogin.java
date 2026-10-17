@@ -11,6 +11,9 @@ import java.util.List;
 public record LimiteDeLogin(int tentativas, Duration janela) {
 
     public boolean bloqueado(List<Instant> falhas, Instant agora) {
-        return falhas.size() >= tentativas;
+        long dentroDaJanela = falhas.stream()
+                .filter(falha -> Duration.between(falha, agora).compareTo(janela) < 0)
+                .count();
+        return dentroDaJanela >= tentativas;
     }
 }
