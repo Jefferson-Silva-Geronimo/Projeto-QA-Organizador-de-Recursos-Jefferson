@@ -12,7 +12,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 - RF-15 e RF-16 são acréscimos da equipe. RN-09 em diante são decisões da equipe.
 
-**Execução E-1:** `./mvnw -B clean verify` local em 17/10/2026, com PostgreSQL 17 fixado por digest: 467 testes (136 de unidade e arquitetura, 331 de integração e BDD), 0 falhas, gate do JaCoCo cumprido (96,7% de linhas, 84,6% de branches). Execução em CI: ainda não existe para estes commits (o último run verde, 38842897941, é de 15 e 16/10/2026, anterior às mudanças desta sessão); ela será a evidência E-2 depois do push.
+**Execução E-1:** `./mvnw -B clean verify` local em 17/10/2026, com PostgreSQL 17 fixado por digest: 468 testes (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas, gate do JaCoCo cumprido (96,7% de linhas, 84,6% de branches). Execução em CI: ainda não existe para estes commits (o último run verde, 38842897941, é de 15 e 16/10/2026, anterior às mudanças desta sessão); ela será a evidência E-2 depois do push.
 
 
 ## Matriz
