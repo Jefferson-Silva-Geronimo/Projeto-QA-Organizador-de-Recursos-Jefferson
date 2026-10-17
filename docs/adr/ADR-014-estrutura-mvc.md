@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026, por determinação do usuário. Substitui a **estrutura de pacotes** do ADR-001 |
 | Data | 15/10/2026 |
 | Origem | Instrução do usuário na Fase 4: "Faça o projeto em formato MVC, a estrutura deve respeitar esse padrão e as boas práticas" |
-| Decisores | Usuário (dono do projeto) e equipe. Nomes: TODO |
+| Decisores | Jefferson Silva (dono do projeto e única pessoa da equipe). |
 
 ## Contexto
 

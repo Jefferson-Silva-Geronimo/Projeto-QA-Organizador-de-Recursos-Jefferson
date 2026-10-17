@@ -1,6 +1,6 @@
 # Plano de teste
 
-Esqueleto no formato do plano de teste da ISO/IEC/IEEE 29119-3. **Nenhum caso de teste é escrito aqui** e nenhum número foi inventado: o que depende de decisão fica como TODO.
+Plano de teste no formato da ISO/IEC/IEEE 29119-3, completado na Fase 4 e atualizado com os números medidos na Fase 5. Os casos de teste ficam em [casos-de-teste.md](testes/casos-de-teste.md). Nenhum número foi inventado: o que não tem origem é hipótese ou proposta, e o que depende de decisão fica como `TODO` com o motivo.
 
 Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
 
@@ -12,8 +12,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Documento | Plano de teste |
 | Versão e estado | 0.3, com os números medidos ao fechar a Fase 4 |
 | Data | 17/10/2026 |
-| Responsável | Equipe. Nomes: TODO |
-| Aprovação | TODO: professor e equipe |
+| Responsável | Equipe: Jefferson Silva (única pessoa do projeto) |
+| Aprovação | Equipe: Jefferson Silva, nas decisões de [decisoes-equipe.md](decisoes-equipe.md). Professor: pendente, perguntas em [perguntas-professor.md](perguntas-professor.md) |
 
 ## 2. Objetivo e referências
 
@@ -31,7 +31,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 ## 3. Escopo
 
-**Itens de teste (versão ou build):** TODO. A identificação do build testado depende da casca do projeto e da integração contínua (Fase 3).
+**Itens de teste (versão ou build):** o commit de cada pull request, verificado pelo workflow `qualidade` da integração contínua; a última medição completa está na seção 5.2.
 
 ### 3.1 Itens a testar
 
@@ -57,7 +57,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Comportamento com valor da tolerância, do reenvio ou do tamanho de página | Valores sem decisão: D1, D3 e D4. Testa-se que o valor é configurável, não o valor | Lacunas |
 | Retenção e anonimização de auditoria e notificações | Lacuna D9 | Lacuna |
 | Marcação automática de não compareceu por job | Fora desta versão: o Responsável marca manualmente (A8, D2) | Decisão D2 |
-| Desempenho com metas numéricas | A especificação não define critérios. TODO na Fase 2 e na Fase 5 | Lacuna |
+| Desempenho com metas numéricas | A especificação não define critérios. As metas são hipótese ([rnf.md](performance/rnf.md)), medidas na rodada 01 da Fase 5 | Lacuna |
 
 ## 4. Estratégia e níveis de teste
 
@@ -71,7 +71,7 @@ Níveis exigidos pela especificação (seção 5). Ferramentas e versões são d
 | Ponta a ponta | Jornadas das personas | TODO: ferramenta, decidida na Fase 6 | Depende do front end (Fase 6) |
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
 | Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
-| Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: TODO |
+| Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: hipótese em [rnf.md](performance/rnf.md); rodada 01 feita |
 | TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TDD por fatia com commits `test(red)`, `feat(green)` e `refactor`; BDD com Cucumber para aprovação e bloqueio (15 cenários) | Evidência em [evidencia-tdd.md](testes/evidencia-tdd.md) e [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). A granularidade do TDD é por fatia, não por caso |
 
 ### 4.1 Técnicas de projeto de teste
@@ -90,7 +90,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 ### 4.2 Dados de teste
 
 - Dados sempre fictícios. Nenhum dado pessoal real e nenhum segredo no repositório.
-- Cada caso de teste cria o estado de que precisa; TODO: política de limpeza.
+- Cada caso de teste cria o estado de que precisa e as tabelas são esvaziadas antes de cada teste (`limparBanco`); o contêiner do PostgreSQL é compartilhado entre as classes.
 
 ## 5. Critérios de entrada, saída e suspensão
 
@@ -101,7 +101,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Requisitos, regras, modelo de dados e fluxos versionados e verificados pela skill analyze-docs | Atendido ao fim da Etapa 1 |
 | Cenários de qualidade e arquitetura definidos | Atendido: CEN-01 a CEN-11 em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md) |
 | Casca do projeto, integração contínua e processo de defeitos | Atendido na Fase 3 (PR 1): `./mvnw -B verify` e workflow `qualidade`; defeitos em [docs/defeitos](defeitos/README.md) |
-| Decisões A1, A3 e A5 confirmadas com o professor | TODO |
+| Decisões A1, A3 e A5 confirmadas com o professor | TODO: aguarda a resposta do professor ([perguntas-professor.md](perguntas-professor.md)) |
 | Lacunas D2 e D10 a D16 decididas em 15/10/2026 | Atendido |
 
 ### 5.2 Critérios de saída
@@ -142,7 +142,7 @@ Proposta da equipe, a validar:
 | Defeito bloqueante impede a execução de um conjunto de casos | A correção é verificada |
 | Decisão pendente de D1, D3, D4, D9 ou D17 impede definir o resultado esperado | A decisão é registrada |
 
-TODO: critério numérico de defeito bloqueante, se necessário.
+Critério numérico de defeito bloqueante: não definido, porque nenhum requisito o exige.
 
 ## 6. Entregáveis de teste
 
@@ -155,7 +155,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | JaCoCo feito; SonarCloud pendente (Bloco F) |
 | Plano e resultado do teste de carga | Especificação, seção 7 | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
 | Registro de defeitos | Especificação, seção 7 | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
-| Relatório final de qualidade | Especificação, seção 7 | TODO |
+| Relatório final de qualidade | Especificação, seção 7 | TODO: Fase 7 |
 | Evidência de TDD ou BDD | Especificação, seção 5 | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
 ## 7. Ambiente
@@ -175,7 +175,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 
 ## 8. Riscos
 
-Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimentam a coluna Risco da [RTM](../RTM.md). R-17 a R-24 vieram da avaliação arquitetural de 15/10/2026 ([ciclo-00.md](avaliacao-arquitetural/ciclo-00.md)). Probabilidade e impacto quantitativos: TODO, não foram estimados.
+Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimentam a coluna Risco da [RTM](../RTM.md). R-17 a R-24 vieram da avaliação arquitetural de 15/10/2026 ([ciclo-00.md](avaliacao-arquitetural/ciclo-00.md)). Probabilidade e impacto quantitativos: não foram estimados, porque o projeto não tem dado de origem para isso.
 
 | ID | Risco | RF | RN | Técnica ou nível previsto |
 | --- | --- | --- | --- | --- |
@@ -218,9 +218,9 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
-| Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | TODO: nomes |
+| Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva (única pessoa do projeto) |
 | Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; pergunta ao professor em [perguntas-professor.md](perguntas-professor.md) |
-| Professor | Validar as decisões pendentes de confirmação | TODO |
+| Professor | Validar as decisões pendentes de confirmação | A definir pela equipe; mensagem pronta em [perguntas-professor.md](perguntas-professor.md) |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
 ### 9.2 Cronograma (especificação, seção 9)

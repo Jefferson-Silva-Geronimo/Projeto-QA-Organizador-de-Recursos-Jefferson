@@ -6,7 +6,7 @@
 | Documento | Descoberta, drivers, arquitetura C4, ATAM e ADR (Prompts 2.1 a 2.4 da Fase 2) |
 | Estado | Fase 2 concluída em 15/10/2026, com pendências externas listadas na seção 23 |
 | Fonte de verdade | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), lida em 12/10/2026 |
-| Responsável | Equipe. Nomes: TODO |
+| Responsável | Equipe: Jefferson Silva (única pessoa do projeto) |
 
 Este documento só consome artefatos do repositório, citados em cada seção: [prd.md](prd.md), [perguntas-abertas.md](prd/perguntas-abertas.md), [regras-negocio.md](prd/regras-negocio.md), [requisitos-funcionais.md](prd/requisitos-funcionais.md), [modelo-dados.dbml](prd/modelo-dados.dbml), [fluxos-sequencia.md](prd/fluxos-sequencia.md), [plano-de-teste.md](plano-de-teste.md) e [RTM.md](../RTM.md). Nenhum requisito, persona ou regra é criado ou alterado aqui. Os identificadores existentes são preservados.
 
@@ -38,7 +38,7 @@ Classificação usada em todo o documento, igual à de [perguntas-abertas.md](pr
 | RF-15, RF-16 e RN-09 a RN-33 | Decisões da equipe de 12/10/2026 | Marcadas como decisão da equipe nos documentos de origem |
 | Decisões A1 a D16 e lacunas D1, D3, D4, D9 e D17 | [perguntas-abertas.md](prd/perguntas-abertas.md) | Texto das decisões não é alterado |
 | Modelo de dados | [modelo-dados.dbml](prd/modelo-dados.dbml) | Revisado na revisão das Fases 0 e 1 |
-| Riscos iniciais R-01 a R-16 | [plano-de-teste.md](plano-de-teste.md), seção 8 | Quantificação de probabilidade e impacto: TODO |
+| Riscos iniciais R-01 a R-16 | [plano-de-teste.md](plano-de-teste.md), seção 8 | Quantificação de probabilidade e impacto: não estimada, sem dado de origem no projeto |
 
 Em caso de dúvida, a página da especificação prevalece.
 

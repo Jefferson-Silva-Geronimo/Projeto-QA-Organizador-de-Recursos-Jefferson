@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário). S6 e D1 seguem a validar |
 | Data | 15/10/2026 |
 | Origem | Decisão D2; [perguntas-abertas.md](../prd/perguntas-abertas.md); [arquitetura.md](../arquitetura.md), seção 13.7 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Decisões iniciais 7 e 12 da equipe; [arquitetura.md](../arquitetura.md), seção 12 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

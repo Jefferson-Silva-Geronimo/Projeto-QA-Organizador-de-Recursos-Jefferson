@@ -214,6 +214,7 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | CT-119 | Token inválido, ausente, revogado, expirado | A | Quatro situações em toda rota protegida | 401 em todas | RF-01 |
 | CT-120 | Entrada inválida | A | Campo ausente, tamanho, tipo e injeção em filtros | Erro de validação; 0 pilhas; 0 efeitos | RNF-07, RF-13 |
 | CT-121 | Nenhum vazamento de terceiros | A | Mensagens de erro de recusa | 0 identificações de terceiros | RF-13, B3 |
+| CT-122 | Primeiro Administrador | I | Tabela de usuários vazia; semear o primeiro Administrador duas vezes, com e-mails diferentes | A primeira chamada cria 1 Administrador com e-mail normalizado e 1 evento de auditoria com ator SISTEMA; a segunda não cria nada | RF-15, RN-17, RN-29, ADR-004 |
 
 ## 4. Cobertura por regra crítica
 

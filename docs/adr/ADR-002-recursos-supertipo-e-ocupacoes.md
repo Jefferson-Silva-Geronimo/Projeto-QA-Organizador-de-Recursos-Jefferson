@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário). A3 segue aguardando o professor |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 1 da equipe; [modelo-dados.dbml](../prd/modelo-dados.dbml); [arquitetura.md](../arquitetura.md), seção 12 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

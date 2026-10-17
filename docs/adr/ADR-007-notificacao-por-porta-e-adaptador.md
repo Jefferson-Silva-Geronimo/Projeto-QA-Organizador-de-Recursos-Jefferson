@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário). A5 aguarda confirmação do professor |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 6 da equipe; A5, C6; [arquitetura.md](../arquitetura.md), seções 12, 12.1 e 13.4 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

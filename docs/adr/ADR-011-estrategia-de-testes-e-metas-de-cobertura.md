@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Especificação, seções 5 e 6; [plano-de-teste.md](../plano-de-teste.md), seção 4; [arquitetura.md](../arquitetura.md), seção 5 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 
