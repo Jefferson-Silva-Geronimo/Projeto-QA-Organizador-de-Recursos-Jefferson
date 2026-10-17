@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário). D17 segue aberta |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 5 da equipe; [arquitetura.md](../arquitetura.md), seções 12, 12.1 e 13.3 |
-| Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

@@ -56,7 +56,7 @@ Bass define tática como uma **decisão de projeto que influencia a resposta do 
 2. **Tática é focada em um atributo.** Isso é o que a torna útil no ATAM: quando duas táticas de atributos diferentes competem pelo mesmo recurso, você achou um trade-off.
 3. **Tática não é gratuita.** Cada uma tem custo em complexidade, latência, dinheiro ou testabilidade. O catálogo abaixo registra esse custo explicitamente.
 
-```
+```text
 Estímulo  ──►  [ Arquitetura + Táticas ]  ──►  Resposta (medida)
                         │
                         └── cada tática altera a resposta a um custo

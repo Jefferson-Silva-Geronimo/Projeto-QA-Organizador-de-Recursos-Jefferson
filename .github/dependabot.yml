@@ -14,5 +14,7 @@ updates:
       # entra por decisão da equipe, nunca por Dependabot.
       - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
         update-types: ["version-update:semver-major"]
+      # springdoc gera o contrato OpenAPI comparado com docs/api/openapi.json (CT-115, R-15): uma versão nova que
+      # altere o JSON reprova a CI de propósito. Só correções (patch) entram sozinhas; o resto é decisão da equipe.
       - dependency-name: "org.springdoc:springdoc-openapi-starter-webmvc-ui"
-        update-types: ["version-update:semver-major"]
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

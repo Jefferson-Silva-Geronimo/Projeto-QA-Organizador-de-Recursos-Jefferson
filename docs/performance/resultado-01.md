@@ -89,6 +89,10 @@ constraint, então esta rodada **não exerceu** o caminho do impasse (BUG-007).
 
 ## 7. Hipótese de gargalo
 
+> **Atualização (rodadas 02 a 04, [resultado-02.md](resultado-02.md)):** a hipótese abaixo, de saturação do pool de conexões, foi
+> **refutada como causa principal**. Com 25 usuários o pool não teve espera e a mediana da criação quase não mudou; a rodada
+> de diagnóstico localizou o custo no `fsync` do PostgreSQL em Docker. O texto original é mantido como registro.
+
 **Hipótese (não confirmada):** a criação é cerca de 10 vezes mais lenta que a consulta (mediana de 247 ms contra 26 ms)
 porque, no caminho de recusa que domina a rodada, cada pedido executa a verificação de conflito, a inserção que falha
 na constraint, o desfazer da transação e uma **segunda transação** que grava a tentativa de conflito

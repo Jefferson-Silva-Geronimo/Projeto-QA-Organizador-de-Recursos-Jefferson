@@ -132,7 +132,7 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 mesclado na `main` em 17/10/2026 |
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Pendências: respostas do professor |
-| 5 | Testes de carga, segurança e robustez (JMeter) | Em andamento: rodada 01 feita (criação de reserva **não atende** a hipótese de p95 de 300 ms), revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos e Dependabot. Pendentes: rodada 02 e decisão sobre limite de tentativas de login |
+| 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Prevista |
 | 7 | Fechamento, relatório de qualidade e prova oral | Prevista |
 

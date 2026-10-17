@@ -506,7 +506,7 @@ As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe de
 
 ### Lacunas que seguem abertas
 
-**Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica registrada, com validação pendente. Responsável pela validação: equipe. Prazo: TODO, a definir pela equipe.
+**Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica registrada, com validação pendente. Responsável pela validação: equipe. Prazo: TODO: a definir pela equipe.
 
 | ID | Pergunta | Afeta | Impacto se assumir errado | Estado |
 | --- | --- | --- | --- | --- |

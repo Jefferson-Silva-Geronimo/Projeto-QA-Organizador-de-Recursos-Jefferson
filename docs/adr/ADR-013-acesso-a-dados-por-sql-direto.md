@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026, por decisão do analista dentro da delegação do usuário; a equipe pode revisar |
 | Data | 15/10/2026 |
 | Origem | Pergunta em aberto de [arquitetura.md](../arquitetura.md), seções 14 e 15 ("acesso a dados") |
-| Decisores | Equipe, com delegação do usuário. Nomes: TODO |
+| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com delegação do usuário. |
 
 ## Contexto
 
