@@ -62,8 +62,8 @@ marcados à parte para não inflar a evidência.
 O gate do JaCoCo roda em `verify`: mínimo de 80% de linhas e 70% de branches no conjunto (ADR-011). A
 suíte completa é executada com `./mvnw clean verify`; o relatório fica em `target/site/jacoco/`.
 
-Medição desta sessão (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **467 testes**, sendo 136 de unidade e
-arquitetura (surefire) e 331 de integração e BDD (failsafe), 0 falhas; **96,7% de linhas** (1551/1604) e **84,6% de
+Medição desta sessão (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **468 testes**, sendo 136 de unidade e
+arquitetura (surefire) e 332 de integração e BDD (failsafe), 0 falhas; **96,7% de linhas** (1551/1604) e **84,6% de
 branches** (438/518). O relatório anterior citava "313 testes": esse número era só a fase de integração.
 
 ## Sessão de fechamento (17/10/2026): o que cada nova evidência prova
@@ -75,7 +75,7 @@ branches** (438/518). O relatório anterior citava "313 testes": esse número er
         Status expected:<409> but was:<500>
 ```
 
-Commit `test(red)` `0a80fc7`; `fix(green)` `61ce37d`, com a suíte inteira verde (467 testes). O segundo caso (log) nasceu
+Commit `test(red)` `0a80fc7`; `fix(green)` `61ce37d`, com a suíte inteira verde (468 testes). O segundo caso (log) nasceu
 verde porque o log foi implementado junto: não conta como vermelho.
 
 ### Testes que passaram de primeira, e a prova de que protegem

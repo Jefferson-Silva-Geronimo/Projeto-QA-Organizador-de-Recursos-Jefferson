@@ -1,0 +1,66 @@
+# Relatório de sessão: fechamento da Fase 4 (17/10/2026)
+
+Branch `fase-4/backend`. Substitui, no que diz respeito a números, o relatório da sessão anterior. Todo número vem
+de execução desta sessão. Meta não atingida consta como não atingida.
+
+## 1. Porta de saída da Fase 4
+
+| Item | Situação | Evidência |
+| --- | --- | --- |
+| RF-01 a RF-14 do back end implementados | **Atingido**, com a ressalva de RF-13 (interface responsiva é da Fase 6) | RTM: 48 linhas "testado" e 1 "parcial" (RF-13), execução E-1 |
+| `./mvnw -B verify` verde local | **Atingido** | 468 testes (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas, `BUILD SUCCESS` |
+| `./mvnw -B verify` verde na CI | **Não verificado para os commits de hoje.** Último run verde (38842897941) é anterior; as mudanças desta sessão não foram enviadas | Depende do push (pendente de aceite) |
+| Gate do JaCoCo 80% e 70% | **Atingido e ligado** | 96,7% de linhas (1551/1604) e 84,6% de branches (438/518), "All coverage checks have been met" |
+| Quality Gate do SonarCloud sem bug ou vulnerabilidade crítica | **Não verificado** | Segredos não configurados; o passo da CI é pulado sem eles |
+| Concorrência verde 5 vezes seguidas | **Não atingido como medido.** 3 execuções isoladas seguidas verdes (7 testes cada); a 4ª e a 5ª, e as repetições seguintes, falharam por **infraestrutura**: o contêiner do PostgreSQL estourou o tempo de inicialização no Docker local (`Timed out waiting for log output`), sem erro de asserção. A classe também passou em todas as execuções completas do `verify` desta sessão | Logs de execução; reexecutar após reiniciar o Docker ou na CI |
+| Concorrência vista vermelha sem a constraint | **Atingido** | `ConcorrenciaApiIT#ct063` remove a constraint, mostra a duplicidade e a restaura |
+| Matriz de autorização sem falha | **Atingido** | `AutorizacaoApiIT`, 137 casos, verdes (BUG-008 corrigido) |
+| `evidencia-tdd.md` com vermelho antes de verde | **Parcial.** Há vermelho antes de verde por fatia e para BUG-007, BUG-008 e BUG-009; BDD, CT-106 e lacunas de risco nasceram verdes e estão declarados assim | [evidencia-tdd.md](testes/evidencia-tdd.md) |
+| Toda linha crítica da RTM com teste e execução | **Atingido, com RF-13 parcial** | [RTM.md](../RTM.md) |
+
+## 2. O que foi feito
+
+- **Diagnóstico (Bloco A):** estado do git, PRs e CI; respostas (a) a (f); `verify` completo medido.
+- **Arquitetura × código (B):** `arquitetura.md` (seções 10 e 10.3) e ADR-001, ADR-013, ADR-014 alinhados ao MVC e ao JDBC; diagramas renderizados (5 de 5). Imagem do PostgreSQL fixada por digest no `compose.yaml` e no Testcontainers.
+- **Qualidade dos testes (C):**
+  - Impasse 40P01: conferido contra RN-30 e ADR-003; **não é inflação**, nenhuma correção.
+  - PIT configurado só como relatório no pacote `model`: 77% (60/78), 0 sobreviventes; 20 testes de risco novos; código morto removido ([mutacao.md](testes/mutacao.md)).
+  - Cucumber 7.23.0: 15 cenários de aprovação e bloqueio, ligados à RTM, executados no failsafe ([bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md)).
+- **TDD (D):** a janela de não compareceu já existia; usado o CT-106 (troca do provedor), com 5 casos e 1 refactor, todos verdes de primeira e provados por falha injetada.
+- **Defeito novo achado e corrigido:** **BUG-009** (falha ao gravar a tentativa de conflito derrubava o 409 em 500), com vermelho `0a80fc7` e verde `61ce37d`.
+- **Documentação (E):** RTM preenchida, plano de teste com números medidos, `ciclo-01.md`, causa raiz de BUG-001 a BUG-009, `decisoes-equipe.md`, `perguntas-professor.md`, issues retroativas 3 a 8 abertas e fechadas.
+
+## 3. O que NÃO foi feito
+
+| Item | Motivo |
+| --- | --- |
+| Quality Gate do SonarCloud | Depende dos segredos e da organização (Bloco F, ação do usuário) |
+| Proteção da `main` | `gh api` devolveu HTTP 403: "Upgrade to GitHub Pro or make this repository public" |
+| Revisão assistida dos PRs 1 e 2 e merge (Bloco G) | Exige enviar a branch (push), que aguarda aceite; merge exige confirmação explícita. O PR 2 tem 168 arquivos e provavelmente precisa de divisão por fatia (a propor) |
+| `tutorial.md` e `update-tutorial` | O arquivo não existe no repositório e a skill `update-tutorial` não foi encontrada em `.aiox-core` nem em `.claude` |
+| `analyze-docs` completa | Foram executadas só as verificações mecânicas (links relativos, fences, colunas de tabela, renderização Mermaid). Não foram feitas: ortografia, fidelidade à especificação, IDs cruzados, termos canônicos e números sem origem |
+| Concorrência 5 vezes seguidas | Ver seção 1: falha de infraestrutura local |
+| Desempenho (CEN-04, R-21) | Fase 5 |
+| R-23 com papel privilegiado | Teste não escrito |
+
+## 4. Suposições abertas
+
+Registradas em [decisoes-equipe.md](decisoes-equipe.md), seção 4: D1, D3, D4, D9, D17, granularidade em segundos, revisão por pares e as lacunas 1 a 8. Nenhuma bloqueia; todas têm o impacto e o teste que as isola.
+
+## 5. Ações pendentes
+
+**Do usuário (Bloco F e aceites):**
+
+1. Importar o repositório no SonarCloud e anotar organização e project key. Atenção: o repositório é privado e o plano gratuito do SonarCloud pode não cobrir repositório privado; **confira antes**.
+2. `gh secret set SONAR_TOKEN` (digite o valor no prompt).
+3. `gh variable set SONAR_ORGANIZATION --body "<org>"` e `gh variable set SONAR_PROJECT_KEY --body "<key>"`.
+4. Decidir sobre a proteção da `main`: tornar o repositório público, assinar o GitHub Pro, ou manter sem proteção e registrar a limitação.
+5. Autorizar o `git push` da branch `fase-4/backend` (22 commits locais não enviados) e o início das revisões dos PRs.
+6. Ratificar as linhas "aceitas em bloco" de `decisoes-equipe.md`.
+7. Reiniciar o Docker e reexecutar a concorrência 5 vezes, ou aceitar a evidência da CI.
+
+**Do professor:** a mensagem única está em [perguntas-professor.md](perguntas-professor.md) (A1 a A8, D1, D3, D4, D9, D17, revisão por pares e precisão em segundos).
+
+## 6. Próximo passo
+
+Fase 5: carga com JMeter e testes de segurança e robustez, depois Fase 6 (front end React) e Fase 7. Antes: concluir os Blocos F e G (SonarCloud, revisão e merge dos PRs 1 e 2).

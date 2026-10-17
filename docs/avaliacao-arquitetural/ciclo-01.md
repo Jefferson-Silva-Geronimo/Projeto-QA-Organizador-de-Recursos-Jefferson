@@ -9,7 +9,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 - **Fato**: confirmado em arquivo e linha, ou em execução desta sessão.
 - **Não verificado**: nenhuma evidência foi produzida; consta como tal, nunca como aprovado.
 - Linhas citadas são do commit da avaliação; podem mudar com edições posteriores.
-- Medições desta sessão: `./mvnw -B clean verify` verde, 467 testes (136 de unidade e arquitetura, 331 de
+- Medições desta sessão: `./mvnw -B clean verify` verde, 468 testes (136 de unidade e arquitetura, 332 de
   integração e BDD), 0 falhas; cobertura de linhas 96,7% (1551/1604) e de branches 84,6% (438/518); mutação do
   pacote `model` 77% (60/78), 0 sobreviventes ([mutacao.md](../testes/mutacao.md)).
 - **Não medidos nesta sessão:** desempenho (JMeter, Fase 5) e SonarCloud (segredos pendentes, Bloco F).
