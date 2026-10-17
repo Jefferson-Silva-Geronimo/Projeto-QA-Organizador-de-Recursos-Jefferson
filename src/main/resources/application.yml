@@ -28,6 +28,11 @@ app:
       email: ${BOOTSTRAP_ADMIN_EMAIL:}
       senha: ${BOOTSTRAP_ADMIN_SENHA:}
 
+logging:
+  pattern:
+    # Correlação por requisição (RNF-12): o filtro CorrelacaoFilter preenche o MDC.
+    level: "%5p [%X{correlacao:-}]"
+
 server:
   error:
     include-message: never

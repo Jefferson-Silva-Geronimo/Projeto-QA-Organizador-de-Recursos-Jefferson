@@ -5,6 +5,7 @@ import br.senac.recursos.exception.ErroDeNegocio;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.NestedExceptionUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -45,8 +46,10 @@ class TratadorDeErros extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     ResponseEntity<ProblemDetail> inesperado(Exception ex) {
-        // O detalhe fica só no log do servidor. A resposta é genérica.
-        LOG.error("Falha interna não tratada", ex);
+        // A resposta é genérica. O log traz a classe, a causa e o ponto do código, mas não a mensagem nem a pilha:
+        // mensagens do banco podem carregar valores de colunas (e-mail, por exemplo).
+        LOG.error("Falha interna não tratada: classe={}, causa={}, onde={}", ex.getClass().getSimpleName(),
+                NestedExceptionUtils.getMostSpecificCause(ex).getClass().getSimpleName(), pontoDoCodigo(ex));
         return negocio(new ErroDeNegocio(CodigoErro.ERRO_INTERNO));
     }
 
@@ -99,5 +102,16 @@ class TratadorDeErros extends ResponseEntityExceptionHandler {
 
     private static String mensagemPara(HttpStatusCode status) {
         return codigoPara(status).mensagemPadrao();
+    }
+
+    /** Primeira linha da pilha dentro do código do projeto; só nomes de classe e de método, nunca texto livre. */
+    private static String pontoDoCodigo(Throwable ex) {
+        for (StackTraceElement e : ex.getStackTrace()) {
+            if (e.getClassName().startsWith("br.senac.recursos.")) {
+                return e.getClassName().substring(e.getClassName().lastIndexOf('.') + 1) + "." + e.getMethodName()
+                        + ":" + e.getLineNumber();
+            }
+        }
+        return "desconhecido";
     }
 }
