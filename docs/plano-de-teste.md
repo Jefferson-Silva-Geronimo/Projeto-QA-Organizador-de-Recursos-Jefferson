@@ -10,8 +10,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | --- | --- |
 | Projeto | Organização de Recursos |
 | Documento | Plano de teste |
-| Versão e estado | 0.2, completado na fatia 4.0 da Fase 4 |
-| Data | 15/10/2026 |
+| Versão e estado | 0.3, com os números medidos ao fechar a Fase 4 |
+| Data | 17/10/2026 |
 | Responsável | Equipe. Nomes: TODO |
 | Aprovação | TODO: professor e equipe |
 
@@ -72,7 +72,7 @@ Níveis exigidos pela especificação (seção 5). Ferramentas e versões são d
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
 | Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
 | Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: TODO |
-| TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TODO: escolha da funcionalidade | Candidata natural: regras de aprovação e bloqueio, conforme o cronograma da especificação |
+| TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TDD por fatia com commits `test(red)`, `feat(green)` e `refactor`; BDD com Cucumber para aprovação e bloqueio (15 cenários) | Evidência em [evidencia-tdd.md](testes/evidencia-tdd.md) e [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). A granularidade do TDD é por fatia, não por caso |
 
 ### 4.1 Técnicas de projeto de teste
 
@@ -115,6 +115,19 @@ Metas da especificação (seção 6):
 | Requisitos críticos na RTM | 100% |
 | Bugs ou vulnerabilidades críticos | 0 |
 
+Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; a evidência de CI será a E-2, depois do push):
+
+| Meta | Meta da especificação | Medido | Situação |
+| --- | --- | --- | --- |
+| Cobertura de linhas | 80% | 96,7% (1551/1604) | Atingida, com gate no `verify` |
+| Cobertura de branches | 70% | 84,6% (438/518) | Atingida, com gate no `verify` |
+| Requisitos críticos na RTM | 100% | 12 de 12 RF críticos e 8 de 8 RN críticas com linha; 11 dos 12 RF críticos como "testado" e RF-13 como "parcial" | **Parcial:** a interface responsiva de RF-13 é da Fase 6 |
+| Bugs ou vulnerabilidades críticos | 0 | Não verificado | SonarCloud ainda sem segredos configurados (Bloco F) |
+| Testes | — | 468 (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas | — |
+| Mutação do pacote `model` (sem meta) | — | 77% (60/78), 0 sobreviventes | Referência, ver [mutacao.md](testes/mutacao.md) |
+
+Itens não testados nesta fase: desempenho e carga (Fase 5), interface e ponta a ponta (Fase 6), SonarCloud, valores das lacunas D1, D3, D4, D9 e D17, e papel privilegiado alterando a auditoria (R-23).
+
 Proposta da equipe, a validar:
 
 - Todo requisito e regra crítica com ao menos um caso de teste executado, com evidência registrada na RTM.
@@ -137,13 +150,13 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | --- | --- | --- |
 | Este plano de teste | Especificação, seção 7 | Esqueleto |
 | Casos de teste identificados por CT-xxx | [casos-de-teste.md](testes/casos-de-teste.md) | Feito na fatia 4.0; execução por fatia |
-| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Esqueleto |
-| Suíte automatizada e relatório de testes | Especificação, seção 7 | TODO |
-| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | TODO |
+| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Feito na Fase 4 (E-1) |
+| Suíte automatizada e relatório de testes | Especificação, seção 7 | Feito: 468 testes no `verify` e na CI |
+| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | JaCoCo feito; SonarCloud pendente (Bloco F) |
 | Plano e resultado do teste de carga | Especificação, seção 7 | TODO |
-| Registro de defeitos | Especificação, seção 7 | TODO |
+| Registro de defeitos | Especificação, seção 7 | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
 | Relatório final de qualidade | Especificação, seção 7 | TODO |
-| Evidência de TDD ou BDD | Especificação, seção 5 | TODO |
+| Evidência de TDD ou BDD | Especificação, seção 5 | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
 ## 7. Ambiente
 
@@ -206,7 +219,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | TODO: nomes |
-| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | TODO |
+| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; pergunta ao professor em [perguntas-professor.md](perguntas-professor.md) |
 | Professor | Validar as decisões pendentes de confirmação | TODO |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
@@ -231,9 +244,9 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 
 ## 10. Rastreabilidade
 
-- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco inicial e status **não iniciado**.
-- Casos de teste usam o prefixo CT-xxx e serão ligados na RTM a partir da Fase 4.
-- Defeitos usam o prefixo BUG-xxx e serão registrados em `docs/defeitos/` a partir da Fase 3.
+- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco, caso de teste, evidência e status (48 testados e 1 parcial em 17/10/2026).
+- Casos de teste usam o prefixo CT-xxx e estão ligados na RTM desde a Fase 4.
+- Defeitos usam o prefixo BUG-xxx e são registrados em `docs/defeitos/` desde a Fase 3.
 - Identificadores: RN-xx, RF-xx, RNF-xx, CEN-xx, ADR-xxx, CT-xxx, INT-xx, BUG-xxx e R-xx.
 
 ## 11. Pendências
@@ -246,5 +259,5 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 | Política de dados e de limpeza dos testes | Fase 3 |
 | Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe e professor |
 | Confirmação de A1, A3 e A5 | Professor |
-| Escolha da funcionalidade de TDD ou BDD | Fase 4 |
+| ~~Escolha da funcionalidade de TDD ou BDD~~ | Feito na Fase 4 |
 | Nomes e prazos dos responsáveis | Equipe |

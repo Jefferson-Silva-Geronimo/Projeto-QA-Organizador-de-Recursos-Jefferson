@@ -103,10 +103,12 @@ docs/
     fluxos-sequencia.md    14 diagramas de sequência
   arquitetura.md       drivers, C4, painel, matriz e porta de saída da Fase 2
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
-  adr/                 ADR-001 a ADR-012 (decisões de arquitetura)
-  avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11)
-  testes/              (vazio)
-  defeitos/            README.md: processo, labels e índice BUG-xxx
+  adr/                 ADR-001 a ADR-014 (decisões de arquitetura)
+  avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
+  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD e mutação
+  defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
+  decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
+  perguntas-professor.md   mensagem consolidada ao professor
   performance/         (vazio)
 perf/                  testes de carga com JMeter (vazio)
 frontend/              React + Vite (vazio)
@@ -114,7 +116,8 @@ pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrappe
 compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
 src/main/java/br/senac/recursos/   MVC (ADR-014): controller, dto, service, repository, model, exception, config, security
 src/main/resources/    application.yml (só variáveis de ambiente) e db/migration (Flyway)
-src/test/java/         ArquiteturaTest e ContextoIT
+src/test/java/         testes de unidade, de arquitetura, de API (MockMvc + PostgreSQL real) e Cucumber (bdd/)
+src/test/resources/features/   cenários BDD de aprovação e bloqueio
 .github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md e workflows/ci.yml (Fase 3)
 .aiox-core/            framework de agentes, instalado, com as skills do projeto
 .claude/, .codex/, .cursor/, .gemini/, .antigravity/, .grok/, .kimi/   configuração de agentes e IDEs, geradas pelo aiox-core
@@ -127,8 +130,8 @@ src/test/java/         ArquiteturaTest e ContextoIT
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
 | 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
 | 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
-| 3 | Casca Maven, integração contínua e processo de defeitos | Prevista |
-| 4 | Back end guiado por testes (TDD e BDD) | Prevista |
+| 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 aberto, aguardando merge |
+| 4 | Back end guiado por testes (TDD e BDD) | Back end e testes concluídos (468 testes, 96,7% de linhas, 84,6% de branches); PR 2 aberto, aguardando merge. Pendentes: Quality Gate do SonarCloud e proteção da `main` |
 | 5 | Testes de carga e concorrência (JMeter) | Prevista |
 | 6 | Front end | Prevista |
 | 7 | Fechamento, relatório de qualidade e prova oral | Prevista |
@@ -143,6 +146,16 @@ Fonte: especificação, seção 6.
 | Cobertura de branches | 70% |
 | Requisitos críticos na RTM | 100% |
 | Bugs ou vulnerabilidades críticos | 0 |
+
+## Limitações conhecidas
+
+- **Revisão por pares:** a equipe é uma pessoa, então não há revisão por par humano. No lugar, cada pull request
+  recebe uma revisão crítica assistida, registrada como comentário e identificada como tal, e a `main` deve exigir pull
+  request e check obrigatório com zero aprovações (o autor não pode aprovar o próprio PR). **Estado atual:** a
+  proteção ainda não foi aplicada; depende de ação do usuário. A pergunta ao professor
+  está em [docs/perguntas-professor.md](docs/perguntas-professor.md).
+- **Valores sem decisão (D1, D3, D4, D9, D17):** sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
+- **SonarCloud:** análise ligada na CI, mas só executa com os segredos configurados.
 
 ## Convenções
 

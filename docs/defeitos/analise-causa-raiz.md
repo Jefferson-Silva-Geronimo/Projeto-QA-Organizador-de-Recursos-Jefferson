@@ -1,11 +1,11 @@
-# Análise de causa raiz: BUG-001 a BUG-008
+# Análise de causa raiz: BUG-001 a BUG-009
 
 Complementa o índice de [README.md](README.md). Cada defeito traz o que aconteceu, a causa raiz, como corrigir, o
 teste de regressão e o commit. As fontes são as mensagens e os arquivos dos commits de correção; onde a causa é uma
 inferência, ela está marcada como **inferência**. Nenhum dado de pessoa, token ou segredo consta aqui.
 
 BUG-001 a BUG-005 nasceram em documentação e foram achados em revisão; BUG-006, na casca do projeto, achado na CI;
-BUG-007 e BUG-008, em código, achados por teste. Os seis primeiros foram achados e corrigidos antes de existir o
+BUG-007 e BUG-008, em código, achados por teste; BUG-009, em código, achado pela avaliação arquitetural e confirmado por teste. Os seis primeiros foram achados e corrigidos antes de existir o
 processo de issues; a abertura retroativa de issues para BUG-001 a BUG-006 depende de aceite do usuário
 (ver [decisoes-equipe.md](../decisoes-equipe.md)).
 
@@ -111,3 +111,19 @@ processo de issues; a abertura retroativa de issues para BUG-001 a BUG-006 depen
 - **Teste de regressão:** CT-117 a CT-121 em `AutorizacaoApiIT` (137 casos), vermelho em `d793879` e verde em
   `73488e5`.
 - **Commit:** `73488e5`.
+
+## BUG-009: falha ao gravar a tentativa de conflito derrubava o 409
+
+- **O que aconteceu:** quando a gravação da tentativa de conflito (RN-30) falhava, o solicitante recebia 500 em vez
+  do 409 de conflito. Achado ao comparar a decisão de 15/10/2026 com o código no
+  [ciclo-01.md](../avaliacao-arquitetural/ciclo-01.md) (DV-01) e confirmado por teste com falha injetada.
+- **Causa raiz:** a tentativa é gravada em transação separada, depois do desfazer (ADR-003). A decisão previa que,
+  se essa gravação falhasse, "o 409 é mantido e a perda vai para o log", mas `registrarEConverter` chamava
+  `tentativas.registrar(...)` sem tratar a exceção e a classe não tinha `Logger`. Era uma decisão aprovada e não
+  implementada, a mesma classe de causa de BUG-007.
+- **Como corrigir:** envolver a gravação em `try/catch` de `RuntimeException`, registrar a perda em nível ERROR com
+  recurso e motivo (sem dado pessoal) e devolver o 409 normalmente.
+- **Teste de regressão:** `FalhaNaTentativaApiIT`, dois casos. O primeiro (409 mantido) foi visto vermelho em
+  `0a80fc7` (esperado 409, obtido 500). O segundo (log sem dado pessoal) nasceu verde porque o log foi implementado
+  junto com a correção.
+- **Commit:** `61ce37d`.

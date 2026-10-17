@@ -36,9 +36,13 @@ aumentar a evidência. A rastreabilidade por caso está na RTM (`RTM.md`) e em `
 | Relatório | CT-107 a CT-113 | `4b3a176` | `ea43349` | — |
 | Documentação da API | CT-114 a CT-116 | `54c1ddf` | `eea2581` | — |
 | Matriz de autorização e entrada inválida | CT-117 a CT-121 | `d793879` | `73488e5` (BUG-008) | — |
+| Falha ao gravar a tentativa de conflito (BUG-009) | `FalhaNaTentativaApiIT` | `0a80fc7` | `61ce37d` | — |
 | Lacunas de risco da cobertura | LacunasDeRiscoApiIT | — | — | — |
+| Lacunas de risco do PIT (horas de funcionamento, eventos de auditoria, período da reserva) | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest`, `ReservaTest` | — | — | `721180b` (código morto removido) |
+| Cenários BDD de aprovação e bloqueio (BDD-01 a BDD-08, 15 cenários) | `aprovacao-bloqueio.feature`, `CucumberIT` | — | — | — |
+| Troca do provedor (CT-106) | `TrocaDeProvedorTest`, `TrocaDeProvedorApiIT`, `ProvedorIsoladoArquiteturaTest` | — (5 casos, `40834ed`, `638687d`, `ee0df5e`, `aa7cf1f`, `8632606`) | — | `da77cb6` |
 
-A linha final tem comportamento que **já existia**: os testes foram escritos depois do código, por indicação
+As linhas sem red (lacunas de risco, PIT, BDD e CT-106) têm comportamento que **já existia**: os testes foram escritos depois do código, por indicação
 do relatório de cobertura (Prompt 4.C). Passaram na primeira execução e não substituem o ciclo TDD. Estão
 marcados à parte para não inflar a evidência.
 
@@ -58,4 +62,35 @@ marcados à parte para não inflar a evidência.
 O gate do JaCoCo roda em `verify`: mínimo de 80% de linhas e 70% de branches no conjunto (ADR-011). A
 suíte completa é executada com `./mvnw clean verify`; o relatório fica em `target/site/jacoco/`.
 
-Medição ao fechar a Fase 4 (313 testes): **96,6% de linhas** (1546/1601) e **83,2% de branches** (436/524).
+Medição desta sessão (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **467 testes**, sendo 136 de unidade e
+arquitetura (surefire) e 331 de integração e BDD (failsafe), 0 falhas; **96,7% de linhas** (1551/1604) e **84,6% de
+branches** (438/518). O relatório anterior citava "313 testes": esse número era só a fase de integração.
+
+## Sessão de fechamento (17/10/2026): o que cada nova evidência prova
+
+### BUG-009: vermelho antes de verde, com trecho da saída
+
+```text
+[ERROR] FalhaNaTentativaApiIT.bug009_seAGravacaoDaTentativaFalharOConflitoContinuaSendo409:66
+        Status expected:<409> but was:<500>
+```
+
+Commit `test(red)` `0a80fc7`; `fix(green)` `61ce37d`, com a suíte inteira verde (467 testes). O segundo caso (log) nasceu
+verde porque o log foi implementado junto: não conta como vermelho.
+
+### Testes que passaram de primeira, e a prova de que protegem
+
+Não há vermelho possível para código que já existia; em vez dele, uma falha foi injetada na regra, a suíte rodou e a
+fonte foi restaurada (nada disso foi commitado).
+
+| Teste | Falha injetada | Resultado |
+| --- | --- | --- |
+| BDD-02 (dono Responsável), BDD-04 e BDD-08 | Aprovação do dono desligada em `AprovacaoService` e `CONCLUIDA` permitida a partir de APROVADA em `MaquinaDeEstados` | 3 cenários vermelhos: `expected: 403` (2) e `expected: 409` (1); 12 verdes |
+| `TrocaDeProvedorTest` (3 casos) | `ENVIADA`, `RECUSADA` e `FALHA_TEMPORARIA` mapeados para o status errado em `DespachoDeNotificacoesService` | 3 vermelhos: `expected: PENDENTE but was: FALHA`, `expected: FALHA but was: PENDENTE`, `expected: ENVIADA but was: PENDENTE` |
+| `HorasDeFuncionamentoTest`, `EventoAuditoriaTest` | PIT (mutantes gerados pela ferramenta) | 0 sobreviventes entre os mutantes cobertos ([mutacao.md](mutacao.md)) |
+
+### Limites desta sessão
+
+- BDD e CT-106 não são TDD: o código existia. Valem como evidência de comportamento especificado e verificado.
+- `ProvedorIsoladoArquiteturaTest` é redundante com a visibilidade do pacote (`WebhookNotificador` não é público) e
+  vale como documentação executável.
