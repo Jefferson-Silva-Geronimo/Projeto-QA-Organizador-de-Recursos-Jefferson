@@ -1,6 +1,7 @@
 package br.senac.recursos.model.regra;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,5 +37,21 @@ class LimiteDeLoginTest {
         Instant falha = AGORA.minusMillis(idadeEmMs);
 
         assertThat(LIMITE.bloqueado(List.of(falha, falha, falha), AGORA)).isEqualTo(esperado);
+    }
+
+    @ParameterizedTest(name = "{0} tentativas, janela de {1} s -> recusado")
+    @CsvSource({"0,600", "-1,600", "3,0", "3,-1"})
+    void configuracaoInvalidaEhRecusada(int tentativas, long janelaEmSegundos) {
+        Duration janela = Duration.ofSeconds(janelaEmSegundos);
+
+        assertThatThrownBy(() -> new LimiteDeLogin(tentativas, janela)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @ParameterizedTest(name = "{0} tentativas, janela de {1} s -> aceito")
+    @CsvSource({"1,1", "3,600"})
+    void configuracaoNoLimiteEhAceita(int tentativas, long janelaEmSegundos) {
+        LimiteDeLogin limite = new LimiteDeLogin(tentativas, Duration.ofSeconds(janelaEmSegundos));
+
+        assertThat(limite.tentativas()).isEqualTo(tentativas);
     }
 }
