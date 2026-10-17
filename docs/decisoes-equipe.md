@@ -11,7 +11,6 @@ lacunas: [perguntas-abertas.md](prd/perguntas-abertas.md). Perguntas ao professo
 | --- | --- |
 | Decisão da equipe | Escolha aceita por Jefferson na conversa, com a data |
 | Pré-aprovada | Aceita de antemão por Jefferson para um escopo definido; a validar com o professor |
-| Aceita em bloco | Jefferson autorizou o conjunto ("pode seguir com tudo, desde que esteja correto e de acordo com as nossas especificações", 17/10/2026) antes de ver a tabela item a item. **Ratificar** cada linha na próxima revisão deste arquivo |
 | Suposição | Premissa adotada sem resposta do professor, com o impacto se estiver errada e o teste que a isola |
 
 ## 1. Decisões anteriores (Fases 1 e 2)
@@ -26,17 +25,19 @@ Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md), com status "Dec
 | Decisões ao aplicar C | D5 a D8 | 12/10/2026 | Equipe (Jefferson) | — |
 | Revisão das Fases 0 e 1, Fase 2 | D2, D10 a D16 | 15/10/2026 | Equipe (Jefferson) | D2 com a suposição S6 |
 | Estrutura MVC | ADR-014 | 15/10/2026 | Jefferson, por determinação | Instrução do usuário na Fase 4 |
-| Acesso a dados por JDBC | ADR-013 | 15/10/2026 | Analista dentro da delegação do usuário | "A equipe pode revisar": ratificado em bloco em 17/10/2026 |
+| Acesso a dados por JDBC | ADR-013 | 15/10/2026 | Analista dentro da delegação do usuário | "A equipe pode revisar": ver DS-01 (17/10/2026) |
 
 ## 2. Decisões desta sessão (17/10/2026)
 
-Cada linha traz a recomendação, a alternativa descartada, o motivo e a origem. Aceite: **em bloco por Jefferson,
-17/10/2026**, a ratificar.
+Cada linha traz a recomendação, a alternativa descartada, o motivo e a origem. **Decisão da equipe (Jefferson),
+17/10/2026**: DS-01 a DS-08 e SQ-01 a SQ-03 foram apresentadas e confirmadas por ele (DS-01, DS-02 e DS-03 uma a uma;
+DS-04 a DS-08 e SQ-03 juntas, com "confirmo"). DS-02 teve a variante escolhida por ele: diagrama único em MVC, com nota
+para a visão hexagonal original.
 
 | ID | Decisão | Alternativa descartada | Motivo | Origem |
 | --- | --- | --- | --- | --- |
 | DS-01 | ADR-001 passa a "Aceito, emendado" pelos ADR-013 e ADR-014; o texto original fica preservado com uma nota de emenda | Marcar como "Substituído" | Seguem valendo o monólito de um artefato, o Spring Boot 3.x, a transação local e o domínio sem Spring. Só mudaram a estrutura de pacotes e o acesso a dados | ADR-014; ADR-013; código em `src/main` |
-| DS-02 | `arquitetura.md`, seção 10.3, redesenhada com a estrutura MVC e os nomes reais de componente; tabela 10.4 acrescenta a integração e o relógio | Manter o diagrama hexagonal com uma tabela de correspondência | O diagrama divergia do código; a tabela sozinha obrigava o leitor a traduzir | Plano mestre, Bloco B; `ArquiteturaTest` |
+| DS-02 | `arquitetura.md`, seção 10.3, redesenhada só com a estrutura MVC e os nomes reais de componente; tabela 10.4 acrescenta a integração e o relógio; nota aponta o ADR-001 e o histórico do Git para a visão hexagonal original | Manter o diagrama hexagonal com uma tabela de correspondência; manter os dois diagramas (risco de divergir de novo, como em BUG-005) | O diagrama divergia do código; a tabela sozinha obrigava o leitor a traduzir | Plano mestre, Bloco B; `ArquiteturaTest` |
 | DS-03 | A imagem do PostgreSQL é fixada por digest do índice multi-arquitetura, lido do Docker Hub em 17/10/2026, no `compose.yaml` e no Testcontainers | Manter a tag móvel `17` | A tag mudou de digest entre a máquina local (7 semanas) e o registro; o banco do teste mudaria sem alteração de código | Registro Docker Hub; `verify` verde com o digest |
 | DS-04 | **Nenhuma correção** do tratamento do impasse 40P01 (BUG-007) e nenhum BUG-009 | Não contar o impasse em `tentativas_conflito` | A RN-30 manda gravar o pedido perdedor de uma disputa simultânea; o ADR-003 manda tratar o impasse como conflito; o CT-060 exige exatamente uma tentativa por recusa. Não há inflação | RN-30; ADR-003; `ConcorrenciaApiIT` |
 | DS-05 | PIT só como relatório, no pacote `model`, fora do `verify`, sem meta | Gate de mutação | O plano pede relatório; a especificação não define meta de mutação | Plano mestre, Bloco C |
@@ -60,7 +61,7 @@ O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%
 | --- | --- | --- | --- |
 | SQ-01 | `java:S2699`, `AutorizacaoApiIT:172`: teste sem asserção | Procedente: o teste só gerava o arquivo da matriz | **Corrigido:** passa a afirmar que `docs/testes/matriz-autorizacao.md` é igual à lista de operações testada |
 | SQ-02 | `java:S6437`, `AutenticacaoService:45`: senha comprometida | Não era credencial: senha-isca para tempo constante no login. Literal fixo é evitável | **Corrigido:** senha-isca aleatória por inicialização (`UUID`) |
-| SQ-03 | `java:S4502`, `SegurancaConfig:43`: CSRF desligado | CSRF só ameaça autenticação por cookie. A API é stateless e o token vai no cabeçalho `Authorization` (ADR-004) | **Aceito com justificativa** no código (`NOSONAR java:S4502`) e aqui. Decisão a ratificar por Jefferson |
+| SQ-03 | `java:S4502`, `SegurancaConfig:43`: CSRF desligado | CSRF só ameaça autenticação por cookie. A API é stateless e o token vai no cabeçalho `Authorization` (ADR-004) | **Aceito com justificativa** no código (`NOSONAR java:S4502`) e aqui. Confirmada por Jefferson em 17/10/2026 |
 
 ## 3. Pré-aprovada
 

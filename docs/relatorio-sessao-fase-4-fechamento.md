@@ -50,7 +50,7 @@ Registradas em [decisoes-equipe.md](decisoes-equipe.md), seção 4: D1, D3, D4, 
 
 **Do usuário:**
 
-1. Ratificar as linhas "aceitas em bloco" de `decisoes-equipe.md`, uma a uma, e SQ-03 (CSRF desligado, aceito com justificativa).
+1. ~~Ratificar as decisões DS-01 a DS-08 e SQ-01 a SQ-03~~ **Feito** em 17/10/2026: todas confirmadas por Jefferson (ver `decisoes-equipe.md`).
 2. Revogar o token do SonarCloud que foi colado na conversa (já substituído por outro no GitHub), se ainda não fez.
 3. Responder ao professor (abaixo) e decidir cada lacuna com as alternativas que eu mostrar.
 
