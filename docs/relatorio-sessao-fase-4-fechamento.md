@@ -55,7 +55,7 @@ Registradas em [decisoes-equipe.md](decisoes-equipe.md), seção 4: D1, D3, D4, 
 2. `gh secret set SONAR_TOKEN` (digite o valor no prompt).
 3. `gh variable set SONAR_ORGANIZATION --body "<org>"` e `gh variable set SONAR_PROJECT_KEY --body "<key>"`.
 4. Decidir sobre a proteção da `main`: tornar o repositório público, assinar o GitHub Pro, ou manter sem proteção e registrar a limitação.
-5. Autorizar o `git push` da branch `fase-4/backend` (22 commits locais não enviados) e o início das revisões dos PRs.
+5. Autorizar o `git push` da branch `fase-4/backend` (24 commits locais não enviados, contados antes deste ajuste) e o início das revisões dos PRs.
 6. Ratificar as linhas "aceitas em bloco" de `decisoes-equipe.md`.
 7. Reiniciar o Docker e reexecutar a concorrência 5 vezes, ou aceitar a evidência da CI.
 
