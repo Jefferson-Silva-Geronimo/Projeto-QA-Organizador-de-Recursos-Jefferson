@@ -98,3 +98,13 @@ com alternativas e escolhida por Jefferson.
 | P5-07 | Log registra a classe da exceção, mensagem saneada (sem detalhe do banco) e identificador de correlação | Só classe e identificador; manter como está | Teste de log: violação de constraint com e-mail fictício e verificação de que ele não aparece no log |
 | P5-08 | Teste com papel de banco que não é dono da tabela: não altera, não apaga e não remove o gatilho da auditoria | Separar papel de migração e de aplicação já; aceitar o risco | Registrar o papel que a aplicação usa; se for o dono, risco aceito com nome e motivo, e a opção B vai para a dívida técnica do relatório final |
 | P5-09 | Autorrevisão estruturada + revisão assistida registrada em cada PR + ferramentas automáticas (Sonar e CodeRabbit se disponível) | Só revisão externa; só ferramentas | Checklist no modelo de PR preenchido por Jefferson; intervalo mínimo entre abrir e mesclar registrado no modelo; chamar de "revisão assistida", nunca de "revisão por pares"; revisão externa nos PRs críticos se o professor exigir; pergunta ao professor mantida em `perguntas-professor.md` |
+
+### Resultado da execução de P5-08 e risco aceito R-23 (17/10/2026)
+
+| Item | Registro |
+| --- | --- |
+| Papel que a aplicação usa de verdade | O **dono** das tabelas: o mesmo usuário que roda as migrações. No teste, o usuário do contêiner; no desenvolvimento local, `POSTGRES_USER` do `.env` |
+| O que o teste prova | Um papel que não é dono, mesmo com todos os privilégios de dados, não altera, não apaga, não trunca nem desliga o gatilho da auditoria (`AuditoriaPapelIT`, provado por mutação) |
+| O que o teste não cobre | O papel dono da aplicação **pode** desligar o gatilho |
+| **Risco aceito R-23** | **Aceito por Jefferson em 17/10/2026.** Motivo: separar o papel de migração do de aplicação é endurecimento de implantação, fora do que a especificação pede, e o projeto não tem ambiente de produção. O gatilho já protege contra qualquer caminho do código da aplicação |
+| Dívida técnica | **Opção B** (papéis separados para migração e para aplicação) vai para a dívida técnica do relatório final |
