@@ -1,0 +1,71 @@
+# Integração contínua (Fase 3, Aula 06). Mesmo comando do terminal: ./mvnw -B verify
+# Sem segredos, sem continue-on-error e sem pull_request_target.
+# Ações fixadas por SHA de commit, com a versão no comentário.
+name: qualidade
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qualidade-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0 # o SonarCloud precisa do histórico para atribuir código novo
+
+      - name: Java 21 (Temurin) com cache do Maven
+        uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5.7.0
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Verificar (unidade, arquitetura e integração com banco real)
+        run: ./mvnw -B -ntp verify
+
+      - name: Relatórios do Surefire e do Failsafe
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: relatorios-de-teste
+          path: |
+            target/surefire-reports
+            target/failsafe-reports
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Relatório de cobertura do JaCoCo
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: relatorio-jacoco
+          path: target/site/jacoco
+          retention-days: 7
+          if-no-files-found: warn
+
+      # Análise do SonarCloud. O token vem do secret SONAR_TOKEN e nunca é escrito em arquivo ou log.
+      # Sem o secret (por exemplo, pull request de fork ou projeto ainda não importado), o passo avisa e segue.
+      - name: Análise do SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+          SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_ORGANIZATION" ] || [ -z "$SONAR_PROJECT_KEY" ]; then
+            echo "::notice title=SonarCloud::SONAR_TOKEN, SONAR_ORGANIZATION ou SONAR_PROJECT_KEY ausente. Análise não executada."
+            exit 0
+          fi
+          ./mvnw -B -ntp org.sonarsource.scanner.maven:sonar-maven-plugin:5.8.0.7211:sonar -Dsonar.qualitygate.wait=true

@@ -1,0 +1,30 @@
+# Toda configuração sensível vem de variável de ambiente. Nenhum valor secreto neste arquivo.
+spring:
+  application:
+    name: organizacao-recursos
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none   # ADR-009: o esquema nasce só das migrações
+  flyway:
+    enabled: true
+
+server:
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
