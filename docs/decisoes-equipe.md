@@ -141,3 +141,19 @@ usam os mesmos 5 e 10 minutos.
 Limitações conhecidas: (1) o e-mail da tentativa falha é guardado durante a janela (dado pessoal de vida curta; ligado à
 lacuna D9); (2) um atacante pode bloquear a conta de outra pessoa de propósito (risco inerente à opção A); (3) tentativas
 simultâneas podem passar de N por pouco, porque a checagem e o registro não são atômicos.
+
+## 7. Fechamento da Fase 5 antes da Fase 6 (17/10/2026)
+
+**Decisão da equipe (Jefferson), 17/10/2026**, aceitando as recomendações apresentadas, sempre dentro da especificação e do
+plano mestre. Origem: plano mestre, seção 9 (porta de saída da Fase 5) e Prompt 5.B.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F5-01 | **Rodada 02 de carga agora**, para separar o efeito da máquina do custo por requisição. Uma variável por vez: rodada 02 com 50 usuários e alvos sorteados, e rodada 03 com 25 usuários, ambas com métricas de CPU e do pool. Otimização só se o dado apontar o código, em TDD, com teste de desempenho antes | Refazer a medição só na Fase 7 |
+| F5-02 | **`analyze-docs` completo antes da Fase 6** (ortografia, IDs cruzados, termos canônicos, números sem origem), além das checagens mecânicas já feitas | Deixar para a Fase 7 |
+| F5-03 | **Apagar as branches já mescladas** na `main` (fases 3, 4 e 5 e as de documentação) | Mantê-las |
+| F5-04 | **`tutorial.md` não se aplica a esta fase.** O documento serviu de base só para as fases iniciais (sugestões de prompts e escolhas); a referência passa a ser a especificação e o plano mestre. Registrado como não aplicável, não como pendência | Procurar ou recriar o arquivo |
+
+Dependências já tratadas na mesma sessão, todas respeitando a especificação: PRs #14 (Spring Boot 4.1.1) e #13 (springdoc 3.1.1)
+**fechados sem mesclar**, porque a especificação exige Spring Boot 3.x; PR #11 (PIT 1.30.1) e PR #12 (Maven 3.10.0) mesclados
+com CI verde, pois nem a especificação nem o plano mestre fixam essas versões.
