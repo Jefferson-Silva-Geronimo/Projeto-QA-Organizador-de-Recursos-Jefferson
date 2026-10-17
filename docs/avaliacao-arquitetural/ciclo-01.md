@@ -12,7 +12,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 - Medições desta sessão: `./mvnw -B clean verify` verde, 468 testes (136 de unidade e arquitetura, 332 de
   integração e BDD), 0 falhas; cobertura de linhas 96,7% (1551/1604) e de branches 84,6% (438/518); mutação do
   pacote `model` 77% (60/78), 0 sobreviventes ([mutacao.md](../testes/mutacao.md)).
-- **Não medidos nesta sessão:** desempenho (JMeter, Fase 5) e SonarCloud (segredos pendentes, Bloco F).
+- **Desempenho:** medido na rodada 01 da Fase 5 (ver CEN-04). SonarCloud: Quality Gate aprovado no PR 2.
 
 ## 2. Comparação por cenário
 
@@ -21,7 +21,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 | CEN-01 Solicitações simultâneas | Exatamente uma reserva aceita; as demais 409; uma tentativa `CONCORRENCIA` por recusa (RN-30) | Constraint `EXCLUDE USING gist` em `V2__esquema.sql:152`. Ocupações inseridas em ordem de recurso: `ReservaService.java:301-312`. Violação 23P01 e impasse 40P01 viram `ConflitoDeAlocacao`: `ReservaService.java:320-327` | `ConcorrenciaApiIT#ct060` (`:105`), `#ct062` (repetição), `#ct065`, `#ct064` (vários recursos, ordens opostas); `#ct063` (`:221`) remove a constraint, mostra a duplicidade e a restaura | **Cumprido.** 20 solicitações: 1 aceita, 19 com 409, 19 tentativas. A hipótese de 20 e 5 repetições segue sem validação (R-24) |
 | CEN-02 Aprovação da própria reserva ou sem perfil | 403 sem mudar estado; autorização em duas camadas | Camada 1 na cadeia de segurança: `SegurancaConfig.java:46-50`. Camada 2: `@PreAuthorize` nos controladores. Dono não aprova: `AprovacaoService.java:91-92` | `AutorizacaoApiIT#ct117_matrizPerfilXOperacao` (`:151`, 137 casos); BDD-01 a BDD-04 | **Cumprido, depois de BUG-008.** A camada 1 só existia na anotação; foi implementada na correção `73488e5` |
 | CEN-03 Professor já alocado | 409 identificando o recurso; nenhuma reserva nova; 1 tentativa `SOBREPOSICAO` | Verificação prévia: `ReservaService.java:132` e `:184`; a garantia continua sendo a constraint | `ReservasApiIT#ct057` (`:238`) | **Cumprido** |
-| CEN-04 Latência com usuários simultâneos | p95 de até 300 ms para 50 usuários (hipótese) | Índice GiST da constraint; relatório paginado; sem cache de sessão | Nenhum: `perf/` e `docs/performance/` vazios | **Não verificado.** Fase 5. A hipótese de 300 ms e 50 usuários continua sem origem (R-24) |
+| CEN-04 Latência com usuários simultâneos | p95 de até 300 ms para 50 usuários (hipótese) | Índice GiST da constraint; relatório paginado; sem cache de sessão | `perf/reservas.jmx`, rodada 01 (17/10/2026) | **Medido: não atende à hipótese.** Consulta p95 de 76 ms (atende); criação p95 de 664 ms (não atende); 0 erro real e 0 resposta 500. Ambiente de 2 núcleos compartilhado com o JMeter. Ver [resultado-01.md](../performance/resultado-01.md) |
 | CEN-05 Provedor com falha | Reserva permanece válida; notificação PENDENTE com próxima tentativa; envio depois do commit | Linha PENDENTE gravada na transação: `NotificacaoService.java:48`. Despacho posterior: `DespachoDeNotificacoesService.java:50-85`. Timeouts configuráveis: `WebhookNotificador.java:36-43` (padrões 0,5 s e 1,5 s no `application.yml`, valores iniciais a validar) | `NotificacaoApiIT#int03` (`:197`), `#int04` (`:210`), `#ct104` (`:252`); `TrocaDeProvedorTest` (3 casos) | **Cumprido com ressalva.** Reenvio sem valor (D3): sem tentativas configuradas, a falha temporária fica PENDENTE e não é reenviada sozinha |
 | CEN-06 Auditoria atômica | Um evento por transição, na mesma transação; falha ao auditar desfaz; tabela sem UPDATE nem DELETE | Gatilhos `auditoria_sem_alteracao` e `auditoria_sem_truncamento`: `V2__esquema.sql:213-226`. Transição centralizada em `UsoService.java:153` | `AuditoriaApiIT#ct096`, `#ct097` (falha injetada em `:87`); `EsquemaIT:98-100` (UPDATE e DELETE recusados) | **Cumprido com ressalva.** R-23 (papel com privilégio) **não verificado**: o teste usa o papel da aplicação, que é dono da tabela e poderia remover o gatilho |
 | CEN-07 Fronteira do bloqueio | 409 `MANUTENCAO` com sobreposição; aceita quando termina no início ou começa no fim ([início, fim)) | `Periodo.sobrepoe`; motivo: `ReservaService.java:333` | `ReservasApiIT#ct081`; BDD-06 (5 linhas, inclusive um segundo antes e depois); `PeriodoTest` | **Cumprido.** A trinca de CT-080 em nível de API só passou a existir com o BDD-06 desta sessão |
@@ -46,7 +46,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 | R-18 | Sem divergência observada: nenhum teste de estado ou de bloqueio mostrou `ativa` fora de sincronia com o estado | Testes de estado e de bloqueio verdes; não há teste dedicado a essa coerência |
 | R-19 | Era aberto por DV-01 (a decisão aceitava a perda da contagem, mas não a perda do 409). **Fechado** pela correção BUG-009 | `FalhaNaTentativaApiIT` (2 casos) verde |
 | R-20 | Coberto: nenhuma notificação sem commit (`#ct104`); chave de idempotência igual no reenvio (`#ct105`) | Verde |
-| R-21 | **Não verificado**: depende de carga | Fase 5 |
+| R-21 | **Parcialmente medido**: a consulta (que valida a sessão a cada requisição) teve p95 de 76 ms sob 50 usuários; cache de sessão não existe | Rodada 01 |
 | R-22 | Coberto: job idempotente em execuções seguidas e simultâneas (`AprovacaoBloqueioApiIT#ct073`) | Verde |
 | R-23 | **Parcialmente verificado**: gatilho bloqueia UPDATE e DELETE; papel privilegiado não testado | `EsquemaIT:98-100` |
 | R-24 | **Confirmado**: 20 solicitações, 5 repetições, 300 ms, 50 usuários, 0,5 s e 1,5 s seguem sem origem | — |
@@ -75,7 +75,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 | Prioridade | Ação | Origem | Esforço |
 | --- | --- | --- | --- |
 | 1 | ~~Corrigir DV-01~~ **Feito** nesta sessão: BUG-009, vermelho `0a80fc7`, verde `61ce37d` | DV-01, R-19 | Concluído |
-| 2 | Medir CEN-04 e CEN-01 sob carga com JMeter e validar as hipóteses com o professor | R-24, R-21 | Fase 5 |
-| 3 | Testar R-23 com papel distinto do dono da tabela | CEN-06 | Pequeno |
+| 2 | ~~Medir CEN-04 e CEN-01 sob carga~~ **Feito na rodada 01** (CEN-01 cumprido; CEN-04 não atende para a criação). Falta a rodada 02 e validar as hipóteses com o professor | R-24, R-21 | Em andamento |
+| 3 | ~~Testar R-23 com papel distinto do dono da tabela~~ **Feito** (`AuditoriaPapelIT`); o papel dono da aplicação segue como risco aceito | CEN-06 | Concluído |
 | 4 | Obter o valor de D3 e de D17 e trocar o valor de teste | PS-04, PS-06 | Depende do professor |
 | 5 | Rodar o Quality Gate do SonarCloud e tratar os apontamentos | Porta de saída da Fase 4 | Depende do Bloco F |
