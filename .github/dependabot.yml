@@ -1,0 +1,12 @@
+# Atualização de dependências (P5-05). Só Maven por enquanto: o npm entra na Fase 6, quando existir frontend/.
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    ignore:
+      # DS-06: o Cucumber está fixado na 7.23.0 porque a 7.24+ exige JUnit Platform 1.13 e o Spring Boot 3.5.16
+      # gerencia a 1.12. Não subir a versão por Dependabot.
+      - dependency-name: "io.cucumber:*"
