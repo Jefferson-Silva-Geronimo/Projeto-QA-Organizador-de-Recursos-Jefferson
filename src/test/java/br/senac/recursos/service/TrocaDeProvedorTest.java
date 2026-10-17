@@ -46,6 +46,19 @@ class TrocaDeProvedorTest {
         }
     }
 
+    /** Adaptador que responde sempre o mesmo resultado. */
+    private record AdaptadorFixo(NotificadorExterno.Resultado resultado) implements NotificadorExterno {
+        @Override
+        public boolean disponivel() {
+            return true;
+        }
+
+        @Override
+        public Resultado enviar(Notificacao notificacao, Instant instante) {
+            return resultado;
+        }
+    }
+
     private static final class CaixaDeSaidaEmMemoria implements NotificacaoRepository {
         final List<Notificacao> guardadas = new ArrayList<>();
 
@@ -140,17 +153,7 @@ class TrocaDeProvedorTest {
     void adaptadorAlternativoQueRecusaDefinitivamenteMarcaANotificacaoComoFalha() {
         CaixaDeSaidaEmMemoria caixa = new CaixaDeSaidaEmMemoria();
         caixa.guardadas.add(pendente(1L));
-        NotificadorExterno recusa = new NotificadorExterno() {
-            @Override
-            public boolean disponivel() {
-                return true;
-            }
-
-            @Override
-            public Resultado enviar(Notificacao notificacao, Instant instante) {
-                return Resultado.RECUSADA;
-            }
-        };
+        NotificadorExterno recusa = new AdaptadorFixo(NotificadorExterno.Resultado.RECUSADA);
 
         int aceitas = servicoCom(recusa, caixa).despachar();
 
@@ -165,17 +168,7 @@ class TrocaDeProvedorTest {
     void adaptadorAlternativoComFalhaTemporariaSemReenvioConfiguradoMantemANotificacaoPendente() {
         CaixaDeSaidaEmMemoria caixa = new CaixaDeSaidaEmMemoria();
         caixa.guardadas.add(pendente(1L));
-        NotificadorExterno instavel = new NotificadorExterno() {
-            @Override
-            public boolean disponivel() {
-                return true;
-            }
-
-            @Override
-            public Resultado enviar(Notificacao notificacao, Instant instante) {
-                return Resultado.FALHA_TEMPORARIA;
-            }
-        };
+        NotificadorExterno instavel = new AdaptadorFixo(NotificadorExterno.Resultado.FALHA_TEMPORARIA);
 
         int aceitas = servicoCom(instavel, caixa).despachar();
 
