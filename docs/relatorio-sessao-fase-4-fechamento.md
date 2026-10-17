@@ -11,7 +11,7 @@ de execução desta sessão. Meta não atingida consta como não atingida.
 | `./mvnw -B verify` verde local | **Atingido** | 468 testes (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas, `BUILD SUCCESS` |
 | `./mvnw -B verify` verde na CI | **Atingido para o PR 2.** Check `test` verde em 5m02s no run `39055557492`, com os commits desta sessão (push `67c2585..8ec54ea`) | `gh pr checks 2` |
 | Gate do JaCoCo 80% e 70% | **Atingido e ligado** | 96,7% de linhas (1551/1604) e 84,6% de branches (438/518), "All coverage checks have been met" |
-| Quality Gate do SonarCloud sem bug ou vulnerabilidade crítica | **Não verificado** | Segredos não configurados; o passo da CI é pulado sem eles |
+| Quality Gate do SonarCloud sem bug ou vulnerabilidade crítica | **Atingido** no PR 2 (status OK; notas A em confiabilidade, segurança e manutenibilidade; cobertura nova 93,9%). A 1ª análise reprovou por 3 apontamentos (S2699, S6437, S4502), tratados em `docs/decisoes-equipe.md` (SQ-01 a SQ-03) | `sonarcloud.io`, PR 2 |
 | Concorrência verde 5 vezes seguidas | **Atingido.** 5 execuções consecutivas verdes de `ConcorrenciaApiIT` (7 testes cada) em 17/10/2026. Antes delas houve falhas intermitentes de **infraestrutura** (o contêiner do PostgreSQL estourou o tempo de inicialização no Docker local, `Timed out waiting for log output`), sem erro de asserção; a classe também passou em todas as execuções completas do `verify` e na CI | Logs `c4-3` a `c4-7` |
 | Concorrência vista vermelha sem a constraint | **Atingido** | `ConcorrenciaApiIT#ct063` remove a constraint, mostra a duplicidade e a restaura |
 | Matriz de autorização sem falha | **Atingido** | `AutorizacaoApiIT`, 137 casos, verdes (BUG-008 corrigido) |
@@ -34,9 +34,9 @@ de execução desta sessão. Meta não atingida consta como não atingida.
 
 | Item | Motivo |
 | --- | --- |
-| Quality Gate do SonarCloud | Depende dos segredos e da organização (Bloco F, ação do usuário) |
+| ~~Quality Gate do SonarCloud~~ | **Feito.** Segredos e variáveis configurados pelo usuário; análise na CI |
 | ~~Proteção da `main`~~ **Feita** | O repositório passou a público; proteção aplicada e conferida: check `test` obrigatório, PR obrigatório, 0 aprovações, vale para administrador, sem force push |
-| Revisão assistida dos PRs 1 e 2 e merge (Bloco G) | Exige enviar a branch (push), que aguarda aceite; merge exige confirmação explícita. O PR 2 tem 168 arquivos e provavelmente precisa de divisão por fatia (a propor) |
+| Revisão assistida dos PRs 1 e 2 | **Feita** (comentários de revisão nos dois PRs, identificados como revisão assistida). **Merge não feito**: depende da confirmação do usuário; ordem #1, retargetar #2 para a `main`, #2 |
 | `tutorial.md` e `update-tutorial` | O arquivo não existe no repositório e a skill `update-tutorial` não foi encontrada em `.aiox-core` nem em `.claude` |
 | `analyze-docs` completa | Foram executadas só as verificações mecânicas (links relativos, fences, colunas de tabela, renderização Mermaid). Não foram feitas: ortografia, fidelidade à especificação, IDs cruzados, termos canônicos e números sem origem |
 | Desempenho (CEN-04, R-21) | Fase 5 |
