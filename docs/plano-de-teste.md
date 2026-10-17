@@ -115,7 +115,7 @@ Metas da especificação (seção 6):
 | Requisitos críticos na RTM | 100% |
 | Bugs ou vulnerabilidades críticos | 0 |
 
-Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; a evidência de CI será a E-2, depois do push):
+Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; evidência de CI E-2: run `39055557492`, check `test` verde):
 
 | Meta | Meta da especificação | Medido | Situação |
 | --- | --- | --- | --- |
