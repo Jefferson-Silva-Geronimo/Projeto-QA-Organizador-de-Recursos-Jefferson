@@ -135,4 +135,29 @@ class TrocaDeProvedorTest {
         });
         assertThat(alternativo.chavesRecebidas).containsExactly("chave-1");
     }
+
+    @Test
+    void adaptadorAlternativoQueRecusaDefinitivamenteMarcaANotificacaoComoFalha() {
+        CaixaDeSaidaEmMemoria caixa = new CaixaDeSaidaEmMemoria();
+        caixa.guardadas.add(pendente(1L));
+        NotificadorExterno recusa = new NotificadorExterno() {
+            @Override
+            public boolean disponivel() {
+                return true;
+            }
+
+            @Override
+            public Resultado enviar(Notificacao notificacao, Instant instante) {
+                return Resultado.RECUSADA;
+            }
+        };
+
+        int aceitas = servicoCom(recusa, caixa).despachar();
+
+        assertThat(aceitas).isZero();
+        assertThat(caixa.guardadas).singleElement().satisfies(n -> {
+            assertThat(n.status()).isEqualTo(StatusNotificacao.FALHA);
+            assertThat(n.tentativas()).isEqualTo(1);
+        });
+    }
 }
