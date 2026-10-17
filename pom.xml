@@ -186,6 +186,35 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Mutation testing (Fase 4, relatório apenas, sem gate): não roda no verify.
+                 Uso: ./mvnw org.pitest:pitest-maven:mutationCoverage. Alcance: pacote model e model.regra
+                 (domínio e regras de período, sobreposição e estados). Resultado em docs/testes/mutacao.md. -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.29.10</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>br.senac.recursos.model.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>br.senac.recursos.model.*</param>
+                    </targetTests>
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                        <outputFormat>XML</outputFormat>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
