@@ -126,7 +126,7 @@ Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean ver
 | Testes | — | 468 (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas | — |
 | Mutação do pacote `model` (sem meta) | — | 77% (60/78), 0 sobreviventes | Referência, ver [mutacao.md](testes/mutacao.md) |
 
-Desempenho medido na Fase 5 (rodada 01, 17/10/2026, em [resultado-01.md](performance/resultado-01.md)): consulta com p95 de 76 ms, criação de reserva com p95 de 664 ms, 0 erro real, 0 resposta 500 e nenhuma dupla reserva. A criação **não atende** à hipótese de 300 ms. Itens não testados: interface e ponta a ponta (Fase 6) e valores das lacunas D1, D3, D4, D9 e D17.
+Desempenho medido na Fase 5 (rodadas 01 a 04, 17/10/2026, em [resultado-01.md](performance/resultado-01.md) e [resultado-02.md](performance/resultado-02.md)): consulta com p95 entre 55 e 152 ms, criação de reserva com p95 entre 568 e 886 ms, 0 erro real, 0 resposta 500 e nenhuma dupla reserva. A criação **não atende** à hipótese de 300 ms nesta máquina; a causa foi localizada no `fsync` do PostgreSQL em Docker (a rodada de diagnóstico, sem `fsync`, deu p95 de 87 ms). Itens não testados: interface e ponta a ponta (Fase 6) e valores das lacunas D1, D3, D4, D9 e D17.
 
 Proposta da equipe, a validar:
 

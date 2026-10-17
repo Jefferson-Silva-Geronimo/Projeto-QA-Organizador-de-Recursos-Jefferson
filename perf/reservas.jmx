@@ -117,6 +117,32 @@
           </FloatProperty>
         </ThroughputController>
         <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Sorteio do alvo (sortear=true)" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">// Sorteia a linha de alvos.csv a cada requisição quando -Jsortear=true (rodadas 02 em diante).
+// Sem a propriedade, vale a leitura sequencial do CSV Data Set (rodada 01).
+if (props.getProperty('sortear', 'false') != 'true') { return }
+def alvos = props.get('alvos_cache')
+if (alvos == null) {
+  synchronized (props) {
+    alvos = props.get('alvos_cache')
+    if (alvos == null) {
+      def arquivo = new File(props.getProperty('csv_alvos', 'perf/alvos.csv'))
+      alvos = arquivo.readLines('UTF-8').drop(1).findAll { it.trim() }
+      props.put('alvos_cache', alvos)
+    }
+  }
+}
+def linha = alvos[new Random().nextInt(alvos.size())].split(',')
+vars.put('salaId', linha[0])
+vars.put('inicio', linha[1])
+vars.put('fim', linha[2])
+</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="consulta-disponibilidade" enabled="true">
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" enabled="true">
               <collectionProp name="Arguments.arguments"/>
@@ -158,6 +184,32 @@
           </FloatProperty>
         </ThroughputController>
         <hashTree>
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="Sorteio do alvo (sortear=true)" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">// Sorteia a linha de alvos.csv a cada requisição quando -Jsortear=true (rodadas 02 em diante).
+// Sem a propriedade, vale a leitura sequencial do CSV Data Set (rodada 01).
+if (props.getProperty('sortear', 'false') != 'true') { return }
+def alvos = props.get('alvos_cache')
+if (alvos == null) {
+  synchronized (props) {
+    alvos = props.get('alvos_cache')
+    if (alvos == null) {
+      def arquivo = new File(props.getProperty('csv_alvos', 'perf/alvos.csv'))
+      alvos = arquivo.readLines('UTF-8').drop(1).findAll { it.trim() }
+      props.put('alvos_cache', alvos)
+    }
+  }
+}
+def linha = alvos[new Random().nextInt(alvos.size())].split(',')
+vars.put('salaId', linha[0])
+vars.put('inicio', linha[1])
+vars.put('fim', linha[2])
+</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
           <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="criar-reserva" enabled="true">
             <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
             <elementProp name="HTTPsampler.Arguments" elementType="Arguments">

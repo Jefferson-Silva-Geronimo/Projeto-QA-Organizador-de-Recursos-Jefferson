@@ -9,7 +9,9 @@ rodada). Decisões P5-01 a P5-03 em [decisoes-equipe.md](../docs/decisoes-equipe
 | `usuarios.csv` | 50 e-mails fictícios `cargaNN@exemplo.test`; a senha **não** está no arquivo | Sim |
 | `preparar_dados.py` | Cria 5 salas e 50 usuários pela API local e gera `alvos.csv` | Sim |
 | `alvos.csv` | 100 pares sala × janela de 1 hora (gerado) | Não |
-| `resultados/rodada-01.jtl` | Resultado bruto da rodada | Sim |
+| `coletar_metricas.py` | Coleta CPU e pool de conexões a cada 5 s durante a rodada (rodada 02 em diante) | Sim |
+| `analisar_rodada.py` | Percentis por operação, 409 separado de erro real e resumo das métricas | Sim |
+| `resultados/rodada-NN.jtl` e `metricas-rodada-NN.csv` | Resultado bruto e métricas das rodadas 01 a 04 | Sim |
 | `relatorio-01/` | Relatório HTML do JMeter | Não |
 
 ## Pré-requisitos

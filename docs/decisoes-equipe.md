@@ -157,3 +157,11 @@ plano mestre. Origem: plano mestre, seção 9 (porta de saída da Fase 5) e Prom
 Dependências já tratadas na mesma sessão, todas respeitando a especificação: PRs #14 (Spring Boot 4.1.1) e #13 (springdoc 3.1.1)
 **fechados sem mesclar**, porque a especificação exige Spring Boot 3.x; PR #11 (PIT 1.30.1) e PR #12 (Maven 3.10.0) mesclados
 com CI verde, pois nem a especificação nem o plano mestre fixam essas versões.
+
+### Resultado de F5-01 (17/10/2026)
+
+Rodadas 02, 03 e 04 executadas e analisadas em [resultado-02.md](performance/resultado-02.md). A hipótese de saturação do pool foi
+refutada; a causa do p95 acima de 300 ms na criação foi localizada no `fsync` do PostgreSQL em Docker nesta máquina. Como o dado
+**não** aponta o código, **nenhuma otimização foi feita**, conforme a condição de F5-01. A hipótese de 300 ms segue sem validação do
+professor, e o relatório final declara RNF-08b como não atendido nesta máquina.
+
