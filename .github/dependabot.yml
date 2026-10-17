@@ -10,3 +10,9 @@ updates:
       # DS-06: o Cucumber está fixado na 7.23.0 porque a 7.24+ exige JUnit Platform 1.13 e o Spring Boot 3.5.16
       # gerencia a 1.12. Não subir a versão por Dependabot.
       - dependency-name: "io.cucumber:*"
+      # A especificação exige Spring Boot 3.x (ADR-001). Salto de versão maior do Spring Boot e do springdoc só
+      # entra por decisão da equipe, nunca por Dependabot.
+      - dependency-name: "org.springframework.boot:spring-boot-starter-parent"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "org.springdoc:springdoc-openapi-starter-webmvc-ui"
+        update-types: ["version-update:semver-major"]

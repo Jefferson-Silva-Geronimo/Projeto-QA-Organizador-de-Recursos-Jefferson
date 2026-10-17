@@ -34,6 +34,9 @@ public abstract class BancoRealIT {
         registro.add("spring.datasource.password", POSTGRES::getPassword);
         // Valor de teste. A duração real da sessão é a lacuna D17 e não tem valor definido.
         registro.add("app.sessao.duracao", () -> "PT1H");
+        // Mesmos valores decididos pela equipe para o limite de login (D18, 17/10/2026): 5 tentativas em 10 minutos.
+        registro.add("app.login.tentativas", () -> "5");
+        registro.add("app.login.janela", () -> "PT10M");
     }
 
     @Autowired
@@ -42,7 +45,7 @@ public abstract class BancoRealIT {
     /** Esvazia as tabelas de dados. A configuração (linha única) é preservada. */
     protected void limparBanco() {
         jdbc.execute("ALTER TABLE auditoria_eventos DISABLE TRIGGER USER");
-        List<String> tabelas = List.of("sessoes", "notificacoes", "movimentacoes_material", "aprovacoes",
+        List<String> tabelas = List.of("tentativas_login", "sessoes", "notificacoes", "movimentacoes_material", "aprovacoes",
                 "tentativas_conflito", "ocupacoes", "bloqueios_manutencao", "reservas", "auditoria_eventos",
                 "professor_competencias", "competencias", "sala_dias_funcionamento", "materiais",
                 "professores", "salas", "recursos", "usuarios");

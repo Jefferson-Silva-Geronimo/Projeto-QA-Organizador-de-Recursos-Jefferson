@@ -19,7 +19,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
 | A04 Cryptographic Failures | Parcial |
 | A05 Injection | Atendida |
 | A06 Insecure Design | Parcial |
-| A07 Authentication Failures | Parcial |
+| A07 Authentication Failures | Atendida (SEC-01 tratado) |
 | A08 Software or Data Integrity Failures | Parcial |
 | A09 Security Logging and Alerting Failures | Parcial |
 | A10 Mishandling of Exceptional Conditions | Atendida |
@@ -72,13 +72,17 @@ falha aberta; as lacunas estão em "parcial", com ação.
 - **Lacuna:** não há modelagem de ameaças formal (por exemplo, STRIDE); os cenários CEN-02 e CEN-09 cobrem só parte.
 - **Ação:** escrever um modelo de ameaças curto na Fase 7, se o grupo achar necessário.
 
-### A07 Authentication Failures: parcial
+### A07 Authentication Failures: atendida
 - **Evidência:** a resposta de login é a mesma para usuário inexistente e senha errada, com tempo constante (senha-isca
   aleatória, `AutenticacaoService.java:47`); sessão com expiração e revogação testadas (`#ct119`, `AutenticacaoApiIT`).
-- **Lacuna:** **não há limite de tentativas de login** (nem bloqueio temporário). Isso permite tentativa de adivinhar
-  senha em volume.
-- **Ação:** decidir a política (limite, janela, resposta) com Jefferson antes de implementar. A especificação não define
-  valor; qualquer número é proposta. Candidata natural para a Fase 5 ou 7.
+- **SEC-01 tratado (decisão P5-10):** limite de tentativas por conta, em janela deslizante guardada no banco
+  (`LimiteDeLogin`, `AutenticacaoService`, migração V4). A conta bloqueada recebe resposta idêntica à de credencial
+  inválida, e a tentativa durante o bloqueio não o estende. Testes: `LimiteDeLoginTest` (unidade, trinca de tempo) e
+  `LimiteDeLoginApiIT` (11 casos, provados por mutação).
+- **Limites conhecidos:** valor decidido pela equipe em 17/10/2026 (D18): 5 tentativas em 10 minutos;
+  um atacante pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o
+  e-mail da falha fica guardado durante a janela (lacuna D9).
+- **Ação:** nenhuma; os valores estão em `.env.example` e na decisão P5-10.
 
 ### A08 Software or Data Integrity Failures: parcial
 - **Evidência:** a auditoria é somente inserção por gatilho e um papel que não é dono não consegue alterá-la nem
@@ -108,7 +112,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
 ## Achados desta revisão
 | ID | Gravidade | Achado | Tratamento |
 | --- | --- | --- | --- |
-| SEC-01 | Média | Sem limite de tentativas de login (A07) | Ação pendente de decisão de Jefferson |
+| SEC-01 | Média | Sem limite de tentativas de login (A07) | **Corrigido** (P5-10): limite por conta com janela deslizante; 5 tentativas em 10 minutos (D18) |
 | SEC-02 | Baixa | Aplicação roda com o papel dono das tabelas (A02, A08) | Risco aceito R-23; opção B na dívida técnica |
 | SEC-03 | Baixa | Sem SBOM nem soma de verificação do Maven no wrapper (A03) | Ação para a Fase 7 |
 | SEC-04 | Informativo | Sem alerta de segurança (A09) | Ação para a Fase 7 |

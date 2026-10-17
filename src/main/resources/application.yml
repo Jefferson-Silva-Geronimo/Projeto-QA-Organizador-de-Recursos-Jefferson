@@ -15,6 +15,10 @@ app:
   sessao:
     # ISO-8601, por exemplo PT30M. Obrigatório e sem valor padrão (lacuna D17).
     duracao: ${SESSAO_DURACAO}
+  login:
+    # Limite de tentativas de login por conta (SEC-01). Obrigatório e sem valor padrão no código (D18: a equipe decidiu 5 em 10 minutos).
+    tentativas: ${LOGIN_TENTATIVAS}
+    janela: ${LOGIN_JANELA}
   notificacao:
     # Endereço e token por variável de ambiente (A5). Vazio desliga o envio.
     url: ${NOTIFICACAO_URL:}
