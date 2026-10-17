@@ -40,4 +40,17 @@ class LogSeguroApiIT extends ApiIT {
                 .contains("DuplicateKeyException")
                 .contains(correlacao);
     }
+
+    @Test
+    void tokenDoCabecalhoAuthorizationNaoApareceNoLog(CapturedOutput saida) throws Exception {
+        criarUsuario("SOLICITANTE", "s1@exemplo.test");
+        String token = login("s1@exemplo.test");
+
+        mvc.perform(get("/api/_teste/explosao").header(HttpHeaders.AUTHORIZATION, bearer(token)))
+                .andExpect(status().isInternalServerError());
+        mvc.perform(get("/api/reservas").header(HttpHeaders.AUTHORIZATION, bearer("token-invalido-de-teste")))
+                .andExpect(status().isUnauthorized());
+
+        assertThat(saida.getAll()).doesNotContain(token).doesNotContain("token-invalido-de-teste");
+    }
 }
