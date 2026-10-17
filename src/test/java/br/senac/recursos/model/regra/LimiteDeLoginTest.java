@@ -28,4 +28,13 @@ class LimiteDeLoginTest {
     void bloqueiaSoQuandoAsFalhasChegamAoLimite(int quantidade, boolean esperado) {
         assertThat(LIMITE.bloqueado(falhas(quantidade), AGORA)).isEqualTo(esperado);
     }
+
+    /** Idade da falha em relação à janela de 10 minutos: antes do fim, no fim e depois do fim. */
+    @ParameterizedTest(name = "3 falhas com idade de {0} ms -> bloqueado {1}")
+    @CsvSource({"599999,true", "600000,false", "600001,false"})
+    void falhaSoContaDentroDaJanela(long idadeEmMs, boolean esperado) {
+        Instant falha = AGORA.minusMillis(idadeEmMs);
+
+        assertThat(LIMITE.bloqueado(List.of(falha, falha, falha), AGORA)).isEqualTo(esperado);
+    }
 }
