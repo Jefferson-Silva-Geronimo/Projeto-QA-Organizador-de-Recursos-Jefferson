@@ -44,9 +44,19 @@ assistida registrada no PR e as ferramentas automáticas (SonarCloud e, quando d
 - [ ] O Quality Gate do SonarCloud passou, ou cada apontamento foi corrigido ou justificado por escrito
 - [ ] Limitações do que não foi testado estão declaradas
 
-**Intervalo mínimo entre abrir e mesclar (proposta, a confirmar por Jefferson):**
+**Intervalo entre abrir e mesclar (decisão de Jefferson, 17/10/2026):**
 
-- PR que muda código: o merge só ocorre depois de reler o diff com a CI verde e **em outra sessão de trabalho** que
-  não a que abriu o PR (por exemplo, no dia seguinte ou depois de uma pausa de pelo menos uma hora).
-- PR só de documentação: pode ser mesclado na mesma sessão, depois da releitura e da CI verde.
-- Registre aqui quando abriu e quando mesclou: abertura ______ / merge ______
+Não há intervalo mínimo obrigatório. O projeto é de uma pessoa só, com prazos fixos, e uma espera artificial não
+cria um segundo revisor: ela só atrasa. Abrir e mesclar na mesma sessão é permitido. O que substitui a revisão por
+pares é o conjunto abaixo, e o merge **só ocorre quando todos estiverem cumpridos**:
+
+1. CI verde: o check `test` (e `segredos`) passou no commit que será mesclado.
+2. Quality Gate do SonarCloud aprovado, ou cada apontamento corrigido ou justificado por escrito.
+3. Autorrevisão preenchida acima, com o diff relido na tela do PR.
+4. Revisão assistida registrada como comentário no PR, com os achados tratados.
+5. Confirmação explícita de Jefferson para o merge.
+
+Limitação declarada: isto **não é revisão por pares**. Se o professor exigir revisão por outra pessoa, ela entra nos
+PRs mais críticos (decisão P5-09).
+
+Registre aqui: abertura ______ / merge ______

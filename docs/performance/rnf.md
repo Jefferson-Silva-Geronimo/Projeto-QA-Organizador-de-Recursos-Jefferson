@@ -1,7 +1,7 @@
 # Requisito de desempenho e modelo de carga (Fase 5)
 
-**Estado: PROPOSTA, aguardando aprovação de Jefferson antes da primeira rodada.** Nenhum número abaixo foi validado
-pelo professor. A especificação não define critério de desempenho: ela pede "plano e resultado do teste de carga" e,
+**Estado: proposta APROVADA por Jefferson em 17/10/2026 para a rodada 01** (usuários, ramp-up, duração, mistura,
+alvos e critérios, sem alteração). Os números continuam sendo hipótese e proposta: nenhum foi validado pelo professor. A especificação não define critério de desempenho: ela pede "plano e resultado do teste de carga" e,
 no cronograma, "reservas simultâneas do mesmo recurso sob carga" (semana 42). Decisões de origem: P5-01 e P5-02 em
 [decisoes-equipe.md](../decisoes-equipe.md).
 
@@ -67,11 +67,11 @@ por sobreposição (409) e não por janela (400).
 3. Contagem de tentativas de conflito (`tentativas_conflito`) comparada com o número de 409.
 4. Zero respostas 500.
 
-## 5. Itens que dependem de aprovação
+## 5. Aprovação
 
-| # | Pergunta | Proposta | Sua decisão |
+| # | Pergunta | Proposta | Decisão de Jefferson |
 | --- | --- | --- | --- |
-| 1 | Usuários, ramp-up e duração | 50 usuários, 30 s, 5 min | Aprovar ou alterar |
-| 2 | Mistura de operações | 70% consulta, 30% criação | Aprovar ou alterar |
-| 3 | Alvos disputados | 5 salas × 20 janelas | Aprovar ou alterar |
-| 4 | Critérios RNF-08a a RNF-08d | p95 de 300 ms, erro abaixo de 1%, zero 500 | Aprovar ou alterar |
+| 1 | Usuários, ramp-up e duração | 50 usuários, 30 s, 5 min | Aprovado em 17/10/2026 |
+| 2 | Mistura de operações | 70% consulta, 30% criação | Aprovado em 17/10/2026 |
+| 3 | Alvos disputados | 5 salas × 20 janelas | Aprovado em 17/10/2026 |
+| 4 | Critérios RNF-08a a RNF-08d | p95 de 300 ms, erro abaixo de 1%, zero 500 | Aprovado em 17/10/2026 |
