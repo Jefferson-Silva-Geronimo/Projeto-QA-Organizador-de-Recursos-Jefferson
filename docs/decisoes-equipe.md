@@ -43,6 +43,16 @@ Cada linha traz a recomendação, a alternativa descartada, o motivo e a origem.
 | DS-06 | Cucumber 7.23.0, com `cucumber-spring` | Cucumber 7.34.9 | A versão 7.24+ exige JUnit Platform 1.13 e o Spring Boot 3.5.16 gerencia a 1.12 (falha de descoberta observada) | Prompt 4.F; falha reproduzida |
 | DS-07 | Remoção de `EstadoReserva.ocupaRecurso` e `Periodo.duracao`, sem uso | Cobri-los com teste | Teste só para chamar código morto sobe o número sem proteger comportamento | PIT; busca por usos em `src/main` |
 
+| DS-08 | BUG-009 corrigido: falha ao gravar a tentativa mantém o 409 e vai para o log (`61ce37d`) | Deixar o 500 e atualizar o ADR-003 | A decisão de 15/10/2026 já dizia que o 409 é mantido; o código divergia. Corrigir o código cumpre a decisão aprovada | ADR-003; `arquitetura.md` seção 13.2; ciclo-01 DV-01 |
+
+### Decisões com resposta explícita de Jefferson (17/10/2026)
+
+| ID | Decisão | Resposta |
+| --- | --- | --- |
+| DS-09 | Bloco D usa o CT-106 (troca do provedor), porque a janela de não compareceu já existia | "CT-106 troca do provedor (Recomendada)" |
+| DS-10 | Criar e fechar 6 issues retroativas (BUG-001 a BUG-006), mantendo o registro nos `.md` | "Pode criar as 6 e fechá-las como sugeriu, mas mantenha o devido registro no arquivo md também". Issues 3 a 8 |
+| DS-11 | A proteção da `main` por API não é possível no plano atual (HTTP 403: "Upgrade to GitHub Pro or make this repository public"). Alternativas em aberto: tornar o repositório público, assinar o GitHub Pro, ou manter sem proteção e registrar a limitação | Aguardando resposta |
+
 ## 3. Pré-aprovada
 
 | ID | Escopo | Aceita por | Data | Situação |
