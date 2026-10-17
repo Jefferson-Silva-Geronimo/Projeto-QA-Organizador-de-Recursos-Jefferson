@@ -38,7 +38,6 @@ marcado como tal.
 | D4 | Qual o tamanho da página do relatório de utilização? | Sem valor padrão: o tamanho é parâmetro obrigatório do pedido | Relatório lento ou incômodo de navegar |
 | D9 | Qual a retenção da auditoria e das notificações e como tratar dado pessoal nelas? | Nada é apagado nem anonimizado: não há expurgo implementado | Dado pessoal guardado além do necessário; exigiria rotina de expurgo e revisão da auditoria somente inserção |
 | D17 | Qual a duração e a expiração da sessão? | Sem valor padrão: a duração é variável de ambiente obrigatória; os testes usam 1 hora, só em teste | Sessão que nunca expira, ou que expira cedo demais para o uso |
-| D18 | Quantas tentativas de login erradas e em qual janela bloqueiam uma conta? | Limite por conta em janela deslizante; `LOGIN_TENTATIVAS` e `LOGIN_JANELA` obrigatórios e sem valor padrão; os testes usam 5 tentativas em 10 minutos, só em teste | Conta de usuário legítimo bloqueada cedo demais, ou ataque de adivinhação de senha com janela folgada demais |
 
 ## Revisão por pares
 

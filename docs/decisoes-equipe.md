@@ -124,16 +124,19 @@ valores:** é decisão da equipe, e todo número é proposta.
 | ID | Decisão | Alternativas descartadas |
 | --- | --- | --- |
 | P5-10 | **Opção A:** limite por conta, guardado no banco, usando o `Clock` injetado | B (por IP, na memória); C (atraso progressivo); D (não implementar, risco aceito) |
-| P5-10a | Os valores do limite são configuração **sem valor padrão no código** (lacuna D18, abaixo). A configuração é **obrigatória**: sem ela a aplicação não sobe | Desligado quando não configurado |
+| P5-10a | Os valores do limite são configuração **sem valor padrão no código** (D18, decidida abaixo). A configuração é **obrigatória**: sem ela a aplicação não sobe | Desligado quando não configurado |
 | P5-10b | Durante o bloqueio a resposta é **idêntica** à de credencial inválida (mesmo código `CREDENCIAIS_INVALIDAS`, mesma mensagem), para não revelar quais contas existem nem quais estão bloqueadas | Resposta 429 distinta |
 
-**Refinamento de implementação (declarado por Claude, a ratificar):** em vez de três parâmetros (N, janela e tempo de
+**Refinamento de implementação (declarado por Claude, ratificado por Jefferson em 17/10/2026, opção 3A):** em vez de três parâmetros (N, janela e tempo de
 bloqueio), a regra é uma **janela deslizante com dois**: `tentativas` falhas dentro de `janela` bloqueiam a conta até a mais
 antiga dessas falhas sair da janela. Um tempo de bloqueio separado criaria liberação antecipada quando as falhas saem da
 janela antes do fim do bloqueio. Tentativas feitas durante o bloqueio não são registradas (não estendem o bloqueio).
 
-**Lacuna D18 (nova):** quantas tentativas e qual janela? Sem valor da especificação. Os testes usam 5 tentativas em 10
-minutos, **só em teste**. O valor real é decisão de Jefferson e entra por `LOGIN_TENTATIVAS` e `LOGIN_JANELA`.
+**D18 decidida pela equipe (Jefferson), 17/10/2026:** **5 tentativas em 10 minutos**. A especificação não define o valor,
+então é decisão da equipe, e não há o que confirmar com o professor (opção 1A: a pergunta saiu de
+[perguntas-professor.md](perguntas-professor.md)). O valor é sugerido em `.env.example` (opção 2A) e entra por
+`LOGIN_TENTATIVAS` e `LOGIN_JANELA`; o código continua sem valor padrão e a aplicação não sobe sem eles. Os testes
+usam os mesmos 5 e 10 minutos.
 
 Limitações conhecidas: (1) o e-mail da tentativa falha é guardado durante a janela (dado pessoal de vida curta; ligado à
 lacuna D9); (2) um atacante pode bloquear a conta de outra pessoa de propósito (risco inerente à opção A); (3) tentativas

@@ -13,8 +13,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
 
 /**
- * Limite de tentativas de login (SEC-01, P5-10, OWASP A07). Os valores de teste (5 tentativas em 10 minutos) vêm de
- * {@code BancoRealIT} e existem só no teste: a lacuna D18 não tem valor definido.
+ * Limite de tentativas de login (SEC-01, P5-10, OWASP A07). Os valores (5 tentativas em 10 minutos, decisão D18 da
+ * equipe) vêm de {@code BancoRealIT}.
  */
 class LimiteDeLoginApiIT extends ApiIT {
 

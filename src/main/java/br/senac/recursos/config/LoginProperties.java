@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
 /**
- * Limite de tentativas de login (SEC-01, P5-10). Obrigatório e sem valor padrão: o valor é a lacuna D18 e nunca foi
- * inventado. Informe por variável de ambiente ({@code LOGIN_TENTATIVAS}, {@code LOGIN_JANELA} em ISO-8601).
+ * Limite de tentativas de login (SEC-01, P5-10). Obrigatório e sem valor padrão no código. A equipe decidiu 5 tentativas em 10 minutos
+ * (D18, 17/10/2026), sugeridos em {@code .env.example}. Informe por variável de ambiente ({@code LOGIN_TENTATIVAS}, {@code LOGIN_JANELA} em ISO-8601).
  */
 @Validated
 @ConfigurationProperties(prefix = "app.login")

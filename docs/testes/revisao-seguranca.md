@@ -79,10 +79,10 @@ falha aberta; as lacunas estão em "parcial", com ação.
   (`LimiteDeLogin`, `AutenticacaoService`, migração V4). A conta bloqueada recebe resposta idêntica à de credencial
   inválida, e a tentativa durante o bloqueio não o estende. Testes: `LimiteDeLoginTest` (unidade, trinca de tempo) e
   `LimiteDeLoginApiIT` (11 casos, provados por mutação).
-- **Limites conhecidos:** valores reais pendentes (lacuna D18; os testes usam 5 tentativas em 10 minutos, só em teste);
+- **Limites conhecidos:** valor decidido pela equipe em 17/10/2026 (D18): 5 tentativas em 10 minutos;
   um atacante pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o
   e-mail da falha fica guardado durante a janela (lacuna D9).
-- **Ação:** Jefferson definir `LOGIN_TENTATIVAS` e `LOGIN_JANELA` (lacuna D18).
+- **Ação:** nenhuma; os valores estão em `.env.example` e na decisão P5-10.
 
 ### A08 Software or Data Integrity Failures: parcial
 - **Evidência:** a auditoria é somente inserção por gatilho e um papel que não é dono não consegue alterá-la nem
@@ -112,7 +112,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
 ## Achados desta revisão
 | ID | Gravidade | Achado | Tratamento |
 | --- | --- | --- | --- |
-| SEC-01 | Média | Sem limite de tentativas de login (A07) | **Corrigido** (P5-10): limite por conta com janela deslizante; valores reais pendentes (D18) |
+| SEC-01 | Média | Sem limite de tentativas de login (A07) | **Corrigido** (P5-10): limite por conta com janela deslizante; 5 tentativas em 10 minutos (D18) |
 | SEC-02 | Baixa | Aplicação roda com o papel dono das tabelas (A02, A08) | Risco aceito R-23; opção B na dívida técnica |
 | SEC-03 | Baixa | Sem SBOM nem soma de verificação do Maven no wrapper (A03) | Ação para a Fase 7 |
 | SEC-04 | Informativo | Sem alerta de segurança (A09) | Ação para a Fase 7 |

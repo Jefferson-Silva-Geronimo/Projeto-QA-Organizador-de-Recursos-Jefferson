@@ -10,7 +10,7 @@ import java.util.List;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-/** Limite de tentativas de login (SEC-01). Os valores 3 e 10 minutos existem só no teste: lacuna D18. */
+/** Limite de tentativas de login (SEC-01). O limite de 3 falhas é só deste teste; o da equipe (D18) é 5 em 10 minutos. */
 class LimiteDeLoginTest {
 
     private static final Instant AGORA = Instant.parse("2026-10-20T17:00:00Z");

@@ -34,7 +34,7 @@ public abstract class BancoRealIT {
         registro.add("spring.datasource.password", POSTGRES::getPassword);
         // Valor de teste. A duração real da sessão é a lacuna D17 e não tem valor definido.
         registro.add("app.sessao.duracao", () -> "PT1H");
-        // Valores de teste do limite de login. O valor real é a lacuna D18 e não tem definição.
+        // Mesmos valores decididos pela equipe para o limite de login (D18, 17/10/2026): 5 tentativas em 10 minutos.
         registro.add("app.login.tentativas", () -> "5");
         registro.add("app.login.janela", () -> "PT10M");
     }
