@@ -7,6 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.Clock;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import br.senac.recursos.config.CorsProperties;
+import java.util.List;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -33,8 +39,27 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties(SessaoProperties.class)
+@EnableConfigurationProperties({SessaoProperties.class, CorsProperties.class})
 class SegurancaConfig {
+
+    /**
+     * CORS restrito (P5-06): só as origens de {@code app.cors.origens}. Sem elas, a fonte fica vazia e nenhuma
+     * origem recebe {@code Access-Control-Allow-Origin}. Sem credenciais de navegador: o token vai em cabeçalho.
+     */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource(CorsProperties cors) {
+        UrlBasedCorsConfigurationSource fonte = new UrlBasedCorsConfigurationSource();
+        if (!cors.origens().isEmpty()) {
+            CorsConfiguration configuracao = new CorsConfiguration();
+            configuracao.setAllowedOrigins(cors.origens());
+            configuracao.setAllowedMethods(List.of("GET", "POST", "PUT", "OPTIONS"));
+            configuracao.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+            configuracao.setExposedHeaders(List.of("X-Correlation-Id"));
+            configuracao.setAllowCredentials(false);
+            fonte.registerCorsConfiguration("/api/**", configuracao);
+        }
+        return fonte;
+    }
 
     @Bean
     SecurityFilterChain filtroDeSeguranca(HttpSecurity http, AutenticacaoService autenticacao,
@@ -43,6 +68,7 @@ class SegurancaConfig {
                 // CSRF só ameaça autenticação por cookie de sessão. Aqui a API é stateless e o token opaco vai no
                 // cabeçalho Authorization, que o navegador não anexa sozinho (ADR-004). Aceito com justificativa.
                 .csrf(AbstractHttpConfigurer::disable) // NOSONAR java:S4502
+                .cors(Customizer.withDefaults())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()

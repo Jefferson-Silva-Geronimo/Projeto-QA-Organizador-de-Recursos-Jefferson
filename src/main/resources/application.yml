@@ -22,6 +22,9 @@ app:
     # Valores iniciais do plano da equipe, a validar (ADR-007). A especificação não define limites.
     timeout-conexao: ${NOTIFICACAO_TIMEOUT_CONEXAO:PT0.5S}
     timeout-leitura: ${NOTIFICACAO_TIMEOUT_LEITURA:PT1.5S}
+  cors:
+    # Origens do front end, separadas por vírgula. Sem valor padrão: vazio significa nenhuma origem (P5-06).
+    origens: ${CORS_ORIGENS:}
   bootstrap:
     admin:
       # Cria o primeiro Administrador se a tabela de usuários estiver vazia. Sem valor padrão.
