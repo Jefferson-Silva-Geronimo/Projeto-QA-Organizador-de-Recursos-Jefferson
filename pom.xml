@@ -23,6 +23,8 @@
         <springdoc.version>2.8.17</springdoc.version>
         <archunit.version>1.5.1</archunit.version>
         <jacoco.version>0.8.15</jacoco.version>
+        <wiremock.version>3.13.2</wiremock.version>
+        <cucumber.version>7.23.0</cucumber.version><!-- 7.24+ exige JUnit Platform 1.13; o Spring Boot 3.5.16 gerencia 1.12 -->
 
         <!-- SonarCloud. Organização e chave vêm do ambiente, nunca do repositório (ver README). -->
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -42,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -87,10 +89,41 @@
             <artifactId>postgresql</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Integração externa isolada em teste (especificação, seção 5). Standalone evita conflito com o Jetty. -->
+        <dependency>
+            <groupId>org.wiremock</groupId>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>${wiremock.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.tngtech.archunit</groupId>
             <artifactId>archunit-junit5</artifactId>
             <version>${archunit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- BDD (Prompt 4.F): cenários executáveis em src/test/resources/features, rodados pelo failsafe. -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-spring</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -122,12 +155,18 @@
                 </executions>
             </plugin>
 
-            <!-- ADR-011: relatório desde a Fase 3, sem regra de falha.
-                 O gate de 80% de linhas e 70% de branches liga na primeira fatia de domínio da Fase 4. -->
+            <!-- ADR-011: relatório desde a Fase 3; gate de cobertura ligado na Fase 4 (execução "gate"). -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>${jacoco.version}</version>
+                <configuration>
+                    <!-- Mede só o código do projeto. Sem isso, o agente instrumenta bibliotecas e o relatório
+                         falha com "Incompatible execution data" quando as classes mudam entre execuções. -->
+                    <includes>
+                        <include>br/senac/recursos/**</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -142,7 +181,64 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
+                    <!-- Gate da ADR-011: 80% de linhas e 70% de branches no conjunto.
+                         Falha o verify, e portanto o CI, quando a cobertura cai abaixo do piso. -->
+                    <execution>
+                        <id>gate</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.80</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>BRANCH</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.70</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
                 </executions>
+            </plugin>
+
+            <!-- Mutation testing (Fase 4, relatório apenas, sem gate): não roda no verify.
+                 Uso: ./mvnw org.pitest:pitest-maven:mutationCoverage. Alcance: pacote model e model.regra
+                 (domínio e regras de período, sobreposição e estados). Resultado em docs/testes/mutacao.md. -->
+            <plugin>
+                <groupId>org.pitest</groupId>
+                <artifactId>pitest-maven</artifactId>
+                <version>1.29.10</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.pitest</groupId>
+                        <artifactId>pitest-junit5-plugin</artifactId>
+                        <version>1.2.3</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <targetClasses>
+                        <param>br.senac.recursos.model.*</param>
+                    </targetClasses>
+                    <targetTests>
+                        <param>br.senac.recursos.model.*</param>
+                    </targetTests>
+                    <outputFormats>
+                        <outputFormat>HTML</outputFormat>
+                        <outputFormat>XML</outputFormat>
+                    </outputFormats>
+                    <timestampedReports>false</timestampedReports>
+                </configuration>
             </plugin>
         </plugins>
     </build>

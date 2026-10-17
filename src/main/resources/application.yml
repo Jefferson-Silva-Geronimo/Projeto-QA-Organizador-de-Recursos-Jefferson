@@ -2,16 +2,31 @@
 spring:
   application:
     name: organizacao-recursos
+  jackson:
+    default-property-inclusion: non_null
   datasource:
     url: ${DB_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: none   # ADR-009: o esquema nasce só das migrações
   flyway:
     enabled: true
+
+app:
+  sessao:
+    # ISO-8601, por exemplo PT30M. Obrigatório e sem valor padrão (lacuna D17).
+    duracao: ${SESSAO_DURACAO}
+  notificacao:
+    # Endereço e token por variável de ambiente (A5). Vazio desliga o envio.
+    url: ${NOTIFICACAO_URL:}
+    token: ${NOTIFICACAO_TOKEN:}
+    # Valores iniciais do plano da equipe, a validar (ADR-007). A especificação não define limites.
+    timeout-conexao: ${NOTIFICACAO_TIMEOUT_CONEXAO:PT0.5S}
+    timeout-leitura: ${NOTIFICACAO_TIMEOUT_LEITURA:PT1.5S}
+  bootstrap:
+    admin:
+      # Cria o primeiro Administrador se a tabela de usuários estiver vazia. Sem valor padrão.
+      email: ${BOOTSTRAP_ADMIN_EMAIL:}
+      senha: ${BOOTSTRAP_ADMIN_SENHA:}
 
 server:
   error:
@@ -19,6 +34,13 @@ server:
     include-binding-errors: never
     include-stacktrace: never
     include-exception: false
+
+springdoc:
+  # Só os controladores da aplicação entram no contrato. A interface Swagger UI fica desligada: o contrato
+  # é o JSON em /v3/api-docs, que exige autenticação.
+  packages-to-scan: br.senac.recursos.controller
+  swagger-ui:
+    enabled: false
 
 management:
   endpoints:

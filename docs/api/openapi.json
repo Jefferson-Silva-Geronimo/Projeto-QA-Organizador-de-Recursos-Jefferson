@@ -1,0 +1,2315 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "title" : "Organização de Recursos",
+    "description" : "API de alocação de salas, professores e materiais sem conflito de horário. Toda resposta de erro traz um código estável no campo code.",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "http://localhost",
+    "description" : "Generated server url"
+  } ],
+  "security" : [ {
+    "sessao" : [ ]
+  } ],
+  "paths" : {
+    "/api/usuarios/{id}/perfil" : {
+      "put" : {
+        "tags" : [ "usuario-controller" ],
+        "summary" : "Altera o perfil de um usuário",
+        "operationId" : "alterarPerfil",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovoPerfilRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/reservas/{id}" : {
+      "get" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Consulta uma reserva",
+        "operationId" : "obter",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      },
+      "put" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Altera uma reserva de forma atômica",
+        "operationId" : "alterar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/AlteracaoReservaRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "SOLICITANTE", "RESPONSAVEL" ]
+      }
+    },
+    "/api/recursos/{id}/restrito" : {
+      "put" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Altera o atributo restrito de um recurso",
+        "operationId" : "alterarRestrito",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RestritoRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/usuarios" : {
+      "get" : {
+        "tags" : [ "usuario-controller" ],
+        "summary" : "Lista os usuários",
+        "operationId" : "listar",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/UsuarioResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      },
+      "post" : {
+        "tags" : [ "usuario-controller" ],
+        "summary" : "Cria um usuário com um único perfil",
+        "operationId" : "criar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovoUsuarioRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/usuarios/{id}/desativacao" : {
+      "post" : {
+        "tags" : [ "usuario-controller" ],
+        "summary" : "Desativa um usuário e revoga as sessões dele",
+        "operationId" : "desativar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/salas" : {
+      "post" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Cadastra uma sala",
+        "operationId" : "criarSala",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovaSalaRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/reservas" : {
+      "get" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Lista as reservas visíveis ao perfil",
+        "operationId" : "listar_1",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ReservaResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      },
+      "post" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Cria uma reserva",
+        "operationId" : "criar_1",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovaReservaRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "SOLICITANTE", "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/retiradas" : {
+      "post" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Registra a retirada de uma unidade de material",
+        "operationId" : "retirar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MaterialRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/rejeicao" : {
+      "post" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Rejeita uma reserva com motivo",
+        "operationId" : "rejeitar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DecisaoRequisicao"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/nao-comparecimento" : {
+      "post" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Marca o não comparecimento depois da tolerância",
+        "operationId" : "naoCompareceu",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/inicio" : {
+      "post" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Registra o início de uso da reserva",
+        "operationId" : "iniciar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/devolucoes" : {
+      "post" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Registra a devolução de uma unidade de material",
+        "operationId" : "devolver",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/MaterialRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/conclusao" : {
+      "post" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Conclui a reserva em uso",
+        "operationId" : "concluir",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/reservas/{id}/cancelamento" : {
+      "post" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Cancela uma reserva",
+        "operationId" : "cancelar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CancelamentoRequisicao"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/reservas/{id}/aprovacao" : {
+      "post" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Aprova uma reserva que exige aprovação",
+        "operationId" : "aprovar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DecisaoRequisicao"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ReservaResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/recursos/{id}/desativacao" : {
+      "post" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Desativa um recurso sem reservas futuras",
+        "operationId" : "desativar_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/professores" : {
+      "post" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Cadastra um professor",
+        "operationId" : "criarProfessor",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovoProfessorRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/materiais" : {
+      "post" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Cadastra uma unidade de material",
+        "operationId" : "criarMaterial",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovoMaterialRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/bloqueios" : {
+      "post" : {
+        "tags" : [ "bloqueio-controller" ],
+        "summary" : "Cria um bloqueio de manutenção, com confirmação",
+        "operationId" : "criar_2",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/NovoBloqueioRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Created",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BloqueioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/bloqueios/{id}/levantamento" : {
+      "post" : {
+        "tags" : [ "bloqueio-controller" ],
+        "summary" : "Levanta um bloqueio de manutenção",
+        "operationId" : "levantar",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LevantamentoRequisicao"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/BloqueioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    },
+    "/api/auth/logout" : {
+      "post" : {
+        "tags" : [ "autenticacao-controller" ],
+        "summary" : "Encerra e revoga a sessão atual",
+        "operationId" : "sair",
+        "parameters" : [ {
+          "name" : "Authorization",
+          "in" : "header",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : "No Content"
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/auth/login" : {
+      "post" : {
+        "tags" : [ "autenticacao-controller" ],
+        "summary" : "Abre uma sessão com e-mail e senha",
+        "operationId" : "entrar",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/LoginRequisicao"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/LoginResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Credenciais inválidas. O campo code traz CREDENCIAIS_INVALIDAS."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "PUBLICO" ]
+      }
+    },
+    "/api/reservas/{id}/movimentacoes" : {
+      "get" : {
+        "tags" : [ "uso-controller" ],
+        "summary" : "Lista retiradas e devoluções da reserva",
+        "operationId" : "historico",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/MovimentacaoResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/reservas/{id}/historico" : {
+      "get" : {
+        "tags" : [ "auditoria-controller" ],
+        "summary" : "Consulta o histórico de uma reserva",
+        "operationId" : "historico_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EventoAuditoriaResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/reservas/fila" : {
+      "get" : {
+        "tags" : [ "reserva-controller" ],
+        "summary" : "Lista a fila de aprovações",
+        "operationId" : "fila",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ReservaResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL" ]
+      }
+    },
+    "/api/relatorios/utilizacao" : {
+      "get" : {
+        "tags" : [ "relatorio-controller" ],
+        "summary" : "Relatório de utilização, carga horária e conflitos evitados",
+        "operationId" : "utilizacao",
+        "parameters" : [ {
+          "name" : "inicio",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "name" : "fim",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "name" : "tipo",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "SALA", "PROFESSOR", "MATERIAL" ]
+          }
+        }, {
+          "name" : "recursoId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "pagina",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "tamanho",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RelatorioResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "RESPONSAVEL", "ADMINISTRADOR" ]
+      }
+    },
+    "/api/recursos" : {
+      "get" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Pesquisa recursos por tipo, capacidade, localização, competência e disponibilidade",
+        "operationId" : "pesquisar",
+        "parameters" : [ {
+          "name" : "tipo",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "SALA", "PROFESSOR", "MATERIAL" ]
+          }
+        }, {
+          "name" : "capacidadeMinima",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "localizacao",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "competencia",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "inicio",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "name" : "fim",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/RecursoResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/recursos/{id}" : {
+      "get" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Consulta um recurso",
+        "operationId" : "obter_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/RecursoResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/recursos/{id}/ocupacoes" : {
+      "get" : {
+        "tags" : [ "recurso-controller" ],
+        "summary" : "Lista os intervalos ocupados de um recurso, sem o dono",
+        "operationId" : "ocupacoes",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "inicio",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }, {
+          "name" : "fim",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/IntervaloResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/auth/eu" : {
+      "get" : {
+        "tags" : [ "autenticacao-controller" ],
+        "summary" : "Identifica o usuário da sessão atual",
+        "operationId" : "eu",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/UsuarioAtualResposta"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "QUALQUER_PERFIL_AUTENTICADO" ]
+      }
+    },
+    "/api/auditoria" : {
+      "get" : {
+        "tags" : [ "auditoria-controller" ],
+        "summary" : "Consulta a auditoria completa",
+        "operationId" : "listar_2",
+        "parameters" : [ {
+          "name" : "entidade",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "RESERVA", "RECURSO", "USUARIO", "BLOQUEIO", "CONFIGURACAO" ]
+          }
+        }, {
+          "name" : "entidadeId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EventoAuditoriaResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "NovoPerfilRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "perfil" : {
+            "type" : "string",
+            "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
+          }
+        },
+        "required" : [ "perfil" ]
+      },
+      "UsuarioResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "perfil" : {
+            "type" : "string",
+            "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
+          },
+          "ativo" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "AlteracaoReservaRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "titulo" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 1
+          },
+          "descricao" : {
+            "type" : "string",
+            "maxLength" : 2000,
+            "minLength" : 0
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "recursoIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "ReservaResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitanteId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "titulo" : {
+            "type" : "string"
+          },
+          "descricao" : {
+            "type" : "string"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "estado" : {
+            "type" : "string",
+            "enum" : [ "SOLICITADA", "APROVADA", "EM_USO", "CONCLUIDA", "REJEITADA", "CANCELADA", "NAO_COMPARECEU" ]
+          },
+          "exigeAprovacao" : {
+            "type" : "boolean"
+          },
+          "motivo" : {
+            "type" : "string"
+          },
+          "recursoIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "RestritoRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "restrito" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "RecursoResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "SALA", "PROFESSOR", "MATERIAL" ]
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "restrito" : {
+            "type" : "boolean"
+          },
+          "ativo" : {
+            "type" : "boolean"
+          },
+          "capacidade" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "localizacao" : {
+            "type" : "string"
+          },
+          "tipoSala" : {
+            "type" : "string"
+          },
+          "horaAbertura" : {
+            "type" : "string"
+          },
+          "horaFechamento" : {
+            "type" : "string"
+          },
+          "diasFuncionamento" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          },
+          "codigoPatrimonio" : {
+            "type" : "string"
+          },
+          "descricao" : {
+            "type" : "string"
+          },
+          "usuarioId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "competencias" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "NovoUsuarioRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "nome" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "email" : {
+            "type" : "string",
+            "format" : "email",
+            "maxLength" : 254,
+            "minLength" : 0
+          },
+          "senha" : {
+            "type" : "string",
+            "maxLength" : 72,
+            "minLength" : 8
+          },
+          "perfil" : {
+            "type" : "string",
+            "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
+          }
+        },
+        "required" : [ "email", "nome", "perfil", "senha" ]
+      },
+      "NovaSalaRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "nome" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "capacidade" : {
+            "type" : "integer",
+            "format" : "int32",
+            "minimum" : 1
+          },
+          "localizacao" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "tipoSala" : {
+            "type" : "string",
+            "maxLength" : 100,
+            "minLength" : 0
+          },
+          "horaAbertura" : {
+            "type" : "string"
+          },
+          "horaFechamento" : {
+            "type" : "string"
+          },
+          "diasFuncionamento" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int32",
+              "maximum" : 7,
+              "minimum" : 1
+            },
+            "minItems" : 1
+          },
+          "restrito" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "capacidade", "diasFuncionamento", "horaAbertura", "horaFechamento", "localizacao", "nome" ]
+      },
+      "NovaReservaRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "titulo" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "descricao" : {
+            "type" : "string",
+            "maxLength" : 2000,
+            "minLength" : 0
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "recursoIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            },
+            "minItems" : 1
+          }
+        },
+        "required" : [ "fim", "inicio", "recursoIds", "titulo" ]
+      },
+      "MaterialRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "materialId" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        },
+        "required" : [ "materialId" ]
+      },
+      "DecisaoRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "motivo" : {
+            "type" : "string",
+            "maxLength" : 1000,
+            "minLength" : 0
+          }
+        }
+      },
+      "CancelamentoRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "motivo" : {
+            "type" : "string",
+            "maxLength" : 1000,
+            "minLength" : 0
+          }
+        }
+      },
+      "NovoProfessorRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "nome" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "usuarioId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "competencias" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string",
+              "maxLength" : 100,
+              "minLength" : 0
+            }
+          },
+          "restrito" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "nome" ]
+      },
+      "NovoMaterialRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "nome" : {
+            "type" : "string",
+            "maxLength" : 200,
+            "minLength" : 0
+          },
+          "codigoPatrimonio" : {
+            "type" : "string",
+            "maxLength" : 100,
+            "minLength" : 0
+          },
+          "descricao" : {
+            "type" : "string",
+            "maxLength" : 500,
+            "minLength" : 0
+          },
+          "restrito" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "codigoPatrimonio", "nome" ]
+      },
+      "NovoBloqueioRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "recursoId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "motivo" : {
+            "type" : "string",
+            "maxLength" : 1000,
+            "minLength" : 0
+          },
+          "reservasConfirmadas" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        },
+        "required" : [ "fim", "inicio", "recursoId" ]
+      },
+      "BloqueioResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "recursoId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "motivo" : {
+            "type" : "string"
+          },
+          "ativo" : {
+            "type" : "boolean"
+          },
+          "reservasCanceladas" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
+          }
+        }
+      },
+      "LevantamentoRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "motivo" : {
+            "type" : "string",
+            "maxLength" : 1000,
+            "minLength" : 0
+          }
+        }
+      },
+      "LoginRequisicao" : {
+        "type" : "object",
+        "properties" : {
+          "email" : {
+            "type" : "string",
+            "maxLength" : 254,
+            "minLength" : 0
+          },
+          "senha" : {
+            "type" : "string",
+            "maxLength" : 72,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "email", "senha" ]
+      },
+      "LoginResposta" : {
+        "type" : "object",
+        "properties" : {
+          "token" : {
+            "type" : "string"
+          },
+          "perfil" : {
+            "type" : "string",
+            "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
+          },
+          "expiraEm" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "MovimentacaoResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "materialId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "RETIRADA", "DEVOLUCAO" ]
+          },
+          "registradoPorId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "registradoEm" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "EventoAuditoriaResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "ocorridoEm" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "atorTipo" : {
+            "type" : "string"
+          },
+          "atorId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "entidade" : {
+            "type" : "string"
+          },
+          "entidadeId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "acao" : {
+            "type" : "string"
+          },
+          "estadoAnterior" : {
+            "type" : "string"
+          },
+          "estadoNovo" : {
+            "type" : "string"
+          },
+          "motivo" : {
+            "type" : "string"
+          },
+          "antes" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "depois" : {
+            "type" : "object",
+            "additionalProperties" : { }
+          },
+          "correlacaoId" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }
+      },
+      "ItemRelatorioResposta" : {
+        "type" : "object",
+        "properties" : {
+          "recursoId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "nome" : {
+            "type" : "string"
+          },
+          "tipo" : {
+            "type" : "string",
+            "enum" : [ "SALA", "PROFESSOR", "MATERIAL" ]
+          },
+          "horasAlocadas" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "utilizacao" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "conflitosEvitados" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitantesDistintos" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "RelatorioResposta" : {
+        "type" : "object",
+        "properties" : {
+          "itens" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/ItemRelatorioResposta"
+            }
+          },
+          "pagina" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "tamanho" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "total" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
+      "IntervaloResposta" : {
+        "type" : "object",
+        "properties" : {
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          }
+        }
+      },
+      "UsuarioAtualResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "email" : {
+            "type" : "string"
+          },
+          "perfil" : {
+            "type" : "string",
+            "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
+          }
+        }
+      }
+    },
+    "securitySchemes" : {
+      "sessao" : {
+        "type" : "http",
+        "description" : "Token opaco devolvido por POST /api/auth/login",
+        "scheme" : "bearer"
+      }
+    }
+  }
+}

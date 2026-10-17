@@ -227,7 +227,7 @@ Riscos de projeto (prazo até a semana 46; decisões A1, A3 e A5 podem mudar; la
 
 ## 10. Visão arquitetural
 
-**Decisão da equipe, a confirmar no Prompt 2.4:** monólito modular em Spring Boot, com camadas que espelham o C4 (`api`, `aplicacao`, `dominio`, `infra`), banco PostgreSQL, front end React + Vite que consome a API REST e uma porta para o provedor de notificação. A origem de cada escolha está na seção 14; a confirmação, contestação ou refinamento de cada uma das doze decisões iniciais está na seção 12.
+**Decisão da equipe:** monólito em Spring Boot organizado em MVC (ADR-014: `controller`, `service`, `repository`, `model`, `dto`), acesso a dados por SQL parametrizado com Spring JDBC (ADR-013), banco PostgreSQL, front end React + Vite que consome a API REST e uma interface (`NotificadorExterno`) para o provedor de notificação. A versão inicial, com camadas `api`, `aplicacao`, `dominio` e `infra`, foi emendada pelo ADR-014 na Fase 4. A origem de cada escolha está na seção 14; a confirmação, contestação ou refinamento de cada uma das doze decisões iniciais está na seção 12.
 
 Os nomes usados nos diagramas são os mesmos do texto: **Solicitante**, **Responsável**, **Administrador**, **Front end (React + Vite)**, **API (Spring Boot)**, **Banco (PostgreSQL)** e **Provedor de notificação (webhook)**. Tabelas e colunas são as de [modelo-dados.dbml](prd/modelo-dados.dbml).
 
@@ -269,6 +269,8 @@ flowchart LR
 
 ### 10.3 Componentes da API (Spring Boot)
 
+Os componentes abaixo são os do código da Fase 4. Cada caixa traz o pacote onde está (ADR-014).
+
 ```mermaid
 flowchart TB
     front["Front end (React + Vite)"]
@@ -276,30 +278,32 @@ flowchart TB
     prov["Provedor de notificação (webhook)"]
 
     subgraph api ["API (Spring Boot)"]
-        subgraph camada_api ["Camada api"]
+        subgraph camada_ctrl ["Controller (pacotes controller, dto, security)"]
             ctrl["Controladores REST"]
-            seg["Autenticação e autorização por perfil"]
-            err["Tradutor de erros com códigos estáveis"]
+            seg["Autenticação e autorização por perfil (TokenFilter, @PreAuthorize)"]
+            err["Tradutor de erros com códigos estáveis (TratadorDeErros)"]
         end
-        subgraph camada_app ["Camada aplicacao"]
+        subgraph camada_svc ["Service (pacote service)"]
             uc_reserva["Casos de uso de reserva"]
             uc_aprov["Casos de uso de aprovação e uso"]
             uc_bloq["Casos de uso de bloqueio e cadastro"]
             uc_rel["Consulta de disponibilidade e relatório"]
             desp["Despachante de notificações"]
-            agend["Agendador de transições automáticas"]
+            audit["Auditoria somente inserção (AuditoriaService)"]
+            notif["Interface NotificadorExterno"]
         end
-        subgraph camada_dom ["Camada dominio"]
+        subgraph camada_model ["Model (pacotes model e model.regra)"]
             regras["Regras de período, janela e conflito"]
             estados["Máquina de estados da reserva"]
             politica["Política de autorização por posse"]
-            portas["Portas: relógio, notificação e repositórios"]
         end
-        subgraph camada_infra ["Camada infra"]
-            repo["Repositórios PostgreSQL"]
-            audit["Auditoria somente inserção"]
+        subgraph camada_repo ["Repository (pacote repository)"]
+            repo["Repositórios JDBC (PostgreSQL)"]
+        end
+        subgraph camada_cfg ["Config e integração (pacotes config e integration)"]
+            agend["Agendador de transições automáticas"]
             webhook["Adaptador de webhook"]
-            relogio["Relógio do sistema"]
+            relogio["Relógio do sistema (Clock injetado)"]
         end
     end
 
@@ -315,24 +319,45 @@ flowchart TB
     uc_aprov --> politica
     uc_aprov --> estados
     uc_bloq --> regras
+    uc_reserva --> repo
+    uc_aprov --> repo
+    uc_bloq --> repo
+    uc_rel --> repo
     agend --> estados
     agend --> audit
     agend --> repo
     seg --> repo
-    desp --> portas
-    regras --> portas
-    portas -.-> repo
-    portas -.-> relogio
-    portas -.-> webhook
+    desp --> notif
+    desp --> repo
+    uc_reserva --> relogio
+    uc_aprov --> relogio
     uc_reserva --> audit
     uc_aprov --> audit
     uc_bloq --> audit
+    audit --> repo
+    webhook -.->|"implementa"| notif
     repo --> banco
-    audit --> banco
     webhook --> prov
 ```
 
-O **Agendador de transições automáticas** está desenhado porque o reenvio de notificações (C6) já exige um executor periódico. Ele executa o cancelamento por SEM_DECISAO (D2); a marcação de não compareceu segue manual. Detalhe na seção 13.7.
+O **Agendador de transições automáticas** executa o cancelamento por SEM_DECISAO (D2) e só liga por configuração (`app.jobs.sem-decisao.habilitado`); a marcação de não compareceu segue manual. Detalhe na seção 13.7 e no ADR-012.
+
+### 10.4 Estrutura MVC (ADR-014)
+
+Por determinação do usuário na Fase 4, o código segue o padrão MVC. O diagrama 10.3 usa os nomes de
+componente e a tabela mostra onde cada um está no código. A interface `NotificadorExterno` fica em `service`
+e o adaptador `WebhookNotificador` em `integration`; o relógio é o `Clock` do bean de `RelogioConfig`.
+
+| Componente do diagrama | Camada MVC | Pacote |
+| --- | --- | --- |
+| Controladores REST, tradutor de erros | Controller | `controller` |
+| Objetos de requisição e resposta | DTO | `dto` |
+| Casos de uso, despachante e agendador | Service | `service`, `config` (agendador) |
+| Repositórios PostgreSQL, auditoria somente inserção | Repository | `repository` |
+| Regras de período, janela e conflito, máquina de estados, política de autorização | Model | `model`, `model.regra` |
+| Adaptador de webhook, relógio do sistema | Integração e configuração | `integration`, `config` |
+| Autenticação e autorização por perfil | Controller e Security | `controller`, `security` |
+| Front end (React + Vite) | View | `frontend/` |
 
 ## 11. Sequências críticas
 

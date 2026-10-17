@@ -10,8 +10,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | --- | --- |
 | Projeto | Organização de Recursos |
 | Documento | Plano de teste |
-| Versão e estado | 0.1, esqueleto (fim da Etapa 1 da Fase 1) |
-| Data | 12/10/2026 |
+| Versão e estado | 0.3, com os números medidos ao fechar a Fase 4 |
+| Data | 17/10/2026 |
 | Responsável | Equipe. Nomes: TODO |
 | Aprovação | TODO: professor e equipe |
 
@@ -67,12 +67,12 @@ Níveis exigidos pela especificação (seção 5). Ferramentas e versões são d
 | --- | --- | --- | --- |
 | Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
 | Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção 5): persistência verificada em ambiente real, não com mock |
-| API em caixa-preta | Contrato, autorização por perfil, códigos de erro | TODO: ferramenta | Matriz perfil × operação |
-| Ponta a ponta | Jornadas das personas | TODO: ferramenta | Depende do front end (Fase 6) |
+| API em caixa-preta | Contrato, autorização por perfil, códigos de erro | MockMvc sobre o contexto completo, com PostgreSQL real | Matriz perfil × operação. Escolha sem requisito da especificação: a exigência é "API em caixa-preta" |
+| Ponta a ponta | Jornadas das personas | TODO: ferramenta, decidida na Fase 6 | Depende do front end (Fase 6) |
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
 | Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
 | Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: TODO |
-| TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TODO: escolha da funcionalidade | Candidata natural: regras de aprovação e bloqueio, conforme o cronograma da especificação |
+| TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TDD por fatia com commits `test(red)`, `feat(green)` e `refactor`; BDD com Cucumber para aprovação e bloqueio (15 cenários) | Evidência em [evidencia-tdd.md](testes/evidencia-tdd.md) e [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). A granularidade do TDD é por fatia, não por caso |
 
 ### 4.1 Técnicas de projeto de teste
 
@@ -99,8 +99,8 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Critério | Estado |
 | --- | --- |
 | Requisitos, regras, modelo de dados e fluxos versionados e verificados pela skill analyze-docs | Atendido ao fim da Etapa 1 |
-| Cenários de qualidade e arquitetura definidos | TODO (Fase 2) |
-| Casca do projeto, integração contínua e processo de defeitos | TODO (Fase 3) |
+| Cenários de qualidade e arquitetura definidos | Atendido: CEN-01 a CEN-11 em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md) |
+| Casca do projeto, integração contínua e processo de defeitos | Atendido na Fase 3 (PR 1): `./mvnw -B verify` e workflow `qualidade`; defeitos em [docs/defeitos](defeitos/README.md) |
 | Decisões A1, A3 e A5 confirmadas com o professor | TODO |
 | Lacunas D2 e D10 a D16 decididas em 15/10/2026 | Atendido |
 
@@ -114,6 +114,19 @@ Metas da especificação (seção 6):
 | Cobertura de branches | 70% |
 | Requisitos críticos na RTM | 100% |
 | Bugs ou vulnerabilidades críticos | 0 |
+
+Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; evidência de CI E-2: run `39055557492`, check `test` verde):
+
+| Meta | Meta da especificação | Medido | Situação |
+| --- | --- | --- | --- |
+| Cobertura de linhas | 80% | 96,7% (1551/1604) | Atingida, com gate no `verify` |
+| Cobertura de branches | 70% | 84,6% (438/518) | Atingida, com gate no `verify` |
+| Requisitos críticos na RTM | 100% | 12 de 12 RF críticos e 8 de 8 RN críticas com linha; 11 dos 12 RF críticos como "testado" e RF-13 como "parcial" | **Parcial:** a interface responsiva de RF-13 é da Fase 6 |
+| Bugs ou vulnerabilidades críticos | 0 | Não verificado | SonarCloud ainda sem segredos configurados (Bloco F) |
+| Testes | — | 468 (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas | — |
+| Mutação do pacote `model` (sem meta) | — | 77% (60/78), 0 sobreviventes | Referência, ver [mutacao.md](testes/mutacao.md) |
+
+Itens não testados nesta fase: desempenho e carga (Fase 5), interface e ponta a ponta (Fase 6), SonarCloud, valores das lacunas D1, D3, D4, D9 e D17, e papel privilegiado alterando a auditoria (R-23).
 
 Proposta da equipe, a validar:
 
@@ -136,14 +149,14 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | Entregável | Origem | Estado |
 | --- | --- | --- |
 | Este plano de teste | Especificação, seção 7 | Esqueleto |
-| Casos de teste identificados por CT-xxx | Fase 4 | TODO |
-| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Esqueleto |
-| Suíte automatizada e relatório de testes | Especificação, seção 7 | TODO |
-| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | TODO |
+| Casos de teste identificados por CT-xxx | [casos-de-teste.md](testes/casos-de-teste.md) | Feito na fatia 4.0; execução por fatia |
+| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Feito na Fase 4 (E-1) |
+| Suíte automatizada e relatório de testes | Especificação, seção 7 | Feito: 468 testes no `verify` e na CI |
+| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | JaCoCo feito; SonarCloud pendente (Bloco F) |
 | Plano e resultado do teste de carga | Especificação, seção 7 | TODO |
-| Registro de defeitos | Especificação, seção 7 | TODO |
+| Registro de defeitos | Especificação, seção 7 | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
 | Relatório final de qualidade | Especificação, seção 7 | TODO |
-| Evidência de TDD ou BDD | Especificação, seção 5 | TODO |
+| Evidência de TDD ou BDD | Especificação, seção 5 | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
 ## 7. Ambiente
 
@@ -157,7 +170,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | Cobertura | JaCoCo | Exigido pela especificação |
 | Carga | JMeter | Exigido pela especificação |
 | Fuso | Configurável, padrão America/Sao_Paulo | Decisão A6 |
-| Versões e configuração de máquina | TODO | Fase 3 |
+| Versões | Java 21, Spring Boot 3.5.16, PostgreSQL 17 em container, JaCoCo 0.8.15, ArchUnit 1.5.1, springdoc 2.8.17, runner ubuntu-24.04 | Fixadas no `pom.xml` e no workflow |
 | Segredos | Em variáveis de ambiente e no repositório de segredos da CI, nunca no repositório | Regra do projeto |
 
 ## 8. Riscos
@@ -206,7 +219,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | TODO: nomes |
-| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | TODO |
+| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; pergunta ao professor em [perguntas-professor.md](perguntas-professor.md) |
 | Professor | Validar as decisões pendentes de confirmação | TODO |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
@@ -231,9 +244,9 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 
 ## 10. Rastreabilidade
 
-- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco inicial e status **não iniciado**.
-- Casos de teste usam o prefixo CT-xxx e serão ligados na RTM a partir da Fase 4.
-- Defeitos usam o prefixo BUG-xxx e serão registrados em `docs/defeitos/` a partir da Fase 3.
+- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco, caso de teste, evidência e status (48 testados e 1 parcial em 17/10/2026).
+- Casos de teste usam o prefixo CT-xxx e estão ligados na RTM desde a Fase 4.
+- Defeitos usam o prefixo BUG-xxx e são registrados em `docs/defeitos/` desde a Fase 3.
 - Identificadores: RN-xx, RF-xx, RNF-xx, CEN-xx, ADR-xxx, CT-xxx, INT-xx, BUG-xxx e R-xx.
 
 ## 11. Pendências
@@ -246,5 +259,5 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 | Política de dados e de limpeza dos testes | Fase 3 |
 | Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe e professor |
 | Confirmação de A1, A3 e A5 | Professor |
-| Escolha da funcionalidade de TDD ou BDD | Fase 4 |
+| ~~Escolha da funcionalidade de TDD ou BDD~~ | Feito na Fase 4 |
 | Nomes e prazos dos responsáveis | Equipe |

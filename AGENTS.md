@@ -113,7 +113,8 @@ docs/adr/, docs/avaliacao-arquitetural/, docs/testes/, docs/defeitos/, docs/perf
 docs/arquitetura.md, docs/taticas-arquiteturais-len-bass.md  (Fase 2)
 perf/                JMeter (previsto)
 frontend/            React + Vite (previsto)
-src/, pom.xml        Maven, na raiz (previstos)
+src/, pom.xml        Maven, na raiz. Pacotes MVC em br.senac.recursos: controller, dto, service,
+                     repository, model, exception, config e security (ADR-014)
 .github/             ISSUE_TEMPLATE/defeito.md e pull_request_template.md; workflows/ (previsto)
 ```
 <!-- PROJETO-END: organizacao-recursos -->
