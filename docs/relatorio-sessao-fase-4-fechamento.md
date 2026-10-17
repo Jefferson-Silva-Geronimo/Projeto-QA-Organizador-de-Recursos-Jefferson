@@ -36,7 +36,7 @@ de execução desta sessão. Meta não atingida consta como não atingida.
 | --- | --- |
 | ~~Quality Gate do SonarCloud~~ | **Feito.** Segredos e variáveis configurados pelo usuário; análise na CI |
 | ~~Proteção da `main`~~ **Feita** | O repositório passou a público; proteção aplicada e conferida: check `test` obrigatório, PR obrigatório, 0 aprovações, vale para administrador, sem force push |
-| Revisão assistida dos PRs 1 e 2 | **Feita** (comentários de revisão nos dois PRs, identificados como revisão assistida). **Merge não feito**: depende da confirmação do usuário; ordem #1, retargetar #2 para a `main`, #2 |
+| Revisão assistida dos PRs 1 e 2 | **Feita** (comentários de revisão nos dois PRs, identificados como revisão assistida). **Merges feitos com confirmação do usuário**, em merge commit: PR 1 (`12310c3`) e PR 2 (`cd04ee6`), em 17/10/2026. O PR 2 foi atualizado com merge da `main` (sem rebase, para não reescrever o histórico) |
 | `tutorial.md` e `update-tutorial` | O arquivo não existe no repositório e a skill `update-tutorial` não foi encontrada em `.aiox-core` nem em `.claude` |
 | `analyze-docs` completa | Foram executadas só as verificações mecânicas (links relativos, fences, colunas de tabela, renderização Mermaid). Não foram feitas: ortografia, fidelidade à especificação, IDs cruzados, termos canônicos e números sem origem |
 | Desempenho (CEN-04, R-21) | Fase 5 |
@@ -48,18 +48,14 @@ Registradas em [decisoes-equipe.md](decisoes-equipe.md), seção 4: D1, D3, D4, 
 
 ## 5. Ações pendentes
 
-**Do usuário (Bloco F e aceites):**
+**Do usuário:**
 
-1. Importar o repositório no SonarCloud e anotar organização e project key. Atenção: o repositório é privado e o plano gratuito do SonarCloud pode não cobrir repositório privado; **confira antes**.
-2. `gh secret set SONAR_TOKEN` (digite o valor no prompt).
-3. `gh variable set SONAR_ORGANIZATION --body "<org>"` e `gh variable set SONAR_PROJECT_KEY --body "<key>"`.
-4. Decidir sobre a proteção da `main`: tornar o repositório público, assinar o GitHub Pro, ou manter sem proteção e registrar a limitação.
-5. Autorizar o `git push` da branch `fase-4/backend` (24 commits locais não enviados, contados antes deste ajuste) e o início das revisões dos PRs.
-6. Ratificar as linhas "aceitas em bloco" de `decisoes-equipe.md`.
-7. Reiniciar o Docker e reexecutar a concorrência 5 vezes, ou aceitar a evidência da CI.
+1. Ratificar as linhas "aceitas em bloco" de `decisoes-equipe.md`, uma a uma, e SQ-03 (CSRF desligado, aceito com justificativa).
+2. Revogar o token do SonarCloud que foi colado na conversa (já substituído por outro no GitHub), se ainda não fez.
+3. Responder ao professor (abaixo) e decidir cada lacuna com as alternativas que eu mostrar.
 
 **Do professor:** a mensagem única está em [perguntas-professor.md](perguntas-professor.md) (A1 a A8, D1, D3, D4, D9, D17, revisão por pares e precisão em segundos).
 
 ## 6. Próximo passo
 
-Fase 5: carga com JMeter e testes de segurança e robustez, depois Fase 6 (front end React) e Fase 7. Antes: concluir os Blocos F e G (SonarCloud, revisão e merge dos PRs 1 e 2).
+Fase 5: carga com JMeter e testes de segurança e robustez, depois Fase 6 (front end React) e Fase 7. Os Blocos F e G estão concluídos.

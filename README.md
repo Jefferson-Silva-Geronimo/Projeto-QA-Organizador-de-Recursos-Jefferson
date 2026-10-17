@@ -130,8 +130,8 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
 | 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
 | 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
-| 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 aberto, aguardando merge |
-| 4 | Back end guiado por testes (TDD e BDD) | Back end e testes concluídos (468 testes, 96,7% de linhas, 84,6% de branches); PR 2 aberto, aguardando merge. Pendentes: Quality Gate do SonarCloud e proteção da `main` |
+| 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 mesclado na `main` em 17/10/2026 |
+| 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Pendências: respostas do professor |
 | 5 | Testes de carga e concorrência (JMeter) | Prevista |
 | 6 | Front end | Prevista |
 | 7 | Fechamento, relatório de qualidade e prova oral | Prevista |
@@ -151,11 +151,11 @@ Fonte: especificação, seção 6.
 
 - **Revisão por pares:** a equipe é uma pessoa, então não há revisão por par humano. No lugar, cada pull request
   recebe uma revisão crítica assistida, registrada como comentário e identificada como tal, e a `main` deve exigir pull
-  request e check obrigatório com zero aprovações (o autor não pode aprovar o próprio PR). **Estado atual:** a
-  proteção ainda não foi aplicada; depende de ação do usuário. A pergunta ao professor
+  request e check obrigatório com zero aprovações (o autor não pode aprovar o próprio PR). **Estado atual:** proteção
+  aplicada em 17/10/2026 (check `test` obrigatório, PR obrigatório, 0 aprovações). A pergunta ao professor
   está em [docs/perguntas-professor.md](docs/perguntas-professor.md).
 - **Valores sem decisão (D1, D3, D4, D9, D17):** sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
-- **SonarCloud:** análise ligada na CI, mas só executa com os segredos configurados.
+- **SonarCloud:** análise ligada na CI e Quality Gate aprovado no PR 2.
 
 ## Convenções
 
