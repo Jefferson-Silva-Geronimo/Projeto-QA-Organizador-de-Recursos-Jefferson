@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Aceito em 15/10/2026 (aprovação do usuário). A **estrutura de pacotes** foi substituída pelo [ADR-014](ADR-014-estrutura-mvc.md); o restante segue valendo |
+| Status | **Aceito, emendado** (decisão da equipe, Jefferson, 17/10/2026). Vale: monólito de um único artefato, Spring Boot 3.x, transação local, domínio sem Spring e portas só onde há troca ou substituição em teste. **Emendado** pelo [ADR-014](ADR-014-estrutura-mvc.md) (estrutura de pacotes: `api/aplicacao/dominio/infra` viram MVC) e pelo [ADR-013](ADR-013-acesso-a-dados-por-sql-direto.md) (acesso a dados por JDBC, sem JPA). A palavra "hexagonal" do título descreve a versão original e não a estrutura atual |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 10 da equipe, revisada em [arquitetura.md](../arquitetura.md), seções 10 e 12 |
 | Decisores | Equipe, com aprovação do usuário. Nomes: TODO |
@@ -10,6 +10,10 @@
 ## Contexto
 
 A especificação exige Java 21 e Spring Boot 3.x e a entrega na semana 46 ([especificação](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 1). A mesma especificação cobra testes unitários isolados, integração com banco real e cobertura de 80% de linhas e 70% de branches (seções 5 e 6). Uma reserva grava reserva, ocupações, auditoria e notificação de forma atômica (RN-03, RN-08, RN-28).
+
+## Emenda de 17/10/2026
+
+Na Fase 4 a estrutura de pacotes passou a MVC ([ADR-014](ADR-014-estrutura-mvc.md)) e o acesso a dados a JDBC ([ADR-013](ADR-013-acesso-a-dados-por-sql-direto.md)). Onde a seção "Decisão" abaixo cita `api`, `aplicacao`, `dominio` e `infra`, leia `controller`/`dto`, `service`, `model`/`model.regra` e `repository`/`config`/`integration`. As portas de relógio e de notificação continuam: o relógio é o `Clock` injetado e a notificação é a interface `NotificadorExterno`. O texto original foi mantido para preservar o histórico.
 
 ## Requisitos e cenários
 

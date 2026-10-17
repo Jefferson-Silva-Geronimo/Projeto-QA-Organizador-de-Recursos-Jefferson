@@ -26,7 +26,7 @@ RF-03, RF-06, RF-12; RN-02, RN-03, RN-11, RN-31; RNF-05, RNF-07; CEN-01, CEN-07;
 
 ## Decisão
 
-Repositórios em `infra` usam `JdbcClient` do Spring, com SQL parametrizado e nomeado. Nenhuma concatenação de texto em consulta (ADR-008). Os tipos enumerados são convertidos por `CAST` explícito. O domínio continua sem dependência de Spring ou de persistência.
+Repositórios (pacote `repository`; no texto original, `infra`) usam `JdbcClient` do Spring, com SQL parametrizado e nomeado. Nenhuma concatenação de texto em consulta (ADR-008). Os tipos enumerados são convertidos por `CAST` explícito. O domínio continua sem dependência de Spring ou de persistência.
 
 O starter de JPA é **removido** da casca e o `spring-boot-starter-jdbc` é adicionado. A regra do ArchUnit que proíbe `jakarta.persistence` e `org.hibernate` no domínio permanece, porque continua valendo como proteção.
 

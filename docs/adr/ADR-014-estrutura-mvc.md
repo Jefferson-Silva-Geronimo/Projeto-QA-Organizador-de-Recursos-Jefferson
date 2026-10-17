@@ -35,6 +35,7 @@ Estrutura de `br.senac.recursos`:
 | **Repository** | `repository` | Contratos de acesso a dados e implementações JDBC com SQL parametrizado (ADR-013) | `model`, `exception` |
 | **DTO** | `dto` | Objetos de requisição e de resposta da API, com validação de entrada | `model` |
 | **Exception** | `exception` | `ErroDeNegocio` e `CodigoErro` (códigos estáveis, ADR-008) | nenhuma |
+| **Integração** | `integration` | Adaptadores de sistemas externos (`WebhookNotificador`), que implementam interfaces de `service` | `service`, `model`, `config` |
 | **Config e security** | `config`, `security` | Beans, propriedades, filtro de token e cadeia de segurança | todas |
 | **View** | `frontend/` | SPA React + Vite (ADR-010). Consome a API REST dos controllers | API HTTP |
 
