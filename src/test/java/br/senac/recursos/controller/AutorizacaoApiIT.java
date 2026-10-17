@@ -169,10 +169,7 @@ class AutorizacaoApiIT extends ApiIT {
     }
 
     @Test
-    void ct117_geraAMatrizPublicada() throws Exception {
-        if (!Boolean.getBoolean("gerar.matriz")) {
-            return;
-        }
+    void ct117_matrizPublicadaCorrespondeAAutorizacaoTestada() throws Exception {
         StringBuilder md = new StringBuilder();
         md.append("# Matriz de autorização\n\n")
                 .append("Gerada por `AutorizacaoApiIT` com `-Dgerar.matriz=true`, da mesma lista de operações que o ")
@@ -202,8 +199,14 @@ class AutorizacaoApiIT extends ApiIT {
                 .append("| Administrador cria reserva | 403 | RN-17 |\n")
                 .append("| Solicitante vê o histórico de reserva de outro usuário | 403 | RN-26 |\n");
         Path destino = Path.of("docs", "testes", "matriz-autorizacao.md");
-        Files.createDirectories(destino.getParent());
-        Files.writeString(destino, md.toString(), StandardCharsets.UTF_8);
+        if (Boolean.getBoolean("gerar.matriz")) {
+            Files.createDirectories(destino.getParent());
+            Files.writeString(destino, md.toString(), StandardCharsets.UTF_8);
+        }
+
+        assertThat(Files.readString(destino, StandardCharsets.UTF_8).replace(System.lineSeparator(), "\n"))
+                .as("docs/testes/matriz-autorizacao.md igual à lista de operações testada (regenere com -Dgerar.matriz=true)")
+                .isEqualTo(md.toString());
     }
 
     // ---- CT-118: reserva de outro usuário
