@@ -160,4 +160,31 @@ class TrocaDeProvedorTest {
             assertThat(n.tentativas()).isEqualTo(1);
         });
     }
+
+    @Test
+    void adaptadorAlternativoComFalhaTemporariaSemReenvioConfiguradoMantemANotificacaoPendente() {
+        CaixaDeSaidaEmMemoria caixa = new CaixaDeSaidaEmMemoria();
+        caixa.guardadas.add(pendente(1L));
+        NotificadorExterno instavel = new NotificadorExterno() {
+            @Override
+            public boolean disponivel() {
+                return true;
+            }
+
+            @Override
+            public Resultado enviar(Notificacao notificacao, Instant instante) {
+                return Resultado.FALHA_TEMPORARIA;
+            }
+        };
+
+        int aceitas = servicoCom(instavel, caixa).despachar();
+
+        // Lacuna D3: sem tentativas nem intervalo configurados, não há reenvio automático.
+        assertThat(aceitas).isZero();
+        assertThat(caixa.guardadas).singleElement().satisfies(n -> {
+            assertThat(n.status()).isEqualTo(StatusNotificacao.PENDENTE);
+            assertThat(n.tentativas()).isEqualTo(1);
+            assertThat(n.proximaTentativaEm()).isNull();
+        });
+    }
 }
