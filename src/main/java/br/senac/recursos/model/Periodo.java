@@ -2,7 +2,6 @@ package br.senac.recursos.model;
 
 import br.senac.recursos.exception.CodigoErro;
 import br.senac.recursos.exception.ErroDeNegocio;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -23,9 +22,5 @@ public record Periodo(Instant inicio, Instant fim) {
 
     public boolean sobrepoe(Periodo outro) {
         return inicio.isBefore(outro.fim) && outro.inicio.isBefore(fim);
-    }
-
-    public Duration duracao() {
-        return Duration.between(inicio, fim);
     }
 }

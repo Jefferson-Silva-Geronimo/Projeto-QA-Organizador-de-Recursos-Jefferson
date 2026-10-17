@@ -14,9 +14,4 @@ public enum EstadoReserva {
     public boolean terminal() {
         return this == CONCLUIDA || this == REJEITADA || this == CANCELADA || this == NAO_COMPARECEU;
     }
-
-    /** Estados em que a reserva ocupa o recurso na constraint de exclusão (ADR-003). */
-    public boolean ocupaRecurso() {
-        return this == SOLICITADA || this == APROVADA || this == EM_USO;
-    }
 }
