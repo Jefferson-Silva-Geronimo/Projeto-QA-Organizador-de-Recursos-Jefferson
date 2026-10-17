@@ -40,7 +40,9 @@ class SegurancaConfig {
     SecurityFilterChain filtroDeSeguranca(HttpSecurity http, AutenticacaoService autenticacao,
                                           ObjectMapper json) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
+                // CSRF só ameaça autenticação por cookie de sessão. Aqui a API é stateless e o token opaco vai no
+                // cabeçalho Authorization, que o navegador não anexa sozinho (ADR-004). Aceito com justificativa.
+                .csrf(AbstractHttpConfigurer::disable) // NOSONAR java:S4502
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(a -> a
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()

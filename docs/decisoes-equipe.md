@@ -52,6 +52,16 @@ Cada linha traz a recomendação, a alternativa descartada, o motivo e a origem.
 | DS-10 | Criar e fechar 6 issues retroativas (BUG-001 a BUG-006), mantendo o registro nos `.md` | "Pode criar as 6 e fechá-las como sugeriu, mas mantenha o devido registro no arquivo md também". Issues 3 a 8 |
 | DS-11 | A proteção da `main` por API não é possível no plano atual (HTTP 403: "Upgrade to GitHub Pro or make this repository public"). Alternativas em aberto: tornar o repositório público, assinar o GitHub Pro, ou manter sem proteção e registrar a limitação | Aguardando resposta |
 
+### Quality Gate do SonarCloud, PR 2 (17/10/2026)
+
+O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%, duplicação 0%, hotspots 100% revisados.
+
+| ID | Apontamento | Análise | Tratamento |
+| --- | --- | --- | --- |
+| SQ-01 | `java:S2699`, `AutorizacaoApiIT:172`: teste sem asserção | Procedente: o teste só gerava o arquivo da matriz | **Corrigido:** passa a afirmar que `docs/testes/matriz-autorizacao.md` é igual à lista de operações testada |
+| SQ-02 | `java:S6437`, `AutenticacaoService:45`: senha comprometida | Não era credencial: senha-isca para tempo constante no login. Literal fixo é evitável | **Corrigido:** senha-isca aleatória por inicialização (`UUID`) |
+| SQ-03 | `java:S4502`, `SegurancaConfig:43`: CSRF desligado | CSRF só ameaça autenticação por cookie. A API é stateless e o token vai no cabeçalho `Authorization` (ADR-004) | **Aceito com justificativa** no código (`NOSONAR java:S4502`) e aqui. Decisão a ratificar por Jefferson |
+
 ## 3. Pré-aprovada
 
 | ID | Escopo | Aceita por | Data | Situação |
