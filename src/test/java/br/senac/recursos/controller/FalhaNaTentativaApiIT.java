@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.ResultActions;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
  * contagem, mas mantém a resposta 409 ao solicitante: "se essa gravação falhar, o 409 é mantido e a perda vai
  * para o log".
  */
+@ExtendWith(OutputCaptureExtension.class)
 class FalhaNaTentativaApiIT extends ApiIT {
 
     private String s1;
@@ -71,5 +75,20 @@ class FalhaNaTentativaApiIT extends ApiIT {
 
         assertThat(contar("select count(*) from reservas")).isEqualTo(1);
         assertThat(contar("select count(*) from tentativas_conflito")).isZero();
+    }
+
+    @Test
+    void bug009_aPerdaDaTentativaVaiParaOLogSemDadoPessoal(CapturedOutput saida) throws Exception {
+        reservar(s1, "2026-10-21T14:00", "2026-10-21T16:00").andExpect(status().isCreated());
+        falharAGravacaoDaTentativa();
+        try {
+            reservar(s2, "2026-10-21T15:00", "2026-10-21T17:00").andExpect(status().isConflict());
+        } finally {
+            restaurarAGravacaoDaTentativa();
+        }
+
+        assertThat(saida.getAll())
+                .contains("Tentativa de conflito não gravada (recurso " + salaA + ", motivo SOBREPOSICAO)")
+                .doesNotContain("s2@exemplo.test");
     }
 }
