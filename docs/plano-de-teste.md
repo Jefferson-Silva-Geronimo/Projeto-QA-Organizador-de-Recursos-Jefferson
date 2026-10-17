@@ -126,7 +126,7 @@ Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean ver
 | Testes | — | 468 (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas | — |
 | Mutação do pacote `model` (sem meta) | — | 77% (60/78), 0 sobreviventes | Referência, ver [mutacao.md](testes/mutacao.md) |
 
-Itens não testados nesta fase: desempenho e carga (Fase 5), interface e ponta a ponta (Fase 6), SonarCloud, valores das lacunas D1, D3, D4, D9 e D17, e papel privilegiado alterando a auditoria (R-23).
+Desempenho medido na Fase 5 (rodada 01, 17/10/2026, em [resultado-01.md](performance/resultado-01.md)): consulta com p95 de 76 ms, criação de reserva com p95 de 664 ms, 0 erro real, 0 resposta 500 e nenhuma dupla reserva. A criação **não atende** à hipótese de 300 ms. Itens não testados: interface e ponta a ponta (Fase 6) e valores das lacunas D1, D3, D4, D9 e D17.
 
 Proposta da equipe, a validar:
 
@@ -153,7 +153,7 @@ TODO: critério numérico de defeito bloqueante, se necessário.
 | RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Feito na Fase 4 (E-1) |
 | Suíte automatizada e relatório de testes | Especificação, seção 7 | Feito: 468 testes no `verify` e na CI |
 | Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | JaCoCo feito; SonarCloud pendente (Bloco F) |
-| Plano e resultado do teste de carga | Especificação, seção 7 | TODO |
+| Plano e resultado do teste de carga | Especificação, seção 7 | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
 | Registro de defeitos | Especificação, seção 7 | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
 | Relatório final de qualidade | Especificação, seção 7 | TODO |
 | Evidência de TDD ou BDD | Especificação, seção 5 | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |

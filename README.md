@@ -105,12 +105,12 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-014 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD e mutação
+  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação e revisão de segurança
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   perguntas-professor.md   mensagem consolidada ao professor
-  performance/         (vazio)
-perf/                  testes de carga com JMeter (vazio)
+  performance/         rnf.md (requisito e modelo de carga) e resultado-01.md
+perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
 frontend/              React + Vite (vazio)
 pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrapper
 compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
@@ -132,7 +132,7 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 mesclado na `main` em 17/10/2026 |
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Pendências: respostas do professor |
-| 5 | Testes de carga e concorrência (JMeter) | Prevista |
+| 5 | Testes de carga, segurança e robustez (JMeter) | Em andamento: rodada 01 feita (criação de reserva **não atende** a hipótese de p95 de 300 ms), revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos e Dependabot. Pendentes: rodada 02 e decisão sobre limite de tentativas de login |
 | 6 | Front end | Prevista |
 | 7 | Fechamento, relatório de qualidade e prova oral | Prevista |
 

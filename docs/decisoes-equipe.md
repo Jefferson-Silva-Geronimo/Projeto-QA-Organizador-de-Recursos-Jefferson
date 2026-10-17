@@ -81,3 +81,36 @@ O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%
 | S-SEG | O período aceita precisão de segundos | A API passaria a recusar segundos | BDD-06, linhas de um segundo (`aprovacao-bloqueio.feature`) |
 | S-PAR | Sem revisor humano, vale a revisão crítica assistida, registrada em cada pull request | Pode ser exigido revisor externo | Não há teste; ver [perguntas-professor.md](perguntas-professor.md) |
 | S-A1 a S-A8 | Lacunas 1 a 8 da especificação resolvidas como em A1 a A8 | Ver a tabela em [perguntas-professor.md](perguntas-professor.md) | CT por regra, em [casos-de-teste.md](testes/casos-de-teste.md) |
+
+## 5. Decisões da Fase 5 (17/10/2026)
+
+**Decisão da equipe (Jefferson), 17/10/2026.** Origem: plano mestre, seção 9 e Prompts 5.A a 5.C. Cada uma foi apresentada
+com alternativas e escolhida por Jefferson.
+
+| ID | Decisão | Alternativas descartadas | Ajustes pedidos por Jefferson |
+| --- | --- | --- | --- |
+| P5-01 | Meta de desempenho como **proposta** (p95 de 300 ms, 50 usuários, erros abaixo de 1%), escrita em `docs/performance/rnf.md` antes da primeira rodada | Esperar o professor antes de rodar; propor a meta a partir da medição | O resultado diz "atende" ou "não atende" à hipótese; o relatório declara que o professor ainda não validou; a conclusão fica limitada à máquina local |
+| P5-02 | Modelo de carga: uma rodada principal com 50 usuários, consulta e criação de reserva disputando o mesmo recurso | Carga em degraus; só o pico de disputa | Usuários, ramp-up, duração e mistura de operações são propostos no `rnf.md` e **aprovados por Jefferson antes de rodar** |
+| P5-03 | Apache JMeter 5.6, binário oficial, em pasta fora do repositório | Plugin Maven; imagem Docker de terceiros | Checksum publicado conferido; versão registrada em `resultado-01.md`; se o download for bloqueado, Jefferson baixa e informa o caminho |
+| P5-04 | Revisão de segurança percorre todas as categorias aplicáveis do OWASP Top 10 | Só as categorias mais ligadas aos riscos | Cada uma com status, evidência e ação; registrar a edição do OWASP usada |
+| P5-05 | Dependabot (Maven) e varredura de segredos na CI com action fixada por SHA, além do secret scanning nativo | Só Dependabot; só a action | `dependabot.yml` ignora o Cucumber (DS-06); npm só na Fase 6; se a action exigir licença, usar o CLI do gitleaks |
+| P5-06 | CORS: origem lida de variável de ambiente, sem valor padrão (sem a variável, nenhuma origem) | Padrão `localhost:5173`; deixar para a Fase 6 | Teste de API com 3 casos (sem variável, com variável, nunca `*`); a porta do Vite vai no `.env.example` e no compose da Fase 6 |
+| P5-07 | Log registra a classe da exceção, mensagem saneada (sem detalhe do banco) e identificador de correlação | Só classe e identificador; manter como está | Teste de log: violação de constraint com e-mail fictício e verificação de que ele não aparece no log |
+| P5-08 | Teste com papel de banco que não é dono da tabela: não altera, não apaga e não remove o gatilho da auditoria | Separar papel de migração e de aplicação já; aceitar o risco | Registrar o papel que a aplicação usa; se for o dono, risco aceito com nome e motivo, e a opção B vai para a dívida técnica do relatório final |
+| P5-09 | Autorrevisão estruturada + revisão assistida registrada em cada PR + ferramentas automáticas (Sonar e CodeRabbit se disponível) | Só revisão externa; só ferramentas | Checklist no modelo de PR preenchido por Jefferson; sem intervalo mínimo obrigatório: Jefferson decidiu em 17/10/2026 que, trabalhando só e com prazos, abrir e mesclar na mesma sessão é permitido, desde que CI verde, Quality Gate, autorrevisão, revisão assistida e confirmação dele estejam cumpridos (registrado no modelo de PR); chamar de "revisão assistida", nunca de "revisão por pares"; revisão externa nos PRs críticos se o professor exigir; pergunta ao professor mantida em `perguntas-professor.md` |
+
+### Resultado da execução de P5-08 e risco aceito R-23 (17/10/2026)
+
+| Item | Registro |
+| --- | --- |
+| Papel que a aplicação usa de verdade | O **dono** das tabelas: o mesmo usuário que roda as migrações. No teste, o usuário do contêiner; no desenvolvimento local, `POSTGRES_USER` do `.env` |
+| O que o teste prova | Um papel que não é dono, mesmo com todos os privilégios de dados, não altera, não apaga, não trunca nem desliga o gatilho da auditoria (`AuditoriaPapelIT`, provado por mutação) |
+| O que o teste não cobre | O papel dono da aplicação **pode** desligar o gatilho |
+| **Risco aceito R-23** | **Aceito por Jefferson em 17/10/2026.** Motivo: separar o papel de migração do de aplicação é endurecimento de implantação, fora do que a especificação pede, e o projeto não tem ambiente de produção. O gatilho já protege contra qualquer caminho do código da aplicação |
+| Dívida técnica | **Opção B** (papéis separados para migração e para aplicação) vai para a dívida técnica do relatório final |
+
+### Quality Gate do SonarCloud, PR 10 (17/10/2026)
+
+| ID | Apontamento | Análise | Tratamento |
+| --- | --- | --- | --- |
+| SQ-04 | `githubactions:S6506`, `ci.yml:87`: o `curl` que baixa o gitleaks não impõe HTTPS | Procedente: um redirecionamento poderia levar a um destino sem TLS. O checksum SHA-256 conferido depois já barraria um binário adulterado, mas a defesa em profundidade é barata | **Corrigido:** `curl --proto '=https' --tlsv1.2` |

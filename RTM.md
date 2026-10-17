@@ -69,6 +69,20 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | RF-02 | RN-32 Desativação de recurso | R-08 Bloqueio ou desativação inconsistente; R-16 Decisão pendente ou suposição altera o comportamento |  | CT-017, CT-018, CT-019, CT-020, CT-021, CT-022, CT-025, CT-026 | CatalogoApiIT; execução E-1 | testado |
 | RF-07, RF-13 | RN-33 Quem rejeita | R-03 Falha de autorização ou escalada de perfil; R-22 Job de SEM_DECISAO em mais de uma instância sem trava eficaz gera evento duplicado | CEN-02, CEN-10 | CT-066, CT-068, CT-070 | AprovacaoBloqueioApiIT, aprovacao-bloqueio; execução E-1 | testado |
 
+## Requisitos não funcionais (Fase 5)
+
+Mesmas colunas da matriz. RNF-05 a RNF-09 e RNF-12 nascem de [arquitetura.md](docs/arquitetura.md), seção 6. A execução E-1
+é a descrita acima; a rodada de carga é a 01, em [resultado-01.md](docs/performance/resultado-01.md).
+
+| Requisito | Regra | Risco | Cenário | Caso de teste | Evidência | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| RNF-05 Uma reserva aceita por solicitações simultâneas **(crítico)** | RN-03, RN-30 | R-01 Dupla reserva sob concorrência | CEN-01 | CT-060, CT-061, CT-062, CT-063, CT-064, CT-065 | ConcorrenciaApiIT; rodada 01: 81 aceitas, 0 sobreposição no banco, 4.071 tentativas para 4.071 respostas 409; execução E-1 | testado |
+| RNF-06 Nenhuma operação acessível a perfil sem permissão **(crítico)** | RN-06, RN-16, RN-17, RN-26 | R-03 Falha de autorização | CEN-02 | CT-117, CT-118, CT-119 | AutorizacaoApiIT (137 casos); execução E-1 | testado |
+| RNF-07 Validação de entrada e erros sem vazamento | — | R-12 Vazamento | CEN-09 | CT-006, CT-120, CT-121, INT-06 | AutenticacaoApiIT, AutorizacaoApiIT, NotificacaoApiIT; execução E-1 | testado |
+| RNF-08 Desempenho: p95 de 300 ms, 50 usuários, erro abaixo de 1% | — | R-24 Medidas hipotéticas; R-21 Consulta de sessão | CEN-04 | Rodada 01 (`perf/reservas.jmx`) | [resultado-01.md](docs/performance/resultado-01.md): consulta p95 de 76 ms (atende); criação p95 de 664 ms (**não atende**); 0 erro real; 0 resposta 500; ambiente de 2 núcleos compartilhado com o JMeter | medido: não atende à hipótese |
+| RNF-09 Toda mudança de estado gera auditoria | RN-08, RN-29 | R-07 Auditoria incompleta ou alterável; R-23 Papel com privilégio | CEN-06 | CT-096, CT-097, CT-098, CT-099, CT-100, CT-101 | AuditoriaApiIT, EsquemaIT, AuditoriaPapelIT; execução E-1 | testado |
+| RNF-12 Logs com correlação e sem segredo | — | R-12 Vazamento | CEN-09 | LogSeguroApiIT | LogSeguroApiIT (violação real de constraint, token no log); execução E-1 | testado |
+
 ## Resumo
 
 | Item | Quantidade |
@@ -80,3 +94,4 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Linhas testadas | 48 |
 | Linhas parciais | 1 |
 | Linhas não testadas | 0 |
+| Linhas de RNF (Fase 5) | 6 (5 testadas e 1 medida: não atende à hipótese) |
