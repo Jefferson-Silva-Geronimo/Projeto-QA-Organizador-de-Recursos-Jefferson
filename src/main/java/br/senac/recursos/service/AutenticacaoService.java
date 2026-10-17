@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.HexFormat;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
@@ -41,8 +42,9 @@ public class AutenticacaoService {
         this.codificador = codificador;
         this.relogio = relogio;
         this.duracaoDaSessao = duracaoDaSessao;
-        // Comparado quando o usuário não existe, para que a resposta demore o mesmo tempo.
-        this.hashParaTempoConstante = codificador.encode("senha-que-nunca-sera-valida");
+        // Comparado quando o usuário não existe, para que a resposta demore o mesmo tempo. A senha-isca é
+        // aleatória a cada inicialização: nenhuma credencial fixa no código.
+        this.hashParaTempoConstante = codificador.encode(UUID.randomUUID().toString());
     }
 
     public SessaoAberta entrar(String email, String senha) {
