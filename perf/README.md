@@ -28,7 +28,7 @@ docker run -d --name pg-carga -e POSTGRES_PASSWORD="$PGPW" -e POSTGRES_DB=carga 
 
 # 2. Aplicação local
 ./mvnw -B -DskipTests package
-DB_URL=jdbc:postgresql://127.0.0.1:55432/carga DB_USER=postgres DB_PASSWORD="$PGPW" SESSAO_DURACAO=PT2H \
+DB_URL=jdbc:postgresql://127.0.0.1:55432/carga DB_USER=postgres DB_PASSWORD="$PGPW" SESSAO_DURACAO=PT2H LOGIN_TENTATIVAS=1000 LOGIN_JANELA=PT1M \
   BOOTSTRAP_ADMIN_EMAIL=admin.carga@exemplo.test BOOTSTRAP_ADMIN_SENHA="$ADMPW" SERVER_PORT=18080 \
   java -jar target/organizacao-recursos-0.0.1-SNAPSHOT.jar
 
@@ -40,6 +40,9 @@ BASE_URL=http://127.0.0.1:18080 ADMIN_EMAIL=admin.carga@exemplo.test ADMIN_SENHA
 jmeter -n -t perf/reservas.jmx -l perf/resultados/rodada-01.jtl -e -o perf/relatorio-01 \
   -Jhost=127.0.0.1 -Jporta=18080 -Jsenha="$CARGAPW"
 ```
+
+`LOGIN_TENTATIVAS` e `LOGIN_JANELA` são obrigatórios (SEC-01, lacuna D18). Na carga os usuários só fazem login com a
+senha correta, então o limite não interfere; os valores acima são de teste e não são recomendação.
 
 Senhas (`PGPW`, `ADMPW`, `CARGAPW`) são geradas na hora, ficam só no ambiente e nunca entram em arquivo versionado.
 Parâmetros do plano: `usuarios` (50), `rampup` (30 s), `duracao` (330 s, ramp-up mais 5 min de regime), `pausa` (1000 ms).

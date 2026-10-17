@@ -38,6 +38,11 @@ aumentar a evidência. A rastreabilidade por caso está na RTM (`RTM.md`) e em `
 | Matriz de autorização e entrada inválida | CT-117 a CT-121 | `d793879` | `73488e5` (BUG-008) | — |
 | Falha ao gravar a tentativa de conflito (BUG-009) | `FalhaNaTentativaApiIT` | `0a80fc7` | `61ce37d` | — |
 | Lacunas de risco da cobertura | LacunasDeRiscoApiIT | — | — | — |
+| Limite de tentativas de login (SEC-01): contagem de falhas | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
+| Limite de login: janela deslizante em trinca (599999, 600000, 600001 ms) | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
+| Limite de login: configuração inválida recusada | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
+| Limite de login: bloqueio por API com a senha correta | `LimiteDeLoginApiIT` | `test(red)` desta sessão (esperado 401, obtido 200) | `feat(green)` | — |
+| Limite de login: 10 casos de API (tempo em trinca, zera no sucesso, resposta idêntica, não estende, conta inexistente, normalização, limpeza) | `LimiteDeLoginApiIT` | — (nasceram verdes) | — | — |
 | Lacunas de risco do PIT (horas de funcionamento, eventos de auditoria, período da reserva) | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest`, `ReservaTest` | — | — | `721180b` (código morto removido) |
 | Cenários BDD de aprovação e bloqueio (BDD-01 a BDD-08, 15 cenários) | `aprovacao-bloqueio.feature`, `CucumberIT` | — | — | — |
 | Troca do provedor (CT-106) | `TrocaDeProvedorTest`, `TrocaDeProvedorApiIT`, `ProvedorIsoladoArquiteturaTest` | — (5 casos, `40834ed`, `638687d`, `ee0df5e`, `aa7cf1f`, `8632606`) | — | `da77cb6` |
