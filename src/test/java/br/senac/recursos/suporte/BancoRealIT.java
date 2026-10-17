@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
  * Base dos testes de integração: PostgreSQL 17 real em container, sem H2 (ADR-009).
@@ -15,7 +16,12 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @SpringBootTest
 public abstract class BancoRealIT {
 
-    protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:17");
+    /** Imagem fixada por digest: a tag móvel "17" mudaria o banco do teste sem alterar o código. */
+    private static final String IMAGEM_POSTGRES =
+            "postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3";
+
+    protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
+            DockerImageName.parse(IMAGEM_POSTGRES).asCompatibleSubstituteFor("postgres"));
 
     static {
         POSTGRES.start();
