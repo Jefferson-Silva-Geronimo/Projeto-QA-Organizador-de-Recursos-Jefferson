@@ -348,6 +348,10 @@ Por determinação do usuário na Fase 4, o código segue o padrão MVC. O diagr
 componente e a tabela mostra onde cada um está no código. A interface `NotificadorExterno` fica em `service`
 e o adaptador `WebhookNotificador` em `integration`; o relógio é o `Clock` do bean de `RelogioConfig`.
 
+A visão hexagonal original (camadas `api`, `aplicacao`, `dominio` e `infra`) não é mais desenhada aqui, para manter um único
+diagrama igual ao código. Ela está preservada no texto do [ADR-001](adr/ADR-001-monolito-modular-hexagonal.md) e no
+histórico do Git (commit `beb9fa1` e anteriores).
+
 | Componente do diagrama | Camada MVC | Pacote |
 | --- | --- | --- |
 | Controladores REST, tradutor de erros | Controller | `controller` |
