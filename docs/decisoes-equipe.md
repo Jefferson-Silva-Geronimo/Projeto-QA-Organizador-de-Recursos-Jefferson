@@ -108,3 +108,9 @@ com alternativas e escolhida por Jefferson.
 | O que o teste não cobre | O papel dono da aplicação **pode** desligar o gatilho |
 | **Risco aceito R-23** | **Aceito por Jefferson em 17/10/2026.** Motivo: separar o papel de migração do de aplicação é endurecimento de implantação, fora do que a especificação pede, e o projeto não tem ambiente de produção. O gatilho já protege contra qualquer caminho do código da aplicação |
 | Dívida técnica | **Opção B** (papéis separados para migração e para aplicação) vai para a dívida técnica do relatório final |
+
+### Quality Gate do SonarCloud, PR 10 (17/10/2026)
+
+| ID | Apontamento | Análise | Tratamento |
+| --- | --- | --- | --- |
+| SQ-04 | `githubactions:S6506`, `ci.yml:87`: o `curl` que baixa o gitleaks não impõe HTTPS | Procedente: um redirecionamento poderia levar a um destino sem TLS. O checksum SHA-256 conferido depois já barraria um binário adulterado, mas a defesa em profundidade é barata | **Corrigido:** `curl --proto '=https' --tlsv1.2` |
