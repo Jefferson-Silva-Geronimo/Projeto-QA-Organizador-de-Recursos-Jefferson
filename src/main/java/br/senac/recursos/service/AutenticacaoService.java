@@ -5,7 +5,9 @@ import br.senac.recursos.exception.ErroDeNegocio;
 import br.senac.recursos.model.SessaoAberta;
 import br.senac.recursos.model.Usuario;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.model.regra.LimiteDeLogin;
 import br.senac.recursos.repository.SessaoRepository;
+import br.senac.recursos.repository.TentativaLoginRepository;
 import br.senac.recursos.repository.UsuarioRepository;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -30,15 +32,20 @@ public class AutenticacaoService {
 
     private final UsuarioRepository usuarios;
     private final SessaoRepository sessoes;
+    private final TentativaLoginRepository tentativasDeLogin;
+    private final LimiteDeLogin limite;
     private final PasswordEncoder codificador;
     private final Clock relogio;
     private final Duration duracaoDaSessao;
     private final String hashParaTempoConstante;
 
     public AutenticacaoService(UsuarioRepository usuarios, SessaoRepository sessoes,
+                               TentativaLoginRepository tentativasDeLogin, LimiteDeLogin limite,
                                PasswordEncoder codificador, Clock relogio, Duration duracaoDaSessao) {
         this.usuarios = usuarios;
         this.sessoes = sessoes;
+        this.tentativasDeLogin = tentativasDeLogin;
+        this.limite = limite;
         this.codificador = codificador;
         this.relogio = relogio;
         this.duracaoDaSessao = duracaoDaSessao;
@@ -48,15 +55,27 @@ public class AutenticacaoService {
     }
 
     public SessaoAberta entrar(String email, String senha) {
-        Optional<Usuario> encontrado = usuarios.buscarPorEmail(normalizar(email));
+        String conta = normalizar(email);
+        Instant agora = relogio.instant();
+        boolean bloqueada = limite.bloqueado(
+                tentativasDeLogin.falhasDepoisDe(conta, agora.minus(limite.janela())), agora);
+        Optional<Usuario> encontrado = usuarios.buscarPorEmail(conta);
         String hash = encontrado.map(Usuario::senhaHash).orElse(hashParaTempoConstante);
+        // Sempre calculado: o tempo da resposta não revela se a conta existe nem se está bloqueada.
         boolean confere = codificador.matches(senha, hash);
-        if (encontrado.isEmpty() || !confere || !encontrado.get().ativo()) {
+        if (bloqueada) {
+            // Resposta idêntica à de credencial inválida (P5-10b). A tentativa bloqueada não é registrada,
+            // então não estende o bloqueio.
             throw new ErroDeNegocio(CodigoErro.CREDENCIAIS_INVALIDAS);
         }
+        if (encontrado.isEmpty() || !confere || !encontrado.get().ativo()) {
+            tentativasDeLogin.registrarFalha(conta, agora);
+            tentativasDeLogin.removerAteInclusive(agora.minus(limite.janela()));
+            throw new ErroDeNegocio(CodigoErro.CREDENCIAIS_INVALIDAS);
+        }
+        tentativasDeLogin.limpar(conta);
         Usuario usuario = encontrado.get();
         String token = novoToken();
-        Instant agora = relogio.instant();
         Instant expiraEm = agora.plus(duracaoDaSessao);
         sessoes.criar(usuario.id(), hashDoToken(token), agora, expiraEm);
         return new SessaoAberta(token, usuario.perfil(), expiraEm);

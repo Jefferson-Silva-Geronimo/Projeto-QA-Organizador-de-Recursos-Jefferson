@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.time.Clock;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import br.senac.recursos.config.CorsProperties;
+import br.senac.recursos.config.LoginProperties;
 import java.util.List;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -39,7 +40,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  */
 @Configuration
 @EnableMethodSecurity
-@EnableConfigurationProperties({SessaoProperties.class, CorsProperties.class})
+@EnableConfigurationProperties({SessaoProperties.class, CorsProperties.class, LoginProperties.class})
 class SegurancaConfig {
 
     /**
@@ -114,8 +115,11 @@ class SegurancaConfig {
     @Bean
     AutenticacaoService autenticacaoServico(br.senac.recursos.repository.UsuarioRepository usuarios,
                                             br.senac.recursos.repository.SessaoRepository sessoes,
-                                            PasswordEncoder codificador, Clock relogio, SessaoProperties sessao) {
-        return new AutenticacaoService(usuarios, sessoes, codificador, relogio, sessao.duracao());
+                                            br.senac.recursos.repository.TentativaLoginRepository tentativasDeLogin,
+                                            PasswordEncoder codificador, Clock relogio, SessaoProperties sessao,
+                                            LoginProperties login) {
+        return new AutenticacaoService(usuarios, sessoes, tentativasDeLogin, login.limite(), codificador, relogio,
+                sessao.duracao());
     }
 
     private static AuthenticationEntryPoint naoAutenticado(ObjectMapper json) {
