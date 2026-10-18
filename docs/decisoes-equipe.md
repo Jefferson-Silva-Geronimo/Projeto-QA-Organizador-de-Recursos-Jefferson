@@ -224,3 +224,30 @@ entre três paletas com contraste calculado (102 pares, 0 falhas). Valores dos t
 | Neutralidade de marca | Nenhum nome, logotipo ou paleta de instituição real |
 
 Alternativas descartadas: paletas B (verde-azulado e âmbar) e C (magenta e ciano); direções "institucional limpo" e "denso e utilitário".
+
+### F6-10. Campos obrigatórios das respostas no contrato (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026**, resolvendo a lacuna L-06 de [navegacao-telas.md](prd/navegacao-telas.md): os
+esquemas de resposta do OpenAPI não declaravam `required`, e o gerador marcava todo campo como opcional. Escolheu a
+**alternativa B**: o back end marca como obrigatórios só os campos de resposta que nunca são nulos. É mudança **só de
+documentação**: nenhum comportamento HTTP muda.
+
+| Item | Decisão |
+| --- | --- |
+| O que entra | O que o tipo ou o banco garantem: primitivos, colunas `NOT NULL` e listas sempre montadas. O Jackson omite campo nulo (`default-property-inclusion: non_null`), então "obrigatório" significa "sempre presente" |
+| Regra de dúvida | Na dúvida se um campo pode faltar, ele **não** entra |
+| Onde está a lista | `ObrigatoriedadeDasRespostasConfig.java`, num ponto só, com o motivo de cada exclusão. `ContratoObrigatoriosApiIT` (CT-134 e CT-135) a confere contra o contrato e contra respostas reais |
+| Contrato | `docs/api/openapi.json` regenerado conscientemente. O CT-115 falhou de propósito e voltou a passar sem alterar o teste; o CT-114 não mudou. Verificado estruturalmente: 12 `required` acrescentados e o resto do contrato idêntico |
+| Front | Cliente regenerado: 63 campos deixaram de ser opcionais. Nenhum `?.` nem guarda de resposta da API havia a remover; o guarda do login fica, com o teste CT-129 |
+
+**Campos que ficaram de fora (opcionais) e por quê:**
+
+| Esquema | Campos de fora | Motivo |
+| --- | --- | --- |
+| `ReservaResposta`, `ReservaDaFilaResposta` | `descricao`, `motivo` | Colunas anuláveis (`descricao`; `motivo_sistema` e `motivo_texto`) |
+| `RecursoResposta` | `capacidade`, `localizacao`, `tipoSala`, `horaAbertura`, `horaFechamento`, `diasFuncionamento`, `codigoPatrimonio`, `descricao`, `usuarioId`, `competencias` | Dependem do tipo do recurso (sala, professor ou material); `tipo_sala` é opcional desde a migração V3 |
+| `EventoAuditoriaResposta` | `atorId`, `estadoAnterior`, `estadoNovo`, `motivo`, `antes`, `depois`, `correlacaoId` | Colunas anuláveis: o ator é nulo para SISTEMA, e eventos de cadastro não têm estado |
+| `ItemRelatorioResposta` | `utilizacao` | Nula para professor e material (B4) |
+
+Alternativas descartadas: **A** (validar no front, sem mexer no back end: duplicaria o contrato à mão, contra a F6-01) e
+**C** (marcar só o fluxo crítico: contrato inconsistente).

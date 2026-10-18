@@ -124,7 +124,7 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação e revisão de segurança
+  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança e ocorrências a vigiar
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   perguntas-professor.md   mensagem consolidada ao professor

@@ -85,10 +85,12 @@ Escolhas técnicas de compatibilidade, sem relação com a especificação nem c
 | ESLint fixado em 9 | `eslint-plugin-jsx-a11y` não aceita ESLint 10. A regra de acessibilidade no lint tem prioridade |
 | Saltos maiores ignorados no Dependabot | Mesmos motivos, mais mudança de API nas bibliotecas principais; só correções e menores entram sozinhas |
 
-**Achado de contrato (L-06, em aberto):** os esquemas de **resposta** do OpenAPI não declaram `required` (só os de requisição
-declaram). O gerador por isso marca todo campo de resposta como opcional, e o front valida na fronteira antes de confiar
-(por exemplo, o login só vira sessão com `token`, `perfil` e `expiraEm`). Marcar os campos como obrigatórios no back end
-tornaria os tipos mais precisos, mas muda o contrato; a decisão é de Jefferson.
+**Achado de contrato (L-06), resolvido pela F6-10 em 18/10/2026:** os esquemas de **resposta** do OpenAPI não declaravam
+`required`, e o gerador marcava todo campo como opcional. O back end passou a marcar como obrigatórios só os campos que nunca
+são nulos (só documentação, sem mudar nenhum comportamento HTTP), e o cliente foi regenerado: 63 campos deixaram de ser
+opcionais. Os campos de fora seguem opcionais e estão listados, com o motivo, na F6-10 de
+[decisoes-equipe.md](../decisoes-equipe.md). O único guarda de resposta em tempo de execução é o do login, que nunca vira
+sessão sem `token`, `perfil` e `expiraEm`.
 
 ## Alternativas descartadas
 
