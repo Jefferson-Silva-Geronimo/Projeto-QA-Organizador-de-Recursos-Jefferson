@@ -23,3 +23,16 @@ export function useRecursos(filtros: FiltrosDeRecursos) {
     queryFn: () => executar(cliente.GET('/api/recursos', { params: { query: filtros } })),
   });
 }
+
+/** Intervalos ocupados de um recurso, sem o dono (B3). Só consulta quando a lista é aberta. */
+export function useOcupacoes(recursoId: number, inicio: string, fim: string, habilitado: boolean) {
+  const { cliente } = useSessao();
+  return useQuery({
+    queryKey: ['ocupacoes', recursoId, inicio, fim],
+    enabled: habilitado,
+    queryFn: () =>
+      executar(
+        cliente.GET('/api/recursos/{id}/ocupacoes', { params: { path: { id: recursoId }, query: { inicio, fim } } }),
+      ),
+  });
+}

@@ -1,7 +1,19 @@
-import { useId, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import { HorariosOcupados } from '@/paginas/busca/HorariosOcupados';
 import estilos from '@/paginas/busca/CartaoDeRecurso.module.css';
 import type { Recurso } from '@/recursos/consulta';
 import { descreverDias, ROTULO_DO_TIPO } from '@/recursos/formatacao';
+import botoes from '@/ui/Botao.module.css';
+
+export interface PeriodoDaBusca {
+  /** Data e hora do campus, como nos campos do formulário ("2026-10-21T14:00"). */
+  inicioLocal?: string;
+  fimLocal?: string;
+  /** Janela para consultar horários ocupados: instantes ISO-8601 com offset. */
+  janelaInicio: string;
+  janelaFim: string;
+}
 
 function Detalhe({ nome, children }: { nome: string; children: ReactNode }) {
   return (
@@ -12,8 +24,19 @@ function Detalhe({ nome, children }: { nome: string; children: ReactNode }) {
   );
 }
 
-export function CartaoDeRecurso({ recurso }: { recurso: Recurso }) {
+function enderecoDaReserva(recurso: Recurso, periodo: PeriodoDaBusca): string {
+  const params = new URLSearchParams({ recursos: String(recurso.id) });
+  if (periodo.inicioLocal && periodo.fimLocal) {
+    params.set('inicio', periodo.inicioLocal);
+    params.set('fim', periodo.fimLocal);
+  }
+  return `/reservas/nova?${params.toString()}`;
+}
+
+export function CartaoDeRecurso({ recurso, periodo }: { recurso: Recurso; periodo: PeriodoDaBusca }) {
   const idTitulo = useId();
+  const idHorarios = useId();
+  const [horariosAbertos, setHorariosAbertos] = useState(false);
   return (
     <article aria-labelledby={idTitulo} className={estilos.cartao}>
       <header className={estilos.cabecalho}>
@@ -44,6 +67,30 @@ export function CartaoDeRecurso({ recurso }: { recurso: Recurso }) {
         )}
       </dl>
       {recurso.restrito && <p className={estilos.restrito}>Exige aprovação</p>}
+      <div className={estilos.acoes}>
+        <Link to={enderecoDaReserva(recurso, periodo)} className={`${botoes.botao} ${botoes.primario}`}>
+          Reservar{' '}
+          <span className="somente-leitor">{recurso.nome}</span>
+        </Link>
+        <button
+          type="button"
+          className={`${botoes.botao} ${botoes.secundario}`}
+          aria-expanded={horariosAbertos}
+          aria-controls={horariosAbertos ? idHorarios : undefined}
+          onClick={() => setHorariosAbertos((aberto) => !aberto)}
+        >
+          Ver horários ocupados{' '}
+          <span className="somente-leitor">de {recurso.nome}</span>
+        </button>
+      </div>
+      {horariosAbertos && (
+        <HorariosOcupados
+          id={idHorarios}
+          recursoId={recurso.id}
+          inicio={periodo.janelaInicio}
+          fim={periodo.janelaFim}
+        />
+      )}
     </article>
   );
 }

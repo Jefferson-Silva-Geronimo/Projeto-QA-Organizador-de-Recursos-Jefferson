@@ -1,0 +1,20 @@
+.caixa {
+  padding: var(--espaco-3);
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-medio);
+}
+
+.lista {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.vazio {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}

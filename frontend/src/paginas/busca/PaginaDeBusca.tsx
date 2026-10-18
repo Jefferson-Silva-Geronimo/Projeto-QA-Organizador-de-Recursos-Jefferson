@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
-import { FUSO_DO_CAMPUS, formatarIntervalo } from '@/datas/fuso';
-import { CartaoDeRecurso } from '@/paginas/busca/CartaoDeRecurso';
+import { FUSO_DO_CAMPUS, formatarIntervalo, isoParaLocal, localParaIsoComOffset, somarDias } from '@/datas/fuso';
+import { CartaoDeRecurso, type PeriodoDaBusca } from '@/paginas/busca/CartaoDeRecurso';
 import { FiltrosDeBusca } from '@/paginas/busca/FiltrosDeBusca';
 import estilos from '@/paginas/busca/PaginaDeBusca.module.css';
 import {
@@ -21,7 +21,9 @@ function contagem(total: number): string {
  * Busca de recursos (T02, RF-03). Os filtros moram no endereço, então voltar, recarregar e compartilhar o link
  * funcionam. A disponibilidade é decidida pelo servidor; o front só mostra o que vem.
  */
-export function PaginaDeBusca({ agora: _agora }: { agora?: Date } = {}) {
+const DIAS_DA_JANELA_PADRAO = 14;
+
+export function PaginaDeBusca({ agora = new Date() }: { agora?: Date } = {}) {
   const [params, setParams] = useSearchParams();
   const filtros = filtrosDoEndereco(params);
   const consultaAtual = consultaDosFiltros(filtros);
@@ -29,6 +31,17 @@ export function PaginaDeBusca({ agora: _agora }: { agora?: Date } = {}) {
   const recursos = consulta.data ?? [];
 
   const buscar = (novos: RascunhoDosFiltros) => setParams(enderecoDosFiltros(novos));
+
+  // Horários ocupados: o período da busca, ou os próximos dias a partir de agora (hora do campus).
+  const periodoPedido = Boolean(consultaAtual.inicio && consultaAtual.fim);
+  const agoraLocal = isoParaLocal(agora.toISOString(), FUSO_DO_CAMPUS);
+  const periodo: PeriodoDaBusca = {
+    ...(periodoPedido ? { inicioLocal: filtros.inicio, fimLocal: filtros.fim } : {}),
+    janelaInicio: consultaAtual.inicio ?? (localParaIsoComOffset(agoraLocal, FUSO_DO_CAMPUS) as string),
+    janelaFim:
+      consultaAtual.fim ??
+      (localParaIsoComOffset(somarDias(agoraLocal, DIAS_DA_JANELA_PADRAO), FUSO_DO_CAMPUS) as string),
+  };
 
   return (
     <section aria-labelledby="titulo-da-tela" className={estilos.pagina}>
@@ -51,7 +64,7 @@ export function PaginaDeBusca({ agora: _agora }: { agora?: Date } = {}) {
       )}
       <div className={estilos.grade}>
         {recursos.map((recurso) => (
-          <CartaoDeRecurso key={recurso.id} recurso={recurso} />
+          <CartaoDeRecurso key={recurso.id} recurso={recurso} periodo={periodo} />
         ))}
       </div>
     </section>

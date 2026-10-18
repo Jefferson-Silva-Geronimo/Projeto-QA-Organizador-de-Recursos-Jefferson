@@ -83,3 +83,9 @@
   background: var(--cor-aviso-fundo);
   border-radius: var(--raio-pequeno);
 }
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
