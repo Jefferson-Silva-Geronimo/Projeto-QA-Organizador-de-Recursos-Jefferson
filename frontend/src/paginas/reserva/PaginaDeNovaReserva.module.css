@@ -1,0 +1,44 @@
+.pagina {
+  display: grid;
+  gap: var(--espaco-4);
+  max-width: 760px;
+}
+
+.pagina h1 {
+  margin: 0;
+}
+
+.formulario {
+  display: grid;
+  gap: var(--espaco-5);
+}
+
+.bloco {
+  display: grid;
+  gap: var(--espaco-4);
+  margin: 0;
+  padding: var(--espaco-4);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+  min-width: 0;
+}
+
+.legenda {
+  padding: 0 var(--espaco-2);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.duplo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--espaco-4);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}

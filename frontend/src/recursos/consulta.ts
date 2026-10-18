@@ -16,10 +16,11 @@ export interface FiltrosDeRecursos {
 }
 
 /** Pesquisa de recursos (RF-03). O servidor decide a disponibilidade; o front só mostra o que vem. */
-export function useRecursos(filtros: FiltrosDeRecursos) {
+export function useRecursos(filtros: FiltrosDeRecursos, habilitado = true) {
   const { cliente } = useSessao();
   return useQuery({
     queryKey: ['recursos', filtros],
+    enabled: habilitado,
     queryFn: () => executar(cliente.GET('/api/recursos', { params: { query: filtros } })),
   });
 }
