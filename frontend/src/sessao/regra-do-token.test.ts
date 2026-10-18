@@ -10,7 +10,11 @@ function arquivos(pasta: string): string[] {
 
 describe('mitigações do ADR-015 para o token no sessionStorage', () => {
   const raiz = resolve(__dirname, '..');
-  const codigo = arquivos(raiz).filter((f) => /\.(ts|tsx)$/.test(f) && !/\.test\.(ts|tsx)$/.test(f));
+  const apoioDeTeste = join(raiz, 'test');
+  // Código de produção: sem testes e sem o apoio de teste (src/test), que só limpa o armazenamento entre testes.
+  const codigo = arquivos(raiz).filter(
+    (f) => /\.(ts|tsx)$/.test(f) && !/\.test\.(ts|tsx)$/.test(f) && !f.startsWith(apoioDeTeste),
+  );
 
   it('só o módulo de sessão acessa o sessionStorage', () => {
     const infratores = codigo
