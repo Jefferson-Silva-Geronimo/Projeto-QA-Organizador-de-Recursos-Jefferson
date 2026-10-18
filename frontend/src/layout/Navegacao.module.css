@@ -1,0 +1,129 @@
+/* Barra inferior no celular (mobile-first) e menu lateral a partir de 1024 px (F6-08). Só tokens, nenhuma cor fixa. */
+.lateral {
+  display: none;
+}
+
+.barra {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 20;
+  background: var(--cor-superficie);
+  border-top: 1px solid var(--cor-borda-campo);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.listaDaBarra {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
+  margin: 0;
+  padding: 6px 6px 4px;
+  list-style: none;
+}
+
+.lista {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 2px 4px;
+  font: inherit;
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  background: transparent;
+  border: 0;
+  border-top: 3px solid transparent;
+  border-radius: 8px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item:hover {
+  color: var(--cor-texto);
+}
+
+.item:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* Tela atual: indicador de destaque e peso da fonte, não só a cor. */
+.item[aria-current] {
+  color: var(--cor-destaque-texto);
+  font-weight: 700;
+  border-top-color: var(--cor-destaque);
+}
+
+.painelMais {
+  position: absolute;
+  inset: auto 8px 100% 8px;
+  display: grid;
+  gap: 2px;
+  margin: 0 0 8px;
+  padding: 8px;
+  list-style: none;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+}
+
+.painelMais .item {
+  grid-auto-flow: column;
+  justify-content: start;
+  justify-items: start;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.95rem;
+  border-top: 0;
+  border-left: 3px solid transparent;
+  padding: 8px 12px;
+}
+
+.painelMais .item[aria-current] {
+  border-left-color: var(--cor-destaque);
+}
+
+@media (min-width: 1024px) {
+  .barra {
+    display: none;
+  }
+
+  .lateral {
+    display: block;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    padding: 24px 12px;
+    background: var(--cor-superficie);
+    border-right: 1px solid var(--cor-borda-campo);
+  }
+
+  .lateral .item {
+    grid-auto-flow: column;
+    justify-content: start;
+    justify-items: start;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 14px;
+    font-size: 0.95rem;
+    border-top: 0;
+    border-left: 4px solid transparent;
+  }
+
+  .lateral .item[aria-current] {
+    border-left-color: var(--cor-destaque);
+  }
+}
