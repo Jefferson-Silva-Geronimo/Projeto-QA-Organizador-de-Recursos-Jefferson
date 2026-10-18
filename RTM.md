@@ -18,6 +18,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 **Execução E-4 (front end, 18/10/2026):** em `frontend/`, `npm ci`, `npm run gerar:api` sem divergência do contrato, `npm run lint`, `npm run typecheck`, `npm test` (16 arquivos de teste, 237 testes, 0 falhas) e `npm run build`, todos com saída 0. Os testes de componente não usam banco; a API é simulada na fronteira do `fetch`.
 
+**Execução E-5 (back end, 18/10/2026):** `./mvnw -B clean verify` local depois dos campos obrigatórios das respostas (F6-10): 517 testes (154 de unidade e arquitetura, 363 de integração e BDD), 0 falhas, gate do JaCoCo cumprido (96,9% de linhas, 1663 de 1717; 84,9% de branches, 465 de 548). `NotificacaoApiIT` passou. O front, regenerado a partir do novo contrato, manteve 16 arquivos de teste e 237 testes, 0 falhas.
+
 
 ## Matriz
 
