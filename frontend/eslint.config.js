@@ -15,6 +15,7 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks },
     rules: {
       ...reactHooks.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       // ADR-015: o token e o HTML do servidor nunca viram marcação. Sem HTML injetado.
       'no-restricted-syntax': [
         'error',
