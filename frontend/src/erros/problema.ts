@@ -6,6 +6,16 @@ export interface ProblemaApi {
   campos: string[];
 }
 
-export function interpretarProblema(_status: number, _corpo: unknown): ProblemaApi {
-  return { status: 0, code: '', itens: [], campos: [] };
+function listaDeTexto(valor: unknown): string[] {
+  return Array.isArray(valor) ? valor.map(String) : [];
+}
+
+export function interpretarProblema(status: number, corpo: unknown): ProblemaApi {
+  const objeto = (corpo ?? {}) as Record<string, unknown>;
+  return {
+    status,
+    code: typeof objeto.code === 'string' ? objeto.code : '',
+    itens: listaDeTexto(objeto.itens),
+    campos: listaDeTexto(objeto.campos),
+  };
 }
