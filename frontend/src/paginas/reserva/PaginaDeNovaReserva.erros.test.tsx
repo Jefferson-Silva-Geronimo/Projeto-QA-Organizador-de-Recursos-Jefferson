@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MENSAGEM_DE_REDE, mensagemPara } from '@/erros/mensagens';
 import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
@@ -94,6 +94,45 @@ describe('PaginaDeNovaReserva: recusas do servidor', () => {
 
     expect(await screen.findByText('Reserva aprovada')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+});
+
+describe('PaginaDeNovaReserva: depois de um conflito', () => {
+  it('refaz a lista de recursos livres e avisa que o recurso escolhido deixou de estar livre', async () => {
+    let consultas = 0;
+    const falso = rotearFetch({
+      'GET /api/recursos': () => {
+        consultas++;
+        // Na segunda consulta a Sala 101 já foi reservada por outra pessoa.
+        return resposta(200, consultas === 1 ? TODOS : TODOS.filter((r) => r.id !== 1));
+      },
+      'POST /api/reservas': () => recusa(409, 'CONFLITO_DE_ALOCACAO'),
+    });
+    montarPagina({ rota: ENDERECO, caminho: '/reservas/nova', elemento: <PaginaDeNovaReserva />, fetch: falso });
+
+    await reservar();
+
+    await screen.findByRole('alert');
+    await waitFor(() => expect(screen.queryByRole('checkbox', { name: /Sala 101/ })).not.toBeInTheDocument());
+    expect(consultas).toBe(2);
+    expect(screen.getByText(/não está livre nesse período/)).toBeInTheDocument();
+  });
+
+  it('outras recusas não refazem a lista (só o que muda o que está livre)', async () => {
+    let consultas = 0;
+    const falso = rotearFetch({
+      'GET /api/recursos': () => {
+        consultas++;
+        return resposta(200, TODOS);
+      },
+      'POST /api/reservas': () => recusa(400, 'INICIO_NO_PASSADO'),
+    });
+    montarPagina({ rota: ENDERECO, caminho: '/reservas/nova', elemento: <PaginaDeNovaReserva />, fetch: falso });
+
+    await reservar();
+    await screen.findByRole('alert');
+
+    expect(consultas).toBe(1);
   });
 });
 
