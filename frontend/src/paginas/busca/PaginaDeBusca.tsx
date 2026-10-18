@@ -21,7 +21,7 @@ function contagem(total: number): string {
  * Busca de recursos (T02, RF-03). Os filtros moram no endereço, então voltar, recarregar e compartilhar o link
  * funcionam. A disponibilidade é decidida pelo servidor; o front só mostra o que vem.
  */
-export function PaginaDeBusca() {
+export function PaginaDeBusca({ agora: _agora }: { agora?: Date } = {}) {
   const [params, setParams] = useSearchParams();
   const filtros = filtrosDoEndereco(params);
   const consultaAtual = consultaDosFiltros(filtros);
