@@ -16,3 +16,18 @@ export function tabelaDeErrosDaDocumentacao(): Map<string, { http: number; mensa
   }
   return tabela;
 }
+
+/** Lê a tabela da seção 5.2 (situações sem código do servidor), indexada pelo início da descrição. */
+export function situacoesSemCodigoDaDocumentacao(): { situacao: string; mensagem: string; acao: string }[] {
+  const texto = readFileSync(resolve(__dirname, '../../../docs/prd/navegacao-telas.md'), 'utf-8').replace(/\r\n/g, '\n');
+  const inicio = texto.indexOf('### 5.2');
+  const fim = texto.indexOf('\n## 6.', inicio);
+  const linhas: { situacao: string; mensagem: string; acao: string }[] = [];
+  for (const linha of texto.slice(inicio, fim).split('\n')) {
+    const celulas = linha.split('|').map((c) => c.trim());
+    if (celulas.length >= 5 && celulas[1] && !celulas[1].startsWith('---') && celulas[1] !== 'Situação') {
+      linhas.push({ situacao: celulas[1], mensagem: celulas[2] ?? '', acao: celulas[3] ?? '' });
+    }
+  }
+  return linhas;
+}

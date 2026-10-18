@@ -49,3 +49,5 @@ export type CodigoConhecido = keyof typeof MENSAGENS;
 export function mensagemPara(code: string): MensagemDeErro {
   return (MENSAGENS as Record<string, MensagemDeErro>)[code] as MensagemDeErro;
 }
+
+export const MENSAGEM_DE_REDE: MensagemDeErro = { mensagem: '', acao: '' };
