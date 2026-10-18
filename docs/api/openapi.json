@@ -1002,6 +1002,42 @@
       }
     },
     "/api/bloqueios" : {
+      "get" : {
+        "tags" : [ "bloqueio-controller" ],
+        "summary" : "Lista os bloqueios de manutenção, ativos e levantados",
+        "operationId" : "listar_2",
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/BloqueioResposta"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Dados inválidos. O campo code traz VALIDACAO_FALHOU ou o código da regra."
+          },
+          "401" : {
+            "description" : "Sem sessão válida. O campo code traz NAO_AUTENTICADO."
+          },
+          "403" : {
+            "description" : "Perfil ou posse não permitem a operação. O campo code traz ACESSO_NEGADO."
+          },
+          "404" : {
+            "description" : "Recurso ou reserva não encontrado."
+          },
+          "409" : {
+            "description" : "Conflito com uma regra de negócio. O campo code traz o código estável."
+          }
+        },
+        "x-perfis" : [ "ADMINISTRADOR" ]
+      },
       "post" : {
         "tags" : [ "bloqueio-controller" ],
         "summary" : "Cria um bloqueio de manutenção, com confirmação",
@@ -1284,7 +1320,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/ReservaResposta"
+                    "$ref" : "#/components/schemas/ReservaDaFilaResposta"
                   }
                 }
               }
@@ -1625,7 +1661,7 @@
       "get" : {
         "tags" : [ "auditoria-controller" ],
         "summary" : "Consulta a auditoria completa",
-        "operationId" : "listar_2",
+        "operationId" : "listar_3",
         "parameters" : [ {
           "name" : "entidade",
           "in" : "query",
@@ -2216,6 +2252,53 @@
           "correlacaoId" : {
             "type" : "string",
             "format" : "uuid"
+          }
+        }
+      },
+      "ReservaDaFilaResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitanteId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitanteNome" : {
+            "type" : "string"
+          },
+          "titulo" : {
+            "type" : "string"
+          },
+          "descricao" : {
+            "type" : "string"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "estado" : {
+            "type" : "string",
+            "enum" : [ "SOLICITADA", "APROVADA", "EM_USO", "CONCLUIDA", "REJEITADA", "CANCELADA", "NAO_COMPARECEU" ]
+          },
+          "exigeAprovacao" : {
+            "type" : "boolean"
+          },
+          "motivo" : {
+            "type" : "string"
+          },
+          "recursoIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
           }
         }
       },

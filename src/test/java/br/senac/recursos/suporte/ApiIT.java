@@ -41,10 +41,14 @@ public abstract class ApiIT extends BancoRealIT {
     }
 
     protected long criarUsuario(String perfil, String email) {
+        return criarUsuario(perfil, email, "Usuário de teste");
+    }
+
+    protected long criarUsuario(String perfil, String email, String nome) {
         return jdbc.queryForObject(
                 "insert into usuarios (nome, email, senha_hash, perfil, criado_em) "
                         + "values (?, ?, ?, cast(? as perfil_usuario), ?) returning id",
-                Long.class, "Usuário de teste", email, codificador.encode(SENHA_DE_TESTE), perfil,
+                Long.class, nome, email, codificador.encode(SENHA_DE_TESTE), perfil,
                 java.sql.Timestamp.from(RelogioDeTesteConfig.INICIAL));
     }
 

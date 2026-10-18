@@ -216,6 +216,15 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | CT-121 | Nenhum vazamento de terceiros | A | Mensagens de erro de recusa | 0 identificações de terceiros | RF-13, B3 |
 | CT-122 | Primeiro Administrador | I | Tabela de usuários vazia; semear o primeiro Administrador duas vezes, com e-mails diferentes | A primeira chamada cria 1 Administrador com e-mail normalizado e 1 evento de auditoria com ator SISTEMA; a segunda não cria nada | RF-15, RN-17, RN-29, ADR-004 |
 
+### 3.12 Fase 6: apoio ao front end (F6-06)
+
+| ID | Título | Nível | Dados e passos | Esperado | Rastreio |
+| --- | --- | --- | --- | --- | --- |
+| CT-123 | Listagem de bloqueios vazia | A | Administrador autenticado, nenhum bloqueio cadastrado, `GET /api/bloqueios` | 200 e lista com 0 itens | RF-08, F6-06a |
+| CT-124 | Listagem de bloqueios | A | Dois bloqueios de uma sala, um deles levantado; `GET /api/bloqueios` | 200 com 2 itens em ordem de início, com `ativo` falso para o levantado e os campos do contrato; a linha "Listar bloqueios" da matriz de autorização recusa Solicitante e Responsável com 403 | RF-08, RN-22, F6-06a |
+| CT-125 | Fila com o nome do solicitante | A | Solicitante com nome e e-mail conhecidos reserva um recurso restrito; Responsável consulta a fila | 1 item com `solicitanteNome` igual ao nome e 0 ocorrências do e-mail ou do campo `email` no corpo | RF-07, RN-26, B3, F6-06b |
+| CT-126 | Fila: perfil proibido e sem sessão | A | `GET /api/reservas/fila` por Solicitante, por Administrador e sem token | 403 com `ACESSO_NEGADO` para os dois perfis e 401 com `NAO_AUTENTICADO` sem token | RF-01, RF-07, F6-06b |
+
 ## 4. Cobertura por regra crítica
 
 | Regra | Casos |

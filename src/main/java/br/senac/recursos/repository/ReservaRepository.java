@@ -4,6 +4,7 @@ import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.OcupacaoConflitante;
 import br.senac.recursos.model.Periodo;
 import br.senac.recursos.model.Reserva;
+import br.senac.recursos.model.ReservaDaFila;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -32,8 +33,8 @@ public interface ReservaRepository {
     void atualizar(long id, String titulo, String descricao, Periodo periodo, EstadoReserva estado,
                    boolean exigeAprovacao, String motivo, Instant agora);
 
-    /** Fila de aprovações: reservas SOLICITADA que exigem aprovação (RF-07). */
-    List<Reserva> listarFila();
+    /** Fila de aprovações: reservas SOLICITADA que exigem aprovação, com o nome do solicitante (RF-07). */
+    List<ReservaDaFila> listarFila();
 
     /** Registra a decisão humana de aprovar ou rejeitar (tabela aprovacoes). */
     void registrarDecisao(long reservaId, long responsavelId, boolean aprovada, String motivo, Instant agora);

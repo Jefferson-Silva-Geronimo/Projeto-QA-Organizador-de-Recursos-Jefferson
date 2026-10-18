@@ -54,6 +54,7 @@ class DocumentacaoApiConfig {
             Map.entry("ReservaController#aprovar", "Aprova uma reserva que exige aprovação"),
             Map.entry("ReservaController#rejeitar", "Rejeita uma reserva com motivo"),
             Map.entry("ReservaController#fila", "Lista a fila de aprovações"),
+            Map.entry("BloqueioController#listar", "Lista os bloqueios de manutenção, ativos e levantados"),
             Map.entry("BloqueioController#criar", "Cria um bloqueio de manutenção, com confirmação"),
             Map.entry("BloqueioController#levantar", "Levanta um bloqueio de manutenção"),
             Map.entry("UsoController#iniciar", "Registra o início de uso da reserva"),

@@ -22,6 +22,8 @@ O ADR-010 fixou React + Vite como SPA que consome a API. O plano mestre (seção
 | 5 | **React Router** nas rotas e **TanStack Query** no estado do servidor | Escolha de Jefferson |
 | 6 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes; *mobile-first*, validado em 360 px e 1280 px, com rótulo, foco e contraste acessíveis | Plano 10.3 (5); escolha de Jefferson |
 | 7 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset | Plano 10.3 (6); ADR-005 |
+| 8 | Navegação: menu lateral no desktop e barra inferior no celular, com no máximo 4 itens principais e "Mais"; rótulo de texto em todo item; item ativo destacado por mais que cor | F6-08; escolha de Jefferson |
+| 9 | Temas claro e escuro por tokens semânticos, `prefers-color-scheme` e botão manual; todo par de cores com no mínimo WCAG AA nos dois temas. O tema escuro não é requisito de acessibilidade e é o primeiro item a cortar, com aviso prévio a Jefferson | F6-09; escolha de Jefferson |
 
 ### Mitigações do `sessionStorage` (decisão 4)
 

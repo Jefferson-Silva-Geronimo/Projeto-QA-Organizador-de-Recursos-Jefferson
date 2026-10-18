@@ -76,6 +76,7 @@ class AutorizacaoApiIT extends ApiIT {
             new Operacao("Rejeitar reserva", HttpMethod.POST, "/api/reservas/{id}/rejeicao", RESP),
             new Operacao("Fila de aprovações", HttpMethod.GET, "/api/reservas/fila", RESP),
             new Operacao("Criar bloqueio", HttpMethod.POST, "/api/bloqueios", ADM),
+            new Operacao("Listar bloqueios", HttpMethod.GET, "/api/bloqueios", ADM),
             new Operacao("Levantar bloqueio", HttpMethod.POST, "/api/bloqueios/{id}/levantamento", ADM),
             new Operacao("Iniciar uso", HttpMethod.POST, "/api/reservas/{id}/inicio", RESP),
             new Operacao("Retirar material", HttpMethod.POST, "/api/reservas/{id}/retiradas", RESP),

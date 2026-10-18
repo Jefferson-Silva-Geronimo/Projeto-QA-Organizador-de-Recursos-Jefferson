@@ -99,3 +99,15 @@ fonte foi restaurada (nada disso foi commitado).
 - BDD e CT-106 não são TDD: o código existia. Valem como evidência de comportamento especificado e verificado.
 - `ProvedorIsoladoArquiteturaTest` é redundante com a visibilidade do pacote (`WebhookNotificador` não é público) e
   vale como documentação executável.
+
+## Fase 6: mudanças de back end para o front end (F6-06)
+
+Mesmo critério das fatias acima, aplicado um teste por vez. Os testes que **nasceram verdes**, porque o código do
+`green` anterior já os satisfazia, estão declarados abaixo: CT-124, a linha "Listar bloqueios" da matriz de
+autorização e CT-126. CT-114 e CT-115 falharam de propósito ao mudar o contrato e voltaram a passar com o
+`openapi.json` regenerado, sem alteração dos testes.
+
+| Fatia | Casos | Red | Green |
+|---|---|---|---|
+| Listagem de bloqueios (F6-06a) | CT-123 (vermelho); CT-124 (nasceu verde) | `29a9c44` | `02ca708`, contrato em `aa90861` |
+| Nome do solicitante na fila (F6-06b) | CT-125 (vermelho); CT-126 (nasceu verde) | `83e7a24` | `d8240c9`, contrato em `6bacc3b` |

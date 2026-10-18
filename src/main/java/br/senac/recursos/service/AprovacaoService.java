@@ -6,6 +6,7 @@ import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.EventoAuditoria;
 import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.model.Reserva;
+import br.senac.recursos.model.ReservaDaFila;
 import br.senac.recursos.model.UsuarioAutenticado;
 import br.senac.recursos.model.regra.MaquinaDeEstados;
 import br.senac.recursos.repository.AuditoriaRepository;
@@ -83,7 +84,7 @@ public class AprovacaoService {
     }
 
     @Transactional(readOnly = true)
-    public List<Reserva> fila() {
+    public List<ReservaDaFila> fila() {
         return reservas.listarFila();
     }
 
