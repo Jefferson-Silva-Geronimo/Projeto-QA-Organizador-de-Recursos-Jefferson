@@ -129,7 +129,8 @@ describe('Rotas', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sair' }));
 
     await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Entrar' })).toBeInTheDocument());
-    expect((falso.mock.calls[0]?.[0] as Request).url).toBe('http://api.teste/api/auth/logout');
+    const enderecos = falso.mock.calls.map(([entrada]) => (entrada as Request).url);
+    expect(enderecos).toContain('http://api.teste/api/auth/logout');
     expect(lerSessao()).toBeNull();
   });
 });

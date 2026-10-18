@@ -2,10 +2,19 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useSessao } from '@/autenticacao/useSessao';
 import { Estrutura } from '@/layout/Estrutura';
 import { NaoEncontrada } from '@/paginas/NaoEncontrada';
+import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
+import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
 import { rotaInicial } from '@/rotas/navegacao';
 import { RotaProtegida } from '@/rotas/RotaProtegida';
-import { TELAS } from '@/rotas/telas';
+import { TELAS, type Tela } from '@/rotas/telas';
+
+/** Telas já construídas (prototipo da etapa 6.C). As demais seguem como marcador de lugar até a aprovação do padrão. */
+function ConteudoDaTela({ tela }: { tela: Tela }) {
+  if (tela.id === 'T02') return <PaginaDeBusca />;
+  if (tela.id === 'T03') return <PaginaDeNovaReserva />;
+  return <PaginaDeTela tela={tela} />;
+}
 
 function Entrar() {
   const { sessao } = useSessao();
@@ -43,7 +52,7 @@ export function Rotas() {
             path={tela.caminho}
             element={
               <RotaProtegida perfis={tela.perfis}>
-                <PaginaDeTela tela={tela} />
+                <ConteudoDaTela tela={tela} />
               </RotaProtegida>
             }
           />
