@@ -1,6 +1,6 @@
 import type { components } from '@/api/schema';
 
-export type Perfil = components['schemas']['LoginResposta']['perfil'];
+export type Perfil = NonNullable<components['schemas']['LoginResposta']['perfil']>;
 
 export interface Sessao {
   token: string;
