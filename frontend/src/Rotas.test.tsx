@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -112,6 +112,52 @@ describe('Rotas', () => {
     montar('/aprovacoes');
 
     expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
+  });
+
+  it('ao trocar de tela pelo menu o foco vai para o conteúdo, para o teclado não ficar perdido', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/buscar');
+
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Menu principal' })).getByRole('link', { name: 'Reservas' }));
+
+    await waitFor(() => expect(document.getElementById('conteudo')).toHaveFocus());
+  });
+
+  it('ao abrir a página o foco não é roubado pelo conteúdo', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/buscar');
+
+    expect(document.getElementById('conteudo')).not.toHaveFocus();
+  });
+
+  it('mudar só o que está no endereço da mesma tela (os filtros) não move o foco', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/buscar');
+    await userEvent.type(await screen.findByLabelText('Local'), 'Bloco A');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    expect(document.getElementById('conteudo')).not.toHaveFocus();
+  });
+
+  it.each([
+    ['/buscar', 'Buscar'],
+    ['/reservas/nova', 'Nova reserva'],
+    ['/aprovacoes', 'Aprovações'],
+    ['/nao-existe', 'Página não encontrada'],
+  ])('a página %s tem o título "%s · Organização de Recursos"', (rota, titulo) => {
+    entrarComo('RESPONSAVEL');
+
+    montar(rota);
+
+    expect(document.title).toBe(`${titulo} · Organização de Recursos`);
+  });
+
+  it('a tela de entrada também tem título', () => {
+    montar('/entrar');
+
+    expect(document.title).toBe('Entrar · Organização de Recursos');
   });
 
   it('a tela de entrada não mostra o menu nem o botão Sair', () => {
