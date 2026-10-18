@@ -1320,7 +1320,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/ReservaResposta"
+                    "$ref" : "#/components/schemas/ReservaDaFilaResposta"
                   }
                 }
               }
@@ -2252,6 +2252,53 @@
           "correlacaoId" : {
             "type" : "string",
             "format" : "uuid"
+          }
+        }
+      },
+      "ReservaDaFilaResposta" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitanteId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "solicitanteNome" : {
+            "type" : "string"
+          },
+          "titulo" : {
+            "type" : "string"
+          },
+          "descricao" : {
+            "type" : "string"
+          },
+          "inicio" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "fim" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "estado" : {
+            "type" : "string",
+            "enum" : [ "SOLICITADA", "APROVADA", "EM_USO", "CONCLUIDA", "REJEITADA", "CANCELADA", "NAO_COMPARECEU" ]
+          },
+          "exigeAprovacao" : {
+            "type" : "boolean"
+          },
+          "motivo" : {
+            "type" : "string"
+          },
+          "recursoIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
           }
         }
       },
