@@ -88,6 +88,32 @@ describe('Rotas', () => {
     expect(screen.getByRole('group', { name: 'Tema' })).toBeInTheDocument();
   });
 
+  it('a rota Buscar mostra a tela de busca de verdade, com os filtros, e não o marcador de lugar', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/buscar');
+
+    expect(screen.getByRole('search', { name: 'Filtros da busca' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('a rota Nova reserva mostra o formulário de verdade, e não o marcador de lugar', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/reservas/nova');
+
+    expect(screen.getByRole('button', { name: 'Reservar' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/aprovacoes');
+
+    expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
+  });
+
   it('a tela de entrada não mostra o menu nem o botão Sair', () => {
     montar('/entrar');
 
