@@ -1,6 +1,6 @@
 import createClient, { type Middleware } from 'openapi-fetch';
-import { type MensagemDeErro } from '@/erros/mensagens';
-import { type ProblemaApi } from '@/erros/problema';
+import { MENSAGEM_DE_REDE, mensagemPara, type MensagemDeErro } from '@/erros/mensagens';
+import { interpretarProblema, type ProblemaApi } from '@/erros/problema';
 import type { paths } from '@/api/schema';
 import { lerSessao, limparSessao } from '@/sessao/armazenamento';
 
@@ -40,6 +40,7 @@ export function criarCliente(opcoes: OpcoesDoCliente) {
   return cliente;
 }
 
+/** Erro de uma chamada à API, já com a mensagem compreensível e a ação sugerida (RF-13). */
 export class ErroDeApi extends Error {
   readonly problema: ProblemaApi;
   readonly rede: boolean;
@@ -49,7 +50,7 @@ export class ErroDeApi extends Error {
     super(problema.code);
     this.problema = problema;
     this.rede = rede;
-    this.mensagem = { mensagem: '', acao: '' };
+    this.mensagem = rede ? MENSAGEM_DE_REDE : mensagemPara(problema.code);
   }
 }
 
@@ -59,7 +60,19 @@ interface Resultado<T> {
   response: Response;
 }
 
+/**
+ * Espera a chamada e devolve o corpo de sucesso. Recusa do servidor e falha de rede viram ErroDeApi;
+ * o texto cru do servidor nunca é guardado.
+ */
 export async function executar<T>(chamada: Promise<Resultado<T>>): Promise<T> {
-  const resultado = await chamada;
+  let resultado: Resultado<T>;
+  try {
+    resultado = await chamada;
+  } catch {
+    throw new ErroDeApi(interpretarProblema(0, null), true);
+  }
+  if (!resultado.response.ok) {
+    throw new ErroDeApi(interpretarProblema(resultado.response.status, resultado.error), false);
+  }
   return resultado.data as T;
 }
