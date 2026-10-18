@@ -1,4 +1,5 @@
 import { guardarSessao, lerSessao, limparSessao, type Sessao } from '@/sessao/armazenamento';
+import { vi } from 'vitest';
 
 const AGORA = new Date('2026-10-18T12:00:00Z');
 const sessao: Sessao = { token: 'token-de-teste', perfil: 'SOLICITANTE', expiraEm: '2026-10-18T13:00:00Z' };
@@ -64,3 +65,22 @@ describe('sessão', () => {
     expect(window.sessionStorage.length).toBe(0);
   });
 });
+
+describe('armazenamento indisponível (modo privado, dados bloqueados)', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('a sessão continua funcionando na memória da aba e nada lança', () => {
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new DOMException('cheio', 'QuotaExceededError');
+    });
+    vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+      throw new DOMException('bloqueado', 'SecurityError');
+    });
+
+    expect(() => guardarSessao(sessao)).not.toThrow();
+    expect(lerSessao(AGORA)).toEqual(sessao);
+  });
+});
+
