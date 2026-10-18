@@ -126,6 +126,11 @@ public class BloqueioService {
         return new BloqueioCriado(criado, ids);
     }
 
+    @Transactional(readOnly = true)
+    public List<Bloqueio> listar() {
+        return bloqueios.listar();
+    }
+
     @Transactional
     public Bloqueio levantar(UsuarioAutenticado ator, long id, String motivo) {
         if (motivo == null || motivo.isBlank()) {

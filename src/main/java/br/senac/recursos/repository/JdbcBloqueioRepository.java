@@ -5,6 +5,7 @@ import br.senac.recursos.model.Periodo;
 import br.senac.recursos.repository.BloqueioRepository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -56,6 +57,19 @@ class JdbcBloqueioRepository implements BloqueioRepository {
                         rs.getObject("fim", OffsetDateTime.class).toInstant(),
                         rs.getString("motivo"), rs.getBoolean("ativo")))
                 .optional();
+    }
+
+    @Override
+    public List<Bloqueio> listar() {
+        return jdbc.sql("""
+                        select id, recurso_id, inicio, fim, motivo, ativo
+                          from bloqueios_manutencao order by inicio, id
+                        """)
+                .query((rs, n) -> new Bloqueio(rs.getLong("id"), rs.getLong("recurso_id"),
+                        rs.getObject("inicio", OffsetDateTime.class).toInstant(),
+                        rs.getObject("fim", OffsetDateTime.class).toInstant(),
+                        rs.getString("motivo"), rs.getBoolean("ativo")))
+                .list();
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +29,11 @@ class BloqueioController {
 
     BloqueioController(BloqueioService bloqueios) {
         this.bloqueios = bloqueios;
+    }
+
+    @GetMapping
+    List<BloqueioResposta> listar() {
+        return bloqueios.listar().stream().map(b -> BloqueioResposta.de(b, List.of())).toList();
     }
 
     @PostMapping
