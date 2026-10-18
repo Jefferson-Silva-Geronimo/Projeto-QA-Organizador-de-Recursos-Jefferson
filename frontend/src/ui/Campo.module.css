@@ -52,3 +52,16 @@
 .campo :is(input, select, textarea)[aria-invalid='true'] {
   border-color: var(--cor-erro-borda);
 }
+
+/* Ícone do calendário dentro dos campos de data e hora: parada própria de Tab, com anel de foco visível. */
+.campo input::-webkit-calendar-picker-indicator {
+  padding: 4px;
+  border-radius: var(--raio-pequeno);
+  cursor: pointer;
+}
+
+.campo input::-webkit-calendar-picker-indicator:focus,
+.campo input::-webkit-calendar-picker-indicator:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
