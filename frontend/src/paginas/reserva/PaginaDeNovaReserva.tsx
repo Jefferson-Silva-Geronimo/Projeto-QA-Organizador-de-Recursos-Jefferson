@@ -5,7 +5,7 @@ import { FUSO_DO_CAMPUS, localParaIsoComOffset } from '@/datas/fuso';
 import estilos from '@/paginas/reserva/PaginaDeNovaReserva.module.css';
 import { ReservaCriada } from '@/paginas/reserva/ReservaCriada';
 import { SeletorDeRecursos } from '@/paginas/reserva/SeletorDeRecursos';
-import { useRecursos } from '@/recursos/consulta';
+import { useRecursos, type Recurso } from '@/recursos/consulta';
 import { useCriarReserva, type NovaReserva } from '@/reservas/criar';
 import { Aviso } from '@/ui/Aviso';
 import { Botao } from '@/ui/Botao';
@@ -42,6 +42,8 @@ function Formulario({ inicial, aoFazerOutra }: Props) {
   const [fim, setFim] = useState(inicial.fim);
   const [escolhidos, setEscolhidos] = useState<ReadonlySet<number>>(() => new Set(inicial.recursos));
   const criar = useCriarReserva();
+  // Recursos como estavam no envio: depois da reserva a lista é refeita e o que foi reservado deixa de estar livre.
+  const [enviados, setEnviados] = useState<Recurso[]>([]);
   const alerta = useRef<HTMLDivElement>(null);
   const idErroRecursos = useId();
 
@@ -89,11 +91,12 @@ function Formulario({ inicial, aoFazerOutra }: Props) {
       recursoIds: [...marcados].sort((a, b) => a - b),
       ...(descricao.trim() ? { descricao: descricao.trim() } : {}),
     };
+    setEnviados((livres.data ?? []).filter((recurso) => marcados.has(recurso.id)));
     criar.mutate(corpo);
   };
 
   if (criar.isSuccess) {
-    return <ReservaCriada reserva={criar.data} recursos={livres.data ?? []} aoFazerOutra={aoFazerOutra} />;
+    return <ReservaCriada reserva={criar.data} recursos={enviados} aoFazerOutra={aoFazerOutra} />;
   }
 
   return (
