@@ -1,4 +1,4 @@
-import { guardarSessao, lerSessao, type Sessao } from '@/sessao/armazenamento';
+import { guardarSessao, lerSessao, limparSessao, type Sessao } from '@/sessao/armazenamento';
 
 const AGORA = new Date('2026-10-18T12:00:00Z');
 const sessao: Sessao = { token: 'token-de-teste', perfil: 'SOLICITANTE', expiraEm: '2026-10-18T13:00:00Z' };
@@ -8,5 +8,59 @@ describe('sessão', () => {
     guardarSessao(sessao);
 
     expect(lerSessao(AGORA)).toEqual(sessao);
+  });
+
+  it('sem nada guardado não há sessão', () => {
+    expect(lerSessao(AGORA)).toBeNull();
+  });
+
+  it('o token fica só no sessionStorage, nunca no localStorage', () => {
+    guardarSessao(sessao);
+
+    expect(window.sessionStorage.length).toBe(1);
+    expect(window.localStorage.length).toBe(0);
+  });
+
+  it('valor corrompido vira "sem sessão" e é apagado', () => {
+    window.sessionStorage.setItem('sessao', '{isto não é json');
+
+    expect(() => lerSessao(AGORA)).not.toThrow();
+    expect(lerSessao(AGORA)).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
+  });
+
+  it('valor com formato inesperado vira "sem sessão" e é apagado', () => {
+    window.sessionStorage.setItem('sessao', JSON.stringify({ token: 42 }));
+
+    expect(lerSessao(AGORA)).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
+  });
+
+  it('sessão expirada vira "sem sessão" e é apagada (o servidor continua decidindo)', () => {
+    guardarSessao({ ...sessao, expiraEm: '2026-10-18T11:59:59Z' });
+
+    expect(lerSessao(AGORA)).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
+  });
+
+  it('no instante exato da expiração a sessão já não vale', () => {
+    guardarSessao({ ...sessao, expiraEm: AGORA.toISOString() });
+
+    expect(lerSessao(AGORA)).toBeNull();
+  });
+
+  it('um segundo antes de expirar a sessão ainda vale', () => {
+    guardarSessao({ ...sessao, expiraEm: '2026-10-18T12:00:01Z' });
+
+    expect(lerSessao(AGORA)).not.toBeNull();
+  });
+
+  it('limparSessao apaga o token', () => {
+    guardarSessao(sessao);
+
+    limparSessao();
+
+    expect(lerSessao(AGORA)).toBeNull();
+    expect(window.sessionStorage.length).toBe(0);
   });
 });
