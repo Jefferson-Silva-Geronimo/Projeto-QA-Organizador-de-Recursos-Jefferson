@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from 'react';
 import { criarCliente, ErroDeApi, executar } from '@/api/cliente';
 import { Contexto } from '@/autenticacao/contexto';
 import { interpretarProblema } from '@/erros/problema';
-import { guardarSessao, lerSessao, type Sessao } from '@/sessao/armazenamento';
+import { guardarSessao, lerSessao, limparSessao, type Sessao } from '@/sessao/armazenamento';
 
 interface Props {
   baseUrl: string;
@@ -20,7 +20,10 @@ function sessaoDoLogin(dados: { token?: string; perfil?: Sessao['perfil']; expir
 
 export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props) {
   const [sessao, setSessao] = useState<Sessao | null>(() => lerSessao());
-  const cliente = useMemo(() => criarCliente({ baseUrl, fetch: fetchFalso }), [baseUrl, fetchFalso]);
+  const cliente = useMemo(
+    () => criarCliente({ baseUrl, fetch: fetchFalso, aoExpirarSessao: () => setSessao(null) }),
+    [baseUrl, fetchFalso],
+  );
 
   const entrar = useCallback(
     async (email: string, senha: string) => {
@@ -32,7 +35,19 @@ export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props
     [cliente],
   );
 
-  const sair = useCallback(async () => {}, []);
+  /** Revoga a sessão no servidor (ADR-004) e apaga a local, mesmo que o servidor não responda. */
+  const sair = useCallback(async () => {
+    try {
+      // O contrato declara o cabeçalho como parâmetro; é o mesmo valor que o middleware do cliente envia.
+      const token = lerSessao()?.token ?? '';
+      await executar(cliente.POST('/api/auth/logout', { params: { header: { Authorization: `Bearer ${token}` } } }));
+    } catch {
+      // a sessão local é apagada de qualquer forma
+    } finally {
+      limparSessao();
+      setSessao(null);
+    }
+  }, [cliente]);
 
   const valor = useMemo(() => ({ sessao, cliente, entrar, sair }), [sessao, cliente, entrar, sair]);
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
