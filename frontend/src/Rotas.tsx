@@ -1,4 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useSessao } from '@/autenticacao/useSessao';
 import { Estrutura } from '@/layout/Estrutura';
 import { NaoEncontrada } from '@/paginas/NaoEncontrada';
@@ -35,6 +36,15 @@ function Raiz() {
  * qualquer chamada proibida (ADR-004).
  */
 export function Rotas() {
+  const { pathname } = useLocation();
+
+  // Título da página: o leitor de tela o anuncia ao trocar de tela (WCAG 2.4.2).
+  useEffect(() => {
+    if (pathname === '/') return;
+    const tela = TELAS.find((t) => t.caminho === pathname);
+    document.title = `${tela?.rotulo ?? 'Página não encontrada'} · Organização de Recursos`;
+  }, [pathname]);
+
   return (
     <Routes>
       <Route path="/entrar" element={<Entrar />} />
