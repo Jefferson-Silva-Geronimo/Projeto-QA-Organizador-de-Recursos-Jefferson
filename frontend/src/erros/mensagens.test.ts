@@ -1,4 +1,4 @@
-import { situacoesSemCodigoDaDocumentacao, tabelaDeErrosDaDocumentacao } from '@/test/documentacao';
+import { codigosDoServidor, situacoesSemCodigoDaDocumentacao, tabelaDeErrosDaDocumentacao } from '@/test/documentacao';
 import { MENSAGEM_DE_REDE, mensagemPara } from '@/erros/mensagens';
 
 describe('mensagemPara', () => {
@@ -37,5 +37,20 @@ describe('mensagens sem código do servidor', () => {
 
   it('falha de rede tem mensagem própria', () => {
     expect(MENSAGEM_DE_REDE).toEqual({ mensagem: rede?.mensagem, acao: rede?.acao });
+  });
+});
+
+describe('amarração com o servidor (CodigoErro.java)', () => {
+  const codigos = codigosDoServidor();
+
+  it('o servidor declara os mesmos 34 códigos que a documentação', () => {
+    expect([...codigos].sort()).toEqual([...tabelaDeErrosDaDocumentacao().keys()].sort());
+  });
+
+  it.each(codigos)('%s tem mensagem própria e não cai na genérica', (code) => {
+    const generica = mensagemPara('CODIGO_DE_UM_SERVIDOR_MAIS_NOVO');
+    const propria = mensagemPara(code);
+    expect(propria.mensagem).not.toBe('');
+    expect(propria).not.toEqual(generica);
   });
 });

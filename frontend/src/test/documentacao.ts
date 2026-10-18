@@ -31,3 +31,12 @@ export function situacoesSemCodigoDaDocumentacao(): { situacao: string; mensagem
   }
   return linhas;
 }
+
+/** Códigos estáveis declarados no servidor (CodigoErro.java). Só para testes: amarra o front ao back end. */
+export function codigosDoServidor(): string[] {
+  const texto = readFileSync(
+    resolve(__dirname, '../../../src/main/java/br/senac/recursos/exception/CodigoErro.java'),
+    'utf-8',
+  );
+  return [...texto.matchAll(/^ {4}([A-Z_]+)\(Categoria\./gm)].map((m) => m[1] as string);
+}
