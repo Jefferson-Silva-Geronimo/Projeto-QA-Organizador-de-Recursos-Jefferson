@@ -83,6 +83,7 @@ Escolhas técnicas de compatibilidade, sem relação com a especificação nem c
 | --- | --- |
 | TypeScript fixado em 5.9 | A versão 7.x conflita com `openapi-typescript` (pede TypeScript 5.x) e com `typescript-eslint` (pede até 6.0) |
 | ESLint fixado em 9 | `eslint-plugin-jsx-a11y` não aceita ESLint 10. A regra de acessibilidade no lint tem prioridade |
+| Ferramentas de acessibilidade só para desenvolvimento: `vitest-axe`, `axe-core` e `@axe-core/playwright` (versões exatas) | Auditoria axe nos testes de componente e no navegador real; sem efeito no pacote de produção |
 | Saltos maiores ignorados no Dependabot | Mesmos motivos, mais mudança de API nas bibliotecas principais; só correções e menores entram sozinhas |
 
 **Achado de contrato (L-06), resolvido pela F6-10 em 18/10/2026:** os esquemas de **resposta** do OpenAPI não declaravam

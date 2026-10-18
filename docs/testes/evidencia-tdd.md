@@ -124,39 +124,39 @@ escopo da regra do token em `regra-do-token.test.ts`.
 
 | Fatia | Red | Green |
 |---|---|---|
-| InterpretarProblema le status, code, itens e campos sem guardar o texto cru | `658f26e` | `6bbedbb` |
-| MensagemPara devolve a mensagem e a acao documentadas para cada um dos 34 codigos | `9aef47c` | `57c740f` |
-| Mensagens para codigo desconhecido, resposta sem codigo e falha de rede (secao 5.2) | `e683790` | `120abd3` |
-| A sessao guardada e lida de volta | `067e407` | `54c16f7` |
-| Sessao corrompida, de formato inesperado, expirada (inclusive no limite) e limpar | `7e9ab49` | `b2ea3c4` |
-| Armazenamento indisponivel nao derruba a sessao; regra de que so o modulo de sessao toca o sessionStorage | `64aa127` | `3aed66a` |
-| RazaoDeContraste WCAG (21:1, 1:1, simetria, 4,54:1 e formas hexadecimais) | `0060deb` | `bf0dabf` |
-| Contraste de 22 pares nos tres blocos de tokens (claro, escuro pela preferencia, escuro pela escolha), com 4,5:1 para texto e 3:1 para foco, bordas e indicador | `d9ee542` | `3d43197` |
-| Escolher o tema escuro marca o documento e e lembrado | `7f94b1f` | `3e265d8` |
-| Tema sistema, escolha ausente ou invalida, aplicar ao abrir e armazenamento indisponivel | `84e9983` | `8596285` |
-| Cliente envia Authorization e trata 401 como sessao expirada | `9483052` | `d44ae8c` |
-| Executar converte recusa, falha de rede e resposta fora do formato em ErroDeApi | `aa5f859` | `9e6dec7` |
-| Telas e perfis iguais a matriz de acesso da documentacao | `ac835fa` | `f96f9a9` |
-| Barra do celular com no maximo 4 itens e Mais; rota inicial por perfil | `1777fd3` | `453662c` |
-| Entrar com credenciais validas guarda a sessao e atualiza o contexto | `abc05c3` | `d967bdb` |
+| `interpretarProblema` lê status, `code`, itens e campos sem guardar o texto cru | `658f26e` | `6bbedbb` |
+| `mensagemPara` devolve a mensagem e a ação documentadas para cada um dos 34 códigos | `9aef47c` | `57c740f` |
+| Mensagens para código desconhecido, resposta sem código e falha de rede (seção 5.2) | `e683790` | `120abd3` |
+| Sessão guardada e lida de volta | `067e407` | `54c16f7` |
+| Sessão corrompida, de formato inesperado, expirada (inclusive no limite) e limpar | `7e9ab49` | `b2ea3c4` |
+| Armazenamento indisponível não derruba a sessão; só o módulo de sessão toca o `sessionStorage` | `64aa127` | `3aed66a` |
+| `razaoDeContraste` WCAG (21:1, 1:1, simetria, 4,54:1 e formas hexadecimais) | `0060deb` | `bf0dabf` |
+| Contraste de 22 pares nos três blocos de tokens (claro, escuro pela preferência, escuro pela escolha), com 4,5:1 para texto e 3:1 para foco, bordas e indicador | `d9ee542` | `3d43197` |
+| Escolher o tema escuro marca o documento e é lembrado | `7f94b1f` | `3e265d8` |
+| Tema do sistema, escolha ausente ou inválida, aplicar ao abrir e armazenamento indisponível | `84e9983` | `8596285` |
+| Cliente envia `Authorization` e trata 401 como sessão expirada | `9483052` | `d44ae8c` |
+| `executar` converte recusa, falha de rede e resposta fora do formato em `ErroDeApi` | `aa5f859` | `9e6dec7` |
+| Telas e perfis iguais à matriz de acesso da documentação | `ac835fa` | `f96f9a9` |
+| Barra do celular com no máximo 4 itens e Mais; rota inicial por perfil | `1777fd3` | `453662c` |
+| Entrar com credenciais válidas guarda a sessão e atualiza o contexto | `abc05c3` | `d967bdb` |
 | Sair (com e sem resposta do servidor) e 401 que zera o contexto | `5d38733` | `ca6f637` |
-| Rota protegida por perfil: sem sessao, perfil proibido e volta ao login apos 401 | `b788faf` | `17a1133` |
-| Navegacao lateral e barra do celular com Mais, aria-current e teclado | `71c521d` | `18190f2` |
-| Seletor de tema Sistema, Claro e Escuro com aria-pressed | `643ef71` | `ac6c7d9` |
-| Rotas por perfil, estrutura com cabecalho e menu, 404, redirecionamentos e sair | `4cc1c7d` | `009165c` |
-| Datas no fuso do campus (ISO-8601 com offset, ida e volta, intervalo legivel) | `897952f` | `3ff61b9` |
-| Componente Aviso (papel ARIA, rotulo para leitor de tela, titulo, foco por codigo, axe) | `31d33e2` | `917bb89` |
-| Componente Campo (rotulo ligado ao controle, obrigatorio em texto, erro e ajuda lidos junto, axe) | `02d1d82` | `d9dc6af` |
-| Botao (type padrao, envio sem duplo clique) e estados Carregando e EstadoVazio | `28b2616` | `0cfaa1e` |
+| Rota protegida por perfil: sem sessão, perfil proibido e volta ao login após 401 | `b788faf` | `17a1133` |
+| Navegação lateral e barra do celular com Mais, `aria-current` e teclado | `71c521d` | `18190f2` |
+| Seletor de tema Sistema, Claro e Escuro com `aria-pressed` | `643ef71` | `ac6c7d9` |
+| Rotas por perfil, estrutura com cabeçalho e menu, 404, redirecionamentos e sair | `4cc1c7d` | `009165c` |
+| Datas no fuso do campus (ISO-8601 com offset, ida e volta, intervalo legível) | `897952f` | `3ff61b9` |
+| Componente `Aviso` (papel ARIA, rótulo para leitor de tela, título, foco por código, axe) | `31d33e2` | `917bb89` |
+| Componente `Campo` (rótulo ligado ao controle, obrigatório em texto, erro e ajuda lidos junto, axe) | `02d1d82` | `d9dc6af` |
+| `Botao` (tipo padrão, envio sem clique duplo) e estados Carregando e EstadoVazio | `28b2616` | `0cfaa1e` |
 | Busca lista os recursos com contagem anunciada e os atributos de cada tipo | `55eb643` | `2e39a21` |
-| Filtros da Busca (envio, periodo com offset, inicio sem fim, limpar, estado na URL) | `ccd039f` | `65ce926` |
-| Estados da Busca (vazio, recusa, texto cru nunca aparece, rede, codigo desconhecido, tentar de novo) | `6d877bb` | `23f1782` |
-| Acoes do cartao da Busca (Reservar com recurso e periodo, horarios ocupados, erro, axe) | `620c1e8` | `28d77b8` |
-| Nova reserva - estrutura, periodo, recursos livres agrupados, preselecao e aviso de recurso nao livre | `f740e3e` | `80467fe` |
-| Nova reserva - envio, confirmacao derivada do estado do servidor, sem clique duplo, foco e nova reserva | `8e91e13` | `987931a` |
-| Nova reserva - recusas do servidor por codigo, foco na mensagem, dados preservados, campos invalidos e rede | `5dab42d` | `3329a0d` |
+| Filtros da Busca (envio, período com offset, início sem fim, limpar, estado na URL) | `ccd039f` | `65ce926` |
+| Estados da Busca (vazio, recusa, texto cru nunca aparece, rede, código desconhecido, tentar de novo) | `6d877bb` | `23f1782` |
+| Ações do cartão da Busca (Reservar com recurso e período, horários ocupados, erro, axe) | `620c1e8` | `28d77b8` |
+| Nova reserva: estrutura, período, recursos livres agrupados, pré-seleção e aviso de recurso não livre | `f740e3e` | `80467fe` |
+| Nova reserva: envio, confirmação derivada do estado do servidor, sem clique duplo, foco e nova reserva | `8e91e13` | `987931a` |
+| Nova reserva: recusas do servidor por código, foco na mensagem, dados preservados, campos inválidos e rede | `5dab42d` | `3329a0d` |
 | Rotas Buscar e Nova reserva mostram as telas reais; as demais seguem como marcador | `558465d` | `a94237a` |
-| Depois de conflito a lista de recursos livres e refeita | `afd37c4` | `67d3150` |
-| Foco vai ao conteudo ao trocar de tela e titulo da pagina por tela | `0f0c8c7` | `8ad762c` |
-| Ícone do calendario dos campos de data tem foco visivel | `f05435b` | `fbc40e3` |
-| Confirmacao mostra o nome dos recursos mesmo quando a lista refeita ja nao os traz | `59ce6f2` | `22ef543` |
+| Depois de conflito a lista de recursos livres é refeita | `afd37c4` | `67d3150` |
+| Foco vai ao conteúdo ao trocar de tela e título da página por tela | `0f0c8c7` | `8ad762c` |
+| Ícone do calendário dos campos de data tem foco visível | `f05435b` | `fbc40e3` |
+| Confirmação mostra o nome dos recursos mesmo quando a lista refeita já não os traz | `59ce6f2` | `22ef543` |

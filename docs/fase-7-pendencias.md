@@ -65,10 +65,15 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Item | Origem | Onde está | Situação |
 | --- | --- | --- | --- |
-| Nenhum até agora | | | |
+| Anel de foco do ícone do calendário nos campos de data e hora é o do navegador (preto no claro, branco no escuro); a cor do sistema não é aplicada pelo Chromium nesse botão interno | Fato (observado no teste em navegador real) | [Campo.module.css](../frontend/src/ui/Campo.module.css), [foco-do-calendario.test.ts](../frontend/src/ui/foco-do-calendario.test.ts) | Aceito pela visibilidade; declarar no relatório de acessibilidade |
+| axe com 24 verificações `color-contrast` incompletas, todas no glifo decorativo do aviso (`aria-hidden`); o par de cores está coberto pelo teste de tokens | Fato | [Aviso.tsx](../frontend/src/ui/Aviso.tsx), [navegacao-telas.md](prd/navegacao-telas.md), seção 9 | Declarar a limitação no relatório de acessibilidade |
+| Campo de data e hora nativo: 6 paradas de Tab por campo no teclado; alternativa é campo de data e campo de hora separados | Decisão pendente de Jefferson (aprovação do protótipo) | [navegacao-telas.md](prd/navegacao-telas.md), seção 9 | Aberto |
+| A verificação em navegador real do protótipo (axe, teclado, capturas) foi feita à mão, com roteiro fora do repositório; precisa virar teste E2E na CI | Fato | [RTM.md](../RTM.md), execução E-6 | Aberto: 6.D |
+| PR do Dependabot #24 (`jsdom` 29 para 30, salto maior) sem decisão: `jsdom` não está na lista de ignorados e o PR não tem o check do SonarCloud | Decisão pendente de Jefferson | `.github/dependabot.yml`; PR #24 no GitHub | Aberto |
 
 ## Histórico de atualizações
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 18/10/2026 | Protótipo da 6.C | Achados da Fase 6 acrescentados: anel do ícone do calendário, verificações incompletas do axe, campo de data e hora, roteiro manual e PR #24 do Dependabot |
 | 18/10/2026 | Criação | Arquivo criado com os itens já registrados: SEC-03, SEC-04, A06, R-23, limites do login, versões fixadas, RNF-08b, ocorrência do `NotificacaoApiIT`, RF-13 parcial, pendências do professor e a revogação do token do SonarCloud |
