@@ -33,20 +33,26 @@ interface Opcoes {
   rota: string;
   caminho: string;
   elemento: ReactNode;
-  perfil?: Perfil;
+  /** Perfil da sessão guardada. `null` monta sem sessão, como quem ainda não entrou. */
+  perfil?: Perfil | null;
+  /** Estado do roteador na entrada (por exemplo, a tela de origem que o login guarda em `de`). */
+  estado?: unknown;
   fetch: typeof fetch;
   /** Rotas extras (por exemplo, a tela para onde a página navega). */
   outras?: ReactNode;
 }
 
 /** Monta uma página como a aplicação a monta: com sessão, consultas, roteador e a API simulada na fronteira do fetch. */
-export function montarPagina({ rota, caminho, elemento, perfil = 'SOLICITANTE', fetch: fetchFalso, outras }: Opcoes) {
-  guardarSessao({ token: 'token-de-teste', perfil, expiraEm: '2999-01-01T00:00:00Z' });
+export function montarPagina({ rota, caminho, elemento, perfil = 'SOLICITANTE', estado, fetch: fetchFalso, outras }: Opcoes) {
+  if (perfil !== null) {
+    guardarSessao({ token: 'token-de-teste', perfil, expiraEm: '2999-01-01T00:00:00Z' });
+  }
+  const entrada = new URL(rota, 'http://teste.local');
   const consultas = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
   return render(
     <QueryClientProvider client={consultas}>
       <ProvedorDeSessao baseUrl={BASE_DA_API} fetch={fetchFalso}>
-        <MemoryRouter initialEntries={[rota]}>
+        <MemoryRouter initialEntries={[{ pathname: entrada.pathname, search: entrada.search, state: estado }]}>
           <Routes>
             <Route path={caminho} element={elemento} />
             {outras}
