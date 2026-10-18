@@ -127,6 +127,7 @@ docs/
   testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança e ocorrências a vigiar
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
+  fase-7-pendencias.md   lista viva do que entra no fechamento da Fase 7, com origem e arquivo de cada item
   perguntas-professor.md   mensagem consolidada ao professor
   performance/         rnf.md (requisito e modelo de carga) e resultado-01.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
