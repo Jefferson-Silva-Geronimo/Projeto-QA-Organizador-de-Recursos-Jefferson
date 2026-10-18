@@ -23,8 +23,13 @@ function sessaoDoLogin(dados: { token?: string; perfil?: Sessao['perfil']; expir
 
 export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props) {
   const [sessao, setSessao] = useState<Sessao | null>(() => lerSessao());
+  const [sessaoExpirou, setSessaoExpirou] = useState(false);
   const cliente = useMemo(
-    () => criarCliente({ baseUrl, fetch: fetchFalso, aoExpirarSessao: () => setSessao(null) }),
+    () => criarCliente({ baseUrl, fetch: fetchFalso, aoExpirarSessao: () => {
+          setSessao(null);
+          setSessaoExpirou(true);
+        },
+      }),
     [baseUrl, fetchFalso],
   );
 
@@ -34,6 +39,7 @@ export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props
       const nova = sessaoDoLogin(dados);
       guardarSessao(nova);
       setSessao(nova);
+      setSessaoExpirou(false);
     },
     [cliente],
   );
@@ -49,12 +55,13 @@ export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props
     } finally {
       limparSessao();
       setSessao(null);
+      setSessaoExpirou(false);
     }
   }, [cliente]);
 
   const valor = useMemo(
-    () => ({ sessao, sessaoExpirou: false, cliente, entrar, sair }),
-    [sessao, cliente, entrar, sair],
+    () => ({ sessao, sessaoExpirou, cliente, entrar, sair }),
+    [sessao, sessaoExpirou, cliente, entrar, sair],
   );
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }
