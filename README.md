@@ -124,7 +124,7 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação e revisão de segurança
+  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança e ocorrências a vigiar
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   perguntas-professor.md   mensagem consolidada ao professor
@@ -179,6 +179,7 @@ Fonte: especificação, seção 6.
 ## Convenções
 
 - **Documentação:** português do Brasil com acentuação completa; a especificação é citada sempre pelo endereço público, nunca por caminho local; classificação de cada afirmação como fato, lacuna, suposição ou decisão; identificadores RF, RN, RNF, CEN, ADR, CT, INT, BUG, R e S nunca são renumerados. Convenção de nomes em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
+  - **Limites conhecidos do `analyze-docs`:** (1) só analisa o que está **commitado** em relação a `origin/main`; com a documentação ainda sem commit ele analisa 0 arquivos, e um resultado vazio não vale como aprovação (aconteceu na etapa 6.B). Faça o commit antes e confira que a lista de arquivos analisados não veio vazia. (2) A checagem de ortografia é heurística, por lista de palavras sem acento, e ignora nomes de arquivo e identificadores; não substitui a leitura. (3) Não renderiza de novo os diagramas Mermaid de arquivos que não mudaram.
 - **Verificação:** a skill `analyze-docs` (em `.aiox-core/development/skills/`) roda ao fim de toda edição de documentação.
 - **Commits:** convencionais (`test(red)`, `feat(green)`, `refactor`, `docs`, `ci`, `chore`), com `git add` por caminho explícito, sem `git add .` nem `git add -A`. O arquivo `.env` e o material de apoio ignorado pelo Git nunca entram no índice.
 - **Regras completas para agentes:** [AGENTS.md](AGENTS.md).

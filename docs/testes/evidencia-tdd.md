@@ -111,3 +111,4 @@ autorização e CT-126. CT-114 e CT-115 falharam de propósito ao mudar o contra
 |---|---|---|---|
 | Listagem de bloqueios (F6-06a) | CT-123 (vermelho); CT-124 (nasceu verde) | `29a9c44` | `02ca708`, contrato em `aa90861` |
 | Nome do solicitante na fila (F6-06b) | CT-125 (vermelho); CT-126 (nasceu verde) | `83e7a24` | `d8240c9`, contrato em `6bacc3b` |
+| Campos obrigatórios das respostas no contrato (F6-10) | CT-134 (vermelho); CT-135 (nasceu verde) | `5286c1b` | `206f9a3`, contrato em `7d88930`, cliente do front em `e18f7e8` (refactor) |

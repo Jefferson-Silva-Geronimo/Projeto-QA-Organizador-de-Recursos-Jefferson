@@ -224,6 +224,8 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | CT-124 | Listagem de bloqueios | A | Dois bloqueios de uma sala, um deles levantado; `GET /api/bloqueios` | 200 com 2 itens em ordem de início, com `ativo` falso para o levantado e os campos do contrato; a linha "Listar bloqueios" da matriz de autorização recusa Solicitante e Responsável com 403 | RF-08, RN-22, F6-06a |
 | CT-125 | Fila com o nome do solicitante | A | Solicitante com nome e e-mail conhecidos reserva um recurso restrito; Responsável consulta a fila | 1 item com `solicitanteNome` igual ao nome e 0 ocorrências do e-mail ou do campo `email` no corpo | RF-07, RN-26, B3, F6-06b |
 | CT-126 | Fila: perfil proibido e sem sessão | A | `GET /api/reservas/fila` por Solicitante, por Administrador e sem token | 403 com `ACESSO_NEGADO` para os dois perfis e 401 com `NAO_AUTENTICADO` sem token | RF-01, RF-07, F6-06b |
+| CT-134 | Campos obrigatórios das respostas no contrato | A | Cenário real com os 12 esquemas de resposta (login, usuários, recursos dos três tipos, reservas com e sem descrição e motivo, fila, retirada de material, bloqueio, auditoria, relatório, ocupações); `required` de cada esquema no `/v3/api-docs` contra a lista decidida e contra as respostas reais (`ContratoObrigatoriosApiIT`) | O `required` de cada esquema é exatamente a lista decidida, e todo campo obrigatório está presente e não nulo em toda resposta real | RF-14, R-15, F6-10 |
+| CT-135 | Campos de fora realmente faltam | A | Mesmo cenário; para cada campo deixado de fora que tem amostra natural, procura uma resposta real sem o campo | Cada campo de fora falta em ao menos uma resposta real, então a exclusão se justifica | RF-14, R-15, F6-10 |
 
 ### 3.13 Fase 6: front end (etapa 6.B)
 
