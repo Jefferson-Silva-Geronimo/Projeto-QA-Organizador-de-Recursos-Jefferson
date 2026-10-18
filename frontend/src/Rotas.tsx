@@ -4,8 +4,10 @@ import { useSessao } from '@/autenticacao/useSessao';
 import { Estrutura } from '@/layout/Estrutura';
 import { NaoEncontrada } from '@/paginas/NaoEncontrada';
 import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
+import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
 import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
+import { destinoDepoisDoLogin } from '@/rotas/destino';
 import { rotaInicial } from '@/rotas/navegacao';
 import { RotaProtegida } from '@/rotas/RotaProtegida';
 import { TELAS, type Tela } from '@/rotas/telas';
@@ -17,13 +19,14 @@ function ConteudoDaTela({ tela }: { tela: Tela }) {
   return <PaginaDeTela tela={tela} />;
 }
 
+/** Tela de entrada. Com sessão, segue para a tela de origem (validada) ou a inicial do perfil. */
 function Entrar() {
   const { sessao } = useSessao();
+  const local = useLocation();
   if (sessao) {
-    return <Navigate to={rotaInicial(sessao.perfil)} replace />;
+    return <Navigate to={destinoDepoisDoLogin(local.state, sessao.perfil)} replace />;
   }
-  const [login] = TELAS;
-  return login ? <PaginaDeTela tela={login} /> : null;
+  return <PaginaDeEntrada />;
 }
 
 function Raiz() {

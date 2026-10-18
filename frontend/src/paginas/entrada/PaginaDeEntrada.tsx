@@ -4,6 +4,7 @@ import { ErroDeApi } from '@/api/cliente';
 import { useSessao } from '@/autenticacao/useSessao';
 import { SeletorDeTema } from '@/layout/SeletorDeTema';
 import estilos from '@/paginas/entrada/PaginaDeEntrada.module.css';
+import { Aviso } from '@/ui/Aviso';
 import { Botao } from '@/ui/Botao';
 import { Campo } from '@/ui/Campo';
 import { ErroDaApi } from '@/ui/ErroDaApi';
@@ -19,7 +20,7 @@ interface ErrosDeCampo {
  * A recusa por credencial não diz qual campo errou, para não ajudar a descobrir contas.
  */
 export function PaginaDeEntrada() {
-  const { entrar } = useSessao();
+  const { entrar, sessaoExpirou } = useSessao();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -83,6 +84,7 @@ export function PaginaDeEntrada() {
       <main className={estilos.principal}>
         <section className={estilos.cartao}>
           <h1 id="titulo-da-tela">Entrar</h1>
+          {sessaoExpirou && !tentativa.isError && <Aviso tipo="info">Sua sessão terminou. Entre novamente.</Aviso>}
           {tentativa.isError && <ErroDaApi erro={tentativa.error} ref={alerta} />}
           <form aria-labelledby="titulo-da-tela" onSubmit={enviar} noValidate className={estilos.formulario}>
             <Campo rotulo="E-mail" obrigatorio erro={erroDoCampo('email')}>
