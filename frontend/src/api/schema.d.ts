@@ -545,12 +545,12 @@ export interface components {
         };
         UsuarioResposta: {
             /** Format: int64 */
-            id?: number;
-            nome?: string;
-            email?: string;
+            id: number;
+            nome: string;
+            email: string;
             /** @enum {string} */
-            perfil?: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
-            ativo?: boolean;
+            perfil: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
+            ativo: boolean;
         };
         AlteracaoReservaRequisicao: {
             titulo?: string;
@@ -563,32 +563,32 @@ export interface components {
         };
         ReservaResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int64 */
-            solicitanteId?: number;
-            titulo?: string;
+            solicitanteId: number;
+            titulo: string;
             descricao?: string;
             /** Format: date-time */
-            inicio?: string;
+            inicio: string;
             /** Format: date-time */
-            fim?: string;
+            fim: string;
             /** @enum {string} */
-            estado?: "SOLICITADA" | "APROVADA" | "EM_USO" | "CONCLUIDA" | "REJEITADA" | "CANCELADA" | "NAO_COMPARECEU";
-            exigeAprovacao?: boolean;
+            estado: "SOLICITADA" | "APROVADA" | "EM_USO" | "CONCLUIDA" | "REJEITADA" | "CANCELADA" | "NAO_COMPARECEU";
+            exigeAprovacao: boolean;
             motivo?: string;
-            recursoIds?: number[];
+            recursoIds: number[];
         };
         RestritoRequisicao: {
             restrito?: boolean;
         };
         RecursoResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** @enum {string} */
-            tipo?: "SALA" | "PROFESSOR" | "MATERIAL";
-            nome?: string;
-            restrito?: boolean;
-            ativo?: boolean;
+            tipo: "SALA" | "PROFESSOR" | "MATERIAL";
+            nome: string;
+            restrito: boolean;
+            ativo: boolean;
             /** Format: int32 */
             capacidade?: number;
             localizacao?: string;
@@ -665,16 +665,16 @@ export interface components {
         };
         BloqueioResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int64 */
-            recursoId?: number;
+            recursoId: number;
             /** Format: date-time */
-            inicio?: string;
+            inicio: string;
             /** Format: date-time */
-            fim?: string;
-            motivo?: string;
-            ativo?: boolean;
-            reservasCanceladas?: number[];
+            fim: string;
+            motivo: string;
+            ativo: boolean;
+            reservasCanceladas: number[];
         };
         LevantamentoRequisicao: {
             motivo?: string;
@@ -684,36 +684,36 @@ export interface components {
             senha: string;
         };
         LoginResposta: {
-            token?: string;
+            token: string;
             /** @enum {string} */
-            perfil?: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
+            perfil: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
             /** Format: date-time */
-            expiraEm?: string;
+            expiraEm: string;
         };
         MovimentacaoResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int64 */
-            materialId?: number;
+            materialId: number;
             /** @enum {string} */
-            tipo?: "RETIRADA" | "DEVOLUCAO";
+            tipo: "RETIRADA" | "DEVOLUCAO";
             /** Format: int64 */
-            registradoPorId?: number;
+            registradoPorId: number;
             /** Format: date-time */
-            registradoEm?: string;
+            registradoEm: string;
         };
         EventoAuditoriaResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: date-time */
-            ocorridoEm?: string;
-            atorTipo?: string;
+            ocorridoEm: string;
+            atorTipo: string;
             /** Format: int64 */
             atorId?: number;
-            entidade?: string;
+            entidade: string;
             /** Format: int64 */
-            entidadeId?: number;
-            acao?: string;
+            entidadeId: number;
+            acao: string;
             estadoAnterior?: string;
             estadoNovo?: string;
             motivo?: string;
@@ -728,58 +728,58 @@ export interface components {
         };
         ReservaDaFilaResposta: {
             /** Format: int64 */
-            id?: number;
+            id: number;
             /** Format: int64 */
-            solicitanteId?: number;
-            solicitanteNome?: string;
-            titulo?: string;
+            solicitanteId: number;
+            solicitanteNome: string;
+            titulo: string;
             descricao?: string;
             /** Format: date-time */
-            inicio?: string;
+            inicio: string;
             /** Format: date-time */
-            fim?: string;
+            fim: string;
             /** @enum {string} */
-            estado?: "SOLICITADA" | "APROVADA" | "EM_USO" | "CONCLUIDA" | "REJEITADA" | "CANCELADA" | "NAO_COMPARECEU";
-            exigeAprovacao?: boolean;
+            estado: "SOLICITADA" | "APROVADA" | "EM_USO" | "CONCLUIDA" | "REJEITADA" | "CANCELADA" | "NAO_COMPARECEU";
+            exigeAprovacao: boolean;
             motivo?: string;
-            recursoIds?: number[];
+            recursoIds: number[];
         };
         ItemRelatorioResposta: {
             /** Format: int64 */
-            recursoId?: number;
-            nome?: string;
+            recursoId: number;
+            nome: string;
             /** @enum {string} */
-            tipo?: "SALA" | "PROFESSOR" | "MATERIAL";
+            tipo: "SALA" | "PROFESSOR" | "MATERIAL";
             /** Format: double */
-            horasAlocadas?: number;
+            horasAlocadas: number;
             /** Format: double */
             utilizacao?: number;
             /** Format: int64 */
-            conflitosEvitados?: number;
+            conflitosEvitados: number;
             /** Format: int64 */
-            solicitantesDistintos?: number;
+            solicitantesDistintos: number;
         };
         RelatorioResposta: {
-            itens?: components["schemas"]["ItemRelatorioResposta"][];
+            itens: components["schemas"]["ItemRelatorioResposta"][];
             /** Format: int32 */
-            pagina?: number;
+            pagina: number;
             /** Format: int32 */
-            tamanho?: number;
+            tamanho: number;
             /** Format: int64 */
-            total?: number;
+            total: number;
         };
         IntervaloResposta: {
             /** Format: date-time */
-            inicio?: string;
+            inicio: string;
             /** Format: date-time */
-            fim?: string;
+            fim: string;
         };
         UsuarioAtualResposta: {
             /** Format: int64 */
-            id?: number;
-            email?: string;
+            id: number;
+            email: string;
             /** @enum {string} */
-            perfil?: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
+            perfil: "SOLICITANTE" | "RESPONSAVEL" | "ADMINISTRADOR";
         };
     };
     responses: never;

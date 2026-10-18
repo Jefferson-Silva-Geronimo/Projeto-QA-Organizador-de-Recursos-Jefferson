@@ -10,7 +10,10 @@ interface Props {
   children: ReactNode;
 }
 
-/** O contrato não marca campos de resposta como obrigatórios: valida na fronteira antes de confiar. */
+/**
+ * O contrato garante os três campos (F6-10). Um 200 sem eles não vem do servidor do contrato e nunca vira sessão:
+ * é o único ponto em que o front confere a resposta em tempo de execução, porque dele depende a autenticação.
+ */
 function sessaoDoLogin(dados: { token?: string; perfil?: Sessao['perfil']; expiraEm?: string }): Sessao {
   if (!dados.token || !dados.perfil || !dados.expiraEm) {
     throw new ErroDeApi(interpretarProblema(200, null), false);
