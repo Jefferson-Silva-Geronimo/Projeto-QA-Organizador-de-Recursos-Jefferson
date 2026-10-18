@@ -1,0 +1,31 @@
+.grupo {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--cor-fundo);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: 999px;
+}
+
+.opcao {
+  min-height: 36px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.opcao:hover {
+  color: var(--cor-texto);
+}
+
+/* Opção escolhida: preenchimento do destaque e peso da fonte, não só a cor. */
+.opcao[aria-pressed='true'] {
+  background: var(--cor-destaque);
+  color: var(--cor-sobre-destaque);
+  font-weight: 700;
+}

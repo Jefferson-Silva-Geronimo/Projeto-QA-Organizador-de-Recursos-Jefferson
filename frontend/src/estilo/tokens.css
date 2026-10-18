@@ -1,0 +1,76 @@
+/*
+ * Tokens semânticos de cor (F6-07 paleta A, F6-09 temas). Esta é a única fonte de cor do front end:
+ * componentes e telas usam var(--cor-*), nunca valor fixo. Qualquer mudança exige rodar tokens.test.ts,
+ * que confere o contraste WCAG AA de cada par nos dois temas. Valores e verificação: ADR-015.
+ * O tema claro é a referência. O escuro segue prefers-color-scheme e pode ser forçado por data-tema.
+ */
+:root {
+  --cor-fundo: #F6F5FB;
+  --cor-superficie: #FFFFFF;
+  --cor-texto: #1C1B2E;
+  --cor-texto-suave: #55536E;
+  --cor-destaque: #6D28D9;
+  --cor-sobre-destaque: #FFFFFF;
+  --cor-destaque-texto: #5B21B6;
+  --cor-foco: #C2185B;
+  --cor-borda-campo: #7B7894;
+  --cor-erro-texto: #9F1239;
+  --cor-erro-fundo: #FFE4EA;
+  --cor-erro-borda: #C81E4B;
+  --cor-sucesso-texto: #14532D;
+  --cor-sucesso-fundo: #DCFCE7;
+  --cor-aviso-texto: #78350F;
+  --cor-aviso-fundo: #FEF3C7;
+  --cor-info-texto: #1E3A8A;
+  --cor-info-fundo: #E0E7FF;
+  color-scheme: light;
+  --sombra-suave: 0 1px 2px rgb(28 27 46 / 12%), 0 6px 16px rgb(28 27 46 / 8%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+    --cor-fundo: #14122A;
+    --cor-superficie: #1E1B3A;
+    --cor-texto: #F1EFFF;
+    --cor-texto-suave: #B7B3D6;
+    --cor-destaque: #A78BFA;
+    --cor-sobre-destaque: #14122A;
+    --cor-destaque-texto: #C4B5FD;
+    --cor-foco: #F9A8D4;
+    --cor-borda-campo: #8E89B8;
+    --cor-erro-texto: #FECDD3;
+    --cor-erro-fundo: #4C1425;
+    --cor-erro-borda: #FB7185;
+    --cor-sucesso-texto: #BBF7D0;
+    --cor-sucesso-fundo: #12351F;
+    --cor-aviso-texto: #FDE68A;
+    --cor-aviso-fundo: #3B2A0A;
+    --cor-info-texto: #C7D2FE;
+    --cor-info-fundo: #1E2A5A;
+    color-scheme: dark;
+    --sombra-suave: 0 1px 2px rgb(0 0 0 / 40%), 0 6px 16px rgb(0 0 0 / 30%);
+  }
+}
+
+:root[data-tema='escuro'] {
+  --cor-fundo: #14122A;
+  --cor-superficie: #1E1B3A;
+  --cor-texto: #F1EFFF;
+  --cor-texto-suave: #B7B3D6;
+  --cor-destaque: #A78BFA;
+  --cor-sobre-destaque: #14122A;
+  --cor-destaque-texto: #C4B5FD;
+  --cor-foco: #F9A8D4;
+  --cor-borda-campo: #8E89B8;
+  --cor-erro-texto: #FECDD3;
+  --cor-erro-fundo: #4C1425;
+  --cor-erro-borda: #FB7185;
+  --cor-sucesso-texto: #BBF7D0;
+  --cor-sucesso-fundo: #12351F;
+  --cor-aviso-texto: #FDE68A;
+  --cor-aviso-fundo: #3B2A0A;
+  --cor-info-texto: #C7D2FE;
+  --cor-info-fundo: #1E2A5A;
+  color-scheme: dark;
+  --sombra-suave: 0 1px 2px rgb(0 0 0 / 40%), 0 6px 16px rgb(0 0 0 / 30%);
+}

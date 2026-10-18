@@ -1,0 +1,93 @@
+/* Celular primeiro: cabeçalho no topo, barra inferior fixa. A partir de 1024 px entra o menu lateral. Só tokens. */
+.casca {
+  min-height: 100vh;
+  display: block;
+}
+
+.saltar {
+  position: absolute;
+  left: var(--espaco-3);
+  top: -100px;
+  z-index: 40;
+  padding: var(--espaco-2) var(--espaco-4);
+  background: var(--cor-destaque);
+  color: var(--cor-sobre-destaque);
+  border-radius: var(--raio-pequeno);
+}
+
+.saltar:focus {
+  top: var(--espaco-3);
+}
+
+.coluna {
+  min-width: 0;
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3) var(--espaco-4);
+  padding-left: max(var(--espaco-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--espaco-4), env(safe-area-inset-right, 0px));
+  background: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda-campo);
+}
+
+.marca {
+  display: grid;
+  min-width: 0;
+}
+
+.nome {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.perfil {
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.sair {
+  min-height: var(--altura-minima-toque);
+  padding: 0 var(--espaco-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--cor-destaque-texto);
+  background: transparent;
+  border: 2px solid var(--cor-destaque-texto);
+  border-radius: var(--raio-medio);
+  cursor: pointer;
+}
+
+.conteudo {
+  padding: var(--espaco-5) var(--espaco-4);
+  padding-left: max(var(--espaco-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--espaco-4), env(safe-area-inset-right, 0px));
+  /* espaço para a barra inferior fixa do celular */
+  padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  outline: none;
+}
+
+@media (min-width: 1024px) {
+  .casca {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+
+  .conteudo {
+    padding: var(--espaco-6);
+    padding-bottom: var(--espaco-6);
+    max-width: 1200px;
+  }
+}

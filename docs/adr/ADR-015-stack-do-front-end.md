@@ -69,9 +69,26 @@ código ou documentação; o sistema aparece só como "Organização de Recursos
 
 **Verificação:** 34 pares calculados por script (17 por tema), 0 falhas. Pares de texto, mínimo de 4,5:1: o menor é 6,69:1
 no tema claro e 6,71:1 no escuro. Pares de componente e foco, mínimo de 3:1: o menor é 4,24:1 no claro (borda de campo) e
-5,04:1 no escuro. Os valores acima são o ponto de partida; qualquer mudança de cor exige novo cálculo, e a CI do front end
-deve repetir a verificação sobre os tokens reais. **Regra de foco:** o anel tem um espaço de 2 px na cor do fundo, então
+5,04:1 no escuro. Os valores acima são o ponto de partida; qualquer mudança de cor exige novo cálculo. A CI do front end repete a
+verificação sobre os tokens reais: `frontend/src/estilo/tokens.test.ts` confere 22 pares nos três blocos de `tokens.css`
+(tema claro, escuro pela preferência e escuro pela escolha), com 4,5:1 para texto e 3:1 para foco, bordas e indicador. **Regra de foco:** o anel tem um espaço de 2 px na cor do fundo, então
 nunca encosta no botão, e o critério de 3:1 vale contra o fundo e o cartão.
+
+## Ajustes de versão na etapa 6.B (18/10/2026)
+
+Escolhas técnicas de compatibilidade, sem relação com a especificação nem com o plano mestre. Versões exatas em
+`frontend/package.json` e `package-lock.json`.
+
+| Ajuste | Motivo (verificado na instalação) |
+| --- | --- |
+| TypeScript fixado em 5.9 | A versão 7.x conflita com `openapi-typescript` (pede TypeScript 5.x) e com `typescript-eslint` (pede até 6.0) |
+| ESLint fixado em 9 | `eslint-plugin-jsx-a11y` não aceita ESLint 10. A regra de acessibilidade no lint tem prioridade |
+| Saltos maiores ignorados no Dependabot | Mesmos motivos, mais mudança de API nas bibliotecas principais; só correções e menores entram sozinhas |
+
+**Achado de contrato (L-06, em aberto):** os esquemas de **resposta** do OpenAPI não declaram `required` (só os de requisição
+declaram). O gerador por isso marca todo campo de resposta como opcional, e o front valida na fronteira antes de confiar
+(por exemplo, o login só vira sessão com `token`, `perfil` e `expiraEm`). Marcar os campos como obrigatórios no back end
+tornaria os tipos mais precisos, mas muda o contrato; a decisão é de Jefferson.
 
 ## Alternativas descartadas
 

@@ -50,9 +50,27 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 
 A suíte cresce a partir da Fase 4. O gate de cobertura (80% de linhas e 70% de branches) liga na primeira fatia de domínio (ADR-011).
 
+### Front end
+
+Pré-requisito: Node 22.12 ou mais novo. Tudo roda em `frontend/`.
+
+```bash
+cd frontend
+npm ci                  # instala as versões exatas do package-lock.json
+npm run gerar:api       # regenera src/api/schema.d.ts a partir de ../docs/api/openapi.json
+npm run lint            # ESLint, inclusive regras de acessibilidade (jsx-a11y)
+npm run typecheck       # tsc --noEmit
+npm test                # Vitest e Testing Library: componente, contraste dos tokens e regras do ADR-015
+npm run build           # tipos e build de produção
+npm run dev             # servidor de desenvolvimento; copie .env.example para .env e ajuste VITE_API_URL
+```
+
+O contrato da API é a fonte dos tipos: o CI regenera `schema.d.ts` e falha se o arquivo versionado divergir do contrato.
+Os testes de contraste leem `src/estilo/tokens.css` de verdade e exigem WCAG AA nos dois temas.
+
 ## Integração contínua
 
-O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda `./mvnw -B verify` em todo pull request e em push na `main`. Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem segredos no build, sem `continue-on-error` e sem `pull_request_target`. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact.
+O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda `./mvnw -B verify` em todo pull request e em push na `main`. Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem segredos no build, sem `continue-on-error` e sem `pull_request_target`. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact. O job `frontend` instala com `npm ci`, confere que os tipos da API batem com o contrato, e roda lint, tipos, testes e build.
 
 ### Execuções registradas
 
@@ -112,7 +130,7 @@ docs/
   perguntas-professor.md   mensagem consolidada ao professor
   performance/         rnf.md (requisito e modelo de carga) e resultado-01.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
-frontend/              React + Vite (vazio)
+frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil e navegação; as telas entram na etapa 6.C
 pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrapper
 compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
 src/main/java/br/senac/recursos/   MVC (ADR-014): controller, dto, service, repository, model, exception, config, security
