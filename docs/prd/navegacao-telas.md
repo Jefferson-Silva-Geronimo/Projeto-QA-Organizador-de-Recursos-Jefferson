@@ -158,7 +158,7 @@ Prova       · 22/10 08:00-10:00 · Sala 203 · SOLICITADA [Alterar][Cancelar]
 ### T05. Fila de aprovações
 
 - **Objetivo:** decidir reservas com recurso restrito. **Endpoints:** `GET /api/reservas/fila`, `POST /api/reservas/{id}/aprovacao`, `POST /api/reservas/{id}/rejeicao`.
-- **Dados:** título, período, recursos, identificador do solicitante. O nome do solicitante só existe em `GET /api/usuarios`, restrito ao Administrador (fato, `SegurancaConfig.java`); por isso a tela mostra o identificador (lacuna **L-04**).
+- **Dados:** título, período, recursos, identificador do solicitante. O nome do solicitante virá na própria resposta da fila, só o nome e nunca o e-mail (F6-06, lacuna **L-04**); hoje a resposta traz apenas `solicitanteId`.
 - **Ações:** aprovar (motivo opcional, suposição: o contrato aceita `DecisaoRequisicao`) e rejeitar (motivo obrigatório, RN-24).
 - **Estados:** carregando, vazio ("sem pendências"), erro, sucesso (o item sai da fila).
 - **Erros:** `MOTIVO_OBRIGATORIO`, `ACESSO_NEGADO` (dono tenta decidir, RN-16 e RN-33), `APROVACAO_APOS_INICIO`, `TRANSICAO_PROIBIDA`, `NAO_ENCONTRADO`.
@@ -204,7 +204,7 @@ Projetor 7 · patrimônio P-0007 · restrito [x] [Desativar]
 - **Fluxo em duas etapas (RN-22):** o primeiro envio pode voltar `BLOQUEIO_PENDE_CONFIRMACAO` com a lista de reservas afetadas em `itens`. A tela mostra a lista e, se o Administrador confirmar, reenvia com `reservasConfirmadas`. Se a lista mudou, volta `BLOQUEIO_LISTA_DESATUALIZADA` e o ciclo recomeça. Com reserva em uso, `BLOQUEIO_COM_RESERVA_EM_USO` recusa e não há opção de forçar.
 - **Dados:** recurso, período, motivo. O servidor devolve `reservasCanceladas`.
 - **Estados:** carregando, pendente de confirmação, erro, sucesso.
-- **Limitação:** não existe `GET /api/bloqueios`, então a tela não lista bloqueios antigos (lacuna **L-02**).
+- **Listagem:** `GET /api/bloqueios` será acrescentado ao back end (F6-06, lacuna **L-02**) para a tela listar e levantar bloqueios ativos. Até existir, o endpoint não consta do contrato.
 - **Erros:** `BLOQUEIO_PENDE_CONFIRMACAO`, `BLOQUEIO_LISTA_DESATUALIZADA`, `BLOQUEIO_COM_RESERVA_EM_USO`, `MOTIVO_OBRIGATORIO`, `PERIODO_INVALIDO`, `NAO_ENCONTRADO`.
 
 ```text
@@ -219,7 +219,7 @@ Reservas afetadas: #41, #44   [ Confirmar e cancelar ]  [ Voltar ]
 - **Objetivo:** consultar o que mudou. **Endpoints:** `GET /api/reservas/{id}/historico` (Responsável e Administrador) e `GET /api/auditoria` com `entidade` e `entidadeId` (só Administrador).
 - **Dados:** instante, ator (inclusive SISTEMA), ação, estado anterior e novo, motivo.
 - **Ações:** filtrar por reserva (Responsável) ou por entidade (Administrador). Não existe edição nem exclusão de evento (RF-10, critério 3).
-- **Estados:** carregando, vazio, erro, sucesso. O filtro por período do plano não tem parâmetro no contrato (lacuna **L-03**).
+- **Estados:** carregando, vazio, erro, sucesso. O filtro por período é feito no front sobre a lista inteira, porque a consulta não é paginada (F6-06, lacuna **L-03**).
 - **Erros:** `ACESSO_NEGADO` (Responsável na auditoria completa), `NAO_ENCONTRADO`.
 
 ### T10. Relatórios
@@ -302,17 +302,17 @@ A mensagem do texto genérico não repete nada do corpo da resposta.
 
 ## 7. Lacunas e riscos do contrato
 
-Nenhuma é decidida aqui. Cada uma precisa de escolha de Jefferson antes de afetar o código.
+Todas decididas por Jefferson em 18/10/2026 (F6-05 e F6-06).
 
 | ID | Lacuna | Impacto no front | Opções conformes ao plano |
 | --- | --- | --- | --- |
 | L-01 | O OpenAPI não descreve o corpo de erro (`code`, `itens`, `campos`) | O tipo do erro não vem do gerador | **Decidida (F6-05, 18/10/2026):** tipo mínimo escrito à mão num único módulo, coberto por teste que o compara com `TratadorDeErros`. O back end não muda |
-| L-02 | Não existe `GET /api/bloqueios` | A tela T08 cria e levanta bloqueio, mas não lista os antigos | (a) endpoint de listagem no back end, em TDD. (b) T08 só levanta o bloqueio recém-criado na mesma sessão |
-| L-03 | `GET /api/auditoria` filtra só por `entidade` e `entidadeId`, não por período | O plano cita filtro por período na T09 | (a) acrescentar o filtro no back end. (b) filtrar no front sobre o resultado recebido |
-| L-04 | O nome do solicitante só está em `GET /api/usuarios`, restrito ao Administrador | A fila de aprovações mostra o identificador | (a) manter o identificador. (b) acrescentar o nome à resposta da fila, em TDD, vendo B3 |
+| L-02 | Não existe `GET /api/bloqueios` | A tela T08 não lista bloqueios antigos | **Decidida (F6-06, 18/10/2026):** acrescentar o endpoint ao back end, em TDD, com `openapi.json` atualizado no mesmo PR |
+| L-03 | `GET /api/auditoria` filtra só por `entidade` e `entidadeId`, não por período | O plano cita filtro por período na T09 | **Decidida (F6-06, 18/10/2026):** filtro no front. Condição de Jefferson verificada: a consulta não é paginada (`JdbcAuditoriaRepository.java`, sem `limit`), então o filtro vale sobre o resultado inteiro. **Risco:** a resposta cresce sem limite (retenção D9 aberta); se a paginação entrar, o filtro precisa migrar para o servidor |
+| L-04 | O nome do solicitante só está em `GET /api/usuarios`, restrito ao Administrador | A fila de aprovações mostra o identificador | **Decidida (F6-06, 18/10/2026):** a fila passa a trazer só o nome do solicitante, nunca o e-mail, em TDD, com `openapi.json` atualizado no mesmo PR |
 | L-05 | Fuso do campus: o front assume `America/Sao_Paulo`, que é a decisão A6 da equipe; não há resposta do professor sobre isso | Datas exibidas no fuso errado se a decisão mudar | Variável de ambiente do front; muda sem alterar código |
 
-Mudanças de back end acima não são obrigatórias para a Fase 6: cada opção (b) funciona só com o front. O plano diz que o front não deve obrigar mudança no back end (seção 10).
+As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 
 ## 8. Rastreabilidade das telas
 

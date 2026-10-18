@@ -101,6 +101,7 @@ docs/
     requisitos-funcionais.md   RF-01 a RF-16 e matrizes RN-RF
     modelo-dados.dbml      modelo de dados, importável no dbdiagram.io
     fluxos-sequencia.md    14 diagramas de sequência
+    navegacao-telas.md     mapa de navegação, 11 telas e mapa dos códigos de erro do front end
   arquitetura.md       drivers, C4, painel, matriz e porta de saída da Fase 2
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
