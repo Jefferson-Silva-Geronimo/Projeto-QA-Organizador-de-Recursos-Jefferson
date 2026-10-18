@@ -1745,7 +1745,8 @@
           "ativo" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "ativo", "email", "id", "nome", "perfil" ]
       },
       "AlteracaoReservaRequisicao" : {
         "type" : "object",
@@ -1819,7 +1820,8 @@
               "format" : "int64"
             }
           }
-        }
+        },
+        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "recursoIds", "solicitanteId", "titulo" ]
       },
       "RestritoRequisicao" : {
         "type" : "object",
@@ -1888,7 +1890,8 @@
               "type" : "string"
             }
           }
-        }
+        },
+        "required" : [ "ativo", "id", "nome", "restrito", "tipo" ]
       },
       "NovoUsuarioRequisicao" : {
         "type" : "object",
@@ -2135,7 +2138,8 @@
               "format" : "int64"
             }
           }
-        }
+        },
+        "required" : [ "ativo", "fim", "id", "inicio", "motivo", "recursoId", "reservasCanceladas" ]
       },
       "LevantamentoRequisicao" : {
         "type" : "object",
@@ -2177,7 +2181,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "expiraEm", "perfil", "token" ]
       },
       "MovimentacaoResposta" : {
         "type" : "object",
@@ -2202,7 +2207,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "id", "materialId", "registradoEm", "registradoPorId", "tipo" ]
       },
       "EventoAuditoriaResposta" : {
         "type" : "object",
@@ -2253,7 +2259,8 @@
             "type" : "string",
             "format" : "uuid"
           }
-        }
+        },
+        "required" : [ "acao", "atorTipo", "entidade", "entidadeId", "id", "ocorridoEm" ]
       },
       "ReservaDaFilaResposta" : {
         "type" : "object",
@@ -2300,7 +2307,8 @@
               "format" : "int64"
             }
           }
-        }
+        },
+        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "recursoIds", "solicitanteId", "solicitanteNome", "titulo" ]
       },
       "ItemRelatorioResposta" : {
         "type" : "object",
@@ -2332,7 +2340,8 @@
             "type" : "integer",
             "format" : "int64"
           }
-        }
+        },
+        "required" : [ "conflitosEvitados", "horasAlocadas", "nome", "recursoId", "solicitantesDistintos", "tipo" ]
       },
       "RelatorioResposta" : {
         "type" : "object",
@@ -2355,7 +2364,8 @@
             "type" : "integer",
             "format" : "int64"
           }
-        }
+        },
+        "required" : [ "itens", "pagina", "tamanho", "total" ]
       },
       "IntervaloResposta" : {
         "type" : "object",
@@ -2368,7 +2378,8 @@
             "type" : "string",
             "format" : "date-time"
           }
-        }
+        },
+        "required" : [ "fim", "inicio" ]
       },
       "UsuarioAtualResposta" : {
         "type" : "object",
@@ -2384,7 +2395,8 @@
             "type" : "string",
             "enum" : [ "SOLICITANTE", "RESPONSAVEL", "ADMINISTRADOR" ]
           }
-        }
+        },
+        "required" : [ "email", "id", "perfil" ]
       }
     },
     "securitySchemes" : {
