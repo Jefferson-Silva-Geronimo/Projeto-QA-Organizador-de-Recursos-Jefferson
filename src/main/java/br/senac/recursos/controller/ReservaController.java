@@ -4,6 +4,7 @@ import br.senac.recursos.dto.AlteracaoReservaRequisicao;
 import br.senac.recursos.dto.CancelamentoRequisicao;
 import br.senac.recursos.dto.DecisaoRequisicao;
 import br.senac.recursos.dto.NovaReservaRequisicao;
+import br.senac.recursos.dto.ReservaDaFilaResposta;
 import br.senac.recursos.dto.ReservaResposta;
 import br.senac.recursos.model.AlteracaoDeReserva;
 import br.senac.recursos.model.NovaReserva;
@@ -57,8 +58,8 @@ class ReservaController {
 
     @GetMapping("/fila")
     @PreAuthorize("hasRole('RESPONSAVEL')")
-    List<ReservaResposta> fila() {
-        return aprovacoes.fila().stream().map(ReservaResposta::de).toList();
+    List<ReservaDaFilaResposta> fila() {
+        return aprovacoes.fila().stream().map(ReservaDaFilaResposta::de).toList();
     }
 
     @PostMapping

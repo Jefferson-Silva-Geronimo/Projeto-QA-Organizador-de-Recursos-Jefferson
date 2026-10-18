@@ -4,13 +4,16 @@ import br.senac.recursos.model.EstadoReserva;
 import br.senac.recursos.model.OcupacaoConflitante;
 import br.senac.recursos.model.Periodo;
 import br.senac.recursos.model.Reserva;
+import br.senac.recursos.model.ReservaDaFila;
 import br.senac.recursos.repository.ReservaRepository;
 import java.sql.Array;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -135,9 +138,17 @@ class JdbcReservaRepository implements ReservaRepository {
     }
 
     @Override
-    public List<Reserva> listarFila() {
-        return jdbc.sql(SELECT + " where r.estado = 'SOLICITADA' and r.exige_aprovacao order by r.inicio, r.id")
+    public List<ReservaDaFila> listarFila() {
+        List<Reserva> fila = jdbc.sql(SELECT + " where r.estado = 'SOLICITADA' and r.exige_aprovacao order by r.inicio, r.id")
                 .query(MAPEADOR).list();
+        if (fila.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, String> nomes = new HashMap<>();
+        jdbc.sql("select id, nome from usuarios where id in (:ids)")
+                .param("ids", fila.stream().map(Reserva::solicitanteId).distinct().toList())
+                .query((rs, n) -> nomes.put(rs.getLong("id"), rs.getString("nome"))).list();
+        return fila.stream().map(r -> new ReservaDaFila(r, nomes.get(r.solicitanteId()))).toList();
     }
 
     @Override
