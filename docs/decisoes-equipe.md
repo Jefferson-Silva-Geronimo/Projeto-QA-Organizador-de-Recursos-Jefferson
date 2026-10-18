@@ -251,3 +251,13 @@ documentação**: nenhum comportamento HTTP muda.
 
 Alternativas descartadas: **A** (validar no front, sem mexer no back end: duplicaria o contrato à mão, contra a F6-01) e
 **C** (marcar só o fluxo crítico: contrato inconsistente).
+
+### F6-11 a F6-13. Padrão das telas, campo de data e Dependabot (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026**, depois de ver as capturas do protótipo da Busca e da Nova reserva.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-11 | **Padrão visual e de interação aprovado**: cartões, formulário em blocos com `fieldset` e legenda, avisos com ícone e texto, recusas pela tabela de erros com o foco na mensagem, dados preservados em toda recusa e confirmação com resumo derivada do estado do servidor. As outras nove telas repetem o padrão, **uma tela por pull request**, na ordem do mapa de telas. Cada tela repete: TDD estrito, verificação em navegador real, axe nos dois temas e tamanhos, navegação só por teclado e ausência de rolagem horizontal | Pedir ajustes ao protótipo |
+| F6-12 | **Campo de data e hora nativo do navegador mantido.** Motivo: as 6 paradas de Tab por campo (5 partes e o ícone do calendário) são o comportamento padrão do navegador e os leitores de tela o conhecem; dois campos separados criam mais código e mais risco de erro de fuso (ADR-005). **Limitações declaradas:** as 6 paradas de Tab e o anel de foco do ícone do calendário, que é o do navegador (preto no tema claro e branco no escuro), não a cor do sistema | Campo de data e campo de hora separados |
+| F6-13 | **PR #24 do Dependabot (`jsdom` 29 para 30) fechado sem mesclar.** O `jsdom` entra na lista de saltos maiores ignorados em `.github/dependabot.yml`; o salto será avaliado em PR nosso, com a suíte completa do front. O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele e o Quality Gate nunca é cumprido por eles | Mesclar o PR do Dependabot; deixá-lo aberto |

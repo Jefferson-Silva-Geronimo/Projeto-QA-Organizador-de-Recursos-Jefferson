@@ -1,11 +1,11 @@
-# Análise de causa raiz: BUG-001 a BUG-009
+# Análise de causa raiz: BUG-001 a BUG-014
 
 Complementa o índice de [README.md](README.md). Cada defeito traz o que aconteceu, a causa raiz, como corrigir, o
 teste de regressão e o commit. As fontes são as mensagens e os arquivos dos commits de correção; onde a causa é uma
 inferência, ela está marcada como **inferência**. Nenhum dado de pessoa, token ou segredo consta aqui.
 
 BUG-001 a BUG-005 nasceram em documentação e foram achados em revisão; BUG-006, na casca do projeto, achado na CI;
-BUG-007 e BUG-008, em código, achados por teste; BUG-009, em código, achado pela avaliação arquitetural e confirmado por teste. Os seis primeiros foram achados e corrigidos antes de existir o
+BUG-007 e BUG-008, em código, achados por teste; BUG-009, em código, achado pela avaliação arquitetural e confirmado por teste; BUG-010 a BUG-014, no front, achados pelo roteiro em navegador real. Os seis primeiros foram achados e corrigidos antes de existir o
 processo de issues; a abertura retroativa de issues para BUG-001 a BUG-006 depende de aceite do usuário
 (ver [decisoes-equipe.md](../decisoes-equipe.md)).
 
@@ -127,3 +127,43 @@ processo de issues; a abertura retroativa de issues para BUG-001 a BUG-006 depen
   `0a80fc7` (esperado 409, obtido 500). O segundo (log sem dado pessoal) nasceu verde porque o log foi implementado
   junto com a correção.
 - **Commit:** `61ce37d`.
+
+## BUG-010: Foco do teclado se perde ao trocar de tela
+
+- **O que aconteceu:** Depois de ativar o link "Reservar" da Busca só com o teclado, o foco ficava no corpo da página e o Tab seguinte recomeçava do topo.
+- **Causa raiz:** Numa aplicação de página única o navegador não move o foco ao trocar de rota, e a estrutura da aplicação não tratava isso. **Inferência:** o desenho da estrutura previa o link "Pular para o conteúdo", mas não a troca de tela.
+- **Como corrigir:** A estrutura move o foco para o `main` quando o caminho muda. Não move na abertura da página nem quando só os filtros do endereço mudam.
+- **Teste de regressão:** `Rotas.test.tsx`: "ao trocar de tela pelo menu o foco vai para o conteúdo" (vermelho), mais dois testes que nasceram verdes: o foco não é roubado na abertura nem ao mudar só os filtros.
+- **Commits:** `test(red)` `0f0c8c7` e `feat(green)` `8ad762c`.
+
+## BUG-011: Todas as telas tinham o mesmo título de página
+
+- **O que aconteceu:** O título da aba era sempre "Organização de Recursos", sem indicar a tela.
+- **Causa raiz:** O título foi definido uma vez no `index.html` e a troca de rota não o atualizava.
+- **Como corrigir:** O conjunto de rotas atualiza o título para "<tela> · Organização de Recursos" a cada caminho.
+- **Teste de regressão:** `Rotas.test.tsx`: 5 casos de título (Buscar, Nova reserva, Aprovações, página não encontrada e Entrar), vermelhos antes da correção.
+- **Commits:** `test(red)` `0f0c8c7` e `feat(green)` `8ad762c`.
+
+## BUG-012: Ícone do calendário dos campos de data sem foco visível
+
+- **O que aconteceu:** Cada campo de data e hora tem 6 paradas de Tab; na sexta, o ícone do calendário, não aparecia nenhum anel de foco.
+- **Causa raiz:** O ícone é um botão interno do navegador dentro do campo; a regra de foco do projeto só cobria o campo.
+- **Como corrigir:** Regra própria para o ícone, com área e raio. **Observado no Chromium:** o anel desenhado é o do navegador (preto no tema claro, branco no escuro) e ignora a cor do sistema; é visível nos dois temas.
+- **Teste de regressão:** `foco-do-calendario.test.ts` confere que a regra existe e usa a cor de foco do tema. O jsdom não calcula o pseudo-elemento interno, então a prova visual é o roteiro em navegador real, com captura nos dois temas.
+- **Commits:** `test(red)` `f05435b` e `feat(green)` `fbc40e3`.
+
+## BUG-013: Confirmação da reserva mostrava "Recurso 2" no lugar do nome da sala
+
+- **O que aconteceu:** Depois de reservar a Sala 203, a confirmação listava "Recurso 2" em vez do nome.
+- **Causa raiz:** Os nomes eram procurados na lista de recursos livres, e essa lista é refeita depois da reserva, quando o recurso reservado já não está livre. **Inferência:** os testes usavam uma lista fixa, que não reproduz o refazer da consulta.
+- **Como corrigir:** Os recursos escolhidos são guardados no instante do envio e a confirmação usa essa cópia.
+- **Teste de regressão:** `PaginaDeNovaReserva.envio.test.tsx`: "a confirmação mostra os nomes dos recursos mesmo que o servidor já não os liste como livres", com a segunda consulta sem a sala.
+- **Commits:** `test(red)` `59ce6f2` e `feat(green)` `22ef543`.
+
+## BUG-014: Sala já ocupada continuava listada como livre depois de um conflito
+
+- **O que aconteceu:** Depois da recusa por CONFLITO_DE_ALOCACAO, a sala continuava na lista de recursos livres e marcada.
+- **Causa raiz:** A consulta de recursos livres só era refeita quando a pessoa mudava o período.
+- **Como corrigir:** Recusas que mudam o que está livre (conflito, manutenção e recurso inativo) refazem a lista de recursos.
+- **Teste de regressão:** `PaginaDeNovaReserva.erros.test.tsx`: "refaz a lista de recursos livres e avisa que o recurso escolhido deixou de estar livre" (vermelho); "outras recusas não refazem a lista" nasceu verde.
+- **Commits:** `test(red)` `afd37c4` e `feat(green)` `67d3150`.
