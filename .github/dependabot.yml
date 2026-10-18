@@ -51,6 +51,10 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@eslint/js"
         update-types: ["version-update:semver-major"]
+      # jsdom (ambiente dos testes de componente): o salto maior só entra depois de avaliado em PR nosso, com a suíte
+      # completa do front (F6-13). O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele.
+      - dependency-name: "jsdom"
+        update-types: ["version-update:semver-major"]
       # Gerador e cliente da API (F6-01): em 0.x, uma versão menor pode mudar o tipo gerado. Só correções entram sozinhas.
       - dependency-name: "openapi-typescript"
         update-types: ["version-update:semver-major"]

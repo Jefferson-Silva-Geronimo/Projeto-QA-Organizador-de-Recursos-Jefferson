@@ -1,0 +1,67 @@
+.campo {
+  display: grid;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.rotulo {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.obrigatorio {
+  font-weight: 400;
+  color: var(--cor-texto-suave);
+}
+
+.ajuda {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+.erro {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-erro-texto);
+}
+
+/* Estilo dos controles dentro do campo: borda de 2 px com o token de borda de campo (3:1 verificado nos testes). */
+.campo :is(input, select, textarea) {
+  width: 100%;
+  min-height: var(--altura-minima-toque);
+  padding: var(--espaco-2) var(--espaco-3);
+  font: inherit;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 2px solid var(--cor-borda-campo);
+  border-radius: var(--raio-medio);
+}
+
+.campo textarea {
+  min-height: 96px;
+  resize: vertical;
+}
+
+.campo :is(input, select, textarea):focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.campo :is(input, select, textarea)[aria-invalid='true'] {
+  border-color: var(--cor-erro-borda);
+}
+
+/* Ícone do calendário dentro dos campos de data e hora: parada própria de Tab, com anel de foco visível. */
+.campo input::-webkit-calendar-picker-indicator {
+  padding: 4px;
+  border-radius: var(--raio-pequeno);
+  cursor: pointer;
+}
+
+.campo input::-webkit-calendar-picker-indicator:focus,
+.campo input::-webkit-calendar-picker-indicator:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}

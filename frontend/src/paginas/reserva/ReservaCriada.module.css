@@ -1,0 +1,31 @@
+.pagina {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.resumo {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: var(--espaco-2) 0 0;
+}
+
+.resumo dt {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.resumo dd {
+  margin: 0;
+}
+
+.linha {
+  margin: var(--espaco-3) 0 0;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}

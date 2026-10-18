@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -88,6 +88,78 @@ describe('Rotas', () => {
     expect(screen.getByRole('group', { name: 'Tema' })).toBeInTheDocument();
   });
 
+  it('a rota Buscar mostra a tela de busca de verdade, com os filtros, e não o marcador de lugar', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/buscar');
+
+    expect(screen.getByRole('search', { name: 'Filtros da busca' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('a rota Nova reserva mostra o formulário de verdade, e não o marcador de lugar', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/reservas/nova');
+
+    expect(screen.getByRole('button', { name: 'Reservar' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/aprovacoes');
+
+    expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
+  });
+
+  it('ao trocar de tela pelo menu o foco vai para o conteúdo, para o teclado não ficar perdido', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/buscar');
+
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Menu principal' })).getByRole('link', { name: 'Reservas' }));
+
+    await waitFor(() => expect(document.getElementById('conteudo')).toHaveFocus());
+  });
+
+  it('ao abrir a página o foco não é roubado pelo conteúdo', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/buscar');
+
+    expect(document.getElementById('conteudo')).not.toHaveFocus();
+  });
+
+  it('mudar só o que está no endereço da mesma tela (os filtros) não move o foco', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/buscar');
+    await userEvent.type(await screen.findByLabelText('Local'), 'Bloco A');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    expect(document.getElementById('conteudo')).not.toHaveFocus();
+  });
+
+  it.each([
+    ['/buscar', 'Buscar'],
+    ['/reservas/nova', 'Nova reserva'],
+    ['/aprovacoes', 'Aprovações'],
+    ['/nao-existe', 'Página não encontrada'],
+  ])('a página %s tem o título "%s · Organização de Recursos"', (rota, titulo) => {
+    entrarComo('RESPONSAVEL');
+
+    montar(rota);
+
+    expect(document.title).toBe(`${titulo} · Organização de Recursos`);
+  });
+
+  it('a tela de entrada também tem título', () => {
+    montar('/entrar');
+
+    expect(document.title).toBe('Entrar · Organização de Recursos');
+  });
+
   it('a tela de entrada não mostra o menu nem o botão Sair', () => {
     montar('/entrar');
 
@@ -103,7 +175,8 @@ describe('Rotas', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Sair' }));
 
     await waitFor(() => expect(screen.getByRole('heading', { level: 1, name: 'Entrar' })).toBeInTheDocument());
-    expect((falso.mock.calls[0]?.[0] as Request).url).toBe('http://api.teste/api/auth/logout');
+    const enderecos = falso.mock.calls.map(([entrada]) => (entrada as Request).url);
+    expect(enderecos).toContain('http://api.teste/api/auth/logout');
     expect(lerSessao()).toBeNull();
   });
 });

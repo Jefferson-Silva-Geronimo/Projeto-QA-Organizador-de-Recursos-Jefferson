@@ -36,3 +36,6 @@ target/
 # Carga (Fase 5): dados gerados na máquina local e relatório HTML do JMeter
 perf/alvos.csv
 perf/relatorio-*/
+
+# Roteiro de navegador real: credenciais descartáveis e dados semeados (nunca versionar)
+docs/testes/roteiro-navegador-real/local/

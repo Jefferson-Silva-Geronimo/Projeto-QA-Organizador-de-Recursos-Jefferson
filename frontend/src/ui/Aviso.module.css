@@ -1,0 +1,74 @@
+.aviso {
+  display: flex;
+  gap: var(--espaco-3);
+  align-items: flex-start;
+  padding: var(--espaco-3) var(--espaco-4);
+  border: 1px solid transparent;
+  border-left-width: 5px;
+  border-radius: var(--raio-medio);
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.aviso:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.glifo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  font-weight: 800;
+  font-size: 0.85rem;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+}
+
+.texto {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.titulo {
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Rótulo em texto só para leitor de tela. */
+.somenteLeitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.erro {
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+  border-color: var(--cor-erro-borda);
+}
+
+.sucesso {
+  background: var(--cor-sucesso-fundo);
+  color: var(--cor-sucesso-texto);
+  border-color: var(--cor-sucesso-texto);
+}
+
+.atencao {
+  background: var(--cor-aviso-fundo);
+  color: var(--cor-aviso-texto);
+  border-color: var(--cor-aviso-texto);
+}
+
+.info {
+  background: var(--cor-info-fundo);
+  color: var(--cor-info-texto);
+  border-color: var(--cor-info-texto);
+}

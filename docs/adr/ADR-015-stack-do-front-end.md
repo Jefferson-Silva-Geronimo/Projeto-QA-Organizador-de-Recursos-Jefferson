@@ -22,6 +22,8 @@ O ADR-010 fixou React + Vite como SPA que consome a API. O plano mestre (seção
 | 5 | **React Router** nas rotas e **TanStack Query** no estado do servidor | Escolha de Jefferson |
 | 6 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes; *mobile-first*, validado em 360 px e 1280 px, com rótulo, foco e contraste acessíveis | Plano 10.3 (5); escolha de Jefferson |
 | 7 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset | Plano 10.3 (6); ADR-005 |
+| 11 | Padrão visual e de interação aprovado a partir do protótipo da Busca e da Nova reserva; uma tela por PR, cada uma com TDD, navegador real, axe, teclado e sem rolagem horizontal | F6-11 |
+| 12 | Campo de data e hora nativo do navegador, com as limitações declaradas (6 paradas de Tab; anel do ícone do calendário é o do navegador) | F6-12 |
 | 10 | Direção visual moderna com a paleta A (violeta e rosa), valores e contraste na seção "Paleta escolhida" | F6-07; escolha de Jefferson |
 | 8 | Navegação: menu lateral no desktop e barra inferior no celular, com no máximo 4 itens principais e "Mais"; rótulo de texto em todo item; item ativo destacado por mais que cor | F6-08; escolha de Jefferson |
 | 9 | Temas claro e escuro por tokens semânticos, `prefers-color-scheme` e botão manual; todo par de cores com no mínimo WCAG AA nos dois temas. O tema escuro não é requisito de acessibilidade e é o primeiro item a cortar, com aviso prévio a Jefferson | F6-09; escolha de Jefferson |
@@ -83,6 +85,7 @@ Escolhas técnicas de compatibilidade, sem relação com a especificação nem c
 | --- | --- |
 | TypeScript fixado em 5.9 | A versão 7.x conflita com `openapi-typescript` (pede TypeScript 5.x) e com `typescript-eslint` (pede até 6.0) |
 | ESLint fixado em 9 | `eslint-plugin-jsx-a11y` não aceita ESLint 10. A regra de acessibilidade no lint tem prioridade |
+| Ferramentas de acessibilidade só para desenvolvimento: `vitest-axe`, `axe-core` e `@axe-core/playwright` (versões exatas) | Auditoria axe nos testes de componente e no navegador real; sem efeito no pacote de produção |
 | Saltos maiores ignorados no Dependabot | Mesmos motivos, mais mudança de API nas bibliotecas principais; só correções e menores entram sozinhas |
 
 **Achado de contrato (L-06), resolvido pela F6-10 em 18/10/2026:** os esquemas de **resposta** do OpenAPI não declaravam

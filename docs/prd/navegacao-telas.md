@@ -322,3 +322,20 @@ As colunas "Opções" listam o que foi considerado; a decisão está marcada em 
 | T01 a T11 | ver seção 3 | definido na fatia 6.C de cada tela | fluxos do Prompt 6.D |
 
 Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md) a cada tela, conforme o Prompt 6.C.
+
+## 9. Estado de construção das telas (etapa 6.C)
+
+| Tela | Estado | Observação |
+| --- | --- | --- |
+| T02 Busca de disponibilidade | Padrão **aprovado** (F6-11), pronta | Verificado em navegador real contra a API (ver RTM, execução E-6) |
+| T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação pronta | A alteração de reserva entra com a tela T04 |
+| T01 e T04 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
+
+Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens
+com ícone, rótulo em texto e papel ARIA correto; recusas pela tabela de erros da seção 5, com o foco levado à mensagem;
+dados digitados preservados em toda recusa; confirmação derivada do estado devolvido pelo servidor; foco no conteúdo ao
+trocar de tela; título por tela; datas no fuso do campus.
+
+Limitações conhecidas, aceitas em F6-12: o campo de data e hora nativo do navegador tem 6 paradas de Tab por campo (5 partes
+e o ícone do calendário), e o anel de foco do ícone é o do navegador, não a cor do sistema; o axe não consegue decidir o
+contraste do glifo decorativo dentro do aviso.

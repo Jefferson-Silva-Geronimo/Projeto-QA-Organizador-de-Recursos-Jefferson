@@ -1,0 +1,7 @@
+.linha {
+  margin: 0;
+}
+
+.acoes {
+  margin-top: var(--espaco-3);
+}
