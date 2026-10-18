@@ -14,6 +14,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 **Execução E-1:** `./mvnw -B clean verify` local em 17/10/2026, com PostgreSQL 17 fixado por digest: 468 testes (136 de unidade e arquitetura, 332 de integração e BDD), 0 falhas, gate do JaCoCo cumprido (96,7% de linhas, 84,6% de branches). **Execução E-2 (CI):** run `39055557492` do PR 2, check `test` verde, com os commits desta sessão.
 
+**Execução E-3 (Fase 6, 18/10/2026):** `./mvnw -B clean verify` local depois das mudanças do back end para o front end (F6-06): 515 testes (154 de unidade e arquitetura, 361 de integração e BDD), 0 falhas, gate do JaCoCo cumprido (96,8% de linhas, 85,0% de branches). Uma execução anterior, idêntica no código, teve 1 falha em `NotificacaoApiIT.int01ECt103` (esperava 2 envios); a classe passou isolada e a execução seguinte passou inteira. Causa não determinada, tratada como ocorrência intermitente a vigiar, sem alteração de teste.
+
 
 ## Matriz
 

@@ -195,3 +195,16 @@ Origem: lacunas L-02 a L-04 de [navegacao-telas.md](prd/navegacao-telas.md).
 
 CT-115 e CT-106 comparam o contrato com `docs/api/openapi.json` e vão falhar de propósito quando o contrato mudar. O arquivo é
 atualizado de forma consciente, sem enfraquecer os testes.
+
+### F6-08 e F6-09. Navegação e tema do front end (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026.** A decisão visual F6-07 (direção moderna, com cor forte nos destaques) fica
+registrada junto com a paleta, depois que Jefferson escolher entre as paletas validadas em contraste.
+
+| ID | Decisão | Condições impostas por Jefferson |
+| --- | --- | --- |
+| F6-08 | **Menu lateral no desktop e barra inferior no celular** | No celular, no máximo 4 itens principais do perfil e um quinto item "Mais" para as demais telas; no desktop, todas as telas do perfil. Todo item com rótulo de texto junto do ícone, nunca só ícone. Item ativo destacado por mais que cor (indicador ou peso da fonte), com foco visível e navegação completa por teclado. Rotas por perfil seguem só como conveniência; o back end decide o acesso |
+| F6-09 | **Tema claro e escuro** | Tokens semânticos (fundo, texto, destaque, erro, foco, borda) que mudam por tema, sem cor fixa nos componentes. Segue `prefers-color-scheme` e tem botão manual; a escolha manual fica só no navegador, sem dado pessoal. Todo par de cores dos dois temas com no mínimo WCAG AA, validado antes do protótipo. axe e capturas do Playwright nos dois temas, em 360 px e 1280 px. O tema claro é a referência; o escuro é o primeiro item a cortar se faltar tempo, e **a decisão de cortar é de Jefferson**: avisá-lo antes |
+
+**Motivo do tema escuro, nas palavras da decisão:** reduz o desconforto em ambiente escuro e combina com o público jovem e com
+a direção visual moderna. **Não é requisito de acessibilidade do WCAG** e não é apresentado como conformidade.
