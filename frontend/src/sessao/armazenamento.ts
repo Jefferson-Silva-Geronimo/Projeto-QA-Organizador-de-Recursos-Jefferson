@@ -9,6 +9,9 @@ export interface Sessao {
 }
 
 const CHAVE = 'sessao';
+
+/** Só é usada quando o navegador recusa o sessionStorage (modo privado, dados bloqueados). */
+let emMemoria: string | null = null;
 const PERFIS: readonly string[] = ['SOLICITANTE', 'RESPONSAVEL', 'ADMINISTRADOR'] satisfies Perfil[];
 
 /**
@@ -16,12 +19,18 @@ const PERFIS: readonly string[] = ['SOLICITANTE', 'RESPONSAVEL', 'ADMINISTRADOR'
  * aqui ele só sobrevive ao recarregar a página, nunca à aba.
  */
 export function guardarSessao(sessao: Sessao): void {
-  window.sessionStorage.setItem(CHAVE, JSON.stringify(sessao));
+  const bruto = JSON.stringify(sessao);
+  try {
+    window.sessionStorage.setItem(CHAVE, bruto);
+    emMemoria = null;
+  } catch {
+    emMemoria = bruto;
+  }
 }
 
 /** O instante de expiração é só conveniência de interface: quem decide a validade é o servidor. */
 export function lerSessao(agora: Date = new Date()): Sessao | null {
-  const bruto = window.sessionStorage.getItem(CHAVE);
+  const bruto = lerBruto();
   if (bruto === null) {
     return null;
   }
@@ -34,7 +43,20 @@ export function lerSessao(agora: Date = new Date()): Sessao | null {
 }
 
 export function limparSessao(): void {
-  window.sessionStorage.removeItem(CHAVE);
+  emMemoria = null;
+  try {
+    window.sessionStorage.removeItem(CHAVE);
+  } catch {
+    // sem armazenamento, não há o que apagar além da memória
+  }
+}
+
+function lerBruto(): string | null {
+  try {
+    return window.sessionStorage.getItem(CHAVE) ?? emMemoria;
+  } catch {
+    return emMemoria;
+  }
 }
 
 function interpretar(bruto: string): Sessao | null {
