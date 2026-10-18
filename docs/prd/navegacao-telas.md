@@ -306,7 +306,7 @@ Nenhuma é decidida aqui. Cada uma precisa de escolha de Jefferson antes de afet
 
 | ID | Lacuna | Impacto no front | Opções conformes ao plano |
 | --- | --- | --- | --- |
-| L-01 | O OpenAPI não descreve o corpo de erro (`code`, `itens`, `campos`) | O tipo do erro seria escrito à mão, o que a decisão F6-01 evita | (a) acrescentar o esquema do Problem Details ao back end, em TDD, com `openapi.json` e CT-115 atualizados juntos. (b) declarar à mão um tipo mínimo num único módulo, coberto por teste que compara com `TratadorDeErros` |
+| L-01 | O OpenAPI não descreve o corpo de erro (`code`, `itens`, `campos`) | O tipo do erro não vem do gerador | **Decidida (F6-05, 18/10/2026):** tipo mínimo escrito à mão num único módulo, coberto por teste que o compara com `TratadorDeErros`. O back end não muda |
 | L-02 | Não existe `GET /api/bloqueios` | A tela T08 cria e levanta bloqueio, mas não lista os antigos | (a) endpoint de listagem no back end, em TDD. (b) T08 só levanta o bloqueio recém-criado na mesma sessão |
 | L-03 | `GET /api/auditoria` filtra só por `entidade` e `entidadeId`, não por período | O plano cita filtro por período na T09 | (a) acrescentar o filtro no back end. (b) filtrar no front sobre o resultado recebido |
 | L-04 | O nome do solicitante só está em `GET /api/usuarios`, restrito ao Administrador | A fila de aprovações mostra o identificador | (a) manter o identificador. (b) acrescentar o nome à resposta da fila, em TDD, vendo B3 |

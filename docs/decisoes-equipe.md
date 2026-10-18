@@ -177,6 +177,7 @@ professor, e o relatório final declara RNF-08b como não atendido nesta máquin
 | F6-02 | Token opaco em **`sessionStorage`**, com mitigações registradas no ADR-015 (módulo único, limpeza em logout e 401, sem HTML injetado, CSP). Risco residual de XSS aceito | Só memória; `localStorage` |
 | F6-03 | **React Router + TanStack Query** | React Router com `useState`/`useEffect` |
 | F6-04 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes | Tailwind; MUI |
+| F6-05 | Corpo de erro (`code`, `itens`, `campos`) tipado **só no front**, em um módulo, com teste contra o `TratadorDeErros` (L-01 de [navegacao-telas.md](prd/navegacao-telas.md)) | Acrescentar o esquema ao back end |
 
 As decisões 1, 2, 3, 5 e 6 do plano (cliente gerado, mapa de erros, front sem regra de negócio, *mobile-first*, datas com
 offset) não tinham alternativa e entram direto no ADR-015.
