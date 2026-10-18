@@ -29,6 +29,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Rejeitar reserva | `POST /api/reservas/{id}/rejeicao` | 403 | permitido | 403 | 
 | Fila de aprovações | `GET /api/reservas/fila` | 403 | permitido | 403 | 
 | Criar bloqueio | `POST /api/bloqueios` | 403 | 403 | permitido | 
+| Listar bloqueios | `GET /api/bloqueios` | 403 | 403 | permitido | 
 | Levantar bloqueio | `POST /api/bloqueios/{id}/levantamento` | 403 | 403 | permitido | 
 | Iniciar uso | `POST /api/reservas/{id}/inicio` | 403 | permitido | 403 | 
 | Retirar material | `POST /api/reservas/{id}/retiradas` | 403 | permitido | 403 | 
