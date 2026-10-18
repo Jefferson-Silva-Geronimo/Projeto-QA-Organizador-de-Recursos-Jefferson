@@ -90,8 +90,10 @@ jobs:
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
-      - name: Instalar dependências (npm ci)
-        run: npm ci
+      # --ignore-scripts: scripts de instalação de pacotes não rodam na CI (SonarCloud S6505, cadeia de suprimento).
+      # Verificado: lint, tipos, testes e build passam sem eles.
+      - name: Instalar dependências (npm ci, sem scripts de instalação)
+        run: npm ci --ignore-scripts
 
       - name: Tipos da API iguais ao contrato publicado (F6-01)
         run: |
