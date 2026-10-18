@@ -22,6 +22,7 @@ O ADR-010 fixou React + Vite como SPA que consome a API. O plano mestre (seção
 | 5 | **React Router** nas rotas e **TanStack Query** no estado do servidor | Escolha de Jefferson |
 | 6 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes; *mobile-first*, validado em 360 px e 1280 px, com rótulo, foco e contraste acessíveis | Plano 10.3 (5); escolha de Jefferson |
 | 7 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset | Plano 10.3 (6); ADR-005 |
+| 10 | Direção visual moderna com a paleta A (violeta e rosa), valores e contraste na seção "Paleta escolhida" | F6-07; escolha de Jefferson |
 | 8 | Navegação: menu lateral no desktop e barra inferior no celular, com no máximo 4 itens principais e "Mais"; rótulo de texto em todo item; item ativo destacado por mais que cor | F6-08; escolha de Jefferson |
 | 9 | Temas claro e escuro por tokens semânticos, `prefers-color-scheme` e botão manual; todo par de cores com no mínimo WCAG AA nos dois temas. O tema escuro não é requisito de acessibilidade e é o primeiro item a cortar, com aviso prévio a Jefferson | F6-09; escolha de Jefferson |
 
@@ -36,6 +37,42 @@ O `sessionStorage` é legível por qualquer script da página, então a seguran�
 - o token é opaco e revogável no servidor, então um vazamento tem efeito limitado ao tempo até a revogação.
 
 **Risco residual aceito:** um XSS que passe por essas barreiras lê o token da aba. Mais seguro seria guardá-lo só em memória, ao custo de novo login a cada recarga; Jefferson preferiu o equilíbrio com `sessionStorage`.
+
+## Paleta escolhida (F6-07)
+
+Jefferson escolheu a **paleta A, violeta e rosa**, em 18/10/2026, entre três opções calculadas por script. Direção visual:
+moderna, com cor forte só nos pontos de destaque (ações principais, estados, navegação ativa) e base neutra para leitura,
+cantos arredondados e sombras suaves sem exagero. Tabelas compactas no desktop e cartões no celular nas telas densas
+(Fila de aprovações, Relatórios, Auditoria e Catálogo). Nenhum nome, logotipo ou paleta de instituição real em tela, texto,
+código ou documentação; o sistema aparece só como "Organização de Recursos".
+
+| Token | Uso | Tema claro | Tema escuro |
+| --- | --- | --- | --- |
+| `fundo` | Fundo | `#F6F5FB` | `#14122A` |
+| `superficie` | Superfície (cartão, tabela) | `#FFFFFF` | `#1E1B3A` |
+| `texto` | Texto | `#1C1B2E` | `#F1EFFF` |
+| `texto-suave` | Texto secundário | `#55536E` | `#B7B3D6` |
+| `destaque` | Destaque (botão, indicador ativo) | `#6D28D9` | `#A78BFA` |
+| `sobre-destaque` | Texto sobre o destaque | `#FFFFFF` | `#14122A` |
+| `destaque-texto` | Destaque em texto (link, ação) | `#5B21B6` | `#C4B5FD` |
+| `foco` | Anel de foco | `#C2185B` | `#F9A8D4` |
+| `borda-campo` | Borda de campo | `#7B7894` | `#8E89B8` |
+| `erro-texto` | Erro, texto | `#9F1239` | `#FECDD3` |
+| `erro-fundo` | Erro, fundo | `#FFE4EA` | `#4C1425` |
+| `erro-borda` | Erro, borda | `#C81E4B` | `#FB7185` |
+| `sucesso-texto` | Sucesso, texto | `#14532D` | `#BBF7D0` |
+| `sucesso-fundo` | Sucesso, fundo | `#DCFCE7` | `#12351F` |
+| `aviso-texto` | Aviso, texto | `#78350F` | `#FDE68A` |
+| `aviso-fundo` | Aviso, fundo | `#FEF3C7` | `#3B2A0A` |
+| `info-texto` | Informação, texto | `#1E3A8A` | `#C7D2FE` |
+| `info-fundo` | Informação, fundo | `#E0E7FF` | `#1E2A5A` |
+
+**Verificação:** 34 pares calculados por script (17 por tema), 0 falhas. Pares de texto, mínimo de 4,5:1: o menor é 6,69:1
+no tema claro e 6,71:1 no escuro. Pares de componente e foco, mínimo de 3:1: o menor é 4,24:1 no claro (borda de campo) e
+5,04:1 no escuro. Os valores acima são o ponto de partida; qualquer mudança de cor exige novo cálculo. A CI do front end repete a
+verificação sobre os tokens reais: `frontend/src/estilo/tokens.test.ts` confere 22 pares nos três blocos de `tokens.css`
+(tema claro, escuro pela preferência e escuro pela escolha), com 4,5:1 para texto e 3:1 para foco, bordas e indicador. **Regra de foco:** o anel tem um espaço de 2 px na cor do fundo, então
+nunca encosta no botão, e o critério de 3:1 vale contra o fundo e o cartão.
 
 ## Ajustes de versão na etapa 6.B (18/10/2026)
 
