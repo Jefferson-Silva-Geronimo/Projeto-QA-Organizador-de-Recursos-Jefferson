@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useSessao } from '@/autenticacao/useSessao';
+import { mensagemPara } from '@/erros/mensagens';
 import type { Perfil } from '@/sessao/armazenamento';
 
 interface Props {
@@ -7,6 +10,25 @@ interface Props {
   children: ReactNode;
 }
 
-export function RotaProtegida({ children }: Props) {
+/**
+ * Esconder a tela de quem não deve vê-la é conveniência de interface (ADR-004, plano mestre 10.3).
+ * A segurança é do servidor: ele continua respondendo 403 a qualquer chamada proibida.
+ */
+export function RotaProtegida({ perfis, children }: Props) {
+  const { sessao } = useSessao();
+  const local = useLocation();
+
+  if (!sessao) {
+    return <Navigate to="/entrar" replace state={{ de: local.pathname }} />;
+  }
+  if (perfis && !perfis.includes(sessao.perfil)) {
+    const { mensagem, acao } = mensagemPara('ACESSO_NEGADO');
+    return (
+      <div role="alert">
+        <p>{mensagem}</p>
+        <p>{acao}</p>
+      </div>
+    );
+  }
   return <>{children}</>;
 }
