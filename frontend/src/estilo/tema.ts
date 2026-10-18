@@ -10,3 +10,4 @@ export function escolherTema(escolha: EscolhaDeTema): void {
   document.documentElement.setAttribute('data-tema', escolha);
   window.localStorage.setItem(CHAVE, escolha);
 }
+export function aplicarTemaGuardado(): void {}
