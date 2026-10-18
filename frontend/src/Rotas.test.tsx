@@ -154,6 +154,68 @@ describe('Rotas', () => {
     expect(document.title).toBe(`${titulo} · Organização de Recursos`);
   });
 
+  it('a rota Entrar mostra o formulário de login de verdade, e não o marcador de lugar', () => {
+    montar('/entrar');
+
+    expect(screen.getByRole('form', { name: 'Entrar' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['RESPONSAVEL', 'Aprovações'],
+    ['ADMINISTRADOR', 'Catálogo'],
+    ['SOLICITANTE', 'Buscar'],
+  ] as const)('entrar como %s leva à tela inicial %s', async (perfil, titulo) => {
+    montar('/entrar', async (entrada) => {
+      const pedido = entrada as Request;
+      return pedido.url.endsWith('/api/auth/login')
+        ? new Response(JSON.stringify({ token: 't', perfil, expiraEm: '2999-01-01T00:00:00Z' }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        : new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
+
+    await userEvent.type(screen.getByLabelText(/E-mail/), 'pessoa@exemplo.test');
+    await userEvent.type(screen.getByLabelText(/Senha/), 'senha-de-teste-123');
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: titulo })).toBeInTheDocument();
+  });
+
+  it('quem foi mandado ao login volta para a tela que tentava abrir, com os filtros do endereço', async () => {
+    montar('/reservas/nova?recursos=1', async (entrada) => {
+      const pedido = entrada as Request;
+      return pedido.url.endsWith('/api/auth/login')
+        ? new Response(JSON.stringify({ token: 't', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        : new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
+    expect(await screen.findByRole('form', { name: 'Entrar' })).toBeInTheDocument();
+
+    await userEvent.type(screen.getByLabelText(/E-mail/), 'pessoa@exemplo.test');
+    await userEvent.type(screen.getByLabelText(/Senha/), 'senha-de-teste-123');
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Nova reserva' })).toBeInTheDocument();
+  });
+
+  it('sessão que o servidor encerrou (401) leva ao login com o aviso de que terminou', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/buscar', async () => new Response(JSON.stringify({ code: 'NAO_AUTENTICADO' }), { status: 401, headers: { 'Content-Type': 'application/json' } }));
+
+    const aviso = await screen.findByText('Sua sessão terminou. Entre novamente.');
+
+    expect(aviso).toBeInTheDocument();
+    expect(screen.getByRole('form', { name: 'Entrar' })).toBeInTheDocument();
+  });
+
+  it('sair por vontade própria não mostra o aviso de sessão terminada', async () => {
+    entrarComo('SOLICITANTE');
+    montar('/aprovacoes');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Sair' }));
+
+    expect(await screen.findByRole('form', { name: 'Entrar' })).toBeInTheDocument();
+    expect(screen.queryByText('Sua sessão terminou. Entre novamente.')).not.toBeInTheDocument();
+  });
+
   it('a tela de entrada também tem título', () => {
     montar('/entrar');
 
