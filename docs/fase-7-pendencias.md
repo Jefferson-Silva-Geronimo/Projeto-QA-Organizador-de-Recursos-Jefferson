@@ -25,6 +25,7 @@ este arquivo vira a base do prompt dela.
 | Modelo de ameaças formal (OWASP A06, Insecure Design) | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md), seção A06 ("escrever um modelo de ameaças curto na Fase 7, se o grupo achar necessário") | Opcional, a critério de Jefferson |
 | R-23: a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria; separar papéis de migração e de aplicação vai à dívida técnica | Decisão (risco aceito por Jefferson) | [decisoes-equipe.md](decisoes-equipe.md), seção "Resultado da execução de P5-08 e risco aceito R-23"; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 5 | Aberto: declarar no relatório final como dívida técnica |
 | Limite de login: pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o e-mail da falha fica guardado durante a janela | Decisão (D18, SEC-01) com limitações conhecidas | [decisoes-equipe.md](decisoes-equipe.md), seção 6; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 5 | Aberto: declarar as limitações no relatório final |
+| 22 alertas abertos do Dependabot (npm), todos em manifestos do **framework AIOX** (`.aiox-core/package-lock.json` e `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json`); nenhum em `frontend/` nem no Maven. Conferido em 18/10/2026 pela API do GitHub. O framework é camada protegida (L1) e não deve ser editado | Fato | GitHub, aba de segurança (Dependabot); [relatório de sessão](relatorio-sessao-fase-6-andamento.md) | Aberto: Jefferson decide se dispensa os alertas como "não se aplica ao produto" ou atualiza o framework pelo canal dele |
 | Versões fixadas por incompatibilidade: TypeScript 5.9 (a 7.x conflita com `openapi-typescript` e `typescript-eslint`) e ESLint 9 (`eslint-plugin-jsx-a11y` não aceita a 10) | Fato (verificado na instalação) | [ADR-015](adr/ADR-015-stack-do-front-end.md), seção "Ajustes de versão na etapa 6.B"; `.github/dependabot.yml` | Reavaliar quando os pacotes aceitarem as versões novas |
 
 ## 2. Desempenho
@@ -75,6 +76,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 18/10/2026 | Login em andamento | Alertas do Dependabot (22, todos no framework AIOX) |
 | 18/10/2026 | Aprovação do protótipo da 6.C | F6-11 a F6-13 e BUG-010 a BUG-014 (defeitos achados em navegador real); limitações declaradas; jsdom e Dependabot |
 | 18/10/2026 | Protótipo da 6.C | Achados da Fase 6 acrescentados: anel do ícone do calendário, verificações incompletas do axe, campo de data e hora, roteiro manual e PR #24 do Dependabot |
 | 18/10/2026 | Criação | Arquivo criado com os itens já registrados: SEC-03, SEC-04, A06, R-23, limites do login, versões fixadas, RNF-08b, ocorrência do `NotificacaoApiIT`, RF-13 parcial, pendências do professor e a revogação do token do SonarCloud |

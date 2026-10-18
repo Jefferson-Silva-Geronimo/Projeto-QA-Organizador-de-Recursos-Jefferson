@@ -166,6 +166,9 @@ reserva e evidência de TDD ou BDD.
   A06 (opcional), R-23 (papel dono das tabelas), limitações do limite de login.
 - **Limitações declaradas:** anel de foco do ícone do calendário é do navegador; 24 verificações `color-contrast`
   incompletas do axe, todas no glifo decorativo do aviso; campo de data e hora nativo com 6 paradas de Tab.
+- **Alertas do Dependabot:** 22 abertos (conferidos em 18/10/2026), **todos em manifestos do framework AIOX** em
+  `.aiox-core/` (camada protegida, não editar); **nenhum** em `frontend/` nem no Maven. Cabe a Jefferson decidir se os
+  dispensa como "não se aplica ao produto".
 - **Dependências fixadas por incompatibilidade (ADR-015):** TypeScript 5.9 e ESLint 9; reavaliar quando os pacotes
   aceitarem as versões novas. Salto do `jsdom` 29 para 30 a avaliar em PR nosso.
 - **RF-13 segue "parcial" na RTM:** fecha com as telas restantes e o E2E em celular (6.D).
