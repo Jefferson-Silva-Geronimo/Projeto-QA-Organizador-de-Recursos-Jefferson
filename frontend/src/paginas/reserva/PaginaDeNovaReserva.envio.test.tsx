@@ -142,6 +142,28 @@ describe('PaginaDeNovaReserva: envio', () => {
     await screen.findByText('Reserva aprovada');
   });
 
+  it('a confirmação mostra os nomes dos recursos mesmo que o servidor já não os liste como livres', async () => {
+    let consultas = 0;
+    const falso = rotearFetch({
+      // Depois da reserva a lista é refeita e a Sala 101 já não aparece como livre.
+      'GET /api/recursos': () => resposta(200, ++consultas === 1 ? TODOS : TODOS.filter((r) => r.id !== 1)),
+      'POST /api/reservas': async () => resposta(201, reservaCriada('APROVADA', [1])),
+    });
+    montarPagina({
+      rota: ENDERECO,
+      caminho: '/reservas/nova',
+      elemento: <PaginaDeNovaReserva />,
+      fetch: falso,
+      outras: <Route path="/reservas" element={<p>Minhas reservas</p>} />,
+    });
+
+    await preencherEReservar('Aula de reforço', /Sala 101/);
+
+    const confirmacao = await screen.findByRole('status');
+    expect(confirmacao).toHaveTextContent('Sala 101');
+    expect(confirmacao).not.toHaveTextContent('Recurso 1');
+  });
+
   it('depois do sucesso o foco vai para a confirmação e o formulário some', async () => {
     montar(async () => resposta(201, reservaCriada('APROVADA')));
 
