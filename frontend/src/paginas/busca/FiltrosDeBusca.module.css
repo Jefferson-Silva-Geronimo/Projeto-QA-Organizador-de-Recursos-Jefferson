@@ -1,0 +1,18 @@
+.formulario {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: var(--espaco-4);
+  align-items: start;
+  padding: var(--espaco-4);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+}
+
+.acoes {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-3);
+}

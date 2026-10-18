@@ -19,3 +19,13 @@
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
   gap: var(--espaco-4);
 }
+
+.periodo {
+  margin: 0;
+  padding: var(--espaco-2) var(--espaco-3);
+  width: fit-content;
+  font-weight: 600;
+  color: var(--cor-info-texto);
+  background: var(--cor-info-fundo);
+  border-radius: var(--raio-pequeno);
+}
