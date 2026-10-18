@@ -311,6 +311,7 @@ Todas decididas por Jefferson em 18/10/2026 (F6-05 e F6-06).
 | L-03 | `GET /api/auditoria` filtra só por `entidade` e `entidadeId`, não por período | O plano cita filtro por período na T09 | **Decidida (F6-06, 18/10/2026):** filtro no front. Condição de Jefferson verificada: a consulta não é paginada (`JdbcAuditoriaRepository.java`, sem `limit`), então o filtro vale sobre o resultado inteiro. **Risco:** a resposta cresce sem limite (retenção D9 aberta); se a paginação entrar, o filtro precisa migrar para o servidor |
 | L-04 | O nome do solicitante só estava em `GET /api/usuarios`, restrito ao Administrador | A fila de aprovações mostraria só o identificador | **Decidida e feita (F6-06b, 18/10/2026):** a fila traz só o nome do solicitante, nunca o e-mail, em TDD, com `openapi.json` atualizado no mesmo PR |
 | L-05 | Fuso do campus: o front assume `America/Sao_Paulo`, que é a decisão A6 da equipe; não há resposta do professor sobre isso | Datas exibidas no fuso errado se a decisão mudar | Variável de ambiente do front; muda sem alterar código |
+| L-06 | Os esquemas de resposta do OpenAPI não declaram `required`, então todo campo de resposta vira opcional no tipo gerado | O front valida cada resposta na fronteira antes de usar | **Em aberto.** (a) manter a validação no front, sem mexer no back end. (b) marcar os campos como obrigatórios no back end, em TDD, com `openapi.json` atualizado. Ver ADR-015 |
 
 As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 

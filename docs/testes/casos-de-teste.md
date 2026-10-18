@@ -6,7 +6,7 @@ Casos de teste CT-xxx do back end, derivados de [regras-negocio.md](../prd/regra
 
 | Item | Significado |
 | --- | --- |
-| Nível | **U** unitário (domínio, sem Spring), **I** integração (PostgreSQL real em Testcontainers), **A** API em caixa-preta (MockMvc sobre o contexto completo e banco real), **C** concorrência (integração com banco real) |
+| Nível | **U** unitário (domínio, sem Spring), **I** integração (PostgreSQL real em Testcontainers), **A** API em caixa-preta (MockMvc sobre o contexto completo e banco real), **C** concorrência (integração com banco real), **F** front end (Vitest e Testing Library, sem banco; a API é simulada na fronteira) |
 | Dados | Fictícios. Horários em America/Sao_Paulo, salvo indicação. Nenhum dado pessoal real |
 | Esperado | Resultado observável e mensurável. Contagens são verificadas por consulta ao banco, não só pela resposta |
 | Rastreio | RF, RN, CEN e ADR que o caso cobre |
@@ -224,6 +224,20 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | CT-124 | Listagem de bloqueios | A | Dois bloqueios de uma sala, um deles levantado; `GET /api/bloqueios` | 200 com 2 itens em ordem de início, com `ativo` falso para o levantado e os campos do contrato; a linha "Listar bloqueios" da matriz de autorização recusa Solicitante e Responsável com 403 | RF-08, RN-22, F6-06a |
 | CT-125 | Fila com o nome do solicitante | A | Solicitante com nome e e-mail conhecidos reserva um recurso restrito; Responsável consulta a fila | 1 item com `solicitanteNome` igual ao nome e 0 ocorrências do e-mail ou do campo `email` no corpo | RF-07, RN-26, B3, F6-06b |
 | CT-126 | Fila: perfil proibido e sem sessão | A | `GET /api/reservas/fila` por Solicitante, por Administrador e sem token | 403 com `ACESSO_NEGADO` para os dois perfis e 401 com `NAO_AUTENTICADO` sem token | RF-01, RF-07, F6-06b |
+
+### 3.13 Fase 6: front end (etapa 6.B)
+
+Testes de `frontend/src`. O nome do arquivo está na coluna de passos; o resultado vem da execução registrada na RTM.
+
+| ID | Título | Nível | Dados e passos | Esperado | Rastreio |
+| --- | --- | --- | --- | --- | --- |
+| CT-127 | Mapa de erros: código estável para mensagem | F | Os 34 códigos de `CodigoErro.java` e a tabela da seção 5.1 de `navegacao-telas.md` (`erros/mensagens.test.ts`, `erros/problema.test.ts`) | Cada código tem a mensagem e a ação documentadas; código desconhecido, resposta sem código e falha de rede têm mensagem própria; o texto cru do servidor nunca é guardado | RF-13, ADR-008, F6-05 |
+| CT-128 | Sessão no sessionStorage | F | Guardar, ler, expirar (um segundo antes, no limite, depois), valor corrompido, armazenamento indisponível, só o módulo de sessão toca o armazenamento, sem HTML injetado (`sessao/*.test.ts`) | Token só no sessionStorage; sessão inválida ou expirada é apagada; sem armazenamento a sessão segue na memória da aba | RF-01, RF-13, ADR-004, ADR-015, F6-02 |
+| CT-129 | Cliente da API e ciclo da sessão | F | Cabeçalho `Authorization`, 401 em rota autenticada e no login, `executar`, entrar, sair com e sem resposta do servidor (`api/cliente.test.ts`, `autenticacao/ProvedorDeSessao.test.tsx`) | Token enviado só com sessão; 401 apaga a sessão e avisa a interface; login sem token nunca vira sessão; sair apaga a sessão local mesmo sem resposta | RF-01, RF-13, ADR-004, F6-01, F6-02 |
+| CT-130 | Contraste dos tokens nos dois temas | F | 22 pares de cor em 3 blocos de `tokens.css`: tema claro, escuro pela preferência e escuro pela escolha (`estilo/tokens.test.ts`, `estilo/contraste.test.ts`, `estilo/regras-dos-temas.test.ts`) | Texto com no mínimo 4,5:1; foco, bordas de campo, indicador e botão com no mínimo 3:1; blocos escuros iguais; nenhuma cor fixa fora de `tokens.css` | RF-13, RNF-10, F6-07, F6-09 |
+| CT-131 | Tema claro, escuro ou do sistema | F | Escolher, sistema, valor inválido, aplicar ao abrir, armazenamento indisponível, seletor com `aria-pressed` (`estilo/tema.test.ts`, `layout/SeletorDeTema.test.tsx`) | Só a escolha fica no navegador; sem escolha vale `prefers-color-scheme` | RF-13, F6-09 |
+| CT-132 | Telas e acesso por perfil iguais à matriz | F | Matriz da seção 3 de `navegacao-telas.md` contra o código; rotas protegidas; redirecionamentos; 404; sair (`rotas/*.test.ts(x)`, `Rotas.test.tsx`) | Cada perfil vê exatamente as telas da matriz; perfil proibido vê a mensagem de acesso negado; sem sessão vai ao login; a decisão final continua no servidor | RF-01, RN-17, ADR-004, F6-08 |
+| CT-133 | Navegação lateral e barra do celular | F | Itens com rótulo de texto, `aria-current`, barra com no máximo 4 itens e "Mais", Escape devolve o foco (`layout/Navegacao.test.tsx`) | A barra mostra até 4 telas e "Mais" abre as demais; tudo opera por teclado | RF-13, F6-08 |
 
 ## 4. Cobertura por regra crítica
 

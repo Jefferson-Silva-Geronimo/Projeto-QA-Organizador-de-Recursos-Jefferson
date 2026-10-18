@@ -37,6 +37,22 @@ O `sessionStorage` é legível por qualquer script da página, então a seguran�
 
 **Risco residual aceito:** um XSS que passe por essas barreiras lê o token da aba. Mais seguro seria guardá-lo só em memória, ao custo de novo login a cada recarga; Jefferson preferiu o equilíbrio com `sessionStorage`.
 
+## Ajustes de versão na etapa 6.B (18/10/2026)
+
+Escolhas técnicas de compatibilidade, sem relação com a especificação nem com o plano mestre. Versões exatas em
+`frontend/package.json` e `package-lock.json`.
+
+| Ajuste | Motivo (verificado na instalação) |
+| --- | --- |
+| TypeScript fixado em 5.9 | A versão 7.x conflita com `openapi-typescript` (pede TypeScript 5.x) e com `typescript-eslint` (pede até 6.0) |
+| ESLint fixado em 9 | `eslint-plugin-jsx-a11y` não aceita ESLint 10. A regra de acessibilidade no lint tem prioridade |
+| Saltos maiores ignorados no Dependabot | Mesmos motivos, mais mudança de API nas bibliotecas principais; só correções e menores entram sozinhas |
+
+**Achado de contrato (L-06, em aberto):** os esquemas de **resposta** do OpenAPI não declaram `required` (só os de requisição
+declaram). O gerador por isso marca todo campo de resposta como opcional, e o front valida na fronteira antes de confiar
+(por exemplo, o login só vira sessão com `token`, `perfil` e `expiraEm`). Marcar os campos como obrigatórios no back end
+tornaria os tipos mais precisos, mas muda o contrato; a decisão é de Jefferson.
+
 ## Alternativas descartadas
 
 | Alternativa | Por que não |
