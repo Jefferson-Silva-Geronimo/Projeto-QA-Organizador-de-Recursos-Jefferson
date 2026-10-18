@@ -40,3 +40,23 @@ export function codigosDoServidor(): string[] {
   );
   return [...texto.matchAll(/^ {4}([A-Z_]+)\(Categoria\./gm)].map((m) => m[1] as string);
 }
+
+/** Lê a matriz de acesso por tela (seção 3). Acesso é qualquer célula que não começa com "Não". */
+export function matrizDeAcessoDaDocumentacao(): Map<string, { SOLICITANTE: boolean; RESPONSAVEL: boolean; ADMINISTRADOR: boolean }> {
+  const texto = readFileSync(resolve(__dirname, '../../../docs/prd/navegacao-telas.md'), 'utf-8').replace(/\r\n/g, '\n');
+  const inicio = texto.indexOf('## 3. Matriz de acesso por tela');
+  const fim = texto.indexOf('\n## 4.', inicio);
+  const matriz = new Map<string, { SOLICITANTE: boolean; RESPONSAVEL: boolean; ADMINISTRADOR: boolean }>();
+  for (const linha of texto.slice(inicio, fim).split('\n')) {
+    const celulas = linha.split('|').map((c) => c.trim());
+    const id = /^(T\d{2})\b/.exec(celulas[1] ?? '')?.[1];
+    if (id) {
+      matriz.set(id, {
+        SOLICITANTE: !(celulas[2] ?? '').startsWith('Não'),
+        RESPONSAVEL: !(celulas[3] ?? '').startsWith('Não'),
+        ADMINISTRADOR: !(celulas[4] ?? '').startsWith('Não'),
+      });
+    }
+  }
+  return matriz;
+}
