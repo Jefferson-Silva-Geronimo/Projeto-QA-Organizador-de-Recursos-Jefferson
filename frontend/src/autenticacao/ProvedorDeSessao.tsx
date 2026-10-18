@@ -52,6 +52,9 @@ export function ProvedorDeSessao({ baseUrl, fetch: fetchFalso, children }: Props
     }
   }, [cliente]);
 
-  const valor = useMemo(() => ({ sessao, cliente, entrar, sair }), [sessao, cliente, entrar, sair]);
+  const valor = useMemo(
+    () => ({ sessao, sessaoExpirou: false, cliente, entrar, sair }),
+    [sessao, cliente, entrar, sair],
+  );
   return <Contexto.Provider value={valor}>{children}</Contexto.Provider>;
 }
