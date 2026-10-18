@@ -1,10 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
+import { vi } from 'vitest';
 import { ErroDeApi } from '@/api/cliente';
 import { ProvedorDeSessao } from '@/autenticacao/ProvedorDeSessao';
 import { useSessao } from '@/autenticacao/useSessao';
-import { lerSessao } from '@/sessao/armazenamento';
+import { guardarSessao, lerSessao } from '@/sessao/armazenamento';
 
 const BASE = 'http://api.teste';
 const LOGIN_OK = { token: 'token-novo', perfil: 'RESPONSAVEL', expiraEm: '2999-01-01T00:00:00Z' };
@@ -52,4 +53,69 @@ describe('ProvedorDeSessao', () => {
     await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('RESPONSAVEL'));
     expect(lerSessao()).toEqual(LOGIN_OK);
   });
+
+  it('credencial inválida lança ErroDeApi com o código estável e não guarda sessão', async () => {
+    montar(async () => resposta(401, { status: 401, code: 'CREDENCIAIS_INVALIDAS' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'entrar' }));
+
+    await waitFor(() => expect(screen.getByTestId('codigo')).toHaveTextContent('CREDENCIAIS_INVALIDAS'));
+    expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum');
+    expect(lerSessao()).toBeNull();
+  });
+
+  it('login que volta sem token é tratado como erro, nunca como sessão', async () => {
+    montar(async () => resposta(200, {}));
+
+    await userEvent.click(screen.getByRole('button', { name: 'entrar' }));
+
+    await waitFor(() => expect(screen.getByTestId('codigo')).toBeInTheDocument());
+    expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum');
+    expect(lerSessao()).toBeNull();
+  });
+
+  it('ao abrir a página retoma a sessão que está no sessionStorage', () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'ADMINISTRADOR', expiraEm: '2999-01-01T00:00:00Z' });
+
+    montar(async () => resposta(200, []));
+
+    expect(screen.getByTestId('perfil')).toHaveTextContent('ADMINISTRADOR');
+  });
+
+  it('sair avisa o servidor com o token, apaga a sessão e zera o contexto', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    const falso = vi.fn(async (_entrada: RequestInfo | URL) => resposta(204));
+    montar(falso);
+
+    await userEvent.click(screen.getByRole('button', { name: 'sair' }));
+
+    await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum'));
+    const pedido = falso.mock.calls[0]?.[0] as Request;
+    expect(pedido.url).toBe(`${BASE}/api/auth/logout`);
+    expect(pedido.headers.get('Authorization')).toBe('Bearer token-antigo');
+    expect(lerSessao()).toBeNull();
+  });
+
+  it('sair apaga a sessão local mesmo que o servidor não responda', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    montar(async () => {
+      throw new TypeError('Failed to fetch');
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'sair' }));
+
+    await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum'));
+    expect(lerSessao()).toBeNull();
+  });
+
+  it('401 numa chamada qualquer zera a sessão do contexto (sessão expirada ou revogada)', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    montar(async () => resposta(401, { status: 401, code: 'NAO_AUTENTICADO' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'consultar' }));
+
+    await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum'));
+    expect(lerSessao()).toBeNull();
+  });
 });
+
