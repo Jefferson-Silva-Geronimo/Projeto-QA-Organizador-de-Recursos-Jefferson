@@ -1,0 +1,11 @@
+/* Tokens semânticos (F6-07, F6-09). Preenchidos no passo verde. */
+:root {
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema='claro']) {
+  }
+}
+
+:root[data-tema='escuro'] {
+}
