@@ -42,3 +42,10 @@
   flex-wrap: wrap;
   gap: var(--espaco-3);
 }
+
+.erroDoGrupo {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-erro-texto);
+}

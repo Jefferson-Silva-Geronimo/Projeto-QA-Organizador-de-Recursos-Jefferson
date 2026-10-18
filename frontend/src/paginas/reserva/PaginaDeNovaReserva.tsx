@@ -1,5 +1,6 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { ErroDeApi } from '@/api/cliente';
 import { FUSO_DO_CAMPUS, localParaIsoComOffset } from '@/datas/fuso';
 import estilos from '@/paginas/reserva/PaginaDeNovaReserva.module.css';
 import { ReservaCriada } from '@/paginas/reserva/ReservaCriada';
@@ -41,6 +42,22 @@ function Formulario({ inicial, aoFazerOutra }: Props) {
   const [fim, setFim] = useState(inicial.fim);
   const [escolhidos, setEscolhidos] = useState<ReadonlySet<number>>(() => new Set(inicial.recursos));
   const criar = useCriarReserva();
+  const alerta = useRef<HTMLDivElement>(null);
+  const idErroRecursos = useId();
+
+  // Depois de uma recusa o foco vai para a mensagem: o teclado e o leitor de tela vão até ela.
+  useEffect(() => {
+    if (criar.isError) {
+      alerta.current?.focus();
+    }
+  }, [criar.isError, criar.submittedAt]);
+
+  // Campos que o servidor não aceitou. Nome de campo desconhecido é ignorado.
+  const recusados =
+    criar.error instanceof ErroDeApi && criar.error.problema.code === 'VALIDACAO_FALHOU'
+      ? new Set(criar.error.problema.campos)
+      : new Set<string>();
+  const erroDoCampo = (campo: string, mensagem: string) => (recusados.has(campo) ? mensagem : undefined);
 
   const inicioIso = localParaIsoComOffset(inicio, FUSO_DO_CAMPUS);
   const fimIso = localParaIsoComOffset(fim, FUSO_DO_CAMPUS);
@@ -81,20 +98,29 @@ function Formulario({ inicial, aoFazerOutra }: Props) {
 
   return (
     <form onSubmit={enviar} noValidate className={estilos.formulario}>
+      {criar.isError && <ErroDaApi erro={criar.error} ref={alerta} />}
       <fieldset className={estilos.bloco}>
         <legend className={estilos.legenda}>Quando</legend>
         <div className={estilos.duplo}>
-          <Campo rotulo="Início" obrigatorio>
+          <Campo rotulo="Início" obrigatorio erro={erroDoCampo('inicio', 'Informe o início.')}>
             {(c) => <input {...c} type="datetime-local" value={inicio} onChange={(e) => setInicio(e.target.value)} />}
           </Campo>
-          <Campo rotulo="Fim" obrigatorio>
+          <Campo rotulo="Fim" obrigatorio erro={erroDoCampo('fim', 'Informe o fim.')}>
             {(c) => <input {...c} type="datetime-local" value={fim} onChange={(e) => setFim(e.target.value)} />}
           </Campo>
         </div>
       </fieldset>
 
-      <fieldset className={estilos.bloco}>
+      <fieldset
+        className={estilos.bloco}
+        aria-describedby={recusados.has('recursoIds') ? idErroRecursos : undefined}
+      >
         <legend className={estilos.legenda}>Recursos livres no período</legend>
+        {recusados.has('recursoIds') && (
+          <p id={idErroRecursos} className={estilos.erroDoGrupo}>
+            Escolha ao menos um recurso.
+          </p>
+        )}
         {!periodoCompleto && (
           <Aviso tipo="info">Informe o início e o fim para ver os recursos livres nesse período.</Aviso>
         )}
@@ -116,10 +142,10 @@ function Formulario({ inicial, aoFazerOutra }: Props) {
 
       <fieldset className={estilos.bloco}>
         <legend className={estilos.legenda}>Detalhes</legend>
-        <Campo rotulo="Título" obrigatorio>
+        <Campo rotulo="Título" obrigatorio erro={erroDoCampo('titulo', 'Informe o título.')}>
           {(c) => <input {...c} type="text" value={titulo} onChange={(e) => setTitulo(e.target.value)} />}
         </Campo>
-        <Campo rotulo="Descrição">
+        <Campo rotulo="Descrição" erro={erroDoCampo('descricao', 'A descrição não foi aceita.')}>
           {(c) => <textarea {...c} value={descricao} onChange={(e) => setDescricao(e.target.value)} />}
         </Campo>
       </fieldset>
