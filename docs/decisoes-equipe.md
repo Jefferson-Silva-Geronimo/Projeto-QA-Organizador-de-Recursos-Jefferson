@@ -208,3 +208,19 @@ registrada junto com a paleta, depois que Jefferson escolher entre as paletas va
 
 **Motivo do tema escuro, nas palavras da decisão:** reduz o desconforto em ambiente escuro e combina com o público jovem e com
 a direção visual moderna. **Não é requisito de acessibilidade do WCAG** e não é apresentado como conformidade.
+
+### F6-07. Direção visual e paleta (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026.** Direção **moderna com cor mais forte**, com a **paleta A (violeta e rosa)**, escolhida
+entre três paletas com contraste calculado (102 pares, 0 falhas). Valores dos tokens e verificação em
+[ADR-015](adr/ADR-015-stack-do-front-end.md), seção "Paleta escolhida".
+
+| Condição imposta por Jefferson | Como é atendida |
+| --- | --- |
+| Contraste acessível vale mais que o visual: todo par com no mínimo WCAG AA, validado antes do protótipo. Se uma cor não passar, ajusta-se a cor, não o critério | Pares calculados por script; o anel de foco ganhou espaço de 2 px em vez de afrouxar o critério |
+| *Mobile-first*, 360 px e 1280 px, rótulos, foco visível, CSS Modules sem biblioteca de UI | F6-04 e plano mestre, seção 10.3 |
+| Cor vibrante só nos destaques, base neutra, sem fundo todo saturado | Tokens `fundo` e `superficie` neutros; `destaque` só em botão, indicador e estado |
+| Cantos arredondados e sombras suaves, telas densas legíveis, tabelas compactas no desktop e cartões no celular | Regra de projeto para Fila, Relatórios, Auditoria e Catálogo |
+| Neutralidade de marca | Nenhum nome, logotipo ou paleta de instituição real |
+
+Alternativas descartadas: paletas B (verde-azulado e âmbar) e C (magenta e ciano); direções "institucional limpo" e "denso e utilitário".
