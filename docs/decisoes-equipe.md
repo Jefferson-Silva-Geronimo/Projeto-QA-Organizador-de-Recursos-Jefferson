@@ -165,3 +165,18 @@ refutada; a causa do p95 acima de 300 ms na criação foi localizada no `fsync` 
 **não** aponta o código, **nenhuma otimização foi feita**, conforme a condição de F5-01. A hipótese de 300 ms segue sem validação do
 professor, e o relatório final declara RNF-08b como não atendido nesta máquina.
 
+
+## 8. Decisões de front end da Fase 6 (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026**, escolhendo entre alternativas que respeitam a especificação e o plano mestre
+(seção 10.3). Texto completo, mitigações e alternativas descartadas em [ADR-015](adr/ADR-015-stack-do-front-end.md).
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-01 | Cliente e tipos gerados com **openapi-typescript + openapi-fetch** | Orval; OpenAPI Generator |
+| F6-02 | Token opaco em **`sessionStorage`**, com mitigações registradas no ADR-015 (módulo único, limpeza em logout e 401, sem HTML injetado, CSP). Risco residual de XSS aceito | Só memória; `localStorage` |
+| F6-03 | **React Router + TanStack Query** | React Router com `useState`/`useEffect` |
+| F6-04 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes | Tailwind; MUI |
+
+As decisões 1, 2, 3, 5 e 6 do plano (cliente gerado, mapa de erros, front sem regra de negócio, *mobile-first*, datas com
+offset) não tinham alternativa e entram direto no ADR-015.
