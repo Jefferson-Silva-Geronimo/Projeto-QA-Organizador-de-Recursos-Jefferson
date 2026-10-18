@@ -47,7 +47,17 @@ const MENSAGENS = {
 export type CodigoConhecido = keyof typeof MENSAGENS;
 
 export function mensagemPara(code: string): MensagemDeErro {
-  return (MENSAGENS as Record<string, MensagemDeErro>)[code] as MensagemDeErro;
+  if (code === '') {
+    return MENSAGEM_SEM_CODIGO;
+  }
+  return (MENSAGENS as Record<string, MensagemDeErro>)[code] ?? MENSAGEM_DE_CODIGO_DESCONHECIDO;
 }
 
-export const MENSAGEM_DE_REDE: MensagemDeErro = { mensagem: '', acao: '' };
+/** Sem resposta do servidor (seção 5.2 da documentação). */
+export const MENSAGEM_DE_REDE: MensagemDeErro = { mensagem: 'Não conseguimos falar com o servidor.', acao: 'Verifique sua conexão e tente de novo.' };
+
+/** Código que este front não conhece, por exemplo de um servidor mais novo (seção 5.2). */
+const MENSAGEM_DE_CODIGO_DESCONHECIDO: MensagemDeErro = { mensagem: 'Não foi possível concluir a operação.', acao: 'Tente de novo. Se persistir, avise a equipe.' };
+
+/** Resposta de erro sem corpo no formato esperado (seção 5.2). */
+const MENSAGEM_SEM_CODIGO: MensagemDeErro = { mensagem: 'Não foi possível concluir a operação.', acao: 'Tente de novo.' };
