@@ -8,12 +8,15 @@ export interface Sessao {
   expiraEm: string;
 }
 
-export function guardarSessao(_sessao: Sessao): void {
-  // ainda não implementado
+const CHAVE = 'sessao';
+
+export function guardarSessao(sessao: Sessao): void {
+  window.sessionStorage.setItem(CHAVE, JSON.stringify(sessao));
 }
 
 export function lerSessao(_agora: Date = new Date()): Sessao | null {
-  return null;
+  const bruto = window.sessionStorage.getItem(CHAVE);
+  return bruto === null ? null : (JSON.parse(bruto) as Sessao);
 }
 
 export function limparSessao(): void {
