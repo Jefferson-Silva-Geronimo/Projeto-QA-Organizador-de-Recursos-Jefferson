@@ -177,6 +177,21 @@ professor, e o relatório final declara RNF-08b como não atendido nesta máquin
 | F6-02 | Token opaco em **`sessionStorage`**, com mitigações registradas no ADR-015 (módulo único, limpeza em logout e 401, sem HTML injetado, CSP). Risco residual de XSS aceito | Só memória; `localStorage` |
 | F6-03 | **React Router + TanStack Query** | React Router com `useState`/`useEffect` |
 | F6-04 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes | Tailwind; MUI |
+| F6-05 | Corpo de erro (`code`, `itens`, `campos`) tipado **só no front**, em um módulo, com teste contra o `TratadorDeErros` (L-01 de [navegacao-telas.md](prd/navegacao-telas.md)) | Acrescentar o esquema ao back end |
 
 As decisões 1, 2, 3, 5 e 6 do plano (cliente gerado, mapa de erros, front sem regra de negócio, *mobile-first*, datas com
 offset) não tinham alternativa e entram direto no ADR-015.
+
+### F6-06. Mudanças mínimas no back end para o front (18/10/2026)
+
+**Decisão da equipe (Jefferson), 18/10/2026**, para que as telas não fiquem pobres mexendo o mínimo no back end fechado.
+Origem: lacunas L-02 a L-04 de [navegacao-telas.md](prd/navegacao-telas.md).
+
+| ID | Decisão | Condições impostas por Jefferson |
+| --- | --- | --- |
+| F6-06a (L-02) | Acrescentar `GET /api/bloqueios` | TDD; `openapi.json` atualizado no mesmo PR; teste de autorização por perfil e de listagem vazia |
+| F6-06b (L-04) | A fila de aprovações passa a trazer o **nome** do solicitante, nunca o e-mail | TDD; `openapi.json` no mesmo PR; teste de perfil proibido e de não autenticado |
+| F6-06c (L-03) | Filtro de período da auditoria **no front** | Só vale se o endpoint devolver tudo. Verificado em 18/10/2026: a consulta não é paginada, então vale. Se a paginação for criada, o filtro migra para o servidor |
+
+CT-115 e CT-106 comparam o contrato com `docs/api/openapi.json` e vão falhar de propósito quando o contrato mudar. O arquivo é
+atualizado de forma consciente, sem enfraquecer os testes.
