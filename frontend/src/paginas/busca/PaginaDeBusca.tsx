@@ -10,7 +10,8 @@ import {
   type RascunhoDosFiltros,
 } from '@/paginas/busca/parametros';
 import { useRecursos } from '@/recursos/consulta';
-import { Carregando } from '@/ui/Estados';
+import { ErroDaApi } from '@/ui/ErroDaApi';
+import { Carregando, EstadoVazio } from '@/ui/Estados';
 
 function contagem(total: number): string {
   return total === 1 ? '1 recurso encontrado' : `${total} recursos encontrados`;
@@ -42,6 +43,12 @@ export function PaginaDeBusca() {
         </p>
       )}
       {consulta.isPending && <Carregando texto="Buscando recursos…" />}
+      {consulta.isError && <ErroDaApi erro={consulta.error} aoTentarDeNovo={() => void consulta.refetch()} />}
+      {consulta.isSuccess && recursos.length === 0 && (
+        <EstadoVazio titulo="Nenhum recurso encontrado">
+          Tente outro período, outro tipo ou tire algum filtro.
+        </EstadoVazio>
+      )}
       <div className={estilos.grade}>
         {recursos.map((recurso) => (
           <CartaoDeRecurso key={recurso.id} recurso={recurso} />
