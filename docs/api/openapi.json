@@ -1819,9 +1819,15 @@
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "podeAlterar" : {
+            "type" : "boolean"
+          },
+          "podeCancelar" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "recursoIds", "solicitanteId", "titulo" ]
+        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "podeAlterar", "podeCancelar", "recursoIds", "solicitanteId", "titulo" ]
       },
       "RestritoRequisicao" : {
         "type" : "object",

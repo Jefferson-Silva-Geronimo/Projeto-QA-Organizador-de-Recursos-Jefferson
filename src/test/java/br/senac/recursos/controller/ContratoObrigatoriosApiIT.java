@@ -34,7 +34,7 @@ class ContratoObrigatoriosApiIT extends ApiIT {
             Map.entry("UsuarioResposta", Set.of("id", "nome", "email", "perfil", "ativo")),
             Map.entry("RecursoResposta", Set.of("id", "tipo", "nome", "restrito", "ativo")),
             Map.entry("ReservaResposta", Set.of("id", "solicitanteId", "titulo", "inicio", "fim", "estado",
-                    "exigeAprovacao", "recursoIds")),
+                    "exigeAprovacao", "recursoIds", "podeAlterar", "podeCancelar")),
             Map.entry("ReservaDaFilaResposta", Set.of("id", "solicitanteId", "solicitanteNome", "titulo", "inicio",
                     "fim", "estado", "exigeAprovacao", "recursoIds")),
             Map.entry("BloqueioResposta", Set.of("id", "recursoId", "inicio", "fim", "motivo", "ativo",
