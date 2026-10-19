@@ -1,0 +1,35 @@
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--espaco-4);
+  background: rgb(0 0 0 / 0.55);
+  overflow-y: auto;
+}
+
+.caixa {
+  display: grid;
+  gap: var(--espaco-3);
+  width: min(100%, 32rem);
+  max-height: 100%;
+  padding: var(--espaco-5, var(--espaco-4));
+  overflow-y: auto;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.descricao {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  overflow-wrap: anywhere;
+}

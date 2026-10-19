@@ -1,7 +1,10 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CartaoDeReserva } from '@/paginas/reservas/CartaoDeReserva';
 import estilos from '@/paginas/reservas/PaginaDeReservas.module.css';
 import { useReservas } from '@/reservas/consulta';
+import type { Reserva } from '@/reservas/criar';
+import { Aviso } from '@/ui/Aviso';
 import botoes from '@/ui/Botao.module.css';
 import { ErroDaApi } from '@/ui/ErroDaApi';
 import { Carregando, EstadoVazio } from '@/ui/Estados';
@@ -16,10 +19,24 @@ function contagem(total: number): string {
  */
 export function PaginaDeReservas() {
   const reservas = useReservas();
+  const [cancelada, setCancelada] = useState<Reserva | null>(null);
+  const aviso = useRef<HTMLDivElement>(null);
+
+  // O botão que abriu o diálogo deixa de existir quando a reserva é cancelada: o foco vai para a confirmação.
+  useEffect(() => {
+    if (cancelada) {
+      aviso.current?.focus();
+    }
+  }, [cancelada]);
 
   return (
     <section aria-labelledby="titulo-da-tela" className={estilos.pagina}>
       <h1 id="titulo-da-tela">Reservas</h1>
+      {cancelada && (
+        <Aviso tipo="sucesso" ref={aviso}>
+          Reserva "{cancelada.titulo}" cancelada.
+        </Aviso>
+      )}
       {reservas.isPending && <Carregando texto="Carregando reservas…" />}
       {reservas.isError && <ErroDaApi erro={reservas.error} aoTentarDeNovo={() => void reservas.refetch()} />}
       {reservas.isSuccess && (
@@ -35,7 +52,7 @@ export function PaginaDeReservas() {
           ) : (
             <div className={estilos.grade}>
               {reservas.data.map((reserva) => (
-                <CartaoDeReserva key={reserva.id} reserva={reserva} />
+                <CartaoDeReserva key={reserva.id} reserva={reserva} aoCancelada={setCancelada} />
               ))}
             </div>
           )}

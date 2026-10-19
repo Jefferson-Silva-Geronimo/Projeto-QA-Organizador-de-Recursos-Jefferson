@@ -1,10 +1,11 @@
-import type { ButtonHTMLAttributes } from 'react';
+import type { ButtonHTMLAttributes, Ref } from 'react';
 import estilos from '@/ui/Botao.module.css';
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variante?: 'primario' | 'secundario';
   carregando?: boolean;
   textoCarregando?: string;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 /** Botão com área de toque de 44 px. Enquanto envia fica ocupado e ignora cliques, para não duplicar o envio. */

@@ -82,3 +82,15 @@
 .carregando {
   color: var(--cor-texto-suave);
 }
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+/* O foco chega ao cartão por código quando o botão que o abriu deixa de existir (depois de cancelar). */
+.cartao:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
