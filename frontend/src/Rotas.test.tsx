@@ -106,6 +106,15 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
+  it('a rota Reservas mostra a lista de verdade, e não o marcador de lugar', async () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/reservas', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Nenhuma reserva ainda')).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 
