@@ -25,41 +25,43 @@ import org.springframework.web.bind.annotation.RestController;
 class UsoController {
 
     private final UsoService uso;
+    private final RespostasDeReserva respostas;
 
-    UsoController(UsoService uso) {
+    UsoController(UsoService uso, RespostasDeReserva respostas) {
+        this.respostas = respostas;
         this.uso = uso;
     }
 
     @PostMapping("/inicio")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta iniciar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id) {
-        return ReservaResposta.de(uso.iniciar(ator, id));
+        return respostas.de(ator, uso.iniciar(ator, id));
     }
 
     @PostMapping("/retiradas")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta retirar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                             @Valid @RequestBody MaterialRequisicao c) {
-        return ReservaResposta.de(uso.retirar(ator, id, c.materialId()));
+        return respostas.de(ator, uso.retirar(ator, id, c.materialId()));
     }
 
     @PostMapping("/devolucoes")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta devolver(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                              @Valid @RequestBody MaterialRequisicao c) {
-        return ReservaResposta.de(uso.devolver(ator, id, c.materialId()));
+        return respostas.de(ator, uso.devolver(ator, id, c.materialId()));
     }
 
     @PostMapping("/conclusao")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta concluir(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id) {
-        return ReservaResposta.de(uso.concluir(ator, id));
+        return respostas.de(ator, uso.concluir(ator, id));
     }
 
     @PostMapping("/nao-comparecimento")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta naoCompareceu(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id) {
-        return ReservaResposta.de(uso.marcarNaoCompareceu(ator, id));
+        return respostas.de(ator, uso.marcarNaoCompareceu(ator, id));
     }
 
     @GetMapping("/movimentacoes")
