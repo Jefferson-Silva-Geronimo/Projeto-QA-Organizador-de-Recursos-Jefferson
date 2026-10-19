@@ -180,6 +180,22 @@ describe('Rotas', () => {
     expect(await screen.findByRole('heading', { level: 1, name: titulo })).toBeInTheDocument();
   });
 
+  it('depois de entrar o foco vai para o conteúdo, para o teclado não ficar no corpo da página (BUG-015)', async () => {
+    montar('/entrar', async (entrada) => {
+      const pedido = entrada as Request;
+      return pedido.url.endsWith('/api/auth/login')
+        ? new Response(JSON.stringify({ token: 't', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' }), { status: 200, headers: { 'Content-Type': 'application/json' } })
+        : new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } });
+    });
+
+    await userEvent.type(screen.getByLabelText(/E-mail/), 'pessoa@exemplo.test');
+    await userEvent.type(screen.getByLabelText(/Senha/), 'senha-de-teste-123');
+    await userEvent.click(screen.getByRole('button', { name: 'Entrar' }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Buscar' })).toBeInTheDocument();
+    await waitFor(() => expect(document.getElementById('conteudo')).toHaveFocus(), { timeout: 1000 });
+  });
+
   it('quem foi mandado ao login volta para a tela que tentava abrir, com os filtros do endereço', async () => {
     montar('/reservas/nova?recursos=1', async (entrada) => {
       const pedido = entrada as Request;
