@@ -330,7 +330,7 @@ Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md)
 | T02 Busca de disponibilidade | Padrão **aprovado** (F6-11), pronta | Verificado em navegador real contra a API (ver RTM, execução E-6) |
 | T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação e alteração prontas | A alteração abre o mesmo formulário da criação, em `/reservas/:id/alterar`, com a verificação em navegador real da T04 (CT-143) |
 | T01 Login | Pronta (PR 34) | Implementada em TDD (CT-141) e verificada em navegador real contra a API (RTM, execução E-7) |
-| T04 Minhas reservas e cancelamento | **Em andamento** (branch `fase-6/tela-minhas-reservas`) | Implementada em TDD (CT-142 e CT-143) e verificada em navegador real contra a API (RTM, execução E-8); falta o pull request e a CI |
+| T04 Minhas reservas e cancelamento | Pronta (PR 36) | Implementada em TDD (CT-142 e CT-143) e verificada em navegador real contra a API (RTM, execução E-8) |
 | T05 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
 
 Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens

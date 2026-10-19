@@ -2,7 +2,7 @@
 
 Documento para contextualizar a próxima conversa. Cole-o no início da sessão ou peça para o Claude lê-lo. **Não contém
 senha nem token.** Nada aqui substitui os documentos do repositório: quando houver divergência, vale o repositório.
-Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho da Fase 6 até a tela Minhas reservas (T04). Atualizado em 19/10/2026: o Login foi mesclado (PR 34) e a T04 está no PR da sua branch.
+Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho da Fase 6 até a tela Minhas reservas (T04). Atualizado em 19/10/2026: o Login foi mesclado (PR 34) e a T04 está no PR 36.
 
 ## 1. Como retomar (comece por aqui)
 
@@ -24,9 +24,9 @@ Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho
 | Fase 6 (front end) | **Em andamento.** Feitos: 6.A (documento de telas), mudanças de back end para o front, 6.B (base do front), o protótipo da 6.C (Busca e Nova reserva, aprovado) e o Login (T01, PR 34). **Em andamento:** Minhas reservas e alteração (T04, branch `fase-6/tela-minhas-reservas`). **Faltam:** as telas T05 a T11 e a etapa 6.D (E2E na CI) |
 | Fase 7 | **Ainda não executada.** A lista viva do que entra nela é `docs/fase-7-pendencias.md` |
 | `main` | Protegida: PR obrigatório, 0 aprovações, vale para administrador, `strict` (branch precisa estar atualizada), sem force push e sem exclusão da branch. **Checks obrigatórios: `test` e `frontend`.** O `e2e` ainda não existe |
-| Último commit da `main` | `bda5b04` (merge do PR #34, Login) |
-| Branch ativa | `fase-6/tela-minhas-reservas`, com a T04 implementada em TDD e verificada em navegador real. Pull request: ver `gh pr list` |
-| PRs abertos | Nenhum. Issues de defeito abertas: BUG-016 (issue 35), que fecha com o PR da T04 (BUG-010 a BUG-015 fechados) |
+| Último commit da `main` | merge do PR #36 (T04); ver `git log` |
+| Branch ativa | Nenhuma: a T04 foi mesclada. A próxima tela (T05) começa em um branch novo a partir da `main` |
+| PRs abertos | Nenhum. Issues de defeito abertas: nenhuma (BUG-010 a BUG-016 fechados) |
 | SonarCloud | Quality Gate OK em todos os PRs mesclados. Não roda em PR do Dependabot (ele não recebe segredos) |
 
 ### 2.1 Pull requests mesclados nesta fase
@@ -42,6 +42,7 @@ Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho
 | #26 | `docs/fase-7-pendencias.md` |
 | #32 | Protótipo da 6.C: Busca (T02) e Nova reserva (T03); F6-11 a F6-13; BUG-010 a BUG-014; roteiro de navegador real |
 | #34 | Login (T01): destino sem redirecionamento aberto, volta à origem, aviso de sessão terminada, verificação em navegador real e BUG-015 (foco depois de entrar) |
+| #36 | Reservas (T04): lista, cancelamento com diálogo de foco gerenciado, alteração com o formulário da Nova reserva, verificação em navegador real (incluindo reserva já iniciada, RN-07) e BUG-016 (Administrador sem Alterar) |
 | #24 (fechado) | Dependabot `jsdom` 29 para 30, **fechado sem mesclar** (F6-13) |
 
 ### 2.2 O que está no branch `fase-6/tela-minhas-reservas`
@@ -53,8 +54,7 @@ T04 em TDD: lista de reservas (`frontend/src/paginas/reservas/`), diálogo de ca
 | Item | Valor | Origem |
 | --- | --- | --- |
 | Back end | 517 testes (154 de unidade e arquitetura, 363 de integração e BDD), 0 falhas, JaCoCo 96,9% de linhas e 84,9% de branches | `./mvnw -B clean verify` local e confirmado pelo CI do PR #25 (RTM, execução E-5) |
-| Front (CI) | 30 arquivos de teste, 391 testes, 0 falhas | Job `frontend`, run `39165239588` (PR #32); RTM, execução E-6 |
-| Front (local, Login em andamento) | 33 arquivos, 449 testes, 0 falhas; lint, tipos e build ok | Execução local; **não é número de CI** (RTM, execução E-7) |
+| Front (CI) | 37 arquivos de teste, 548 testes, 0 falhas | Job `frontend`, run `39333087251` (PR #36); RTM, execução E-8 |
 | Navegador real (protótipo) | axe com 0 violações em 48 estados; 47 paradas de Tab sem mouse, com foco visível; 0 rolagem horizontal em 8 de 8 telas | Roteiro manual (RTM, execução E-6) |
 
 ## 4. Decisões da equipe desta fase (texto completo em `docs/decisoes-equipe.md`)
