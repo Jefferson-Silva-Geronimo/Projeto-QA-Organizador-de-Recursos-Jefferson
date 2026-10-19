@@ -106,6 +106,41 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
+  it('a rota Reservas mostra a lista de verdade, e não o marcador de lugar', async () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/reservas', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Nenhuma reserva ainda')).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it.each(['SOLICITANTE', 'RESPONSAVEL'] as const)('%s abre a alteração de uma reserva em /reservas/:id/alterar', async (perfil) => {
+    entrarComo(perfil);
+
+    montar('/reservas/10/alterar', async () => new Response(null, { status: 404, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByRole('heading', { level: 1, name: 'Alterar reserva' })).toBeInTheDocument();
+    expect(screen.queryByText('Página não encontrada')).not.toBeInTheDocument();
+  });
+
+  it('Administrador abrindo a alteração de reserva vê acesso negado (RN-17)', () => {
+    entrarComo('ADMINISTRADOR');
+
+    montar('/reservas/10/alterar');
+
+    expect(screen.getByRole('alert')).toHaveTextContent(mensagemPara('ACESSO_NEGADO').mensagem);
+    expect(screen.queryByRole('heading', { level: 1, name: 'Alterar reserva' })).not.toBeInTheDocument();
+  });
+
+  it('a página de alteração tem título "Alterar reserva · Organização de Recursos"', () => {
+    entrarComo('SOLICITANTE');
+
+    montar('/reservas/10/alterar');
+
+    expect(document.title).toBe('Alterar reserva · Organização de Recursos');
+  });
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 

@@ -18,6 +18,8 @@ dele. Nada aqui contém segredo: as credenciais são geradas na hora, ficam em `
 
 | `prototipo.cjs login` | Tela de Login **sem sessão injetada**, em 360 e 1280 px, nos dois temas: tela, campos em branco, senha visível, credencial inválida (recusa sem dizer o campo, foco na mensagem, senha apagada), entrar como Solicitante e Responsável (destino e foco), volta à tela de origem com filtros e sessão terminada (token recusado pela API). Mais um fluxo só com teclado |
 
+| `prototipo.cjs reservas` | Reservas (T04) e alteração, **pela interface, com a API real**, em 360 e 1280 px, nos dois temas: lista (estados, motivo, nomes dos recursos), diálogo de cancelamento (foco entra, Tab preso, Escape devolve o foco), cancelar com motivo, alterar (dados atuais, recurso da própria reserva marcado, confirmação), alterar com conflito de horário, Administrador sem Alterar e com `MOTIVO_OBRIGATORIO`, e uma reserva que **já começou** (RN-07: cancelar e alterar são recusados com `RESERVA_JA_INICIADA`) e outra **em uso** (sem ações). Mais um fluxo só com teclado. As duas reservas "de agora" começam 4 a 5 minutos depois do início do script, que espera por elas: a rodada leva cerca de 8 minutos e só funciona em dia útil, entre 07:00 e 22:00 no campus |
+
 Saída: capturas (`.jpg` da janela e `-completa.png` da página) e `relatorio.json` (violações do axe, verificações
 incompletas, paradas de Tab e conferências).
 

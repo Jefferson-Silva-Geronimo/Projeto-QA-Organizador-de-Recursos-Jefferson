@@ -165,3 +165,10 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Tela de Login: estrutura, `autocomplete`, mostrar senha e tema | `106afb9` | `2a2b9e6` |
 | Tela de Login: envio, clique duplo, campos em branco, recusa sem dizer qual campo errou, foco e tabela de mensagens | `9c44f04` | `361ef2a` |
 | Login nas rotas: tela real, destino por perfil, volta à tela de origem com filtros e aviso de sessão terminada | `54b7d19` | `09d7a88` |
+| Depois de entrar o foco vai para o conteúdo (BUG-015, achado no navegador real) | `c009d40` | `4df87e8` |
+| Tela de Reservas: lista, estados, nomes dos recursos, motivo e cancelada continua listada | `5e80ddd` | `11d4347` |
+| A rota Reservas mostra a lista de verdade | `b95e0c4` | `39fca3d` |
+| Reservas: ações conforme o estado, diálogo de confirmação com foco preso e devolvido, cancelamento e recusas do servidor | `b331cd8` | `73437db` |
+| Alteração de reserva: dados atuais, recursos da própria reserva, envio, confirmação pelo estado devolvido, recusas e conflito reaproveitado | `240334a` | `398234c` |
+| Rota e título da alteração, e acesso negado ao Administrador | `9fce799` | `5e1a821` |
+| Administrador não vê Alterar na lista de Reservas (BUG-016, achado nas capturas do navegador real) | `c3ed51b` | `35ddae4` |

@@ -25,6 +25,8 @@
   --cor-info-fundo: #E0E7FF;
   color-scheme: light;
   --sombra-suave: 0 1px 2px rgb(28 27 46 / 12%), 0 6px 16px rgb(28 27 46 / 8%);
+  /* Escurece a página atrás de um diálogo. Não é cor de texto nem de fundo de conteúdo: fica fora dos pares de contraste. */
+  --fundo-do-dialogo: rgb(0 0 0 / 60%);
 }
 
 @media (prefers-color-scheme: dark) {
