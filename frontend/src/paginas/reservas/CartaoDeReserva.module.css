@@ -1,0 +1,84 @@
+.cartao {
+  display: grid;
+  gap: var(--espaco-3);
+  align-content: start;
+  padding: var(--espaco-4);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+  min-width: 0;
+}
+
+.cabecalho {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+/* O estado é sempre dito em texto; a cor só reforça (WCAG 1.4.1). */
+.estado {
+  padding: 2px var(--espaco-3);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 999px;
+}
+
+.SOLICITADA {
+  color: var(--cor-aviso-texto);
+  background: var(--cor-aviso-fundo);
+}
+
+.APROVADA,
+.CONCLUIDA {
+  color: var(--cor-sucesso-texto);
+  background: var(--cor-sucesso-fundo);
+}
+
+.EM_USO {
+  color: var(--cor-info-texto);
+  background: var(--cor-info-fundo);
+}
+
+.REJEITADA,
+.CANCELADA,
+.NAO_COMPARECEU {
+  color: var(--cor-erro-texto);
+  background: var(--cor-erro-fundo);
+}
+
+.detalhes {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+}
+
+.detalhe {
+  display: grid;
+  gap: 0;
+}
+
+.detalhe dt {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cor-texto-suave);
+}
+
+.detalhe dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.carregando {
+  color: var(--cor-texto-suave);
+}
