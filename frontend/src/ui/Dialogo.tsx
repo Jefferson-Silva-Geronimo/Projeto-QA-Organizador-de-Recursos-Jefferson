@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, type KeyboardEvent, type ReactNode, type RefObject } from 'react';
+import { useEffect, useId, useRef, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import estilos from '@/ui/Dialogo.module.css';
 
@@ -17,6 +17,7 @@ interface Props {
 }
 
 const FOCAVEIS = 'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled)';
+const CAMPOS = 'input:not(:disabled), textarea:not(:disabled), select:not(:disabled)';
 
 /**
  * Diálogo modal (WCAG 2.1.2, 2.4.3, 4.1.2). O foco entra no primeiro campo (ou controle), o Tab fica preso dentro,
@@ -26,50 +27,61 @@ export function Dialogo({ titulo, descricao, aoFechar, ocupado = false, retorno,
   const idTitulo = useId();
   const idDescricao = useId();
   const caixa = useRef<HTMLDivElement>(null);
+  // O teclado é ouvido uma vez só; o que ele precisa saber da hora vem daqui.
+  const atual = useRef({ aoFechar, ocupado });
+  useEffect(() => {
+    atual.current = { aoFechar, ocupado };
+  });
 
   useEffect(() => {
-    const primeiro = caixa.current?.querySelector<HTMLElement>('input:not(:disabled), textarea:not(:disabled), select:not(:disabled)')
-      ?? caixa.current?.querySelector<HTMLElement>(FOCAVEIS);
-    primeiro?.focus();
+    const dialogo = caixa.current;
+    if (!dialogo) {
+      return;
+    }
+    const quemAbriu = retorno.current;
+    const cartao = alternativa.current;
+    (dialogo.querySelector<HTMLElement>(CAMPOS) ?? dialogo.querySelector<HTMLElement>(FOCAVEIS))?.focus();
     const rolagem = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
+    const aoTeclar = (evento: KeyboardEvent) => {
+      if (evento.key === 'Escape') {
+        evento.stopPropagation();
+        if (!atual.current.ocupado) {
+          atual.current.aoFechar();
+        }
+        return;
+      }
+      if (evento.key !== 'Tab') {
+        return;
+      }
+      // Pela ordem do documento, que é a ordem do Tab. Não confiar na ordem do seletor composto (o jsdom a agrupa).
+      const focaveis = [...dialogo.querySelectorAll<HTMLElement>(FOCAVEIS)].sort((a, b) =>
+        a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
+      );
+      const primeiro = focaveis[0];
+      const ultimo = focaveis[focaveis.length - 1];
+      if (!primeiro || !ultimo) {
+        evento.preventDefault();
+        return;
+      }
+      const ativo = document.activeElement;
+      if (evento.shiftKey && (ativo === primeiro || ativo === dialogo || !dialogo.contains(ativo))) {
+        evento.preventDefault();
+        ultimo.focus();
+      } else if (!evento.shiftKey && ativo === ultimo) {
+        evento.preventDefault();
+        primeiro.focus();
+      }
+    };
+    dialogo.addEventListener('keydown', aoTeclar);
+
     return () => {
+      dialogo.removeEventListener('keydown', aoTeclar);
       document.body.style.overflow = rolagem;
-      const alvo = retorno.current?.isConnected ? retorno.current : alternativa.current;
-      alvo?.focus();
+      (quemAbriu?.isConnected ? quemAbriu : cartao)?.focus();
     };
   }, [retorno, alternativa]);
-
-  const aoTeclar = (evento: KeyboardEvent<HTMLDivElement>) => {
-    if (evento.key === 'Escape') {
-      evento.stopPropagation();
-      if (!ocupado) {
-        aoFechar();
-      }
-      return;
-    }
-    if (evento.key !== 'Tab' || !caixa.current) {
-      return;
-    }
-    // Pela ordem do documento, que é a ordem do Tab. Não confiar na ordem do seletor composto (o jsdom a agrupa).
-    const focaveis = [...caixa.current.querySelectorAll<HTMLElement>(FOCAVEIS)].sort((a, b) =>
-      a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1,
-    );
-    const primeiro = focaveis[0];
-    const ultimo = focaveis[focaveis.length - 1];
-    if (!primeiro || !ultimo) {
-      evento.preventDefault();
-      return;
-    }
-    const ativo = document.activeElement;
-    if (evento.shiftKey && (ativo === primeiro || !caixa.current.contains(ativo) || ativo === caixa.current)) {
-      evento.preventDefault();
-      ultimo.focus();
-    } else if (!evento.shiftKey && ativo === ultimo) {
-      evento.preventDefault();
-      primeiro.focus();
-    }
-  };
 
   return createPortal(
     <div className={estilos.fundo}>
@@ -80,7 +92,6 @@ export function Dialogo({ titulo, descricao, aoFechar, ocupado = false, retorno,
         aria-labelledby={idTitulo}
         aria-describedby={idDescricao}
         className={estilos.caixa}
-        onKeyDown={aoTeclar}
       >
         <h2 id={idTitulo} className={estilos.titulo}>
           {titulo}
