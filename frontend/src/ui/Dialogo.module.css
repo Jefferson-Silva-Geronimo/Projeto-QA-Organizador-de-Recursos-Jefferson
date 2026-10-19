@@ -5,7 +5,7 @@
   display: grid;
   place-items: center;
   padding: var(--espaco-4);
-  background: rgb(0 0 0 / 0.55);
+  background: var(--fundo-do-dialogo);
   overflow-y: auto;
 }
 
