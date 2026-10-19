@@ -160,3 +160,8 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Foco vai ao conteúdo ao trocar de tela e título da página por tela | `0f0c8c7` | `8ad762c` |
 | Ícone do calendário dos campos de data tem foco visível | `f05435b` | `fbc40e3` |
 | Confirmação mostra o nome dos recursos mesmo quando a lista refeita já não os traz | `59ce6f2` | `22ef543` |
+| Destino depois do login só para endereço interno de tela que o perfil vê (sem redirecionamento aberto) | `3c99a0b` | `0ff209f` |
+| Contexto marca a sessão como expirada no 401 e limpa ao entrar ou sair | `c6ebb36` | `e259171` |
+| Tela de Login: estrutura, `autocomplete`, mostrar senha e tema | `106afb9` | `2a2b9e6` |
+| Tela de Login: envio, clique duplo, campos em branco, recusa sem dizer qual campo errou, foco e tabela de mensagens | `9c44f04` | `361ef2a` |
+| Login nas rotas: tela real, destino por perfil, volta à tela de origem com filtros e aviso de sessão terminada | `54b7d19` | `09d7a88` |

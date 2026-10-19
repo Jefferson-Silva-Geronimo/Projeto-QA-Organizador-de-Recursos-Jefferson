@@ -19,7 +19,7 @@ export function RotaProtegida({ perfis, children }: Props) {
   const local = useLocation();
 
   if (!sessao) {
-    return <Navigate to="/entrar" replace state={{ de: local.pathname }} />;
+    return <Navigate to="/entrar" replace state={{ de: local.pathname + local.search }} />;
   }
   if (perfis && !perfis.includes(sessao.perfil)) {
     const { mensagem, acao } = mensagemPara('ACESSO_NEGADO');

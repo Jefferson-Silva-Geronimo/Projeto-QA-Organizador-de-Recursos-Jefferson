@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -275,9 +275,168 @@ async function fluxoTeclado(navegador, maria) {
   await ctx.close();
 }
 
+/** Contexto limpo, sem sessão injetada: o login é feito de verdade pela tela. */
+async function contextoSemSessao(navegador, c) {
+  return navegador.newContext({ viewport: { width: c.largura, height: c.altura }, colorScheme: c.esquema, locale: 'pt-BR', timezoneId: 'America/Sao_Paulo', deviceScaleFactor: 1 });
+}
+async function preencherEEnviar(page, email, senha) {
+  await page.getByLabel('E-mail').fill(email);
+  await page.getByLabel(/^Senha/).fill(senha);
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+}
+function conferir(rotulo, ok, detalhe) {
+  RELATORIO.notas.push({ estado: rotulo, ok, ...(detalhe ? { detalhe } : {}) });
+  if (!ok) console.log('CONFERÊNCIA FALHOU:', rotulo, detalhe || '');
+}
+
+/** Login (T01): tela, validação local, credencial inválida, destino por perfil, volta à origem e sessão terminada. */
+async function fluxoLogin(navegador, c, semente, indice) {
+  const P = (nome) => `${c.id}-${nome}`;
+  const maria = semente.usuarios.solicitante.email;
+  const carlos = semente.usuarios.responsavel.email;
+
+  // ---- a tela, campos em branco e credencial inválida (e-mail inexistente: não gasta tentativas de conta real)
+  let ctx = await contextoSemSessao(navegador, c);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/entrar');
+  await page.getByRole('heading', { level: 1, name: 'Entrar' }).waitFor();
+  conferir(P('titulo-da-pagina'), (await page.title()).includes('Entrar'), await page.title());
+  await foto(page, P('login-1-tela'));
+  await auditar(page, P('login-1-tela'));
+  await semRolagemHorizontal(page, P('login'));
+
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await page.getByText('Informe o e-mail.').waitFor();
+  conferir(P('foco-no-email-em-branco'), await page.evaluate(() => document.activeElement && document.activeElement.id !== '' && document.activeElement.type === 'email'));
+  await foto(page, P('login-2-em-branco'));
+  await auditar(page, P('login-2-em-branco'));
+
+  await page.getByLabel(/^Senha/).fill('qualquer-senha-errada');
+  await page.getByRole('button', { name: 'Mostrar senha' }).click();
+  await foto(page, P('login-3-senha-visivel'));
+  await auditar(page, P('login-3-senha-visivel'));
+  await page.getByRole('button', { name: 'Mostrar senha' }).click();
+  await page.getByLabel('E-mail').fill(`inexistente.${indice}@exemplo.test`);
+  await page.getByRole('button', { name: 'Entrar', exact: true }).click();
+  await page.getByRole('alert').waitFor();
+  const texto = await page.getByRole('alert').innerText();
+  conferir(P('recusa-sem-dizer-o-campo'), /e-?mail/i.test(texto) === /senha/i.test(texto), texto.replace(/\s+/g, ' '));
+  conferir(P('foco-na-mensagem'), await page.evaluate(() => document.activeElement && document.activeElement.getAttribute('role') === 'alert'));
+  conferir(P('senha-apagada'), (await page.getByLabel(/^Senha/).inputValue()) === '');
+  conferir(P('email-preservado'), (await page.getByLabel('E-mail').inputValue()) === `inexistente.${indice}@exemplo.test`);
+  await foto(page, P('login-4-recusa'));
+  await auditar(page, P('login-4-recusa'));
+  await ctx.close();
+
+  // ---- entrar de verdade: Solicitante e Responsável vão para a sua tela inicial
+  for (const [perfil, email, senha, destino] of [['solicitante', maria, env.SOL_SENHA, '/buscar'], ['responsavel', carlos, env.RESP_SENHA, '/aprovacoes']]) {
+    ctx = await contextoSemSessao(navegador, c);
+    page = await ctx.newPage();
+    await page.goto(FRONT + '/entrar');
+    await preencherEEnviar(page, email, senha);
+    await page.waitForURL('**' + destino);
+    conferir(P('destino-' + perfil), new URL(page.url()).pathname === destino, page.url());
+    await page.getByRole('heading', { level: 1 }).waitFor();
+    await page.waitForTimeout(500);
+    const focoDepoisDeEntrar = await descrever(page);
+    conferir(P('foco-depois-de-entrar-' + perfil), focoDepoisDeEntrar.nome !== '(corpo da página)', focoDepoisDeEntrar.nome);
+    if (perfil === 'solicitante') {
+      await foto(page, P('login-5-entrou'));
+      await auditar(page, P('login-5-entrou'));
+    }
+    await ctx.close();
+  }
+
+  // ---- volta à tela de origem com filtros: abrir /buscar?tipo=SALA sem sessão, entrar, voltar ao mesmo endereço
+  ctx = await contextoSemSessao(navegador, c);
+  page = await ctx.newPage();
+  await page.goto(FRONT + '/buscar?tipo=SALA&capacidadeMinima=30');
+  await page.getByRole('heading', { level: 1, name: 'Entrar' }).waitFor();
+  conferir(P('protegida-leva-ao-login'), new URL(page.url()).pathname === '/entrar', page.url());
+  await preencherEEnviar(page, maria, env.SOL_SENHA);
+  await page.getByRole('heading', { level: 1, name: 'Buscar' }).waitFor();
+  const u = new URL(page.url());
+  conferir(P('volta-com-filtros'), u.pathname === '/buscar' && u.search === '?tipo=SALA&capacidadeMinima=30', page.url());
+
+  // ---- sessão terminada: o token passa a ser recusado pela API (401) e a tela de login avisa
+  await page.evaluate(() => {
+    const s = JSON.parse(window.sessionStorage.getItem('sessao'));
+    window.sessionStorage.setItem('sessao', JSON.stringify({ ...s, token: 'token-que-a-api-nao-conhece' }));
+  });
+  await page.reload();
+  await page.getByText('Sua sessão terminou. Entre novamente.').waitFor();
+  conferir(P('sessao-terminada-no-login'), new URL(page.url()).pathname === '/entrar', page.url());
+  await foto(page, P('login-6-sessao-terminada'));
+  await auditar(page, P('login-6-sessao-terminada'));
+  await semRolagemHorizontal(page, P('login-sessao-terminada'));
+  await ctx.close();
+}
+
+/** Login só pelo teclado: Tab até os campos, Enter envia, foco vai à mensagem na recusa. */
+async function fluxoTecladoLogin(navegador) {
+  const c = { id: 'teclado-login', largura: 1280, altura: 800, esquema: 'light' };
+  const ctx = await contextoSemSessao(navegador, c);
+  const page = await ctx.newPage();
+  const passos = [];
+  const registrar = async (acao) => { const d = await descrever(page); passos.push({ acao, ...d }); return d; };
+  const ate = async (nome, limite = 12) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await registrar('Tab');
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado do login: não cheguei em "' + nome + '"');
+  };
+  await page.goto(FRONT + '/entrar');
+  await page.getByRole('heading', { level: 1, name: 'Entrar' }).waitFor();
+  await ate('E-mail');
+  await page.keyboard.type('inexistente.teclado@exemplo.test');
+  await ate('Senha');
+  await page.keyboard.type('senha-errada-teclado');
+  await ate('Mostrar senha');
+  await ate('Entrar');
+  await page.keyboard.press('Enter');
+  await page.getByRole('alert').waitFor();
+  await registrar('Enter em Entrar (recusa)');
+  await foto(page, 'teclado-login-1-recusa');
+  await ate('E-mail');
+  await page.keyboard.press('Control+A');
+  await page.keyboard.type(JSON.parse(fs.readFileSync(path.join(LOCAL, 'semente.json'), 'utf-8')).usuarios.solicitante.email);
+  await ate('Senha');
+  await page.keyboard.type(env.SOL_SENHA);
+  await page.keyboard.press('Enter');
+  await page.getByRole('heading', { level: 1, name: 'Buscar' }).waitFor();
+  await page.waitForTimeout(500);
+  const depois = await registrar('Enter na senha (entra)');
+  RELATORIO.notas.push({ estado: 'teclado-login', focoDepoisDeEntrar: depois.nome, ok: depois.nome !== '(corpo da página)' });
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
+
 (async () => {
   const navegador = await chromium.launch();
   const semente = JSON.parse(fs.readFileSync(path.join(LOCAL, 'semente.json'), 'utf-8'));
+  if (SO === 'tudo' || SO === 'login') {
+    for (const [i, c] of COMBOS.entries()) {
+      console.log('login', c.id);
+      await fluxoLogin(navegador, c, semente, i);
+    }
+    console.log('login teclado');
+    await fluxoTecladoLogin(navegador);
+    if (SO === 'login') {
+      fs.writeFileSync(path.join(SAIDA, 'relatorio-login.json'), JSON.stringify(RELATORIO, null, 1));
+      await navegador.close();
+      const v = RELATORIO.axe.filter((a) => a.violacoes.length);
+      console.log('estados auditados:', RELATORIO.axe.length, '| com violação:', v.length);
+      for (const a of v) console.log(' -', a.estado, JSON.stringify(a.violacoes));
+      const f = RELATORIO.notas.filter((n) => n.ok === false || n.semRolagemHorizontal === false);
+      console.log('conferências:', RELATORIO.notas.length, '| falhas:', f.length);
+      const semFoco = RELATORIO.foco.filter((p) => !p.visivel);
+      console.log('paradas de Tab:', RELATORIO.foco.length, '| sem foco visível:', semFoco.length);
+      for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
+      return;
+    }
+  }
   const ids = { sala203: semente.recursos.sala203 };
   const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
   const joao = await entrar(semente.usuarios.solicitante2.email, env.SOL_SENHA);

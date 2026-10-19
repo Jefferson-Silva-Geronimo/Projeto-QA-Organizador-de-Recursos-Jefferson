@@ -17,11 +17,12 @@ function resposta(status: number, corpo?: unknown): Response {
 }
 
 function Sonda() {
-  const { sessao, entrar, sair, cliente } = useSessao();
+  const { sessao, sessaoExpirou, entrar, sair, cliente } = useSessao();
   const [codigo, setCodigo] = useState('');
   return (
     <div>
       <p data-testid="perfil">{sessao?.perfil ?? 'nenhum'}</p>
+      <p data-testid="expirou">{String(sessaoExpirou)}</p>
       <p data-testid="codigo">{codigo}</p>
       <button type="button" onClick={() => entrar('r@exemplo.test', 'senha').catch((e: unknown) => setCodigo((e as ErroDeApi).problema.code))}>
         entrar
@@ -116,6 +117,44 @@ describe('ProvedorDeSessao', () => {
 
     await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum'));
     expect(lerSessao()).toBeNull();
+  });
+
+  it('na abertura a sessão não expirou', () => {
+    montar(async () => resposta(200, []));
+
+    expect(screen.getByTestId('expirou')).toHaveTextContent('false');
+  });
+
+  it('401 numa chamada com sessão marca a sessão como expirada', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    montar(async () => resposta(401, { status: 401, code: 'NAO_AUTENTICADO' }));
+
+    await userEvent.click(screen.getByRole('button', { name: 'consultar' }));
+
+    await waitFor(() => expect(screen.getByTestId('expirou')).toHaveTextContent('true'));
+  });
+
+  it('sair por vontade própria não conta como sessão expirada', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    montar(async () => resposta(204));
+
+    await userEvent.click(screen.getByRole('button', { name: 'sair' }));
+
+    await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('nenhum'));
+    expect(screen.getByTestId('expirou')).toHaveTextContent('false');
+  });
+
+  it('entrar de novo limpa a marca de expirada', async () => {
+    guardarSessao({ token: 'token-antigo', perfil: 'SOLICITANTE', expiraEm: '2999-01-01T00:00:00Z' });
+    let chamadas = 0;
+    montar(async () => (++chamadas === 1 ? resposta(401, { code: 'NAO_AUTENTICADO' }) : resposta(200, LOGIN_OK)));
+    await userEvent.click(screen.getByRole('button', { name: 'consultar' }));
+    await waitFor(() => expect(screen.getByTestId('expirou')).toHaveTextContent('true'));
+
+    await userEvent.click(screen.getByRole('button', { name: 'entrar' }));
+
+    await waitFor(() => expect(screen.getByTestId('perfil')).toHaveTextContent('RESPONSAVEL'));
+    expect(screen.getByTestId('expirou')).toHaveTextContent('false');
   });
 });
 

@@ -329,7 +329,8 @@ Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md)
 | --- | --- | --- |
 | T02 Busca de disponibilidade | Padrão **aprovado** (F6-11), pronta | Verificado em navegador real contra a API (ver RTM, execução E-6) |
 | T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação pronta | A alteração de reserva entra com a tela T04 |
-| T01 e T04 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
+| T01 Login | **Em andamento** (branch `fase-6/tela-login`) | Implementada em TDD (CT-141); faltam a verificação em navegador real, o pull request e a CI |
+| T04 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
 
 Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens
 com ícone, rótulo em texto e papel ARIA correto; recusas pela tabela de erros da seção 5, com o foco levado à mensagem;

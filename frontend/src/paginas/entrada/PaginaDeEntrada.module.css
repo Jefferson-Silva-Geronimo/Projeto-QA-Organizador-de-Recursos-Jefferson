@@ -1,0 +1,83 @@
+/* Celular primeiro: cartão de largura total. Só tokens, nenhuma cor fixa. */
+.fundo {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+
+.topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3) var(--espaco-4);
+  padding-left: max(var(--espaco-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--espaco-4), env(safe-area-inset-right, 0px));
+}
+
+.marca {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.principal {
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-6);
+  padding-left: max(var(--espaco-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--espaco-4), env(safe-area-inset-right, 0px));
+}
+
+.cartao {
+  width: 100%;
+  max-width: 420px;
+  display: grid;
+  gap: var(--espaco-4);
+  padding: var(--espaco-5);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  box-shadow: var(--sombra-suave);
+}
+
+.cartao h1 {
+  margin: 0;
+}
+
+.formulario {
+  display: grid;
+  gap: var(--espaco-4);
+}
+
+.senha {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--espaco-2);
+  align-items: stretch;
+}
+
+.alternar {
+  min-height: var(--altura-minima-toque);
+  padding: 0 var(--espaco-3);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cor-destaque-texto);
+  background: transparent;
+  border: 2px solid var(--cor-destaque-texto);
+  border-radius: var(--raio-medio);
+  cursor: pointer;
+}
+
+.alternar[aria-pressed='true'] {
+  background: var(--cor-destaque);
+  color: var(--cor-sobre-destaque);
+  border-color: var(--cor-destaque);
+}
+
+.alternar:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}

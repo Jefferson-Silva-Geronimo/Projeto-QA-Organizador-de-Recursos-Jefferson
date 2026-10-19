@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigationType } from 'react-router-dom';
 import { useSessao } from '@/autenticacao/useSessao';
 import estilos from '@/layout/Estrutura.module.css';
 import { Navegacao } from '@/layout/Navegacao';
@@ -16,11 +16,21 @@ const NOMES_DOS_PERFIS = {
 export function Estrutura() {
   const { sessao, sair } = useSessao();
   const { pathname } = useLocation();
+  const tipoDeNavegacao = useNavigationType();
   const conteudo = useRef<HTMLElement>(null);
   const telaAnterior = useRef(pathname);
 
   // Numa aplicação de página única o navegador não move o foco ao trocar de tela. Sem isto o teclado fica
   // no corpo da página. Só muda de tela quando o caminho muda: filtros no endereço não movem o foco (WCAG 2.4.3).
+  // Depois do login a casca monta já na tela de destino, por redirecionamento: também é troca de tela.
+  // Só a abertura direta da página (POP) deixa o foco em paz.
+  useEffect(() => {
+    if (tipoDeNavegacao !== 'POP') {
+      conteudo.current?.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- só na montagem
+  }, []);
+
   useEffect(() => {
     if (telaAnterior.current !== pathname) {
       telaAnterior.current = pathname;

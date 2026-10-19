@@ -16,6 +16,8 @@ dele. Nada aqui contém segredo: as credenciais são geradas na hora, ficam em `
 | `prototipo.cjs visual` | Busca e Nova reserva em 360 px e 1280 px, nos temas claro e escuro, em 12 estados cada: lista, horários ocupados, filtros, erro de campo, recursos livres, validação recusada, formulário preenchido, conflito de verdade (outra pessoa reserva antes), lista refeita, aprovada, recurso restrito e enviada para aprovação. Em cada estado: captura, auditoria axe (WCAG 2.0, 2.1 e 2.2 AA e boas práticas, com contraste) e conferência de rolagem horizontal |
 | `prototipo.cjs teclado` | Fluxo completo **sem mouse**: pular para o conteúdo, filtros, Buscar, Reservar, formulário, envio e confirmação. Registra cada parada de Tab e se o foco é visível |
 
+| `prototipo.cjs login` | Tela de Login **sem sessão injetada**, em 360 e 1280 px, nos dois temas: tela, campos em branco, senha visível, credencial inválida (recusa sem dizer o campo, foco na mensagem, senha apagada), entrar como Solicitante e Responsável (destino e foco), volta à tela de origem com filtros e sessão terminada (token recusado pela API). Mais um fluxo só com teclado |
+
 Saída: capturas (`.jpg` da janela e `-completa.png` da página) e `relatorio.json` (violações do axe, verificações
 incompletas, paradas de Tab e conferências).
 
@@ -59,6 +61,10 @@ cd frontend && VITE_API_URL=http://localhost:8080 npm run build \
 python docs/testes/roteiro-navegador-real/semear.py
 DESLOCAMENTO=7 node docs/testes/roteiro-navegador-real/prototipo.cjs /tmp/saida-roteiro tudo
 ```
+
+Modo só do Login: `node docs/testes/roteiro-navegador-real/prototipo.cjs <pasta-de-saida-absoluta> login`. O e-mail da recusa é inexistente, para não gastar as 5 tentativas de uma conta real.
+
+Se o `docker run` recusar a porta 55432 ("permissões de acesso"), o Windows a reservou: veja `netsh interface ipv4 show excludedportrange protocol=tcp` e use outra, como 35432 (ajuste `DB_URL`).
 
 Para repetir no mesmo banco, troque `DESLOCAMENTO` (o roteiro cria reservas de verdade), ou apague o contêiner e
 recomece no passo 2.
