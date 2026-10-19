@@ -7,6 +7,7 @@ import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
 import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
 import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
+import { PaginaDeReservas } from '@/paginas/reservas/PaginaDeReservas';
 import { destinoDepoisDoLogin } from '@/rotas/destino';
 import { rotaInicial } from '@/rotas/navegacao';
 import { RotaProtegida } from '@/rotas/RotaProtegida';
@@ -16,6 +17,7 @@ import { TELAS, type Tela } from '@/rotas/telas';
 function ConteudoDaTela({ tela }: { tela: Tela }) {
   if (tela.id === 'T02') return <PaginaDeBusca />;
   if (tela.id === 'T03') return <PaginaDeNovaReserva />;
+  if (tela.id === 'T04') return <PaginaDeReservas />;
   return <PaginaDeTela tela={tela} />;
 }
 
