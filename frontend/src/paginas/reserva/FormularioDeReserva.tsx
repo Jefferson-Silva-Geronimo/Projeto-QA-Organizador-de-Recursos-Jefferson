@@ -1,38 +1,53 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
 import { ErroDeApi } from '@/api/cliente';
 import { FUSO_DO_CAMPUS, localParaIsoComOffset } from '@/datas/fuso';
 import estilos from '@/paginas/reserva/PaginaDeNovaReserva.module.css';
 import { ReservaCriada } from '@/paginas/reserva/ReservaCriada';
 import { SeletorDeRecursos } from '@/paginas/reserva/SeletorDeRecursos';
 import { useRecursos, type Recurso } from '@/recursos/consulta';
-import { useCriarReserva, type NovaReserva } from '@/reservas/criar';
+import { useRecursosDaReserva } from '@/reservas/consulta';
+import { useAlterarReserva, useCriarReserva, type NovaReserva, type Reserva } from '@/reservas/criar';
+import botoes from '@/ui/Botao.module.css';
 import { Aviso } from '@/ui/Aviso';
 import { Botao } from '@/ui/Botao';
 import { Campo } from '@/ui/Campo';
 import { ErroDaApi } from '@/ui/ErroDaApi';
 import { Carregando, EstadoVazio } from '@/ui/Estados';
 
-/** Valores com que o formulário abre: os que vieram da Busca no endereço, ou vazios. */
+/** Valores com que o formulário abre: os da Busca no endereço, os da reserva que se altera, ou vazios. */
 export interface Inicial {
   inicio: string;
   fim: string;
   recursos: number[];
+  titulo?: string;
+  descricao?: string;
 }
 
 export const VAZIO: Inicial = { inicio: '', fim: '', recursos: [] };
 
 interface Props {
   inicial: Inicial;
-  aoFazerOutra: () => void;
+  /** Só na Nova reserva: volta ao formulário vazio depois da confirmação. */
+  aoFazerOutra?: () => void;
+  /** Reserva que está sendo alterada. Sem ela, o formulário cria uma reserva nova. */
+  alteracao?: Reserva;
 }
 
-export function Formulario({ inicial, aoFazerOutra }: Props) {
-  const [titulo, setTitulo] = useState('');
-  const [descricao, setDescricao] = useState('');
+/**
+ * Formulário de reserva, o mesmo para criar e para alterar. O tratamento das recusas (conflito, janela, manutenção)
+ * é um só: o servidor decide e a tela mostra a mensagem da tabela de erros.
+ */
+export function Formulario({ inicial, aoFazerOutra, alteracao }: Props) {
+  const [titulo, setTitulo] = useState(inicial.titulo ?? '');
+  const [descricao, setDescricao] = useState(inicial.descricao ?? '');
   const [inicio, setInicio] = useState(inicial.inicio);
   const [fim, setFim] = useState(inicial.fim);
   const [escolhidos, setEscolhidos] = useState<ReadonlySet<number>>(() => new Set(inicial.recursos));
-  const criar = useCriarReserva();
+  const criarReserva = useCriarReserva();
+  const alterarReserva = useAlterarReserva(alteracao?.id);
+  const envio = alteracao ? alterarReserva : criarReserva;
+  const proprios = useRecursosDaReserva(alteracao?.recursoIds ?? []);
   // Recursos como estavam no envio: depois da reserva a lista é refeita e o que foi reservado deixa de estar livre.
   const [enviados, setEnviados] = useState<Recurso[]>([]);
   const alerta = useRef<HTMLDivElement>(null);
@@ -40,15 +55,15 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
 
   // Depois de uma recusa o foco vai para a mensagem: o teclado e o leitor de tela vão até ela.
   useEffect(() => {
-    if (criar.isError) {
+    if (envio.isError) {
       alerta.current?.focus();
     }
-  }, [criar.isError, criar.submittedAt]);
+  }, [envio.isError, envio.submittedAt]);
 
   // Campos que o servidor não aceitou. Nome de campo desconhecido é ignorado.
   const recusados =
-    criar.error instanceof ErroDeApi && criar.error.problema.code === 'VALIDACAO_FALHOU'
-      ? new Set(criar.error.problema.campos)
+    envio.error instanceof ErroDeApi && envio.error.problema.code === 'VALIDACAO_FALHOU'
+      ? new Set(envio.error.problema.campos)
       : new Set<string>();
   const erroDoCampo = (campo: string, mensagem: string) => (recusados.has(campo) ? mensagem : undefined);
 
@@ -57,10 +72,17 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
   const periodoCompleto = inicioIso !== null && fimIso !== null;
   const livres = useRecursos({ inicio: inicioIso ?? undefined, fim: fimIso ?? undefined }, periodoCompleto);
 
-  // Só vale a seleção que o servidor ainda mostra como livre neste período.
-  const idsLivres = new Set((livres.data ?? []).map((r) => r.id));
-  const marcados = new Set([...escolhidos].filter((id) => idsLivres.has(id)));
-  const desmarcados = livres.isSuccess && [...escolhidos].some((id) => !idsLivres.has(id));
+  // O que se pode escolher: o que o servidor mostra como livre neste período e, na alteração, os recursos da própria
+  // reserva, que ela mesma ocupa e por isso o servidor não lista como livres.
+  const candidatos = [...(livres.data ?? [])];
+  for (const { recurso } of proprios) {
+    if (recurso && !candidatos.some((c) => c.id === recurso.id)) candidatos.push(recurso);
+  }
+  const idsDisponiveis = new Set(candidatos.map((r) => r.id));
+  const propriosProntos = proprios.every((p) => !p.carregando);
+  // Só vale a seleção que ainda se pode escolher neste período.
+  const marcados = new Set([...escolhidos].filter((id) => idsDisponiveis.has(id)));
+  const desmarcados = livres.isSuccess && propriosProntos && [...escolhidos].some((id) => !idsDisponiveis.has(id));
 
   const alternar = (id: number) =>
     setEscolhidos((atual) => {
@@ -72,7 +94,7 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
 
   const enviar = (evento: FormEvent) => {
     evento.preventDefault();
-    if (criar.isPending || !inicioIso || !fimIso) {
+    if (envio.isPending || !inicioIso || !fimIso) {
       return;
     }
     const corpo: NovaReserva = {
@@ -82,17 +104,17 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
       recursoIds: [...marcados].sort((a, b) => a - b),
       ...(descricao.trim() ? { descricao: descricao.trim() } : {}),
     };
-    setEnviados((livres.data ?? []).filter((recurso) => marcados.has(recurso.id)));
-    criar.mutate(corpo);
+    setEnviados(candidatos.filter((recurso) => marcados.has(recurso.id)));
+    envio.mutate(corpo);
   };
 
-  if (criar.isSuccess) {
-    return <ReservaCriada reserva={criar.data} recursos={enviados} aoFazerOutra={aoFazerOutra} />;
+  if (envio.isSuccess) {
+    return <ReservaCriada reserva={envio.data} recursos={enviados} aoFazerOutra={aoFazerOutra} alterada={alteracao !== undefined} />;
   }
 
   return (
     <form onSubmit={enviar} noValidate className={estilos.formulario}>
-      {criar.isError && <ErroDaApi erro={criar.error} ref={alerta} />}
+      {envio.isError && <ErroDaApi erro={envio.error} ref={alerta} />}
       <fieldset className={estilos.bloco}>
         <legend className={estilos.legenda}>Quando</legend>
         <div className={estilos.duplo}>
@@ -120,7 +142,7 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
         )}
         {periodoCompleto && livres.isPending && <Carregando texto="Buscando recursos livres…" />}
         {livres.isError && <ErroDaApi erro={livres.error} aoTentarDeNovo={() => void livres.refetch()} />}
-        {livres.isSuccess && livres.data.length === 0 && (
+        {livres.isSuccess && candidatos.length === 0 && (
           <EstadoVazio titulo="Nenhum recurso livre neste período">Escolha outro horário.</EstadoVazio>
         )}
         {desmarcados && (
@@ -129,8 +151,8 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
             ou outro recurso.
           </Aviso>
         )}
-        {livres.isSuccess && livres.data.length > 0 && (
-          <SeletorDeRecursos recursos={livres.data} marcados={marcados} aoAlternar={alternar} />
+        {candidatos.length > 0 && (
+          <SeletorDeRecursos recursos={candidatos} marcados={marcados} aoAlternar={alternar} />
         )}
       </fieldset>
 
@@ -145,9 +167,18 @@ export function Formulario({ inicial, aoFazerOutra }: Props) {
       </fieldset>
 
       <div className={estilos.acoes}>
-        <Botao type="submit" carregando={criar.isPending} textoCarregando="Reservando…">
-          Reservar
+        <Botao
+          type="submit"
+          carregando={envio.isPending}
+          textoCarregando={alteracao ? 'Salvando…' : 'Reservando…'}
+        >
+          {alteracao ? 'Salvar alterações' : 'Reservar'}
         </Botao>
+        {alteracao && (
+          <Link to="/reservas" className={`${botoes.botao} ${botoes.secundario}`}>
+            Cancelar edição
+          </Link>
+        )}
       </div>
     </form>
   );

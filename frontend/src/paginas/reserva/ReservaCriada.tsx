@@ -11,18 +11,24 @@ import botoes from '@/ui/Botao.module.css';
 interface Props {
   reserva: Reserva;
   recursos: Recurso[];
-  aoFazerOutra: () => void;
+  /** Só na Nova reserva. Sem ele, não há "Fazer outra reserva". */
+  aoFazerOutra?: () => void;
+  /** Confirmação de uma alteração, e não de uma reserva nova. */
+  alterada?: boolean;
 }
 
 /** O texto vem do estado que o servidor devolveu. O front não decide se a reserva exigia aprovação. */
-function titulo(estado: Reserva['estado'] | undefined): string {
+function titulo(estado: Reserva['estado'] | undefined, alterada: boolean): string {
+  if (alterada) {
+    return estado === 'SOLICITADA' ? 'Reserva alterada e enviada para nova aprovação' : 'Reserva alterada';
+  }
   if (estado === 'APROVADA') return 'Reserva aprovada';
   if (estado === 'SOLICITADA') return 'Reserva enviada para aprovação';
   return 'Reserva registrada';
 }
 
 /** Confirmação da reserva. Recebe o foco ao aparecer, para o teclado e o leitor de tela não ficarem no vazio. */
-export function ReservaCriada({ reserva, recursos, aoFazerOutra }: Props) {
+export function ReservaCriada({ reserva, recursos, aoFazerOutra, alterada = false }: Props) {
   const aviso = useRef<HTMLDivElement>(null);
   useEffect(() => {
     aviso.current?.focus();
@@ -33,7 +39,7 @@ export function ReservaCriada({ reserva, recursos, aoFazerOutra }: Props) {
   return (
     <div className={estilos.pagina}>
       <Aviso tipo="sucesso" ref={aviso}>
-        <strong>{titulo(reserva.estado)}</strong>
+        <strong>{titulo(reserva.estado, alterada)}</strong>
         <dl className={estilos.resumo}>
           <div>
             <dt>Título</dt>
@@ -56,9 +62,11 @@ export function ReservaCriada({ reserva, recursos, aoFazerOutra }: Props) {
         <Link to="/reservas" className={`${botoes.botao} ${botoes.primario}`}>
           Ver minhas reservas
         </Link>
-        <Botao variante="secundario" onClick={aoFazerOutra}>
-          Fazer outra reserva
-        </Botao>
+        {aoFazerOutra && (
+          <Botao variante="secundario" onClick={aoFazerOutra}>
+            Fazer outra reserva
+          </Botao>
+        )}
       </div>
     </div>
   );
