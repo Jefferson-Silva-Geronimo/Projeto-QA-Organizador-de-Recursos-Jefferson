@@ -6,6 +6,7 @@ import { NaoEncontrada } from '@/paginas/NaoEncontrada';
 import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
 import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
+import { PaginaDeAlteracao } from '@/paginas/reserva/PaginaDeAlteracao';
 import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
 import { PaginaDeReservas } from '@/paginas/reservas/PaginaDeReservas';
 import { destinoDepoisDoLogin } from '@/rotas/destino';
@@ -36,6 +37,11 @@ function Raiz() {
   return <Navigate to={sessao ? rotaInicial(sessao.perfil) : '/entrar'} replace />;
 }
 
+const ENDERECO_DA_ALTERACAO = /^\/reservas\/[^/]+\/alterar$/;
+
+/** A alteração é parte da T03 (Nova reserva e alteração): quem vê uma, vê a outra. */
+const PERFIS_DA_ALTERACAO = TELAS.find((t) => t.id === 'T03')?.perfis;
+
 /**
  * Mapa de rotas por perfil (F6-08). Esconder uma tela é conveniência: o servidor recusa com 403
  * qualquer chamada proibida (ADR-004).
@@ -47,7 +53,8 @@ export function Rotas() {
   useEffect(() => {
     if (pathname === '/') return;
     const tela = TELAS.find((t) => t.caminho === pathname);
-    document.title = `${tela?.rotulo ?? 'Página não encontrada'} · Organização de Recursos`;
+    const rotulo = ENDERECO_DA_ALTERACAO.test(pathname) ? 'Alterar reserva' : (tela?.rotulo ?? 'Página não encontrada');
+    document.title = `${rotulo} · Organização de Recursos`;
   }, [pathname]);
 
   return (
@@ -72,6 +79,14 @@ export function Rotas() {
             }
           />
         ))}
+        <Route
+          path="/reservas/:id/alterar"
+          element={
+            <RotaProtegida perfis={PERFIS_DA_ALTERACAO}>
+              <PaginaDeAlteracao />
+            </RotaProtegida>
+          }
+        />
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>
