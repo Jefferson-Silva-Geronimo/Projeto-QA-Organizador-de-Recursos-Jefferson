@@ -328,14 +328,17 @@ Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md)
 | Tela | Estado | Observação |
 | --- | --- | --- |
 | T02 Busca de disponibilidade | Padrão **aprovado** (F6-11), pronta | Verificado em navegador real contra a API (ver RTM, execução E-6) |
-| T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação pronta | A alteração de reserva entra com a tela T04 |
-| T01 Login | **Em andamento** (branch `fase-6/tela-login`) | Implementada em TDD (CT-141); faltam a verificação em navegador real, o pull request e a CI |
-| T04 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
+| T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação e alteração prontas | A alteração abre o mesmo formulário da criação, em `/reservas/:id/alterar`, com a verificação em navegador real da T04 (CT-143) |
+| T01 Login | Pronta (PR 34) | Implementada em TDD (CT-141) e verificada em navegador real contra a API (RTM, execução E-7) |
+| T04 Minhas reservas e cancelamento | **Em andamento** (branch `fase-6/tela-minhas-reservas`) | Implementada em TDD (CT-142 e CT-143) e verificada em navegador real contra a API (RTM, execução E-8); falta o pull request e a CI |
+| T05 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
 
 Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens
 com ícone, rótulo em texto e papel ARIA correto; recusas pela tabela de erros da seção 5, com o foco levado à mensagem;
 dados digitados preservados em toda recusa; confirmação derivada do estado devolvido pelo servidor; foco no conteúdo ao
 trocar de tela; título por tela; datas no fuso do campus.
+
+Decisões de construção da T04, dentro da seção 4 e do padrão aprovado (nenhuma muda regra): o título da tela é "Reservas" (o rótulo do menu), porque o Responsável e o Administrador também a usam; Alterar e Cancelar aparecem nos estados SOLICITADA e APROVADA e a recusa por dono, perfil ou horário vem do servidor (RN-07, RN-18, RN-19); o Administrador não vê Alterar, pela matriz de telas (T03 não é dele, RN-17); o motivo do cancelamento é um campo opcional na tela, com a ajuda "Obrigatório quando quem cancela é um Responsável ou um Administrador", e quem o exige é o servidor (`MOTIVO_OBRIGATORIO`); a confirmação é um diálogo próprio (`role="dialog"`, foco preso, Escape, foco devolvido), porque o jsdom não implementa `<dialog>.showModal()`; a lista segue a ordem do servidor (início crescente).
 
 Limitações conhecidas, aceitas em F6-12: o campo de data e hora nativo do navegador tem 6 paradas de Tab por campo (5 partes
 e o ícone do calendário), e o anel de foco do ícone é o do navegador, não a cor do sistema; o axe não consegue decidir o

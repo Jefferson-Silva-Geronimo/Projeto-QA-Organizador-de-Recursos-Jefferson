@@ -1,8 +1,8 @@
-# Relatório de sessão: Fase 6 em andamento (18/10/2026)
+# Relatório de sessão: Fase 6 em andamento (18 e 19/10/2026)
 
 Documento para contextualizar a próxima conversa. Cole-o no início da sessão ou peça para o Claude lê-lo. **Não contém
 senha nem token.** Nada aqui substitui os documentos do repositório: quando houver divergência, vale o repositório.
-Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho da Fase 6 até a tela de Login.
+Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho da Fase 6 até a tela Minhas reservas (T04). Atualizado em 19/10/2026: o Login foi mesclado (PR 34) e a T04 está no PR da sua branch.
 
 ## 1. Como retomar (comece por aqui)
 
@@ -21,12 +21,12 @@ Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho
 | Item | Situação |
 | --- | --- |
 | Fases 0 a 5 | Concluídas |
-| Fase 6 (front end) | **Em andamento.** Feitos: 6.A (documento de telas), mudanças de back end para o front, 6.B (base do front) e o protótipo da 6.C (Busca e Nova reserva, aprovado). **Em andamento:** tela de Login (T01). **Faltam:** as telas T04 a T11 e a etapa 6.D (E2E na CI) |
+| Fase 6 (front end) | **Em andamento.** Feitos: 6.A (documento de telas), mudanças de back end para o front, 6.B (base do front), o protótipo da 6.C (Busca e Nova reserva, aprovado) e o Login (T01, PR 34). **Em andamento:** Minhas reservas e alteração (T04, branch `fase-6/tela-minhas-reservas`). **Faltam:** as telas T05 a T11 e a etapa 6.D (E2E na CI) |
 | Fase 7 | **Ainda não executada.** A lista viva do que entra nela é `docs/fase-7-pendencias.md` |
 | `main` | Protegida: PR obrigatório, 0 aprovações, vale para administrador, `strict` (branch precisa estar atualizada), sem force push e sem exclusão da branch. **Checks obrigatórios: `test` e `frontend`.** O `e2e` ainda não existe |
-| Último commit da `main` | `c5379c8` (merge do PR #32) |
-| Branch ativa | `fase-6/tela-login`, com a tela de Login implementada em TDD. **Sem pull request ainda** |
-| PRs abertos | Nenhum. Issues de defeito abertas: nenhuma (BUG-010 a BUG-014 fechados) |
+| Último commit da `main` | `bda5b04` (merge do PR #34, Login) |
+| Branch ativa | `fase-6/tela-minhas-reservas`, com a T04 implementada em TDD e verificada em navegador real. Pull request: ver `gh pr list` |
+| PRs abertos | Nenhum. Issues de defeito abertas: BUG-016 (issue 35), que fecha com o PR da T04 (BUG-010 a BUG-015 fechados) |
 | SonarCloud | Quality Gate OK em todos os PRs mesclados. Não roda em PR do Dependabot (ele não recebe segredos) |
 
 ### 2.1 Pull requests mesclados nesta fase
@@ -41,13 +41,12 @@ Sucede o resumo da sessão anterior (Fases 4 e 5 concluídas) e cobre o trabalho
 | #25 | L-06 (F6-10): o contrato marca como obrigatórios só os campos de resposta que nunca são nulos (só documentação) |
 | #26 | `docs/fase-7-pendencias.md` |
 | #32 | Protótipo da 6.C: Busca (T02) e Nova reserva (T03); F6-11 a F6-13; BUG-010 a BUG-014; roteiro de navegador real |
+| #34 | Login (T01): destino sem redirecionamento aberto, volta à origem, aviso de sessão terminada, verificação em navegador real e BUG-015 (foco depois de entrar) |
 | #24 (fechado) | Dependabot `jsdom` 29 para 30, **fechado sem mesclar** (F6-13) |
 
-### 2.2 O que está só no branch `fase-6/tela-login` (publicado, sem PR)
+### 2.2 O que está no branch `fase-6/tela-minhas-reservas`
 
-Tela de Login (T01) implementada em TDD: destino depois do login sem redirecionamento aberto
-(`frontend/src/rotas/destino.ts`), contexto que sabe se a sessão **expirou**, formulário de entrada
-(`frontend/src/paginas/entrada/`), login nas rotas e aviso "Sua sessão terminou". Ver a seção 7.
+T04 em TDD: lista de reservas (`frontend/src/paginas/reservas/`), diálogo de cancelamento com foco gerenciado (`frontend/src/ui/Dialogo.tsx`), alteração em `/reservas/:id/alterar` reaproveitando o formulário e o tratamento de conflito da Nova reserva (`frontend/src/paginas/reserva/FormularioDeReserva.tsx`) e o BUG-016 (Administrador sem Alterar). Ver a seção 7.
 
 ## 3. Números (todos de execução real)
 
@@ -116,7 +115,7 @@ Tela de Login (T01) implementada em TDD: destino depois do login sem redireciona
   ou documentação (o sistema aparece só como "Organização de Recursos").
 - Chamar o que existe de **revisão assistida**, nunca de "revisão por pares".
 
-## 7. Tela de Login: o que está feito e o que falta
+## 7. Tela de Login (T01): concluída em 19/10/2026 (PR 34)
 
 **Feito (commits em `fase-6/tela-login`, todos em TDD, 449 testes locais verdes):**
 
@@ -130,7 +129,7 @@ Tela de Login (T01) implementada em TDD: destino depois do login sem redireciona
   Entre novamente." no login.
 - Documentação: CT-141, evidência de TDD e `navegacao-telas.md` (seção 9) atualizados.
 
-**Falta para fechar o PR do Login:**
+**Histórico do que faltava (feito e mesclado no PR 34, ver RTM, execução E-7):**
 
 1. Verificação em **navegador real** contra a API real (roteiro em `docs/testes/roteiro-navegador-real/`): capturas em
    360 e 1280 px nos dois temas, axe, navegação só por teclado, rolagem horizontal. Incluir: credencial inválida,
@@ -142,7 +141,7 @@ Tela de Login (T01) implementada em TDD: destino depois do login sem redireciona
 
 ## 8. Próximas telas (ordem do mapa de telas, uma por PR)
 
-T04 Minhas reservas e cancelamento (inclui alteração de reserva) → T05 Fila de aprovações → T06 Retirada e devolução →
+T04 Minhas reservas e cancelamento (inclui alteração de reserva) está no seu PR (ver `gh pr list`). Depois: T05 Fila de aprovações → T06 Retirada e devolução →
 T07 Catálogo de recursos → T08 Bloqueios de manutenção → T09 Histórico de auditoria → T10 Relatórios → T11 Usuários e
 perfis. Telas densas (Fila, Relatórios, Auditoria, Catálogo): **tabela compacta no desktop e cartões no celular** (F6-07).
 Contrato e regras de cada tela estão em `docs/prd/navegacao-telas.md` (seção 4). A auditoria não é paginada: o filtro de
