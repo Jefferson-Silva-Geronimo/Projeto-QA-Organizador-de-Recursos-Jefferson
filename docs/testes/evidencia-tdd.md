@@ -172,3 +172,5 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Alteração de reserva: dados atuais, recursos da própria reserva, envio, confirmação pelo estado devolvido, recusas e conflito reaproveitado | `240334a` | `398234c` |
 | Rota e título da alteração, e acesso negado ao Administrador | `9fce799` | `5e1a821` |
 | Administrador não vê Alterar na lista de Reservas (BUG-016, achado nas capturas do navegador real) | `c3ed51b` | `35ddae4` |
+| Permissões da reserva por estado, perfil, posse e instante, com o início em trinca (regra pura) | `c8c3532` | `7aae5e1` |
+| Resposta de reserva traz `podeAlterar` e `podeCancelar`, e o campo concorda com a recusa do servidor | `0bd9a62` | `d10a5e8` |

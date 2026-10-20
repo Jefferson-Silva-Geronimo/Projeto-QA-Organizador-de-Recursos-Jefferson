@@ -261,3 +261,21 @@ Alternativas descartadas: **A** (validar no front, sem mexer no back end: duplic
 | F6-11 | **Padrão visual e de interação aprovado**: cartões, formulário em blocos com `fieldset` e legenda, avisos com ícone e texto, recusas pela tabela de erros com o foco na mensagem, dados preservados em toda recusa e confirmação com resumo derivada do estado do servidor. As outras nove telas repetem o padrão, **uma tela por pull request**, na ordem do mapa de telas. Cada tela repete: TDD estrito, verificação em navegador real, axe nos dois temas e tamanhos, navegação só por teclado e ausência de rolagem horizontal | Pedir ajustes ao protótipo |
 | F6-12 | **Campo de data e hora nativo do navegador mantido.** Motivo: as 6 paradas de Tab por campo (5 partes e o ícone do calendário) são o comportamento padrão do navegador e os leitores de tela o conhecem; dois campos separados criam mais código e mais risco de erro de fuso (ADR-005). **Limitações declaradas:** as 6 paradas de Tab e o anel de foco do ícone do calendário, que é o do navegador (preto no tema claro e branco no escuro), não a cor do sistema | Campo de data e campo de hora separados |
 | F6-13 | **PR #24 do Dependabot (`jsdom` 29 para 30) fechado sem mesclar.** O `jsdom` entra na lista de saltos maiores ignorados em `.github/dependabot.yml`; o salto será avaliado em PR nosso, com a suíte completa do front. O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele e o Quality Gate nunca é cumprido por eles | Mesclar o PR do Dependabot; deixá-lo aberto |
+
+### F6-14. O back end diz o que o usuário pode fazer com cada reserva (19/10/2026)
+
+**Decisão da equipe (Jefferson), 19/10/2026**, ao resolver as duas dúvidas da tela Reservas (T04) registradas em [fase-7-pendencias.md](fase-7-pendencias.md).
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-14 | **A resposta de toda reserva traz `podeAlterar` e `podeCancelar`**, calculados no servidor para o usuário logado, pelas mesmas políticas que hoje recusam (`PoliticaDeAlteracao` e `PoliticaDeCancelamento`) e pelo `Clock` injetado (ADR-005). Cobre o dono (RN-18 e RN-19), o perfil e o início da reserva (RN-07, RN-20 e D10). O front só mostra ou esconde a ação: não guarda o id do usuário nem olha o relógio. A recusa pelo código estável continua valendo como defesa (ADR-004). Mudança **aditiva e só de contrato**: os dois campos entram no `required` da resposta e o `openapi.json` foi regenerado (CT-115 falhou de propósito; CT-114 não mudou) | **A** (manter como estava e mostrar a recusa do servidor) e guardar o id do usuário no front para decidir por dono (contra F6-02 e contra o princípio de que o front não decide) |
+
+**Suposições registradas (o cálculo não decidiu nenhuma lacuna A1 a A8; segue o que o back end já fazia):**
+
+| # | Suposição | Origem | Impacto se estiver errada |
+| --- | --- | --- | --- |
+| 1 | O motivo do cancelamento conta como informado: quem precisa dele (Responsável e Administrador, RN-18) "pode cancelar" informando-o; o servidor segue exigindo o motivo e responde `MOTIVO_OBRIGATORIO` se faltar | `PoliticaDeCancelamento.java`, `exigirMotivo` | Só muda se a tela deveria avisar antes que o motivo é obrigatório; hoje a ajuda do campo já diz |
+| 2 | O Administrador nunca "pode alterar": a alteração é só de Solicitante e Responsável (RN-17, `@PreAuthorize` do `PUT /api/reservas/{id}`) | `ReservaController.java`; RN-17 | Só a ação Alterar some para o Administrador, que já a recebia como acesso negado |
+| 3 | O dono cancela SOLICITADA em qualquer horário (sem limite de início), como a política já fazia; o limite do instante de início vale para APROVADA (D10) | `PoliticaDeCancelamento.java` | Só o texto do campo muda se a regra mudar |
+
+Os campos são calculados por `PermissoesDaReserva` (regra pura, em `model.regra`) e montados por `RespostasDeReserva` no pacote `controller`; as respostas de criar, alterar, cancelar, aprovar, rejeitar e do uso de material trazem os mesmos campos. A fila de aprovações (`ReservaDaFilaResposta`) não mudou.
