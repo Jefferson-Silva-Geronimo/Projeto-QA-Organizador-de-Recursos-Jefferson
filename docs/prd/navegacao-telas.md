@@ -312,6 +312,7 @@ Todas decididas por Jefferson em 18/10/2026 (F6-05, F6-06 e F6-10).
 | L-04 | O nome do solicitante só estava em `GET /api/usuarios`, restrito ao Administrador | A fila de aprovações mostraria só o identificador | **Decidida e feita (F6-06b, 18/10/2026):** a fila traz só o nome do solicitante, nunca o e-mail, em TDD, com `openapi.json` atualizado no mesmo PR |
 | L-05 | Fuso do campus: o front assume `America/Sao_Paulo`, que é a decisão A6 da equipe; não há resposta do professor sobre isso | Datas exibidas no fuso errado se a decisão mudar | Variável de ambiente do front; muda sem alterar código |
 | L-06 | Os esquemas de resposta do OpenAPI não declaravam `required`, então todo campo de resposta virava opcional no tipo gerado | As telas teriam de validar cada resposta | **Decidida e feita (F6-10, 18/10/2026):** alternativa B, o back end marca como obrigatórios só os campos que nunca são nulos (só documentação). Cliente regenerado; as telas já nascem com tipos precisos. Campos de fora e motivos em [decisoes-equipe.md](../decisoes-equipe.md) |
+| L-07 | A resposta de reserva não dizia o que o usuário pode fazer com ela (alterar e cancelar dependem do dono, do perfil e do início) | A T04 mostraria ações que o servidor recusa | **Decidida (F6-14, 19/10/2026), alternativa C:** o back end devolve `podeAlterar` e `podeCancelar` por reserva, pelas políticas e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 
 As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 

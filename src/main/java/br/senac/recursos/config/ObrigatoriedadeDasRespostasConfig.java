@@ -33,7 +33,7 @@ class ObrigatoriedadeDasRespostasConfig {
             Map.entry("UsuarioResposta", List.of("id", "nome", "email", "perfil", "ativo")),
             Map.entry("RecursoResposta", List.of("id", "tipo", "nome", "restrito", "ativo")),
             Map.entry("ReservaResposta", List.of("id", "solicitanteId", "titulo", "inicio", "fim", "estado",
-                    "exigeAprovacao", "recursoIds")),
+                    "exigeAprovacao", "recursoIds", "podeAlterar", "podeCancelar")),
             Map.entry("ReservaDaFilaResposta", List.of("id", "solicitanteId", "solicitanteNome", "titulo", "inicio",
                     "fim", "estado", "exigeAprovacao", "recursoIds")),
             Map.entry("BloqueioResposta", List.of("id", "recursoId", "inicio", "fim", "motivo", "ativo",

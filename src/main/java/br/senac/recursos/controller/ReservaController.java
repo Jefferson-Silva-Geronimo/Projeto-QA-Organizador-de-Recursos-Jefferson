@@ -36,24 +36,26 @@ class ReservaController {
 
     private final ReservaService reservas;
     private final AprovacaoService aprovacoes;
+    private final RespostasDeReserva respostas;
 
-    ReservaController(ReservaService reservas, AprovacaoService aprovacoes) {
+    ReservaController(ReservaService reservas, AprovacaoService aprovacoes, RespostasDeReserva respostas) {
         this.reservas = reservas;
         this.aprovacoes = aprovacoes;
+        this.respostas = respostas;
     }
 
     @PostMapping("/{id}/aprovacao")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta aprovar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                             @Valid @RequestBody(required = false) DecisaoRequisicao c) {
-        return ReservaResposta.de(aprovacoes.aprovar(ator, id, c == null ? null : c.motivo()));
+        return respostas.de(ator, aprovacoes.aprovar(ator, id, c == null ? null : c.motivo()));
     }
 
     @PostMapping("/{id}/rejeicao")
     @PreAuthorize("hasRole('RESPONSAVEL')")
     ReservaResposta rejeitar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                              @Valid @RequestBody(required = false) DecisaoRequisicao c) {
-        return ReservaResposta.de(aprovacoes.rejeitar(ator, id, c == null ? null : c.motivo()));
+        return respostas.de(ator, aprovacoes.rejeitar(ator, id, c == null ? null : c.motivo()));
     }
 
     @GetMapping("/fila")
@@ -68,7 +70,7 @@ class ReservaController {
     ReservaResposta criar(@AuthenticationPrincipal UsuarioAutenticado ator,
                           @Valid @RequestBody NovaReservaRequisicao c) {
         Periodo periodo = new Periodo(c.inicio(), c.fim());
-        return ReservaResposta.de(reservas.criar(ator,
+        return respostas.de(ator, reservas.criar(ator,
                 new NovaReserva(c.titulo().trim(), c.descricao(), periodo, c.recursoIds())));
     }
 
@@ -76,7 +78,7 @@ class ReservaController {
     @PreAuthorize("hasAnyRole('SOLICITANTE', 'RESPONSAVEL')")
     ReservaResposta alterar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                             @Valid @RequestBody AlteracaoReservaRequisicao c) {
-        return ReservaResposta.de(reservas.alterar(ator, id,
+        return respostas.de(ator, reservas.alterar(ator, id,
                 new AlteracaoDeReserva(c.titulo() == null ? null : c.titulo().trim(), c.descricao(), c.inicio(), c.fim(),
                         c.recursoIds())));
     }
@@ -84,16 +86,16 @@ class ReservaController {
     @PostMapping("/{id}/cancelamento")
     ReservaResposta cancelar(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id,
                              @Valid @RequestBody(required = false) CancelamentoRequisicao c) {
-        return ReservaResposta.de(reservas.cancelar(ator, id, c == null ? null : c.motivo()));
+        return respostas.de(ator, reservas.cancelar(ator, id, c == null ? null : c.motivo()));
     }
 
     @GetMapping("/{id}")
     ReservaResposta obter(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id) {
-        return ReservaResposta.de(reservas.obter(ator, id));
+        return respostas.de(ator, reservas.obter(ator, id));
     }
 
     @GetMapping
     List<ReservaResposta> listar(@AuthenticationPrincipal UsuarioAutenticado ator) {
-        return reservas.listar(ator).stream().map(ReservaResposta::de).toList();
+        return reservas.listar(ator).stream().map(r -> respostas.de(ator, r)).toList();
     }
 }
