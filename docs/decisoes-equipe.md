@@ -279,3 +279,14 @@ Alternativas descartadas: **A** (validar no front, sem mexer no back end: duplic
 | 3 | O dono cancela SOLICITADA em qualquer horário (sem limite de início), como a política já fazia; o limite do instante de início vale para APROVADA (D10) | `PoliticaDeCancelamento.java` | Só o texto do campo muda se a regra mudar |
 
 Os campos são calculados por `PermissoesDaReserva` (regra pura, em `model.regra`) e montados por `RespostasDeReserva` no pacote `controller`; as respostas de criar, alterar, cancelar, aprovar, rejeitar e do uso de material trazem os mesmos campos. A fila de aprovações (`ReservaDaFilaResposta`) não mudou.
+
+### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
+
+| Item | Registro |
+| --- | --- |
+| **Risco aceito R-25** | **Aceito por Jefferson em 19/10/2026**, depois de investigar (opção a). O teste `int01ECt103_resposta200MarcaEnviadaECorpoTemSoOContratoMinimo` falhou 2 vezes (18/10 e 19/10) em suítes completas, com `expected: 2 but was: 0`, e passou sozinho e em 6 rodadas controladas. **A causa não foi encontrada.** Nenhum teste nem o produto foi alterado por causa dele |
+| O que se sabe | Na execução que falhou, o despacho encontrou as duas notificações e as duas chamadas ao WireMock estouraram o tempo de leitura de 1,5 s, que o `despachar()` conta como falha temporária (zero aceitas). O teste é o primeiro da classe, o mais lento em todas as rodadas (custo de partida a frio) |
+| Hipótese que sobra, **sem prova** | Parada de mais de 3 s do WireMock ou do cliente HTTP na primeira chamada da classe |
+| O que foi descartado | Corrida com o agendador (desligado nos testes); notificação "ainda não elegível" pelo relógio fixo; estado vazado de outro teste; atraso de 4 s do `int04` (roda depois); contexto Spring reaproveitado; carga de CPU sozinha (3 rodadas com os 4 núcleos saturados, 0 falhas); 3 ciclos completos sem carga, 0 falhas |
+| Limite de 1,5 s | Valor inicial **"a validar"** do plano da equipe (ADR-007; `timeout-conexao` PT0.5S e `timeout-leitura` PT1.5S no `application.yml`). A especificação não define limites. Nenhuma validação foi feita |
+| Conduta | A ocorrência segue vigiada em [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) e entra no relatório final como risco aceito, com nome e motivo. **Se falhar na CI de um PR:** repetir o job uma única vez; se passar, mesclar e registrar a ocorrência 3 com o run das duas execuções; se falhar de novo, parar e avisar Jefferson com os logs, sem repetir mais. Falha de qualquer outro teste nunca entra nessa regra. **Na terceira ocorrência:** abrir BUG-xxx em `docs/defeitos/`, ligado ao RF-11, e levar a proposta (inclusive dar a cada teste o seu controle de tempo) antes de qualquer mudança. Proibido: `@Disabled`, aumentar espera, repetição automática dentro do teste |

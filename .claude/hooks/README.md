@@ -207,3 +207,11 @@ Para adicionar novo hook:
 
 *Criado: 2026-01-24*
 *Arquitetura: docs/architecture/claude-md-governance-system.md*
+
+## Invólucro "falha fechada" do hook de autoridade (projeto)
+
+O Claude Code só bloqueia uma ferramenta quando o hook sai com **2**. Qualquer outro código (1 de um script que não carrega, 127 de um `node` ausente, exceção, tempo esgotado) é um erro sem bloqueio e deixa o comando passar. Por isso o hook `enforce-git-push-authority.cjs` roda dentro de `fail-closed.cjs`, que só deixa o hook terminar em 0 ou 2, e o comando em `.claude/settings.local.json` tem uma guarda de shell para o que o invólucro não alcança (`node` ausente, invólucro ausente, `NODE_OPTIONS` inválido).
+
+- Comando canônico: `node -e "console.log(require('./.claude/hooks/fail-closed.cjs').comandoDoHook())"`, na raiz do repositório.
+- Provas: `node --test .claude/hooks/` (15 casos).
+- O script do AIOX, em `.aiox-core/infrastructure`, é camada protegida e não é editado.
