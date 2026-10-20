@@ -577,6 +577,8 @@ export interface components {
             exigeAprovacao: boolean;
             motivo?: string;
             recursoIds: number[];
+            podeAlterar: boolean;
+            podeCancelar: boolean;
         };
         RestritoRequisicao: {
             restrito?: boolean;
