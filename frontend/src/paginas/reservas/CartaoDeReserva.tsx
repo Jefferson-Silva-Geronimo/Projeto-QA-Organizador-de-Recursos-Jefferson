@@ -2,12 +2,10 @@ import { useId, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FUSO_DO_CAMPUS, formatarIntervalo } from '@/datas/fuso';
 import estilos from '@/paginas/reservas/CartaoDeReserva.module.css';
-import { useSessao } from '@/autenticacao/useSessao';
 import { DialogoDeCancelamento } from '@/paginas/reservas/DialogoDeCancelamento';
 import { useRecursosDaReserva } from '@/reservas/consulta';
 import type { Reserva } from '@/reservas/criar';
 import { ROTULO_DO_ESTADO, textoDoMotivo } from '@/reservas/rotulos';
-import { TELAS } from '@/rotas/telas';
 import { Botao } from '@/ui/Botao';
 import botoes from '@/ui/Botao.module.css';
 
@@ -20,25 +18,18 @@ function NomesDosRecursos({ ids }: { ids: readonly number[] }) {
   return <>{recursos.map((r) => r.recurso?.nome ?? `Recurso ${r.id}`).join(', ')}</>;
 }
 
-/**
- * Estados em que a ação aparece. É só o que a tela oferece: a recusa por perfil, dono ou horário (RN-07, RN-18, RN-19)
- * vem do servidor, com o código estável, e é mostrada na tela. O front nunca olha o relógio nem o dono.
- */
-const ESTADOS_COM_ACOES: ReadonlySet<Reserva['estado']> = new Set(['SOLICITADA', 'APROVADA']);
-
-/** A alteração é parte da T03, que o Administrador não vê (RN-17). Esconder o link é conveniência: o servidor recusa. */
-const PERFIS_QUE_ALTERAM = TELAS.find((t) => t.id === 'T03')?.perfis ?? [];
-
 interface Props {
   reserva: Reserva;
   aoCancelada: (reserva: Reserva) => void;
 }
 
-/** Uma reserva. Mostra o que o servidor devolveu e as ações que o estado comporta. */
+/**
+ * Uma reserva. Mostra o que o servidor devolveu. As ações aparecem só quando o servidor diz que o usuário pode
+ * (podeAlterar e podeCancelar, F6-14): o front não olha estado, perfil, dono nem relógio, e a recusa pelo código
+ * estável continua valendo como defesa (ADR-004).
+ */
 export function CartaoDeReserva({ reserva, aoCancelada }: Props) {
   const idTitulo = useId();
-  const { sessao } = useSessao();
-  const podeVerAlterar = sessao !== null && PERFIS_QUE_ALTERAM.includes(sessao.perfil);
   const [cancelando, setCancelando] = useState(false);
   const cartao = useRef<HTMLElement>(null);
   const abridor = useRef<HTMLButtonElement>(null);
@@ -74,16 +65,18 @@ export function CartaoDeReserva({ reserva, aoCancelada }: Props) {
           </div>
         )}
       </dl>
-      {ESTADOS_COM_ACOES.has(reserva.estado) && (
+      {(reserva.podeAlterar || reserva.podeCancelar) && (
         <div className={estilos.acoes}>
-          {podeVerAlterar && (
+          {reserva.podeAlterar && (
             <Link to={`/reservas/${reserva.id}/alterar`} className={`${botoes.botao} ${botoes.secundario}`}>
               Alterar <span className="somente-leitor">{reserva.titulo}</span>
             </Link>
           )}
-          <Botao ref={abridor} variante="secundario" onClick={() => setCancelando(true)}>
-            Cancelar <span className="somente-leitor">{reserva.titulo}</span>
-          </Botao>
+          {reserva.podeCancelar && (
+            <Botao ref={abridor} variante="secundario" onClick={() => setCancelando(true)}>
+              Cancelar <span className="somente-leitor">{reserva.titulo}</span>
+            </Botao>
+          )}
         </div>
       )}
       {cancelando && (

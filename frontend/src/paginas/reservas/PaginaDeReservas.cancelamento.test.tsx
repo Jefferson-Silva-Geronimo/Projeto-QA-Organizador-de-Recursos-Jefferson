@@ -28,7 +28,7 @@ function montar({ reservas, cancelar }: Cenario) {
       const corpo = await pedido.json();
       estado.cancelamentos.push(corpo);
       if (cancelar) return cancelar(corpo, pedido);
-      const cancelada: Reserva = { ...AULA_EXTRA, estado: 'CANCELADA', ...(corpo.motivo ? { motivo: corpo.motivo } : {}) };
+      const cancelada: Reserva = { ...AULA_EXTRA, estado: 'CANCELADA', podeAlterar: false, podeCancelar: false, ...(corpo.motivo ? { motivo: corpo.motivo } : {}) };
       estado.reservas = estado.reservas.map((r) => (r.id === cancelada.id ? cancelada : r));
       return resposta(200, cancelada);
     },
