@@ -94,3 +94,10 @@
   outline: 3px solid var(--cor-foco);
   outline-offset: 2px;
 }
+
+/* Sem ação disponível: texto simples e visível, sem cor de alerta (a informação não depende de cor, WCAG 1.4.1). */
+.semAcao {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}

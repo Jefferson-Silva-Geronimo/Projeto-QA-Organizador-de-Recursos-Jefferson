@@ -18,6 +18,12 @@ function NomesDosRecursos({ ids }: { ids: readonly number[] }) {
   return <>{recursos.map((r) => r.recurso?.nome ?? `Recurso ${r.id}`).join(', ')}</>;
 }
 
+/** Estados em que a reserva ainda está em curso: sem ação disponível, a pessoa merece uma explicação (F6-14). */
+const ESTADOS_EM_ANDAMENTO: ReadonlySet<Reserva['estado']> = new Set(['SOLICITADA', 'APROVADA', 'EM_USO']);
+
+/** Texto aprovado por Jefferson (19/10/2026). Não explica a regra nem sugere ação: o front não sabe o motivo. */
+const MENSAGEM_SEM_ACAO = 'Você não pode alterar nem cancelar esta reserva agora.';
+
 interface Props {
   reserva: Reserva;
   aoCancelada: (reserva: Reserva) => void;
@@ -30,6 +36,8 @@ interface Props {
  */
 export function CartaoDeReserva({ reserva, aoCancelada }: Props) {
   const idTitulo = useId();
+  const idMensagem = useId();
+  const semAcao = !reserva.podeAlterar && !reserva.podeCancelar && ESTADOS_EM_ANDAMENTO.has(reserva.estado);
   const [cancelando, setCancelando] = useState(false);
   const cartao = useRef<HTMLElement>(null);
   const abridor = useRef<HTMLButtonElement>(null);
@@ -40,7 +48,10 @@ export function CartaoDeReserva({ reserva, aoCancelada }: Props) {
   };
 
   return (
-    <article ref={cartao} tabIndex={-1} aria-labelledby={idTitulo} className={estilos.cartao}>
+    <article ref={cartao} tabIndex={-1} aria-labelledby={idTitulo}
+      aria-describedby={semAcao ? idMensagem : undefined}
+      className={estilos.cartao}
+    >
       <header className={estilos.cabecalho}>
         <h2 id={idTitulo} className={estilos.titulo}>
           {reserva.titulo}
@@ -78,6 +89,11 @@ export function CartaoDeReserva({ reserva, aoCancelada }: Props) {
             </Botao>
           )}
         </div>
+      )}
+      {semAcao && (
+        <p id={idMensagem} className={estilos.semAcao}>
+          {MENSAGEM_SEM_ACAO}
+        </p>
       )}
       {cancelando && (
         <DialogoDeCancelamento
