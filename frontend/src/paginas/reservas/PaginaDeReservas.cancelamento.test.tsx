@@ -46,9 +46,11 @@ async function abrirDialogo() {
   return { cartao, abridor, dialogo: await screen.findByRole('dialog') };
 }
 
-describe('PaginaDeReservas: ações conforme o estado devolvido', () => {
-  it.each(['SOLICITADA', 'APROVADA'] as const)('reserva %s oferece Alterar e Cancelar', async (estado) => {
-    montar({ reservas: [{ ...AULA_EXTRA, estado }] });
+describe('PaginaDeReservas: ações conforme o que o servidor informa (F6-14)', () => {
+  const SEM_ACOES = { podeAlterar: false, podeCancelar: false };
+
+  it('podeAlterar e podeCancelar verdadeiros: oferece Alterar e Cancelar', async () => {
+    montar({ reservas: [{ ...AULA_EXTRA, podeAlterar: true, podeCancelar: true }] });
 
     const cartao = await screen.findByRole('article', { name: 'Aula extra' });
 
@@ -56,10 +58,28 @@ describe('PaginaDeReservas: ações conforme o estado devolvido', () => {
     expect(within(cartao).getByRole('button', { name: 'Cancelar Aula extra' })).toBeInTheDocument();
   });
 
-  it.each(['EM_USO', 'CONCLUIDA', 'REJEITADA', 'CANCELADA', 'NAO_COMPARECEU'] as const)(
-    'reserva %s não oferece Alterar nem Cancelar',
+  it('só podeCancelar verdadeiro: oferece só Cancelar', async () => {
+    montar({ reservas: [{ ...AULA_EXTRA, podeAlterar: false, podeCancelar: true }] });
+
+    const cartao = await screen.findByRole('article', { name: 'Aula extra' });
+
+    expect(within(cartao).getByRole('button', { name: 'Cancelar Aula extra' })).toBeInTheDocument();
+    expect(within(cartao).queryByRole('link', { name: /Alterar/ })).not.toBeInTheDocument();
+  });
+
+  it('só podeAlterar verdadeiro: oferece só Alterar', async () => {
+    montar({ reservas: [{ ...AULA_EXTRA, podeAlterar: true, podeCancelar: false }] });
+
+    const cartao = await screen.findByRole('article', { name: 'Aula extra' });
+
+    expect(within(cartao).getByRole('link', { name: 'Alterar Aula extra' })).toBeInTheDocument();
+    expect(within(cartao).queryByRole('button', { name: /Cancelar/ })).not.toBeInTheDocument();
+  });
+
+  it.each(['SOLICITADA', 'APROVADA', 'EM_USO', 'CONCLUIDA', 'REJEITADA', 'CANCELADA', 'NAO_COMPARECEU'] as const)(
+    'estado %s com os dois campos falsos: nenhuma ação',
     async (estado) => {
-      montar({ reservas: [{ ...AULA_EXTRA, estado }] });
+      montar({ reservas: [{ ...AULA_EXTRA, estado, ...SEM_ACOES }] });
 
       const cartao = await screen.findByRole('article', { name: 'Aula extra' });
 
@@ -68,12 +88,39 @@ describe('PaginaDeReservas: ações conforme o estado devolvido', () => {
     },
   );
 
-  it('o front não decide pelo relógio: reserva APROVADA que já começou continua oferecendo as ações', async () => {
-    montar({ reservas: [{ ...AULA_EXTRA, inicio: '2020-01-01T17:00:00Z', fim: '2020-01-01T19:00:00Z' }] });
+  it('o front obedece ao campo, não ao estado nem ao relógio: reserva que já começou com os campos verdadeiros mostra as ações', async () => {
+    montar({
+      reservas: [{ ...AULA_EXTRA, inicio: '2020-01-01T17:00:00Z', fim: '2020-01-01T19:00:00Z', podeAlterar: true, podeCancelar: true }],
+    });
 
     const cartao = await screen.findByRole('article', { name: 'Aula extra' });
 
     expect(within(cartao).getByRole('button', { name: 'Cancelar Aula extra' })).toBeInTheDocument();
+  });
+
+  it('o front obedece ao campo, não ao estado: CONCLUIDA com podeCancelar verdadeiro mostra Cancelar', async () => {
+    montar({ reservas: [{ ...AULA_EXTRA, estado: 'CONCLUIDA', podeAlterar: false, podeCancelar: true }] });
+
+    const cartao = await screen.findByRole('article', { name: 'Aula extra' });
+
+    expect(within(cartao).getByRole('button', { name: 'Cancelar Aula extra' })).toBeInTheDocument();
+  });
+
+  it('depois de a lista ser refeita com o campo falso, a ação some (a reserva mudou de estado)', async () => {
+    const { estado } = montar({
+      reservas: [AULA_EXTRA],
+      cancelar: () => {
+        estado.reservas = [{ ...AULA_EXTRA, estado: 'EM_USO', podeAlterar: false, podeCancelar: false }];
+        return recusa(409, 'TRANSICAO_PROIBIDA');
+      },
+    });
+    const { cartao, dialogo } = await abrirDialogo();
+
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Confirmar cancelamento' }));
+    await within(screen.getByRole('dialog')).findByRole('alert');
+
+    await waitFor(() => expect(within(cartao).queryByRole('button', { name: /Cancelar Aula extra/ })).not.toBeInTheDocument());
+    expect(within(cartao).queryByRole('link', { name: /Alterar/ })).not.toBeInTheDocument();
   });
 });
 
@@ -303,7 +350,7 @@ describe('PaginaDeReservas: recusas do servidor no cancelamento', () => {
     const { estado } = montar({
       reservas: [AULA_EXTRA],
       cancelar: () => {
-        estado.reservas = [{ ...AULA_EXTRA, estado: 'EM_USO' }];
+        estado.reservas = [{ ...AULA_EXTRA, estado: 'EM_USO', podeAlterar: false, podeCancelar: false }];
         return recusa(409, 'TRANSICAO_PROIBIDA');
       },
     });
