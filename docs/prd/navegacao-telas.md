@@ -158,15 +158,15 @@ Prova       · 22/10 08:00-10:00 · Sala 203 · SOLICITADA [Alterar][Cancelar]
 ### T05. Fila de aprovações
 
 - **Objetivo:** decidir reservas com recurso restrito. **Endpoints:** `GET /api/reservas/fila`, `POST /api/reservas/{id}/aprovacao`, `POST /api/reservas/{id}/rejeicao`.
-- **Dados:** título, período, recursos, identificador do solicitante. A resposta da fila traz `solicitanteNome`, só o nome e nunca o e-mail (F6-06b, lacuna **L-04**, CT-125 e CT-126), além de `solicitanteId`.
+- **Dados:** título, período, recursos e o nome do solicitante (a tela não mostra o identificador nem o e-mail). A resposta da fila traz `solicitanteNome`, só o nome e nunca o e-mail (F6-06b, lacuna **L-04**, CT-125 e CT-126), além de `solicitanteId`.
 - **Ações:** aprovar (motivo opcional, suposição: o contrato aceita `DecisaoRequisicao`) e rejeitar (motivo obrigatório, RN-24). A tela mostra cada ação conforme `podeAprovar` e `podeRejeitar`, devolvidos pelo servidor em cada item (F6-15, L-08); o front não decide por dono, perfil nem relógio, e a recusa pelo código estável continua como defesa.
 - **Estados:** carregando, vazio ("sem pendências"), erro, sucesso (o item sai da fila).
 - **Erros:** `MOTIVO_OBRIGATORIO`, `ACESSO_NEGADO` (dono tenta decidir, RN-16 e RN-33), `APROVACAO_APOS_INICIO`, `TRANSICAO_PROIBIDA`, `NAO_ENCONTRADO`.
 
 ```text
 Pendentes de aprovação
-#41 · Projetor 7 · 20/10 14:00-16:00 · solicitante #12
-    [ Aprovar ]  [ Rejeitar ]   Motivo [_____________]
+Prova de Estatística · Maria Souza · 22/10, 08:00 às 10:00 · Laboratório de Informática 3
+    [ Aprovar ]  [ Rejeitar ]      (abrem a confirmação, com o campo Motivo)
 ```
 
 ### T06. Retirada e devolução
@@ -333,7 +333,8 @@ Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md)
 | T03 Nova reserva e alteração | Padrão **aprovado** (F6-11), criação e alteração prontas | A alteração abre o mesmo formulário da criação, em `/reservas/:id/alterar`, com a verificação em navegador real da T04 (CT-143) |
 | T01 Login | Pronta (PR 34) | Implementada em TDD (CT-141) e verificada em navegador real contra a API (RTM, execução E-7) |
 | T04 Minhas reservas e cancelamento | Pronta (PR 36); ações pelos campos do servidor (F6-14) | Implementada em TDD (CT-142 e CT-143) e verificada em navegador real contra a API (RTM, execuções E-8 e E-10) |
-| T05 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
+| T05 Fila de aprovações | Pronta; ações pelos campos do servidor (F6-15) | Implementada em TDD (CT-148 e CT-149) e verificada em navegador real contra a API (RTM, execução E-13) |
+| T06 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
 
 Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens
 com ícone, rótulo em texto e papel ARIA correto; recusas pela tabela de erros da seção 5, com o foco levado à mensagem;
@@ -341,6 +342,8 @@ dados digitados preservados em toda recusa; confirmação derivada do estado dev
 trocar de tela; título por tela; datas no fuso do campus.
 
 Decisões de construção da T04, dentro da seção 4 e do padrão aprovado (nenhuma muda regra): o título da tela é "Reservas" (o rótulo do menu), porque o Responsável e o Administrador também a usam; Alterar e Cancelar aparecem conforme `podeAlterar` e `podeCancelar` do servidor (F6-14), que já considera estado, dono, perfil e horário (RN-07, RN-18, RN-19), e a recusa pelo código estável segue como defesa; o Administrador nunca recebe `podeAlterar` verdadeiro (T03 não é dele, RN-17); o motivo do cancelamento é um campo opcional na tela, com a ajuda "Obrigatório quando quem cancela é um Responsável ou um Administrador", e quem o exige é o servidor (`MOTIVO_OBRIGATORIO`); a confirmação é um diálogo próprio (`role="dialog"`, foco preso, Escape, foco devolvido), porque o jsdom não implementa `<dialog>.showModal()`; a lista segue a ordem do servidor (início crescente).
+
+Decisões de construção da T05, dentro da seção 4 e do padrão aprovado (nenhuma muda regra): o título da tela é "Aprovações" (o rótulo do menu); cada cartão mostra o título, o nome do solicitante (nunca o e-mail nem o número), o período no fuso do campus e os nomes dos recursos, na ordem em que o servidor devolve; Aprovar e Rejeitar aparecem conforme `podeAprovar` e `podeRejeitar` (F6-15), e só quando os dois são falsos o cartão mostra, em texto visível e lido junto com ele (`aria-describedby`), "Você não pode aprovar nem rejeitar esta solicitação agora." (texto aprovado por Jefferson em 22/10/2026, sem explicar a regra); a decisão passa por um diálogo próprio (`ui/Dialogo.tsx`, foco preso, Escape, foco devolvido) que vive na página, e não no cartão, para a mensagem de uma recusa não sumir quando o item sai da fila; na aprovação o motivo é opcional; na rejeição o motivo é obrigatório (RN-24) e a tela não envia o pedido sem ele ("Informe o motivo."), enquanto o servidor segue decidindo e recusando pelo código estável (ADR-004); depois de uma recusa que muda a fila (`TRANSICAO_PROIBIDA`, `APROVACAO_APOS_INICIO`, `NAO_ENCONTRADO`) a fila é consultada de novo; o resultado é anunciado em uma mensagem de sucesso que recebe o foco, e se o botão que abriu o diálogo deixou de existir o foco vai para o título da página. A fila não tem paginação (ver [fase-7-pendencias.md](../fase-7-pendencias.md)). Solicitante e Administrador não veem a tela nem o item do menu e abrem a página de acesso negado, que ganhou o título "Acesso negado" (BUG-018, texto aprovado por Jefferson em 22/10/2026).
 
 Limitações conhecidas, aceitas em F6-12: o campo de data e hora nativo do navegador tem 6 paradas de Tab por campo (5 partes
 e o ícone do calendário), e o anel de foco do ícone é o do navegador, não a cor do sistema; o axe não consegue decidir o
