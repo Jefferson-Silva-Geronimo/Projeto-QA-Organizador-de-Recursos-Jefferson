@@ -1,4 +1,4 @@
-import { formatarIntervalo, isoParaLocal, localParaIsoComOffset } from '@/datas/fuso';
+import { formatarHora, formatarIntervalo, isoParaLocal, localParaIsoComOffset } from '@/datas/fuso';
 
 const SAO_PAULO = 'America/Sao_Paulo';
 
@@ -68,5 +68,16 @@ describe('formatarIntervalo', () => {
 
   it('usa a hora do campus, não a do navegador', () => {
     expect(formatarIntervalo('2026-10-21T02:30:00Z', '2026-10-21T04:00:00Z', SAO_PAULO)).toContain('20/10');
+  });
+});
+
+describe('formatarHora', () => {
+  it.each([
+    ['2026-10-21T17:02:00Z', SAO_PAULO, '14:02'],
+    ['2026-10-21T02:05:00Z', SAO_PAULO, '23:05'],
+    ['2026-10-21T03:00:00Z', SAO_PAULO, '00:00'],
+    ['2026-07-01T13:30:00Z', 'America/New_York', '09:30'],
+  ])('mostra só a hora e o minuto na hora do campus: %s em %s -> %s', (iso, fuso, esperado) => {
+    expect(formatarHora(iso, fuso)).toBe(esperado);
   });
 });

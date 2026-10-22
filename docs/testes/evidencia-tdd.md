@@ -183,3 +183,4 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | T05: a rota Aprovações mostra a fila; Solicitante e Administrador veem acesso negado sem consultar a fila | `bae362b` | `32877dc` |
 | Tela de acesso negado ganha o título "Acesso negado" na página e na aba (BUG-018, achado no navegador real) | `611db6e` | `55b37c7` |
 | Reserva traz `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento`; histórico traz `registradoPorNome` e a movimentação `atual` de cada material (F6-16; regra pura e API; cálculo e serviço usam a mesma `PoliticaDeUso` e a mesma `MovimentacoesAtuais`) | `053762a` | `1aa933f` (refactor `5df6676`, contrato `7045c37`) |
+| Retirada e devolução (T06): lista de aprovadas e em uso, unidade pela movimentação atual, ações pelos campos do servidor, confirmação do irreversível e recusas pelo mapa (F6-16; 65 testes da tela, `formatarHora` e a rota) | `22eb383`, `fa48bb1` | `4b98d3e` |
