@@ -5,6 +5,7 @@ import { Estrutura } from '@/layout/Estrutura';
 import { NaoEncontrada } from '@/paginas/NaoEncontrada';
 import { PaginaDeAprovacoes } from '@/paginas/aprovacoes/PaginaDeAprovacoes';
 import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
+import { PaginaDoCatalogo } from '@/paginas/catalogo/PaginaDoCatalogo';
 import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
 import { PaginaDeAlteracao } from '@/paginas/reserva/PaginaDeAlteracao';
@@ -25,6 +26,7 @@ function ConteudoDaTela({ tela }: { tela: Tela }) {
   if (tela.id === 'T05') return <PaginaDeAprovacoes />;
   if (tela.id === 'T06') return <PaginaDeRetiradas />;
   if (tela.id === 'T10') return <PaginaDeRelatorios />;
+  if (tela.id === 'T07') return <PaginaDoCatalogo />;
   return <PaginaDeTela tela={tela} />;
 }
 

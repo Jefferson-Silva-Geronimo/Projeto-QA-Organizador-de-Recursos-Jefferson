@@ -209,10 +209,20 @@ describe('Rotas', () => {
     expect(falso).not.toHaveBeenCalled();
   });
 
+  it.each(['SOLICITANTE', 'RESPONSAVEL', 'ADMINISTRADOR'] as const)('%s abre o Catálogo de verdade, e não o marcador de lugar', async (perfil) => {
+    entrarComo(perfil);
+
+    montar('/catalogo', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Nada cadastrado')).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Salas' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 
-    montar('/catalogo');
+    montar('/auditoria');
 
     expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
   });
