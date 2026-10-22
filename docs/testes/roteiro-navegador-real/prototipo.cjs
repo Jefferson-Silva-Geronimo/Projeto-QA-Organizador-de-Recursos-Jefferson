@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|relatorios|usuarios|auditoria]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|relatorios|usuarios|auditoria|bloqueios]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | relatorios | usuarios | auditoria
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | relatorios | usuarios | auditoria | bloqueios
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -1846,6 +1846,185 @@ async function fluxoTecladoAuditoria(navegador, semente, atores) {
   RELATORIO.foco.push(...passos);
   await ctx.close();
 }
+/** Bloqueios (T08): criar em duas etapas (confirmar, voltar, lista desatualizada), levantar e acesso só do Administrador. */
+async function fluxoBloqueios(navegador, c, semente, atores, indice) {
+  const S = String(indice + 1);
+  const { maria, carlos, admin } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+
+  // Uma reserva (aprovada na hora) dentro da janela que o Administrador vai bloquear
+  const r1 = await criarReservaPelaApi(maria.token, `Aula a bloquear ${S}`, c.dia, '09:00', '10:00', [R.sala203]);
+
+  let ctx = await contexto(navegador, c, admin);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/bloqueios');
+  await page.getByRole('heading', { level: 1, name: 'Bloqueios' }).waitFor();
+  const formulario = page.getByRole('form', { name: 'Novo bloqueio' });
+  await formulario.waitFor();
+  await page.getByText(/\d+ bloqueios?/).first().waitFor();
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Bloqueios'), await page.title());
+  await foto(page, P('bloqueios-1-lista'));
+  await auditar(page, P('bloqueios-1-lista'));
+  await semRolagemHorizontal(page, P('bloqueios-lista'));
+
+  // ---- em branco
+  await formulario.getByRole('button', { name: 'Bloquear' }).click();
+  await formulario.getByText('Escolha o recurso.').waitFor();
+  conferir(P('em-branco-quatro-erros'), (await formulario.getByText(/^(Escolha o recurso|Informe o início|Informe o fim|Informe o motivo)\.$/).count()) === 4);
+  conferir(P('em-branco-foco-no-recurso'), await formulario.getByLabel(/^Recurso/).evaluate((el) => el === document.activeElement));
+  await foto(page, P('bloqueios-2-em-branco'));
+  await auditar(page, P('bloqueios-2-em-branco'));
+
+  // ---- primeira etapa: o servidor pede confirmação com a lista
+  await formulario.getByLabel(/^Recurso/).selectOption({ label: 'Sala 203' });
+  await formulario.getByLabel(/^Início/).fill(`${c.dia}T08:00`);
+  await formulario.getByLabel(/^Fim/).fill(`${c.dia}T12:00`);
+  await formulario.getByLabel(/^Motivo/).fill(`Pintura ${S}`);
+  await formulario.getByRole('button', { name: 'Bloquear' }).click();
+  await page.getByText(/Reservas afetadas:/).waitFor();
+  const afetadas1 = await page.getByText(/Reservas afetadas:/).innerText();
+  conferir(P('pede-confirmacao-com-a-reserva'), afetadas1.includes(`nº ${r1.id}`), afetadas1);
+  conferir(P('pede-confirmacao-foco-na-mensagem'), await focoEmPapel(page, 'alert'));
+  conferir(P('pede-confirmacao-campos-travados'), await formulario.getByLabel(/^Motivo/).isDisabled());
+  conferir(P('nada-foi-cancelado-ainda'), (await api('GET', `/api/reservas/${r1.id}`, undefined, admin.token)).corpo.estado === 'APROVADA');
+  await foto(page, P('bloqueios-3-confirmacao'));
+  await auditar(page, P('bloqueios-3-confirmacao'));
+  await semRolagemHorizontal(page, P('bloqueios-confirmacao'));
+
+  // ---- Voltar devolve o formulário editável, com o que foi digitado
+  await page.getByRole('button', { name: 'Voltar' }).click();
+  conferir(P('voltar-campos-editaveis'), await formulario.getByLabel(/^Motivo/).isEnabled());
+  conferir(P('voltar-mantem-o-motivo'), (await formulario.getByLabel(/^Motivo/).inputValue()) === `Pintura ${S}`);
+  await formulario.getByRole('button', { name: 'Bloquear' }).click();
+  await page.getByText(/Reservas afetadas:/).waitFor();
+
+  // ---- a lista muda antes da confirmação: o servidor devolve lista desatualizada e o ciclo recomeça
+  const r2 = await criarReservaPelaApi(maria.token, `Segunda aula a bloquear ${S}`, c.dia, '11:00', '11:30', [R.sala203]);
+  await page.getByRole('button', { name: 'Confirmar e cancelar' }).click();
+  await page.getByRole('alert').filter({ hasText: 'A lista de reservas mudou' }).waitFor();
+  conferir(P('lista-desatualizada-volta-ao-formulario'), (await formulario.getByLabel(/^Motivo/).isEnabled()) && (await page.getByRole('button', { name: 'Confirmar e cancelar' }).count()) === 0);
+  conferir(P('lista-desatualizada-nada-foi-cancelado'), (await api('GET', `/api/reservas/${r1.id}`, undefined, admin.token)).corpo.estado === 'APROVADA');
+  await foto(page, P('bloqueios-4-lista-desatualizada'));
+  await auditar(page, P('bloqueios-4-lista-desatualizada'));
+  await formulario.getByRole('button', { name: 'Bloquear' }).click();
+  await page.getByText(/Reservas afetadas:/).waitFor();
+  const afetadas2 = await page.getByText(/Reservas afetadas:/).innerText();
+  conferir(P('nova-lista-tem-as-duas'), afetadas2.includes(`nº ${r1.id}`) && afetadas2.includes(`nº ${r2.id}`), afetadas2);
+
+  // ---- confirmar: o bloqueio é criado e as duas reservas são canceladas
+  await page.getByRole('button', { name: 'Confirmar e cancelar' }).click();
+  await page.getByText(/Bloqueio de "Sala 203" criado\./).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('criado-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  const aviso = await page.getByRole('status').innerText();
+  conferir(P('aviso-diz-as-canceladas'), aviso.includes(`nº ${r1.id}`) && aviso.includes(`nº ${r2.id}`), aviso);
+  conferir(P('servidor-cancelou-r1'), (await api('GET', `/api/reservas/${r1.id}`, undefined, admin.token)).corpo.estado === 'CANCELADA');
+  conferir(P('servidor-cancelou-r2'), (await api('GET', `/api/reservas/${r2.id}`, undefined, admin.token)).corpo.estado === 'CANCELADA');
+  conferir(P('formulario-limpo-depois-de-criar'), (await formulario.getByLabel(/^Motivo/).inputValue()) === '');
+  await foto(page, P('bloqueios-5-criado'));
+  await auditar(page, P('bloqueios-5-criado'));
+
+  // ---- levantar o bloqueio da Sala 203
+  const cartao203 = page.getByRole('article', { name: 'Sala 203' }).filter({ hasText: `Pintura ${S}` });
+  await cartao203.getByRole('button', { name: /Levantar/ }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('levantar-dialogo-foco-entra'), await foiParaODialogo(page));
+  await foto(page, P('bloqueios-5b-dialogo-levantar'));
+  await auditar(page, P('bloqueios-5b-dialogo-levantar'));
+  await page.getByRole('dialog').getByRole('button', { name: 'Levantar bloqueio' }).click();
+  await page.getByRole('dialog').getByText('Informe o motivo.', { exact: true }).waitFor();
+  await page.getByRole('dialog').getByLabel(/^Motivo/).fill(`Obra concluída ${S}`);
+  await page.getByRole('dialog').getByRole('button', { name: 'Levantar bloqueio' }).click();
+  await page.getByText('Bloqueio de "Sala 203" levantado.').waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('levantado-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('levantado-sem-acao'), (await cartao203.getByRole('button').count()) === 0 && (await cartao203.innerText()).includes('Levantado'));
+  const ativos = await api('GET', '/api/bloqueios', undefined, admin.token);
+  conferir(P('servidor-levantou'), ativos.corpo.filter((b) => b.recursoId === R.sala203 && b.ativo).length === 0);
+  await foto(page, P('bloqueios-6-levantado'));
+  await auditar(page, P('bloqueios-6-levantado'));
+
+  // ---- sem reservas afetadas: a primeira etapa já cria
+  await formulario.getByLabel(/^Recurso/).selectOption({ label: 'Sala 101' });
+  await formulario.getByLabel(/^Início/).fill(`${c.dia}T06:00`);
+  await formulario.getByLabel(/^Fim/).fill(`${c.dia}T07:00`);
+  await formulario.getByLabel(/^Motivo/).fill(`Limpeza ${S}`);
+  await formulario.getByRole('button', { name: 'Bloquear' }).click();
+  await page.getByText(/Bloqueio de "Sala 101" criado\./).waitFor();
+  conferir(P('sem-reservas-cria-direto'), (await page.getByText(/Reservas afetadas:/).count()) === 0 && !(await page.getByRole('status').innerText()).includes('Reservas canceladas'));
+  const cartao101 = page.getByRole('article', { name: 'Sala 101' }).filter({ hasText: `Limpeza ${S}` });
+  await cartao101.getByRole('button', { name: /Levantar/ }).click();
+  await page.getByRole('dialog').getByLabel(/^Motivo/).fill(`Limpeza concluída ${S}`);
+  await page.getByRole('dialog').getByRole('button', { name: 'Levantar bloqueio' }).click();
+  await page.getByText('Bloqueio de "Sala 101" levantado.').waitFor();
+  await ctx.close();
+
+  // ---- Responsável e Solicitante: acesso negado
+  for (const [quem, sessao] of [['responsavel', carlos], ['solicitante', maria]]) {
+    ctx = await contexto(navegador, c, sessao);
+    page = await ctx.newPage();
+    await page.goto(FRONT + '/bloqueios');
+    await page.getByRole('heading', { level: 1, name: 'Acesso negado' }).waitFor();
+    conferir(P(`${quem}-acesso-negado`), (await page.title()).startsWith('Acesso negado'), await page.title());
+    conferir(P(`${quem}-sem-menu-de-bloqueios`), (await page.getByRole('link', { name: 'Bloqueios' }).count()) === 0);
+    if (quem === 'solicitante') {
+      await foto(page, P('bloqueios-7-acesso-negado'));
+      await auditar(page, P('bloqueios-7-acesso-negado'));
+    }
+    await ctx.close();
+  }
+}
+
+/** Bloqueios só com o teclado: criar sem reservas afetadas e levantar, sem mouse. */
+async function fluxoTecladoBloqueios(navegador, semente, atores) {
+  const c = { id: 'teclado-bloqueios', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  const ctx = await contexto(navegador, c, atores.admin);
+  const page = await ctx.newPage();
+  const passos = [];
+  await page.goto(FRONT + '/bloqueios');
+  await page.getByRole('heading', { level: 1, name: 'Bloqueios' }).waitFor();
+  await page.getByRole('form', { name: 'Novo bloqueio' }).waitFor();
+  const ate = async (nome, limite = 60) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await descrever(page);
+      passos.push({ acao: 'Tab', ...d });
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  const dig = (iso) => iso.slice(8, 10) + iso.slice(5, 7) + iso.slice(0, 4);
+  await ate('Recurso');
+  await page.keyboard.type('Sala 101');
+  await ate('Início');
+  await page.keyboard.type(dig(c.dia));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('0500');
+  await ate('Fim');
+  await page.keyboard.type(dig(c.dia));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('0600');
+  await ate('Motivo');
+  await page.keyboard.type('Bloqueio pelo teclado');
+  await ate('Bloquear');
+  await page.keyboard.press('Enter');
+  await page.getByText(/Bloqueio de "Sala 101" criado\./).waitFor();
+  passos.push({ acao: 'Enter em Bloquear', ...(await descrever(page)) });
+  conferir('teclado-bloqueios-criou-com-enter', (await page.getByRole('article', { name: 'Sala 101' }).filter({ hasText: 'Bloqueio pelo teclado' }).count()) === 1);
+  await ate('Levantar bloqueio Sala 101');
+  await page.keyboard.press('Enter');
+  await page.getByRole('dialog').waitFor();
+  conferir('teclado-bloqueios-dialogo-foco-no-motivo', (await descrever(page)).nome.includes('Motivo'));
+  await page.keyboard.type('Obra concluída pelo teclado');
+  await ate('Levantar bloqueio');
+  await page.keyboard.press('Enter');
+  await page.getByText('Bloqueio de "Sala 101" levantado.').waitFor();
+  passos.push({ acao: 'Enter em Levantar', ...(await descrever(page)) });
+  await auditar(page, 'teclado-bloqueios-resultado');
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -1900,6 +2079,21 @@ function resumoDoModo(arquivo) {
     await fluxoTecladoRetiradas(navegador, semente, atores);
     await navegador.close();
     resumoDoModo('relatorio-retiradas.json');
+    return;
+  }
+  if (SO === 'bloqueios') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('bloqueios', c.id);
+      await fluxoBloqueios(navegador, c, semente, atores, COMBOS.indexOf(c));
+    }
+    console.log('bloqueios teclado');
+    await fluxoTecladoBloqueios(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-bloqueios.json');
     return;
   }
   if (SO === 'auditoria') {
