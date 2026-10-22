@@ -595,24 +595,23 @@ async function fluxoReservas(navegador, c, semente, atores, reservasDeAgora, ind
   conferir(P('em-uso-sem-acoes'), (await emUso.getByRole('button').count()) === 0 && (await emUso.getByRole('link').count()) === 0);
   await foto(page, P('reservas-5-em-uso'));
   await auditar(page, P('reservas-5-em-uso'));
-  await cancelarPelaTela(page, 'Reunião em andamento', '');
-  await page.getByRole('dialog').getByRole('alert').waitFor();
-  const textoJaIniciada = (await page.getByRole('dialog').getByRole('alert').innerText()).replace(/\s+/g, ' ');
-  conferir(P('ja-iniciada-cancelar'), textoJaIniciada.includes('já começou'), textoJaIniciada);
+  // F6-14: o servidor manda podeAlterar e podeCancelar falsos; o botão e o link não existem, e a tela mostra a mensagem.
+  const MENSAGEM_SEM_ACAO = 'Você não pode alterar nem cancelar esta reserva agora.';
+  const andamento = page.getByRole('article', { name: 'Reunião em andamento' });
+  conferir(P('ja-iniciada-sem-acoes'), (await andamento.getByRole('button').count()) === 0 && (await andamento.getByRole('link').count()) === 0);
+  const mensagem = andamento.getByText(MENSAGEM_SEM_ACAO, { exact: true });
+  conferir(P('ja-iniciada-mensagem-visivel'), (await mensagem.count()) === 1 && (await mensagem.isVisible()));
+  const descricao = await andamento.evaluate((el) => { const id = el.getAttribute('aria-describedby'); const d = id && document.getElementById(id); return d ? d.textContent : null; });
+  conferir(P('ja-iniciada-mensagem-lida-com-o-cartao'), descricao === MENSAGEM_SEM_ACAO, String(descricao));
+  conferir(P('em-uso-mensagem-visivel'), (await emUso.getByText(MENSAGEM_SEM_ACAO, { exact: true }).count()) === 1);
+  const rejeitada = page.getByRole('article', { name: new RegExp('^Oficina de robótica') });
+  conferir(P('encerrada-sem-mensagem'), (await rejeitada.getByText(MENSAGEM_SEM_ACAO).count()) === 0);
   await foto(page, P('reservas-6-ja-iniciada'));
   await auditar(page, P('reservas-6-ja-iniciada'));
-  await page.getByRole('dialog').getByRole('button', { name: 'Voltar' }).click();
-  await page.getByRole('dialog').waitFor({ state: 'detached' });
-  const aposVoltar = await descrever(page);
-  conferir(P('voltar-devolve-o-foco'), aposVoltar.nome.includes('Cancelar Reunião em andamento'), aposVoltar.nome);
-  await page.getByRole('link', { name: 'Alterar Reunião em andamento' }).click();
-  await page.getByRole('checkbox', { name: /Sala 203/ }).waitFor();
-  await page.getByRole('button', { name: 'Salvar alterações' }).click();
-  await page.getByRole('alert').filter({ hasText: 'já começou' }).waitFor();
-  conferir(P('ja-iniciada-alterar'), true);
-  await foto(page, P('alterar-4-ja-iniciada'));
-  await auditar(page, P('alterar-4-ja-iniciada'));
-  await semRolagemHorizontal(page, P('alterar-ja-iniciada'));
+  await semRolagemHorizontal(page, P('reservas-ja-iniciada'));
+  // Defesa (ADR-004): sem a tela, o servidor continua recusando pelo código estável.
+  const recusa = await api('POST', `/api/reservas/${reservasDeAgora.idAndamento}/cancelamento`, { motivo: 'Tentativa direta pela API.' }, maria.token);
+  conferir(P('ja-iniciada-defesa-do-servidor'), recusa.status === 409 && JSON.stringify(recusa.corpo).includes('RESERVA_JA_INICIADA'), `${recusa.status} ${JSON.stringify(recusa.corpo)}`);
   await ctx.close();
 }
 
