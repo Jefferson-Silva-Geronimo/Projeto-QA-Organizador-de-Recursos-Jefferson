@@ -79,6 +79,11 @@ export function formatarIntervalo(inicioIso: string, fimIso: string, fuso: strin
     : `${dia.format(inicio)}, ${hora.format(inicio)} até ${dia.format(fim)}, ${hora.format(fim)}`;
 }
 
+/** Hora e minuto na hora do fuso ("14:02"), para dizer quando algo aconteceu no campus. */
+export function formatarHora(iso: string, fuso: string): string {
+  return new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso));
+}
+
 /** Soma dias a uma data e hora locais ("2026-10-20T12:00"), mantendo a hora do relógio. */
 export function somarDias(local: string, dias: number): string {
   const m = PADRAO_LOCAL.exec(local);
