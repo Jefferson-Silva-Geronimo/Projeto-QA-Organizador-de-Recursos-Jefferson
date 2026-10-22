@@ -176,3 +176,4 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Resposta de reserva traz `podeAlterar` e `podeCancelar`, e o campo concorda com a recusa do servidor | `0bd9a62` | `d10a5e8` |
 | Ações da T04 obedecem a `podeAlterar` e `podeCancelar` do servidor, não ao estado nem ao perfil (F6-14; os testes antigos de estado e perfil foram reescritos porque a premissa mudou por decisão, dito no commit) | `f1e24c8` | `c019532` |
 | Reserva em andamento sem ação disponível mostra "Você não pode alterar nem cancelar esta reserva agora.", lida junto com o cartão (texto aprovado por Jefferson) | `3ffbc41` | `955801b` |
+| Item da fila traz `podeAprovar` e `podeRejeitar` por posse, perfil, estado e início em trinca (F6-15; regra pura e API; o cálculo e o serviço usam a mesma `PoliticaDeDecisao`) | `497cf95` | `a299357` (refactor `36ba6cc`, contrato `ace5de3`) |
