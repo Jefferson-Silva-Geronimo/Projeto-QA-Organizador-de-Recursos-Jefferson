@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -914,6 +914,243 @@ async function fluxoTecladoAprovacoes(navegador, semente, atores) {
   await ctx.close();
 }
 
+/** Reserva que começa daqui a poucos minutos e que ninguém usa: depois do início e da tolerância (D1, só do roteiro) ela pode ser marcada como não compareceu. */
+async function prepararReservaDeNaoComparecimento(semente, maria) {
+  const inicio = new Date(Math.ceil((Date.now() + 4 * 60_000) / 60_000) * 60_000);
+  const fim = new Date(inicio.getTime() + 60 * 60_000);
+  const horaDoCampus = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23' }).format(fim));
+  const diaDaSemana = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'short' }).format(inicio);
+  if (horaDoCampus >= 22 || horaDoCampus < 7 || ['Sat', 'Sun'].includes(diaDaSemana)) {
+    throw new Error('Fora do funcionamento das salas (07:00 a 22:00, dias úteis): rode o modo retiradas em outro horário.');
+  }
+  const r = await api('POST', '/api/reservas', { titulo: 'Reunião que não aconteceu', inicio: inicio.toISOString(), fim: fim.toISOString(), recursoIds: [semente.recursos.sala203] }, maria.token);
+  if (r.status !== 201) throw new Error('reserva de não comparecimento: ' + r.status + ' ' + JSON.stringify(r.corpo));
+  return { inicio: inicio.getTime(), id: r.corpo.id };
+}
+
+/** Espera o fim da tolerância de 1 minuto configurada no banco do roteiro (a tolerância real é a lacuna D1). */
+async function esperarTolerancia(reserva) {
+  const falta = reserva.inicio + 60_000 + 8_000 - Date.now();
+  if (falta > 0) {
+    console.log(`aguardando ${Math.ceil(falta / 1000)} s para a tolerância de não comparecimento terminar`);
+    await new Promise((resolver) => setTimeout(resolver, falta));
+  }
+}
+
+/** Retirada e devolução (T06): unidades pela movimentação atual, ações pelos campos do servidor e confirmações. */
+async function fluxoRetiradas(navegador, c, semente, atores, deAgora, indice, ultimo) {
+  const S = String(indice + 1); // cada combinação tem títulos próprios: a lista acumula todas
+  const { maria, carlos } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+  const a = await criarReservaPelaApi(maria.token, `Aula de informática ${S}`, c.dia, '10:00', '12:00', [R.sala101, R.notebook, R.caixa]);
+  const b = await criarReservaPelaApi(maria.token, `Atendimento sem material ${S}`, c.dia, '13:00', '15:00', [R.sala203]);
+  conferir(P('estados-da-semente'), a.estado === 'APROVADA' && b.estado === 'APROVADA', `${a.estado} ${b.estado}`);
+
+  let ctx = await contexto(navegador, c, carlos);
+  let page = await ctx.newPage();
+  const pedidos = [];
+  page.on('request', (r) => { pedidos.push(new URL(r.url()).pathname); });
+  await page.goto(FRONT + '/retiradas');
+  await page.getByRole('heading', { level: 1, name: 'Retiradas' }).waitFor();
+  const cartaoA = page.getByRole('article', { name: `Aula de informática ${S}` });
+  const cartaoB = page.getByRole('article', { name: `Atendimento sem material ${S}` });
+  await cartaoA.waitFor();
+  await cartaoA.getByText('Não retirado').first().waitFor();
+
+  // ---- lista
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Retiradas'), await page.title());
+  conferir(P('duas-unidades-nao-retiradas'), (await cartaoA.getByText('Não retirado').count()) === 2);
+  conferir(P('sala-nao-e-unidade'), (await cartaoA.getByRole('listitem').count()) === 2);
+  conferir(P('so-iniciar-no-comeco'), (await cartaoA.getByRole('button', { name: /^Iniciar uso/ }).count()) === 1 && (await cartaoA.getByRole('button', { name: /^(Concluir|Não compareceu)/ }).count()) === 0);
+  conferir(P('sem-material-so-iniciar'), (await cartaoB.getByRole('button', { name: /^Iniciar uso/ }).count()) === 1);
+  conferir(P('sem-email-na-tela'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  await foto(page, P('retiradas-1-lista'));
+  await auditar(page, P('retiradas-1-lista'));
+  await semRolagemHorizontal(page, P('retiradas-lista'));
+
+  // ---- defesa antes da tolerância (só na primeira combinação, que roda antes de a tolerância terminar)
+  if (indice === 0) {
+    const cedo = await api('POST', `/api/reservas/${deAgora.id}/nao-comparecimento`, undefined, carlos.token);
+    conferir(P('defesa-nao-comparecimento-antes-da-tolerancia'), cedo.status === 409 && ['TOLERANCIA_NAO_ENCERRADA', 'TRANSICAO_PROIBIDA'].includes(cedo.corpo.code), `${cedo.status} ${JSON.stringify(cedo.corpo)}`);
+  }
+
+  // ---- retirar: a primeira retirada inicia o uso
+  await cartaoA.getByRole('button', { name: 'Retirar Notebook N-001' }).click();
+  await page.getByText('Retirada de "Notebook N-001" registrada.').waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('retirar-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  await cartaoA.getByText(/Retirado às \d\d:\d\d por Carlos Lima/).waitFor();
+  conferir(P('retirar-reserva-em-uso'), (await cartaoA.innerText()).includes('Em uso'));
+  conferir(P('retirar-oferece-devolver'), (await cartaoA.getByRole('button', { name: 'Devolver Notebook N-001' }).count()) === 1);
+  conferir(P('retirar-material-pendente-sem-concluir'), (await cartaoA.getByRole('button', { name: /^Concluir/ }).count()) === 0);
+  conferir(P('retirar-sem-iniciar'), (await cartaoA.getByRole('button', { name: /^Iniciar uso/ }).count()) === 0);
+  const historico = await api('GET', `/api/reservas/${a.id}/movimentacoes`, undefined, carlos.token);
+  conferir(P('servidor-marcou-a-atual'), historico.corpo.length === 1 && historico.corpo[0].atual === true && historico.corpo[0].registradoPorNome === 'Carlos Lima' && !JSON.stringify(historico.corpo).includes('@'), JSON.stringify(historico.corpo));
+  await foto(page, P('retiradas-2-retirado'));
+  await auditar(page, P('retiradas-2-retirado'));
+
+  // ---- devolver
+  await cartaoA.getByRole('button', { name: 'Devolver Notebook N-001' }).click();
+  await page.getByText('Devolução de "Notebook N-001" registrada.').waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('devolver-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  await cartaoA.getByText(/Devolvido às \d\d:\d\d por Carlos Lima/).waitFor();
+  conferir(P('devolver-volta-a-oferecer-retirar'), (await cartaoA.getByRole('button', { name: 'Retirar Notebook N-001' }).count()) === 1);
+  await cartaoA.getByRole('button', { name: /^Concluir reserva/ }).waitFor();
+  await foto(page, P('retiradas-3-devolvido'));
+  await auditar(page, P('retiradas-3-devolvido'));
+
+  // ---- concluir: diálogo com foco, Tab preso e Escape devolve o foco
+  await cartaoA.getByRole('button', { name: /^Concluir reserva/ }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('concluir-dialogo-foco-entra'), await foiParaODialogo(page));
+  await foto(page, P('retiradas-4-dialogo-concluir'));
+  await auditar(page, P('retiradas-4-dialogo-concluir'));
+  await semRolagemHorizontal(page, P('retiradas-dialogo-concluir'));
+  let dentro = true;
+  for (let i = 0; i < 5; i++) { await page.keyboard.press('Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  for (let i = 0; i < 3; i++) { await page.keyboard.press('Shift+Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  conferir(P('concluir-tab-preso'), dentro);
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  const aposEscape = await descrever(page);
+  conferir(P('concluir-escape-devolve-o-foco'), aposEscape.nome.includes(`Concluir reserva Aula de informática ${S}`), aposEscape.nome);
+  await cartaoA.getByRole('button', { name: /^Concluir reserva/ }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar conclusão' }).click();
+  await page.getByText(`Reserva "Aula de informática ${S}" concluída.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('concluir-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('concluida-sai-da-lista'), (await page.getByRole('article', { name: `Aula de informática ${S}` }).count()) === 0);
+  const concluida = await api('GET', `/api/reservas/${a.id}`, undefined, maria.token);
+  conferir(P('servidor-concluiu'), concluida.corpo.estado === 'CONCLUIDA', concluida.corpo.estado);
+  await foto(page, P('retiradas-5-concluida'));
+  await auditar(page, P('retiradas-5-concluida'));
+
+  // ---- iniciar uso direto, sem material
+  await cartaoB.getByRole('button', { name: /^Iniciar uso/ }).click();
+  await page.getByText(`Uso da reserva "Atendimento sem material ${S}" iniciado.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('iniciar-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  await cartaoB.getByRole('button', { name: /^Concluir reserva/ }).waitFor();
+  conferir(P('iniciar-reserva-em-uso'), (await cartaoB.innerText()).includes('Em uso'));
+  await foto(page, P('retiradas-6-iniciado'));
+  await auditar(page, P('retiradas-6-iniciado'));
+
+  // ---- não compareceu: só depois do início e da tolerância (D1 é lacuna; o banco do roteiro usa 1 minuto)
+  await esperarTolerancia(deAgora);
+  await page.reload();
+  await page.getByRole('heading', { level: 1, name: 'Retiradas' }).waitFor();
+  const cartaoN = page.getByRole('article', { name: 'Reunião que não aconteceu' });
+  await cartaoN.waitFor();
+  await cartaoN.getByRole('button', { name: /^Não compareceu/ }).waitFor();
+  conferir(P('nao-compareceu-aparece-depois-da-tolerancia'), (await cartaoN.getByRole('button', { name: /^Não compareceu/ }).count()) === 1);
+  await cartaoN.getByRole('button', { name: /^Não compareceu/ }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('nao-compareceu-dialogo-foco-entra'), await foiParaODialogo(page));
+  await foto(page, P('retiradas-7-dialogo-nao-compareceu'));
+  await auditar(page, P('retiradas-7-dialogo-nao-compareceu'));
+  await semRolagemHorizontal(page, P('retiradas-dialogo-nao-compareceu'));
+  if (ultimo) {
+    await page.getByRole('dialog').getByRole('button', { name: 'Confirmar não comparecimento' }).click();
+    await page.getByText('Reserva "Reunião que não aconteceu" marcada como não compareceu.').waitFor();
+    await page.waitForTimeout(300);
+    conferir(P('nao-compareceu-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+    const marcada = await api('GET', `/api/reservas/${deAgora.id}`, undefined, maria.token);
+    conferir(P('servidor-marcou-nao-compareceu'), marcada.corpo.estado === 'NAO_COMPARECEU', marcada.corpo.estado);
+    await foto(page, P('retiradas-8-nao-compareceu'));
+    await auditar(page, P('retiradas-8-nao-compareceu'));
+  } else {
+    await page.keyboard.press('Escape');
+    await page.getByRole('dialog').waitFor({ state: 'detached' });
+    const aposEsc = await descrever(page);
+    conferir(P('nao-compareceu-escape-devolve-o-foco'), aposEsc.nome.includes('Não compareceu Reunião que não aconteceu'), aposEsc.nome);
+  }
+  conferir(P('nao-consulta-usuarios'), !pedidos.some((p) => p.startsWith('/api/usuarios')), pedidos.filter((p) => p.startsWith('/api/usuarios')).join(','));
+  await ctx.close();
+
+  // ---- Solicitante e Administrador não veem a tela nem a ação
+  for (const [nome, ator] of [['solicitante', maria], ['administrador', atores.admin]]) {
+    ctx = await contexto(navegador, c, ator);
+    page = await ctx.newPage();
+    const consultas = [];
+    page.on('request', (r) => { const u = new URL(r.url()); if (u.pathname === '/api/reservas') consultas.push(u.pathname); });
+    await page.goto(FRONT + '/retiradas');
+    await page.getByRole('alert').waitFor();
+    conferir(P(`${nome}-acesso-negado`), (await page.getByRole('alert').innerText()).includes('Seu perfil não permite esta ação.'));
+    conferir(P(`${nome}-com-titulo`), (await page.getByRole('heading', { level: 1, name: 'Acesso negado' }).count()) === 1 && (await page.title()).startsWith('Acesso negado'));
+    conferir(P(`${nome}-sem-a-tela`), (await page.getByRole('heading', { level: 1, name: 'Retiradas' }).count()) === 0 && (await page.getByRole('button', { name: /^(Iniciar|Retirar|Devolver|Concluir|Não compareceu)/ }).count()) === 0);
+    conferir(P(`${nome}-sem-link-no-menu`), (await page.getByRole('navigation', { name: 'Menu principal' }).getByRole('link', { name: 'Retiradas' }).count()) === 0);
+    conferir(P(`${nome}-nao-consulta-as-reservas`), consultas.length === 0, consultas.join(','));
+    await foto(page, P(`retiradas-9-${nome}-acesso-negado`));
+    await auditar(page, P(`retiradas-9-${nome}-acesso-negado`));
+    await ctx.close();
+  }
+}
+
+/** Só teclado na Retirada e devolução: retirar, devolver e concluir, com o foco depois de cada resultado. */
+async function fluxoTecladoRetiradas(navegador, semente, atores) {
+  const { maria, carlos } = atores;
+  const c = { id: 'teclado-retiradas', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  await criarReservaPelaApi(maria.token, 'Aula com teclado', c.dia, '10:00', '12:00', [semente.recursos.sala101, semente.recursos.notebook]);
+  const ctx = await contexto(navegador, c, carlos);
+  const page = await ctx.newPage();
+  const passos = [];
+  const registrar = async (acao) => { const d = await descrever(page); passos.push({ acao, ...d }); return d; };
+  const ate = async (nome, limite = 200) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await registrar('Tab');
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado das retiradas: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  try {
+    await page.goto(FRONT + '/retiradas');
+    await page.getByRole('article', { name: 'Aula com teclado' }).waitFor();
+    await page.getByRole('article', { name: 'Aula com teclado' }).getByText('Não retirado').waitFor();
+    await ate('Pular para o conteúdo');
+    await page.keyboard.press('Enter');
+    await registrar('Enter (pular para o conteúdo)');
+
+    await ate('Retirar Notebook N-001');
+    await foto(page, 'teclado-retiradas-1-foco-no-retirar');
+    await page.keyboard.press('Enter');
+    await page.getByText('Retirada de "Notebook N-001" registrada.').waitFor();
+    await page.waitForTimeout(300);
+    const aposRetirar = await registrar('Enter em Retirar');
+    conferir('teclado-retiradas-foco-na-retirada', await focoEmPapel(page, 'status'), aposRetirar.nome);
+
+    await ate('Devolver Notebook N-001');
+    await page.keyboard.press('Enter');
+    await page.getByText('Devolução de "Notebook N-001" registrada.').waitFor();
+    await page.waitForTimeout(300);
+    const aposDevolver = await registrar('Enter em Devolver');
+    conferir('teclado-retiradas-foco-na-devolucao', await focoEmPapel(page, 'status'), aposDevolver.nome);
+    await foto(page, 'teclado-retiradas-2-devolvido');
+
+    await ate('Concluir reserva Aula com teclado');
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog').waitFor();
+    const noDialogo = await registrar('Enter em Concluir (abre o diálogo)');
+    conferir('teclado-retiradas-foco-entra-no-dialogo', await foiParaODialogo(page), noDialogo.nome);
+    await foto(page, 'teclado-retiradas-3-dialogo');
+    await page.keyboard.press('Enter');
+    await page.getByText('Reserva "Aula com teclado" concluída.').waitFor();
+    await page.waitForTimeout(300);
+    const aposConcluir = await registrar('Enter em Confirmar conclusão');
+    conferir('teclado-retiradas-foco-na-conclusao', await focoEmPapel(page, 'status'), aposConcluir.nome);
+    await foto(page, 'teclado-retiradas-4-concluida');
+  } catch (e) {
+    await page.screenshot({ path: path.join(SAIDA, 'teclado-retiradas-FALHA.png') });
+    console.log('PASSOS ATE A FALHA:', passos.map((p) => p.acao + ' -> ' + p.nome).join(' | '));
+    console.log('URL:', page.url());
+    throw e;
+  }
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
+
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -953,6 +1190,22 @@ function resumoDoModo(arquivo) {
       for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
       return;
     }
+  }
+  if (SO === 'retiradas') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const deAgora = await prepararReservaDeNaoComparecimento(semente, maria);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('retiradas', c.id);
+      await fluxoRetiradas(navegador, c, semente, atores, deAgora, COMBOS.indexOf(c), c === COMBOS[COMBOS.length - 1]);
+    }
+    console.log('retiradas teclado');
+    await fluxoTecladoRetiradas(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-retiradas.json');
+    return;
   }
   if (SO === 'aprovacoes') {
     const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
