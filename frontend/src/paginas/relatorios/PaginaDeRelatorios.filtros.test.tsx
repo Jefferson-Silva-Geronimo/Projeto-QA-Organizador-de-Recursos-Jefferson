@@ -5,8 +5,8 @@ import { montarRelatorios, PERIODO } from '@/test/relatorio';
 const formulario = () => within(screen.getByRole('search', { name: 'Filtros do relatório' }));
 
 function preencherPeriodo() {
-  fireEvent.change(formulario().getByLabelText('Início'), { target: { value: '2026-10-20T08:00' } });
-  fireEvent.change(formulario().getByLabelText('Fim'), { target: { value: '2026-10-27T18:00' } });
+  fireEvent.change(formulario().getByLabelText(/^Início/), { target: { value: '2026-10-20T08:00' } });
+  fireEvent.change(formulario().getByLabelText(/^Fim/), { target: { value: '2026-10-27T18:00' } });
 }
 
 describe('PaginaDeRelatorios: filtros', () => {
@@ -15,7 +15,7 @@ describe('PaginaDeRelatorios: filtros', () => {
 
     expect(screen.getByRole('heading', { level: 1, name: 'Relatórios' })).toBeInTheDocument();
     for (const rotulo of ['Início', 'Fim', 'Tipo', 'Recurso']) {
-      expect(formulario().getByLabelText(rotulo)).toBeInTheDocument();
+      expect(formulario().getByLabelText(new RegExp(`^${rotulo}`))).toBeInTheDocument();
     }
     expect(formulario().getByRole('button', { name: 'Gerar relatório' })).toBeInTheDocument();
     expect(formulario().getByRole('button', { name: 'Limpar filtros' })).toBeInTheDocument();
@@ -37,20 +37,20 @@ describe('PaginaDeRelatorios: filtros', () => {
 
     expect(formulario().getByText('Informe o início do período.')).toBeVisible();
     expect(formulario().getByText('Informe o fim do período.')).toBeVisible();
-    expect(formulario().getByLabelText('Início')).toBeInvalid();
-    expect(formulario().getByLabelText('Início')).toHaveFocus();
+    expect(formulario().getByLabelText(/^Início/)).toBeInvalid();
+    expect(formulario().getByLabelText(/^Início/)).toHaveFocus();
     expect(estado.consultas).toHaveLength(0);
   });
 
   it('só o início: pede o fim e não marca o início', async () => {
     const { estado } = montarRelatorios();
-    fireEvent.change(formulario().getByLabelText('Início'), { target: { value: '2026-10-20T08:00' } });
+    fireEvent.change(formulario().getByLabelText(/^Início/), { target: { value: '2026-10-20T08:00' } });
 
     await userEvent.click(formulario().getByRole('button', { name: 'Gerar relatório' }));
 
     expect(formulario().getByText('Informe o fim do período.')).toBeVisible();
     expect(formulario().queryByText('Informe o início do período.')).not.toBeInTheDocument();
-    expect(formulario().getByLabelText('Fim')).toBeInvalid();
+    expect(formulario().getByLabelText(/^Fim/)).toBeInvalid();
     expect(estado.consultas).toHaveLength(0);
   });
 
@@ -85,8 +85,8 @@ describe('PaginaDeRelatorios: filtros', () => {
     const { estado } = montarRelatorios({ rota: `/relatorios?${PERIODO}&tipo=SALA` });
 
     await waitFor(() => expect(estado.consultas).toHaveLength(1));
-    expect(formulario().getByLabelText('Início')).toHaveValue('2026-10-20T08:00');
-    expect(formulario().getByLabelText('Fim')).toHaveValue('2026-10-27T18:00');
+    expect(formulario().getByLabelText(/^Início/)).toHaveValue('2026-10-20T08:00');
+    expect(formulario().getByLabelText(/^Fim/)).toHaveValue('2026-10-27T18:00');
     expect(formulario().getByLabelText('Tipo')).toHaveValue('SALA');
     expect(estado.consultas[0]?.get('tipo')).toBe('SALA');
   });
@@ -119,7 +119,8 @@ describe('PaginaDeRelatorios: filtros', () => {
   it('sem tipo, a lista de recursos traz todos', async () => {
     montarRelatorios();
 
-    const opcoes = await within(formulario().getByLabelText('Recurso')).findAllByRole('option');
+    await within(formulario().getByLabelText('Recurso')).findByRole('option', { name: 'Projetor P-007' });
+    const opcoes = within(formulario().getByLabelText('Recurso')).getAllByRole('option');
 
     expect(opcoes.map((o) => o.textContent)).toEqual([
       'Todos os recursos',
@@ -146,7 +147,7 @@ describe('PaginaDeRelatorios: filtros', () => {
 
     await userEvent.click(formulario().getByRole('button', { name: 'Limpar filtros' }));
 
-    expect(formulario().getByLabelText('Início')).toHaveValue('');
+    expect(formulario().getByLabelText(/^Início/)).toHaveValue('');
     expect(formulario().getByLabelText('Tipo')).toHaveValue('');
     expect(screen.getByLabelText('endereço atual').textContent).toBe('/relatorios');
     expect(screen.getByText('Informe o período')).toBeInTheDocument();

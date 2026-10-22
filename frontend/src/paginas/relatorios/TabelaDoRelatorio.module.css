@@ -1,0 +1,81 @@
+.envoltorio {
+  min-width: 0;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+  overflow: hidden;
+}
+
+.tabela th,
+.tabela td {
+  padding: var(--espaco-2) var(--espaco-3);
+  text-align: left;
+  border-bottom: 1px solid var(--cor-borda-campo);
+  vertical-align: top;
+}
+
+.tabela thead th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cor-texto-suave);
+}
+
+.tabela tbody th {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.tabela tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+/* Celular: cada linha vira um cartão e cada célula mostra o próprio rótulo. A informação continua em texto. */
+@media (max-width: 720px) {
+  .tabela,
+  .tabela tbody,
+  .tabela tr,
+  .tabela th,
+  .tabela td {
+    display: block;
+  }
+
+  .tabela thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .tabela {
+    border: 0;
+    background: transparent;
+  }
+
+  .tabela tbody tr {
+    margin-bottom: var(--espaco-3);
+    padding: var(--espaco-3);
+    background: var(--cor-superficie);
+    border: 1px solid var(--cor-borda-campo);
+    border-radius: var(--raio-grande);
+    box-shadow: var(--sombra-suave);
+  }
+
+  .tabela th,
+  .tabela td {
+    padding: var(--espaco-1) 0;
+    border-bottom: 0;
+  }
+
+  .tabela td::before {
+    content: attr(data-rotulo) ': ';
+    font-weight: 600;
+    color: var(--cor-texto-suave);
+  }
+}

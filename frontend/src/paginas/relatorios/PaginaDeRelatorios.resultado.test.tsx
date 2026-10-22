@@ -113,7 +113,7 @@ describe('PaginaDeRelatorios: resultado', () => {
 
     expect(alerta).toHaveTextContent(mensagemPara('PERIODO_INVALIDO').mensagem);
     expect(alerta).toHaveTextContent(mensagemPara('PERIODO_INVALIDO').acao);
-    expect(within(screen.getByRole('search', { name: 'Filtros do relatório' })).getByLabelText('Início')).toHaveValue('2026-10-20T08:00');
+    expect(within(screen.getByRole('search', { name: 'Filtros do relatório' })).getByLabelText(/^Início/)).toHaveValue('2026-10-20T08:00');
   });
 
   it('falha de rede mostra a mensagem de rede, e Tentar de novo consulta de novo', async () => {
