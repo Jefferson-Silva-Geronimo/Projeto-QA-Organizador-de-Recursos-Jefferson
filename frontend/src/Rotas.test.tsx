@@ -141,10 +141,34 @@ describe('Rotas', () => {
     expect(document.title).toBe('Alterar reserva · Organização de Recursos');
   });
 
+  it('a rota Aprovações mostra a fila de verdade, e não o marcador de lugar', async () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/aprovacoes', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Sem pendências')).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it.each(['SOLICITANTE', 'ADMINISTRADOR'] as const)(
+    '%s abrindo a fila de aprovações vê acesso negado, sem a tela e sem consultar a fila',
+    (perfil) => {
+      entrarComo(perfil);
+      const falso = vi.fn(async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+      montar('/aprovacoes', falso);
+
+      expect(screen.getByRole('alert')).toHaveTextContent(mensagemPara('ACESSO_NEGADO').mensagem);
+      expect(screen.queryByRole('heading', { level: 1, name: 'Aprovações' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^(Aprovar|Rejeitar)/ })).not.toBeInTheDocument();
+      expect(falso).not.toHaveBeenCalled();
+    },
+  );
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 
-    montar('/aprovacoes');
+    montar('/retiradas');
 
     expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
   });
@@ -187,6 +211,28 @@ describe('Rotas', () => {
     montar(rota);
 
     expect(document.title).toBe(`${titulo} · Organização de Recursos`);
+  });
+
+  it.each([
+    ['SOLICITANTE', '/aprovacoes'],
+    ['ADMINISTRADOR', '/aprovacoes'],
+    ['RESPONSAVEL', '/usuarios'],
+    ['ADMINISTRADOR', '/reservas/10/alterar'],
+  ] as const)('%s abrindo %s vê o título "Acesso negado" na página e na aba (BUG-018)', (perfil, rota) => {
+    entrarComo(perfil);
+
+    montar(rota);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Acesso negado' })).toBeInTheDocument();
+    expect(document.title).toBe('Acesso negado · Organização de Recursos');
+  });
+
+  it('a aba volta a ter o nome da tela quando o perfil pode vê-la', () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/aprovacoes');
+
+    expect(document.title).toBe('Aprovações · Organização de Recursos');
   });
 
   it('a rota Entrar mostra o formulário de login de verdade, e não o marcador de lugar', () => {

@@ -177,3 +177,8 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Ações da T04 obedecem a `podeAlterar` e `podeCancelar` do servidor, não ao estado nem ao perfil (F6-14; os testes antigos de estado e perfil foram reescritos porque a premissa mudou por decisão, dito no commit) | `f1e24c8` | `c019532` |
 | Reserva em andamento sem ação disponível mostra "Você não pode alterar nem cancelar esta reserva agora.", lida junto com o cartão (texto aprovado por Jefferson) | `3ffbc41` | `955801b` |
 | Item da fila traz `podeAprovar` e `podeRejeitar` por posse, perfil, estado e início em trinca (F6-15; regra pura e API; o cálculo e o serviço usam a mesma `PoliticaDeDecisao`) | `497cf95` | `a299357` (refactor `36ba6cc`, contrato `ace5de3`) |
+| Fila de aprovações (T05): lista com solicitante pelo nome, período, recursos, contagem, vazio e erros | `fcb7b27` | `79e8d1a` |
+| T05: Aprovar e Rejeitar conforme `podeAprovar` e `podeRejeitar`; mensagem quando nenhuma ação está disponível, lida junto com o cartão | `a70ca19` | `7b34d19` |
+| T05: decisão por diálogo com foco gerenciado, rejeitar exige motivo, recusas pelo código estável (39 casos) | `14a49f9` | `41f4253` |
+| T05: a rota Aprovações mostra a fila; Solicitante e Administrador veem acesso negado sem consultar a fila | `bae362b` | `32877dc` |
+| Tela de acesso negado ganha o título "Acesso negado" na página e na aba (BUG-018, achado no navegador real) | `611db6e` | `55b37c7` |

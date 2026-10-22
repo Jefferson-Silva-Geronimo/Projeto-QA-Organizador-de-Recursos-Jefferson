@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -692,6 +692,228 @@ async function fluxoTecladoReservas(navegador, semente, maria) {
   await ctx.close();
 }
 
+const MENSAGEM_SEM_ACAO_DA_FILA = 'Você não pode aprovar nem rejeitar esta solicitação agora.';
+
+/** Solicitação com recurso restrito que começa daqui a poucos minutos: depois do início só resta rejeitar (D2, D10). */
+async function prepararSolicitacaoDeAgora(semente, maria) {
+  const inicio = new Date(Math.ceil((Date.now() + 4 * 60_000) / 60_000) * 60_000);
+  const fim = new Date(inicio.getTime() + 60 * 60_000);
+  const horaDoCampus = Number(new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour: '2-digit', hourCycle: 'h23' }).format(fim));
+  const diaDaSemana = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'short' }).format(inicio);
+  if (horaDoCampus >= 22 || horaDoCampus < 7 || ['Sat', 'Sun'].includes(diaDaSemana)) {
+    throw new Error('Fora do funcionamento das salas (07:00 a 22:00, dias úteis): rode o modo aprovacoes em outro horário.');
+  }
+  const r = await api('POST', '/api/reservas', { titulo: 'Pedido já iniciado', inicio: inicio.toISOString(), fim: fim.toISOString(), recursoIds: [semente.recursos.lab3] }, maria.token);
+  if (r.status !== 201 || r.corpo.estado !== 'SOLICITADA') throw new Error('solicitação de agora: ' + r.status + ' ' + JSON.stringify(r.corpo));
+  return { inicio: inicio.getTime(), id: r.corpo.id };
+}
+
+async function esperarIniciar(solicitacao) {
+  const falta = solicitacao.inicio + 8_000 - Date.now();
+  if (falta > 0) {
+    console.log(`aguardando ${Math.ceil(falta / 1000)} s para a solicitação de agora começar`);
+    await new Promise((resolver) => setTimeout(resolver, falta));
+  }
+}
+
+/** Fila de aprovações (T05): aprovar, rejeitar (motivo obrigatório), mensagem sem ação, item iniciado e acesso por perfil. */
+async function fluxoAprovacoes(navegador, c, semente, atores, deAgora, indice) {
+  const S = String(indice + 1); // cada combinação tem títulos próprios: a fila acumula todas
+  const { maria, joao, carlos, ana } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+  const a = await criarReservaPelaApi(maria.token, `Pedido A ${S}`, c.dia, '08:00', '10:00', [R.lab3]);
+  const b = await criarReservaPelaApi(maria.token, `Pedido B ${S}`, c.dia, '10:00', '12:00', [R.auditorio]);
+  await criarReservaPelaApi(joao.token, `Pedido C ${S}`, c.dia, '13:00', '15:00', [R.lab3]);
+  const propria = await criarReservaPelaApi(carlos.token, `Pedido do Responsável ${S}`, c.dia, '15:00', '17:00', [R.lab3]);
+  conferir(P('estados-da-semente'), [a, b, propria].every((x) => x.estado === 'SOLICITADA'), [a, b, propria].map((x) => x.estado).join(' '));
+
+  // ---- lista
+  let ctx = await contexto(navegador, c, carlos);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/aprovacoes');
+  await page.getByRole('heading', { level: 1, name: 'Aprovações' }).waitFor();
+  const cartaoA = page.getByRole('article', { name: `Pedido A ${S}` });
+  await cartaoA.waitFor();
+  await page.getByText('Laboratório de Informática 3').first().waitFor();
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Aprovações'), await page.title());
+  conferir(P('solicitante-pelo-nome'), (await cartaoA.innerText()).includes('Maria Souza'));
+  conferir(P('nomes-dos-recursos'), (await cartaoA.innerText()).includes('Laboratório de Informática 3'));
+  conferir(P('sem-email-na-tela'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  conferir(P('aprovar-e-rejeitar-no-pedido'), (await cartaoA.getByRole('button').count()) === 2);
+  const cartaoPropria = page.getByRole('article', { name: `Pedido do Responsável ${S}` });
+  conferir(P('propria-sem-acoes'), (await cartaoPropria.getByRole('button').count()) === 0);
+  const mensagem = cartaoPropria.getByText(MENSAGEM_SEM_ACAO_DA_FILA, { exact: true });
+  conferir(P('propria-mensagem-visivel'), (await mensagem.count()) === 1 && (await mensagem.isVisible()));
+  const descricao = await cartaoPropria.evaluate((el) => { const id = el.getAttribute('aria-describedby'); const d = id && document.getElementById(id); return d ? d.textContent : null; });
+  conferir(P('propria-mensagem-lida-com-o-cartao'), descricao === MENSAGEM_SEM_ACAO_DA_FILA, String(descricao));
+  conferir(P('pedido-com-acao-sem-mensagem'), (await cartaoA.getByText(MENSAGEM_SEM_ACAO_DA_FILA).count()) === 0);
+  await foto(page, P('aprovacoes-1-lista'));
+  await auditar(page, P('aprovacoes-1-lista'));
+  await semRolagemHorizontal(page, P('aprovacoes-lista'));
+
+  // ---- diálogo de aprovação: foco, Tab preso, Escape devolve o foco
+  await page.getByRole('button', { name: `Aprovar Pedido A ${S}` }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('dialogo-foco-entra'), await foiParaODialogo(page));
+  await foto(page, P('aprovacoes-2-dialogo-aprovar'));
+  await auditar(page, P('aprovacoes-2-dialogo-aprovar'));
+  await semRolagemHorizontal(page, P('aprovacoes-dialogo-aprovar'));
+  let dentro = true;
+  for (let i = 0; i < 6; i++) { await page.keyboard.press('Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  for (let i = 0; i < 3; i++) { await page.keyboard.press('Shift+Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  conferir(P('dialogo-tab-preso'), dentro);
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  const aposEscape = await descrever(page);
+  conferir(P('escape-devolve-o-foco'), aposEscape.nome.includes(`Aprovar Pedido A ${S}`), aposEscape.nome);
+
+  // ---- aprovar de verdade, com motivo
+  await page.getByRole('button', { name: `Aprovar Pedido A ${S}` }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByLabel('Motivo').fill('Laboratório disponível.');
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar aprovação' }).click();
+  await page.getByText(`Reserva "Pedido A ${S}" aprovada.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('aprovada-sai-da-fila'), (await page.getByRole('article', { name: `Pedido A ${S}` }).count()) === 0);
+  const depoisDeAprovar = await api('GET', `/api/reservas/${a.id}`, undefined, maria.token);
+  conferir(P('servidor-aprovou'), depoisDeAprovar.corpo.estado === 'APROVADA', depoisDeAprovar.corpo.estado);
+  await foto(page, P('aprovacoes-3-aprovada'));
+  await auditar(page, P('aprovacoes-3-aprovada'));
+
+  // ---- rejeitar exige motivo
+  await page.getByRole('button', { name: `Rejeitar Pedido B ${S}` }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar rejeição' }).click();
+  await page.getByRole('dialog').getByText('Informe o motivo.').waitFor();
+  const campo = page.getByRole('dialog').getByLabel(/Motivo/);
+  conferir(P('rejeitar-sem-motivo-campo-invalido'), (await campo.getAttribute('aria-invalid')) === 'true');
+  conferir(P('rejeitar-sem-motivo-foco-no-campo'), await campo.evaluate((el) => el === document.activeElement));
+  const semMotivo = await api('GET', `/api/reservas/${b.id}`, undefined, maria.token);
+  conferir(P('rejeitar-sem-motivo-nada-enviado'), semMotivo.corpo.estado === 'SOLICITADA', semMotivo.corpo.estado);
+  await foto(page, P('aprovacoes-4-rejeitar-sem-motivo'));
+  await auditar(page, P('aprovacoes-4-rejeitar-sem-motivo'));
+  await semRolagemHorizontal(page, P('aprovacoes-rejeitar-sem-motivo'));
+  await campo.fill('Auditório reservado para um evento da direção.');
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar rejeição' }).click();
+  await page.getByText(`Reserva "Pedido B ${S}" rejeitada.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('rejeitada-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  const depoisDeRejeitar = await api('GET', `/api/reservas/${b.id}`, undefined, maria.token);
+  conferir(P('servidor-rejeitou-com-motivo'), depoisDeRejeitar.corpo.estado === 'REJEITADA' && String(depoisDeRejeitar.corpo.motivo).includes('Auditório reservado'), JSON.stringify([depoisDeRejeitar.corpo.estado, depoisDeRejeitar.corpo.motivo]));
+  await foto(page, P('aprovacoes-5-rejeitada'));
+  await auditar(page, P('aprovacoes-5-rejeitada'));
+
+  // ---- defesa do servidor (ADR-004): a tela não oferece, mas o servidor recusa pelo código estável
+  const propriaPelaApi = await api('POST', `/api/reservas/${propria.id}/aprovacao`, {}, carlos.token);
+  conferir(P('defesa-aprovar-a-propria'), propriaPelaApi.status === 403 && propriaPelaApi.corpo.code === 'ACESSO_NEGADO', `${propriaPelaApi.status} ${JSON.stringify(propriaPelaApi.corpo)}`);
+  const filaDeAna = await api('GET', '/api/reservas/fila', undefined, ana.token);
+  const daFilaDeAna = filaDeAna.corpo.find((i) => i.id === propria.id);
+  conferir(P('outro-responsavel-pode-decidir'), !!daFilaDeAna && daFilaDeAna.podeAprovar === true && daFilaDeAna.podeRejeitar === true, JSON.stringify(daFilaDeAna));
+
+  // ---- pedido que já começou: só rejeitar
+  await esperarIniciar(deAgora);
+  await page.reload();
+  await page.getByRole('heading', { level: 1, name: 'Aprovações' }).waitFor();
+  const iniciado = page.getByRole('article', { name: 'Pedido já iniciado' });
+  await iniciado.waitFor();
+  conferir(P('iniciado-so-rejeitar'), (await iniciado.getByRole('button', { name: /^Rejeitar/ }).count()) === 1 && (await iniciado.getByRole('button', { name: /^Aprovar/ }).count()) === 0);
+  conferir(P('iniciado-sem-mensagem'), (await iniciado.getByText(MENSAGEM_SEM_ACAO_DA_FILA).count()) === 0);
+  const aposInicio = await api('POST', `/api/reservas/${deAgora.id}/aprovacao`, {}, carlos.token);
+  conferir(P('defesa-aprovar-apos-inicio'), aposInicio.status === 409 && aposInicio.corpo.code === 'APROVACAO_APOS_INICIO', `${aposInicio.status} ${JSON.stringify(aposInicio.corpo)}`);
+  await foto(page, P('aprovacoes-6-ja-iniciado'));
+  await auditar(page, P('aprovacoes-6-ja-iniciado'));
+  await semRolagemHorizontal(page, P('aprovacoes-ja-iniciado'));
+  await ctx.close();
+
+  // ---- Solicitante e Administrador não veem a tela nem a ação
+  for (const [nome, ator] of [['solicitante', maria], ['administrador', atores.admin]]) {
+    ctx = await contexto(navegador, c, ator);
+    page = await ctx.newPage();
+    const consultas = [];
+    page.on('request', (r) => { if (r.url().includes('/api/reservas/fila')) consultas.push(r.url()); });
+    await page.goto(FRONT + '/aprovacoes');
+    await page.getByRole('alert').waitFor();
+    conferir(P(`${nome}-acesso-negado`), (await page.getByRole('alert').innerText()).includes('Seu perfil não permite esta ação.'));
+    conferir(P(`${nome}-sem-a-tela`), (await page.getByRole('heading', { level: 1, name: 'Aprovações' }).count()) === 0 && (await page.getByRole('button', { name: /^(Aprovar|Rejeitar)/ }).count()) === 0);
+    conferir(P(`${nome}-sem-link-no-menu`), (await page.getByRole('navigation', { name: 'Menu principal' }).getByRole('link', { name: 'Aprovações' }).count()) === 0);
+    conferir(P(`${nome}-nao-consulta-a-fila`), consultas.length === 0, consultas.join(','));
+    await foto(page, P(`aprovacoes-7-${nome}-acesso-negado`));
+    await auditar(page, P(`aprovacoes-7-${nome}-acesso-negado`));
+    await ctx.close();
+  }
+}
+
+/** Só teclado na Fila de aprovações: abrir, confirmar, motivo obrigatório e o foco depois de cada resultado. */
+async function fluxoTecladoAprovacoes(navegador, semente, atores) {
+  const { maria, carlos } = atores;
+  const c = { id: 'teclado-aprovacoes', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  await criarReservaPelaApi(maria.token, 'Pedido com teclado um', c.dia, '08:00', '10:00', [semente.recursos.lab3]);
+  await criarReservaPelaApi(maria.token, 'Pedido com teclado dois', c.dia, '10:00', '12:00', [semente.recursos.auditorio]);
+  const ctx = await contexto(navegador, c, carlos);
+  const page = await ctx.newPage();
+  const passos = [];
+  const registrar = async (acao) => { const d = await descrever(page); passos.push({ acao, ...d }); return d; };
+  const ate = async (nome, limite = 200) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await registrar('Tab');
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado das aprovações: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  try {
+    await page.goto(FRONT + '/aprovacoes');
+    await page.getByRole('article', { name: 'Pedido com teclado um' }).waitFor();
+    await page.getByText('Laboratório de Informática 3').first().waitFor();
+    await ate('Pular para o conteúdo');
+    await page.keyboard.press('Enter');
+    await registrar('Enter (pular para o conteúdo)');
+
+    await ate('Aprovar Pedido com teclado um');
+    await foto(page, 'teclado-aprovacoes-1-foco-no-aprovar');
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog').waitFor();
+    const noMotivo = await registrar('Enter em Aprovar (abre o diálogo)');
+    conferir('teclado-aprovacoes-foco-entra-no-motivo', noMotivo.nome.includes('Motivo'), noMotivo.nome);
+    await page.keyboard.type('Laboratório disponível.');
+    await ate('Confirmar aprovação');
+    await page.keyboard.press('Enter');
+    await page.getByText('Reserva "Pedido com teclado um" aprovada.').waitFor();
+    await page.waitForTimeout(300);
+    const aposAprovar = await registrar('Enter em Confirmar aprovação');
+    conferir('teclado-aprovacoes-foco-na-confirmacao', await focoEmPapel(page, 'status'), aposAprovar.nome);
+    await foto(page, 'teclado-aprovacoes-2-aprovada');
+
+    await ate('Rejeitar Pedido com teclado dois');
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog').waitFor();
+    await registrar('Enter em Rejeitar (abre o diálogo)');
+    await ate('Confirmar rejeição');
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog').getByText('Informe o motivo.').waitFor();
+    const semMotivo = await registrar('Enter em Confirmar rejeição sem motivo');
+    conferir('teclado-aprovacoes-foco-volta-ao-motivo', semMotivo.nome.includes('Motivo'), semMotivo.nome);
+    await foto(page, 'teclado-aprovacoes-3-motivo-obrigatorio');
+    await page.keyboard.type('Sem equipamento.');
+    await ate('Confirmar rejeição');
+    await page.keyboard.press('Enter');
+    await page.getByText('Reserva "Pedido com teclado dois" rejeitada.').waitFor();
+    await page.waitForTimeout(300);
+    const aposRejeitar = await registrar('Enter em Confirmar rejeição');
+    conferir('teclado-aprovacoes-foco-na-rejeicao', await focoEmPapel(page, 'status'), aposRejeitar.nome);
+    await foto(page, 'teclado-aprovacoes-4-rejeitada');
+  } catch (e) {
+    await page.screenshot({ path: path.join(SAIDA, 'teclado-aprovacoes-FALHA.png') });
+    console.log('PASSOS ATE A FALHA:', passos.map((p) => p.acao + ' -> ' + p.nome).join(' | '));
+    console.log('URL:', page.url());
+    throw e;
+  }
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
+
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -731,6 +953,24 @@ function resumoDoModo(arquivo) {
       for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
       return;
     }
+  }
+  if (SO === 'aprovacoes') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const joao = await entrar(semente.usuarios.solicitante2.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const ana = await entrar(semente.usuarios.responsavel2.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const deAgora = await prepararSolicitacaoDeAgora(semente, maria);
+    const atores = { maria, joao, carlos, ana, admin };
+    for (const c of COMBOS) {
+      console.log('aprovacoes', c.id);
+      await fluxoAprovacoes(navegador, c, semente, atores, deAgora, COMBOS.indexOf(c));
+    }
+    console.log('aprovacoes teclado');
+    await fluxoTecladoAprovacoes(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-aprovacoes.json');
+    return;
   }
   if (SO === 'reservas') {
     const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
