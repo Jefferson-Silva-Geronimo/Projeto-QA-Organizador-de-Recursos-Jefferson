@@ -241,12 +241,14 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
-  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
+  it('o Administrador abre os Bloqueios de verdade, e não o marcador de lugar', async () => {
     entrarComo('ADMINISTRADOR');
 
-    montar('/bloqueios');
+    montar('/bloqueios', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
 
-    expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
+    expect(await screen.findByText('Nada bloqueado')).toBeInTheDocument();
+    expect(screen.getByRole('form', { name: 'Novo bloqueio' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
   it('ao trocar de tela pelo menu o foco vai para o conteúdo, para o teclado não ficar perdido', async () => {

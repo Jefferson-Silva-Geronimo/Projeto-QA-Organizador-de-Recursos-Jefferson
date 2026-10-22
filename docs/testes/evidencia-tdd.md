@@ -188,4 +188,6 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Relatórios (T10): filtros no endereço, período obrigatório, tabela do servidor, paginação e recusas pela tabela de erros (28 testes da tela, 3 de rota) | `e97f0fc` | `d762f49` |
 | Usuários e perfis (T11): lista, cadastro com perfil único, trocar perfil e desativar com a recusa do servidor e as reservas afetadas (F6-17; 35 testes da tela, 1 de rota) | `9d83d08` | `b1a5343` |
 | Histórico de auditoria (T09): Responsável por reserva, Administrador na auditoria completa, período na tela, ator pelo nome e ações na grafia da pessoa (30 testes da tela, 2 de rota; um teste de rota existente mudou de tela, declarado no commit) | `42fe6d0` | `6006b24` |
+| Bloqueios de manutenção (T08): lista, levantar e novo bloqueio em duas etapas com as recusas do servidor (31 testes da tela, 1 de rota) | `a5aaf96` | `15739a6` |
+| Bloqueios (T08), levantar com motivo: achado do navegador real, o servidor exige o motivo e o contrato o marca como opcional (12 testes de levantar substituem os 6 anteriores, declarado no commit) | `5e6c7d3` | `bfefdfb` |
 | Histórico de auditoria traz `atorNome`, só o nome e nunca o e-mail, e o usuário desativado mantém o nome (F6-17) | `cb31a0c` | `1c7fc09` (contrato `5b861e3`) |
