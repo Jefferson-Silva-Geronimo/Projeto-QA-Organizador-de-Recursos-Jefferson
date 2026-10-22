@@ -1179,7 +1179,7 @@ async function fluxoCatalogo(navegador, c, semente, atores, indice) {
   await semRolagemHorizontal(page, P('catalogo-lista'));
 
   // ---- restrito: marcar e voltar ao que era
-  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).check();
+  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).click(); // a caixa só muda depois da resposta do servidor
   await page.getByText('"Sala 101" agora exige aprovação.').waitFor();
   await page.waitForTimeout(300);
   conferir(P('restrito-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
@@ -1187,7 +1187,7 @@ async function fluxoCatalogo(navegador, c, semente, atores, indice) {
   conferir(P('servidor-marcou-restrito'), marcada.corpo.restrito === true);
   await foto(page, P('catalogo-2-restrito'));
   await auditar(page, P('catalogo-2-restrito'));
-  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).uncheck();
+  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).click();
   await page.getByText('"Sala 101" deixou de exigir aprovação.').waitFor();
 
   // ---- cadastrar sala: validação, diálogo, foco
@@ -1500,4 +1500,4 @@ function resumoDoModo(arquivo) {
   const semFoco = RELATORIO.foco.filter((p) => !p.visivel && p.tipo !== 'datetime-local');
   console.log('paradas de Tab:', RELATORIO.foco.length, '| sem foco visível:', semFoco.length, '| no ícone do calendário (anel do navegador, verificado por captura):', icone.length);
   for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
-})().catch((e) => { console.error('FALHOU:', e.message.split('\n')[0]); process.exit(1); });
+})().catch((e) => { console.error('FALHOU:', e.message.split('\n').slice(0, 8).join('\n')); process.exit(1); });
