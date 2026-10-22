@@ -67,6 +67,26 @@ describe('RotaProtegida (conveniência de interface: o servidor decide o acesso)
     expect(screen.getByRole('alert')).toHaveTextContent(mensagemPara('ACESSO_NEGADO').acao);
   });
 
+  it('a tela de acesso negado tem o título de página "Acesso negado" (h1) e a mensagem da tabela continua abaixo dele (BUG-018)', () => {
+    entrarComo('SOLICITANTE');
+
+    montar(['RESPONSAVEL']);
+
+    const titulo = screen.getByRole('heading', { level: 1, name: 'Acesso negado' });
+    const alerta = screen.getByRole('alert');
+    expect(alerta).toHaveTextContent(mensagemPara('ACESSO_NEGADO').mensagem);
+    expect(alerta).toHaveTextContent(mensagemPara('ACESSO_NEGADO').acao);
+    expect(titulo.compareDocumentPosition(alerta) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it('perfil permitido não vê o título de acesso negado', () => {
+    entrarComo('RESPONSAVEL');
+
+    montar(['RESPONSAVEL']);
+
+    expect(screen.queryByRole('heading', { name: 'Acesso negado' })).not.toBeInTheDocument();
+  });
+
   it('sem lista de perfis, qualquer usuário com sessão vê a tela', () => {
     entrarComo('ADMINISTRADOR');
 

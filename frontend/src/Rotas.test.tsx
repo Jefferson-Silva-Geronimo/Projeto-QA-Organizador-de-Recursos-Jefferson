@@ -213,6 +213,28 @@ describe('Rotas', () => {
     expect(document.title).toBe(`${titulo} · Organização de Recursos`);
   });
 
+  it.each([
+    ['SOLICITANTE', '/aprovacoes'],
+    ['ADMINISTRADOR', '/aprovacoes'],
+    ['RESPONSAVEL', '/usuarios'],
+    ['ADMINISTRADOR', '/reservas/10/alterar'],
+  ] as const)('%s abrindo %s vê o título "Acesso negado" na página e na aba (BUG-018)', (perfil, rota) => {
+    entrarComo(perfil);
+
+    montar(rota);
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Acesso negado' })).toBeInTheDocument();
+    expect(document.title).toBe('Acesso negado · Organização de Recursos');
+  });
+
+  it('a aba volta a ter o nome da tela quando o perfil pode vê-la', () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/aprovacoes');
+
+    expect(document.title).toBe('Aprovações · Organização de Recursos');
+  });
+
   it('a rota Entrar mostra o formulário de login de verdade, e não o marcador de lugar', () => {
     montar('/entrar');
 
