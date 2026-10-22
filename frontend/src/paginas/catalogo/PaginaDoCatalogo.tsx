@@ -101,7 +101,7 @@ export function PaginaDoCatalogo() {
         </Aviso>
       )}
       <div className={estilos.barra}>
-        <div role="tablist" aria-label="Tipo de recurso" className={estilos.abas} onKeyDown={teclar}>
+        <div role="tablist" aria-label="Tipo de recurso" className={estilos.abas}>
           {ABAS.map((a, posicao) => (
             <button
               key={a.tipo}
@@ -116,6 +116,7 @@ export function PaginaDoCatalogo() {
               tabIndex={posicao === indice ? 0 : -1}
               className={estilos.aba}
               onClick={() => setIndice(posicao)}
+              onKeyDown={teclar}
             >
               {a.rotulo}
             </button>
