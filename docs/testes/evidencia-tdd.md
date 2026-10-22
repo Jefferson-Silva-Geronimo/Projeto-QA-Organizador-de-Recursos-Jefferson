@@ -174,3 +174,5 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Administrador não vê Alterar na lista de Reservas (BUG-016, achado nas capturas do navegador real) | `c3ed51b` | `35ddae4` |
 | Permissões da reserva por estado, perfil, posse e instante, com o início em trinca (regra pura) | `c8c3532` | `7aae5e1` |
 | Resposta de reserva traz `podeAlterar` e `podeCancelar`, e o campo concorda com a recusa do servidor | `0bd9a62` | `d10a5e8` |
+| Ações da T04 obedecem a `podeAlterar` e `podeCancelar` do servidor, não ao estado nem ao perfil (F6-14; os testes antigos de estado e perfil foram reescritos porque a premissa mudou por decisão, dito no commit) | `f1e24c8` | `c019532` |
+| Reserva em andamento sem ação disponível mostra "Você não pode alterar nem cancelar esta reserva agora.", lida junto com o cartão (texto aprovado por Jefferson) | `3ffbc41` | `955801b` |

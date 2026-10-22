@@ -84,6 +84,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 22/10/2026 | T04 usa as permissões do servidor (F6-14) | As duas dúvidas da T04 (ações por dono e reserva já iniciada) resolvidas no front pelos campos `podeAlterar` e `podeCancelar`; mensagem de ação ausente aprovada por Jefferson; roteiro de navegador real reescrito (execução E-10) |
 | 19/10/2026 | Investigação do hook e do teste intermitente | Incidente do hook de publicação (falha aberta) e ocorrência 2 do `NotificacaoApiIT` |
 | 19/10/2026 | T04 Minhas reservas e alteração | Limitação do axe no diálogo (contraste medido à mão), duas dúvidas para Jefferson (ações por dono e reserva já iniciada), lista sem paginação e diálogo próprio; BUG-015 e BUG-016 |
 | 18/10/2026 | Login em andamento | Alertas do Dependabot (22, todos no framework AIOX) |
