@@ -717,6 +717,7 @@ export interface components {
             atorTipo: string;
             /** Format: int64 */
             atorId?: number;
+            atorNome?: string;
             entidade: string;
             /** Format: int64 */
             entidadeId: number;

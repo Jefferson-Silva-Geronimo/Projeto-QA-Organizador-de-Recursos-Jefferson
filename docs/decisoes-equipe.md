@@ -319,6 +319,26 @@ O cálculo está em `PermissoesDeDecisao` e `PoliticaDeDecisao` (regra pura, em 
 
 Os campos de uso são calculados por `PermissoesDeUso` (regra pura, em `model.regra`) e montados por `UsoService.permissoes` e `RespostasDeReserva`; as respostas de criar, alterar, cancelar, aprovar, rejeitar e do uso de material trazem os mesmos campos. A lista de reservas lê a tolerância uma vez por chamada e consulta as movimentações só das reservas em uso do Responsável (ver [fase-7-pendencias.md](fase-7-pendencias.md)).
 
+### F6-17. O histórico diz quem agiu pelo nome; Desativar não ganha campo "pode" (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, ao levantar o que as telas T07 a T11 exigem do back end.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-17 | **(a)** Cada evento de `GET /api/reservas/{id}/historico` e de `GET /api/auditoria` traz `atorNome`, só o nome de quem agiu, **nunca o e-mail**, no mesmo molde da L-04 e da F6-16. O usuário desativado depois continua com o nome no histórico, e o SISTEMA não tem nome. Mudança **aditiva e só de contrato** (o campo não entra no `required`, porque falta no SISTEMA); `openapi.json` regenerado (CT-115 falhou de propósito; CT-114 não mudou). Quem já via o histórico continua vendo e ninguém ganhou acesso novo; o front não chama `GET /api/usuarios` para isso. **(b)** A T07 (Catálogo) e a T11 (Usuários) **não ganham `podeDesativar`**: a tela oferece Desativar e, quando o servidor recusa (`RECURSO_COM_RESERVA_FUTURA`, `USUARIO_COM_RESERVA_FUTURA`, `MINIMO_DE_RESPONSAVEIS`), mostra a mensagem e a ação do mapa de erros e a lista de reservas afetadas em `itens`. Motivo: a decisão continua do servidor, nenhuma regra nova vai para o front, e um campo falso esconderia o botão sem dizer por quê, quando a lista é exatamente o que o Administrador precisa ver | **(a)** mostrar "Usuário nº 12" no lugar do nome (contra a L-04); **(b)** `podeDesativar` em recursos e usuários (consulta de reservas futuras por item e botão que some sem explicação) |
+
+Os testes da T07 e da T11 cobrem a recusa com a lista de reservas afetadas (teste de componente).
+
+### F6-18. Como acelerar sem perder a rastreabilidade (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026.** Regras de trabalho, sem mudar nenhuma regra do produto.
+
+| ID | Decisão | Condições |
+| --- | --- | --- |
+| F6-18 | Em **PR de front puro ou de campo aditivo**, roda-se local só as classes de teste afetadas, o contrato (CT-114, CT-115 e CT-134) e a arquitetura (ArchUnit), e a suíte completa fica para a CI | Se o PR mudar **regra de negócio, política, migração ou consulta**, a suíte completa roda local antes de abrir o PR. O PR declara o que rodou local e o que ficou para a CI. **Os números de testes da RTM e dos relatórios vêm sempre da CI, nunca do local.** A regra de repetir o job da CI uma única vez para `NotificacaoApiIT.int01ECt103` (R-25 e R-26) continua; qualquer outro teste falhando, pára e avisa |
+
+Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão já aprovado (T04, T05 e T06) e permissões no molde da F6-14, da F6-15 e da F6-16 não são perguntados, e entram no resumo do PR; só se pergunta o que for novo ou conflitar com a especificação ou o plano mestre; enquanto a CI de um PR roda, a próxima tela começa em branch novo; nas telas simples (Usuários e Catálogo) o navegador real roda só o modo da própria tela, com axe nos dois temas e tamanhos, teclado e rolagem, e o PR declara o que deixou de rodar.
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
