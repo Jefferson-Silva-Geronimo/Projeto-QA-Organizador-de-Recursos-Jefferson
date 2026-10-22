@@ -1,0 +1,52 @@
+# Ambiente de E2E (Fase 6, 6.D): PostgreSQL, API e front end, sem mocks. Banco descartável: nada é guardado em volume.
+# Só dados fictícios, e nenhum segredo no repositório: as credenciais vêm de variáveis de ambiente (na CI, geradas na hora).
+#
+# Subir:   docker compose -f compose.e2e.yaml up --build -d
+# Derrubar: docker compose -f compose.e2e.yaml down -v
+# Variáveis obrigatórias (valores locais à sua escolha): E2E_DB_NAME, E2E_DB_USER, E2E_DB_PASSWORD,
+# E2E_ADMIN_EMAIL, E2E_ADMIN_SENHA. Ver docs/testes/e2e/README.md.
+name: e2e
+
+services:
+  postgres:
+    image: postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3
+    environment:
+      POSTGRES_DB: ${E2E_DB_NAME:?defina E2E_DB_NAME}
+      POSTGRES_USER: ${E2E_DB_USER:?defina E2E_DB_USER}
+      POSTGRES_PASSWORD: ${E2E_DB_PASSWORD:?defina E2E_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${E2E_DB_NAME:?defina E2E_DB_NAME}
+      DB_USER: ${E2E_DB_USER:?defina E2E_DB_USER}
+      DB_PASSWORD: ${E2E_DB_PASSWORD:?defina E2E_DB_PASSWORD}
+      SESSAO_DURACAO: PT3H
+      LOGIN_TENTATIVAS: "20"
+      LOGIN_JANELA: PT10M
+      CORS_ORIGENS: http://localhost:4173
+      BOOTSTRAP_ADMIN_EMAIL: ${E2E_ADMIN_EMAIL:?defina E2E_ADMIN_EMAIL}
+      BOOTSTRAP_ADMIN_SENHA: ${E2E_ADMIN_SENHA:?defina E2E_ADMIN_SENHA}
+    ports:
+      - "127.0.0.1:8080:8080"
+
+  front:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8080
+    depends_on:
+      - api
+    ports:
+      - "127.0.0.1:4173:80"
