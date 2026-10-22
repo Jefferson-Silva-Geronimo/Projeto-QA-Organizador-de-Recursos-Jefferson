@@ -26,6 +26,8 @@ dele. Nada aqui contém segredo: as credenciais são geradas na hora, ficam em `
 
 | `prototipo.cjs catalogo` | Catálogo de recursos (T07) **pela interface, com a API real**, em 360 e 1280 px, nos dois temas: abas, restrito (marcar e voltar, pela caixa, que só muda depois da resposta), cadastro de sala (diálogo, campos em branco, foco), de professor (usuário por nome e perfil, sem e-mail) e de material (patrimônio repetido recusado), desativar com recusa e a lista de reservas afetadas e depois com sucesso, Solicitante e Responsável só consultando, e o fluxo só com teclado. Não há espera: a rodada leva poucos minutos. O modo cria recursos e uma reserva futura por combinação; num banco que já teve uma rodada, troque `DESLOCAMENTO` ou recomece no banco limpo |
 
+| `prototipo.cjs relatorios` | Relatórios (T10) **pela interface, com a API real**, em 360 e 1280 px, nos dois temas: sem período, período obrigatório com o foco no primeiro campo, relatório gerado (contagem igual à do servidor e linha da Sala 101), recarregar mantendo os filtros, tipo Professor com "Não se aplica", período sem uso, Limpar filtros, Administrador vendo a tela, Solicitante com "Acesso negado", e o fluxo só com teclado (data, Tab, hora, Enter em Gerar). A paginação não é exercida aqui: o banco do roteiro tem menos recursos que uma página de 20 (coberta pelos testes de componente). O modo só lê, e a rodada leva poucos minutos
+
 Saída: capturas (`.jpg` da janela e `-completa.png` da página) e `relatorio.json` (violações do axe, verificações
 incompletas, paradas de Tab e conferências).
 
