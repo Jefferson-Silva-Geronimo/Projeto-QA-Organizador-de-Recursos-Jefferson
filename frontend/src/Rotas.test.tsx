@@ -229,6 +229,18 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
+  it.each([
+    ['RESPONSAVEL', 'Informe a reserva'],
+    ['ADMINISTRADOR', 'Nada registrado'],
+  ] as const)('%s abre o Histórico de verdade, e não o marcador de lugar', async (perfil, texto) => {
+    entrarComo(perfil);
+
+    montar('/auditoria', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText(texto)).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
   it('o Administrador abre os Bloqueios de verdade, e não o marcador de lugar', async () => {
     entrarComo('ADMINISTRADOR');
 
@@ -237,14 +249,6 @@ describe('Rotas', () => {
     expect(await screen.findByText('Nada bloqueado')).toBeInTheDocument();
     expect(screen.getByRole('form', { name: 'Novo bloqueio' })).toBeInTheDocument();
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
-  });
-
-  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
-    entrarComo('RESPONSAVEL');
-
-    montar('/auditoria');
-
-    expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
   });
 
   it('ao trocar de tela pelo menu o foco vai para o conteúdo, para o teclado não ficar perdido', async () => {
