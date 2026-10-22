@@ -187,4 +187,5 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Catálogo de recursos (T07): abas por tipo, lista, restrito, desativar com a lista de reservas afetadas e cadastro por tipo (F6-17; 61 testes da tela, 3 de rota; lint corrigido em `9c10927`) | `e90007c` | `9850afd` |
 | Relatórios (T10): filtros no endereço, período obrigatório, tabela do servidor, paginação e recusas pela tabela de erros (28 testes da tela, 3 de rota) | `e97f0fc` | `d762f49` |
 | Usuários e perfis (T11): lista, cadastro com perfil único, trocar perfil e desativar com a recusa do servidor e as reservas afetadas (F6-17; 35 testes da tela, 1 de rota) | `9d83d08` | `b1a5343` |
+| Histórico de auditoria (T09): Responsável por reserva, Administrador na auditoria completa, período na tela, ator pelo nome e ações na grafia da pessoa (30 testes da tela, 2 de rota; um teste de rota existente mudou de tela, declarado no commit) | `42fe6d0` | `6006b24` |
 | Histórico de auditoria traz `atorNome`, só o nome e nunca o e-mail, e o usuário desativado mantém o nome (F6-17) | `cb31a0c` | `1c7fc09` (contrato `5b861e3`) |
