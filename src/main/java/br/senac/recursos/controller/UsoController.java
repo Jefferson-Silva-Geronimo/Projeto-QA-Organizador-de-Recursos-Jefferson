@@ -3,10 +3,14 @@ package br.senac.recursos.controller;
 import br.senac.recursos.dto.MaterialRequisicao;
 import br.senac.recursos.dto.MovimentacaoResposta;
 import br.senac.recursos.dto.ReservaResposta;
+import br.senac.recursos.model.Movimentacao;
 import br.senac.recursos.model.UsuarioAutenticado;
+import br.senac.recursos.model.regra.MovimentacoesAtuais;
 import br.senac.recursos.service.UsoService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -66,6 +70,9 @@ class UsoController {
 
     @GetMapping("/movimentacoes")
     List<MovimentacaoResposta> historico(@AuthenticationPrincipal UsuarioAutenticado ator, @PathVariable long id) {
-        return uso.historico(ator, id).stream().map(MovimentacaoResposta::de).toList();
+        List<Movimentacao> historico = uso.historico(ator, id);
+        Set<Long> atuais = MovimentacoesAtuais.ultimaPorMaterial(historico).values().stream()
+                .map(Movimentacao::id).collect(Collectors.toSet());
+        return historico.stream().map(m -> MovimentacaoResposta.de(m, atuais.contains(m.id()))).toList();
     }
 }

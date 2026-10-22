@@ -96,6 +96,6 @@ class ReservaController {
 
     @GetMapping
     List<ReservaResposta> listar(@AuthenticationPrincipal UsuarioAutenticado ator) {
-        return reservas.listar(ator).stream().map(r -> respostas.de(ator, r)).toList();
+        return respostas.lista(ator, reservas.listar(ator));
     }
 }
