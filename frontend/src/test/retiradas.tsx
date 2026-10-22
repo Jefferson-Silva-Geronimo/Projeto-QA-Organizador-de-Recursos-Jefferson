@@ -19,12 +19,12 @@ export interface EstadoDoServidor {
 export interface Cenario {
   reservas: Reserva[];
   movimentacoes?: Record<number, Movimentacao[]>;
+  /** Resposta à consulta das movimentações de uma reserva. Sem retorno, devolve o histórico do cenário. */
+  consultarMovimentacoes?: (reservaId: number) => Response | undefined;
   /**
    * Resposta ao registro de uso. Pode mudar o estado do servidor antes de responder. Sem retorno, o servidor devolve
    * 200 com a reserva como está.
    */
-  /** Resposta à consulta das movimentações de uma reserva. Sem retorno, devolve o histórico do cenário. */
-  consultarMovimentacoes?: (reservaId: number) => Response | undefined;
   registrar?: (acao: string, reservaId: number, corpo: unknown, estado: EstadoDoServidor) => Response | Promise<Response> | undefined;
 }
 

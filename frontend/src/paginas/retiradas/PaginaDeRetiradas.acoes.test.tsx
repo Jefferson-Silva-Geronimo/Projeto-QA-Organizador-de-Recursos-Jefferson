@@ -91,14 +91,15 @@ describe('PaginaDeRetiradas: quando nenhuma ação de uso está disponível', ()
 
     const cartao = await screen.findByRole('article', { name: 'Aula de informática' });
 
+    expect(await within(cartao).findByText(MENSAGEM)).toBeVisible();
     expect(within(cartao).queryByRole('button')).not.toBeInTheDocument();
-    expect(within(cartao).getByText(MENSAGEM)).toBeVisible();
   });
 
   it('a mensagem é texto, sem papel de alerta, e o leitor de tela a lê junto com o cartão (descrição acessível)', async () => {
     montarRetiradas({ reservas: [{ ...SEM_MATERIAL, ...TODAS_FALSAS }] });
 
     const cartao = await screen.findByRole('article', { name: 'Aula de informática' });
+    await within(cartao).findByText(MENSAGEM);
 
     expect(within(cartao).queryByRole('alert')).not.toBeInTheDocument();
     expect(cartao).toHaveAccessibleDescription(MENSAGEM);
@@ -112,6 +113,7 @@ describe('PaginaDeRetiradas: quando nenhuma ação de uso está disponível', ()
     montarRetiradas({ reservas: [{ ...SEM_MATERIAL, ...TODAS_FALSAS, ...campo }] });
 
     const cartao = await screen.findByRole('article', { name: 'Aula de informática' });
+    await within(cartao).findByText(/Sala 101/);
 
     expect(within(cartao).queryByText(MENSAGEM)).not.toBeInTheDocument();
     expect(cartao).not.toHaveAccessibleDescription();

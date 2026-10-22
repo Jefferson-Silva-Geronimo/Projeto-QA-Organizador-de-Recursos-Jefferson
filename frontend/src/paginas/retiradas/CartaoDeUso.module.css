@@ -1,0 +1,33 @@
+.unidades {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unidade {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-2);
+  padding: var(--espaco-2) 0;
+  border-top: 1px solid var(--cor-borda-campo);
+}
+
+.dadosDaUnidade {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}
+
+.nome {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.situacao {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}

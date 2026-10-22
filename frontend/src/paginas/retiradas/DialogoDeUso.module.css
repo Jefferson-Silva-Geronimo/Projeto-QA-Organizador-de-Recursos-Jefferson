@@ -1,0 +1,15 @@
+.corpo {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.pendentes {
+  margin: 0;
+  font-weight: 600;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}

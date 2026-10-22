@@ -14,7 +14,7 @@ async function cartao() {
 
 /** Uma unidade pelo nome do material, depois de os recursos carregarem. */
 async function botao(nome: string) {
-  return within(await cartao()).findByRole('button', { name });
+  return within(await cartao()).findByRole('button', { name: nome });
 }
 
 describe('PaginaDeRetiradas: ações diretas (iniciar, retirar e devolver)', () => {
@@ -77,12 +77,12 @@ describe('PaginaDeRetiradas: ações diretas (iniciar, retirar e devolver)', () 
     expect(await within(await cartao()).findByText('Devolvido às 14:30 por Ana Prado')).toBeInTheDocument();
   });
 
-  it('clique duplo em Retirar envia um único pedido', async () => {
-    const { estado } = montarRetiradas({ reservas: [AULA_DE_INFORMATICA] });
+  it('clique duplo em Retirar envia um único pedido enquanto o primeiro está em andamento', async () => {
+    // O servidor só responde depois dos dois cliques: o segundo cai com o primeiro ainda em andamento.
+    const { estado } = montarRetiradas({ reservas: [AULA_DE_INFORMATICA], registrar: () => new Promise<Response>(() => {}) });
 
     await userEvent.dblClick(await botao('Retirar Notebook N-001'));
 
-    await screen.findByText(/Retirada de "Notebook N-001" registrada/);
     expect(estado.chamadas.filter((c) => c.acao === 'retiradas')).toHaveLength(1);
   });
 
