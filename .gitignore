@@ -39,3 +39,7 @@ perf/relatorio-*/
 
 # Roteiro de navegador real: credenciais descartáveis e dados semeados (nunca versionar)
 docs/testes/roteiro-navegador-real/local/
+
+# Saídas do Playwright (E2E)
+frontend/playwright-report/
+frontend/test-results/

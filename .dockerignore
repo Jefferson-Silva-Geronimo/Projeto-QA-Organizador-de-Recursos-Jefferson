@@ -1,0 +1,13 @@
+# Contexto de build da API: só o necessário para compilar o jar
+**/node_modules
+frontend
+target
+docs
+perf
+.git
+.github
+.claude
+.aiox-core
+*.log
+.env
+.env.*

@@ -112,6 +112,94 @@ jobs:
       - name: Build
         run: npm run build
 
+  # E2E (Fase 6, 6.D): PostgreSQL, API e front reais, subidos por compose.e2e.yaml, e Playwright no Chromium, sem mocks.
+  # As credenciais são fictícias e geradas nesta execução (mascaradas no log e nunca versionadas). O relatório HTML e os
+  # traces sobem como artifact mesmo quando o teste falha (if: always()).
+  e2e:
+    name: e2e
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - name: Node 22 com cache do npm
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Credenciais fictícias desta execução
+        run: |
+          echo "E2E_DB_NAME=e2e" >> "$GITHUB_ENV"
+          echo "E2E_DB_USER=e2e" >> "$GITHUB_ENV"
+          echo "E2E_ADMIN_EMAIL=admin.e2e@exemplo.test" >> "$GITHUB_ENV"
+          for variavel in E2E_DB_PASSWORD E2E_ADMIN_SENHA E2E_SOLICITANTE_SENHA E2E_RESPONSAVEL_SENHA; do
+            valor=$(openssl rand -hex 16)
+            echo "::add-mask::$valor"
+            echo "$variavel=$valor" >> "$GITHUB_ENV"
+          done
+
+      - name: Subir PostgreSQL, API e front (compose.e2e.yaml)
+        working-directory: .
+        run: docker compose -f compose.e2e.yaml up --build -d
+
+      - name: Esperar a API ficar de pé
+        run: |
+          for tentativa in $(seq 1 60); do
+            if curl -fsS http://localhost:8080/actuator/health > /dev/null; then
+              echo "API no ar depois de $tentativa tentativas"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "A API não subiu a tempo." >&2
+          docker compose -f ../compose.e2e.yaml logs api >&2
+          exit 1
+
+      - name: Instalar dependências (npm ci, sem scripts de instalação)
+        run: npm ci --ignore-scripts
+
+      - name: Instalar o Chromium do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: Testes E2E
+        run: npm run e2e
+
+      - name: Relatório do Playwright e traces
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: relatorio-e2e
+          path: |
+            frontend/playwright-report
+            frontend/test-results
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Logs dos serviços
+        if: always()
+        working-directory: .
+        run: docker compose -f compose.e2e.yaml logs --no-color > e2e-servicos.log 2>&1 || true
+
+      - name: Publicar os logs dos serviços
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: logs-e2e
+          path: e2e-servicos.log
+          retention-days: 7
+          if-no-files-found: warn
+
+      - name: Derrubar o ambiente
+        if: always()
+        working-directory: .
+        run: docker compose -f compose.e2e.yaml down -v
+
   # Varredura de segredos no repositório e no histórico (P5-05). Usa o CLI do gitleaks, sem action de terceiros:
   # o binário vem do release oficial e o SHA-256 é conferido contra o valor fixado aqui (release v8.30.1).
   segredos:
