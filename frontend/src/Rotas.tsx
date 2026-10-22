@@ -50,14 +50,20 @@ const PERFIS_DA_ALTERACAO = TELAS.find((t) => t.id === 'T03')?.perfis;
  */
 export function Rotas() {
   const { pathname } = useLocation();
+  const { sessao } = useSessao();
+  const perfil = sessao?.perfil;
 
-  // Título da página: o leitor de tela o anuncia ao trocar de tela (WCAG 2.4.2).
+  // Título da página: o leitor de tela o anuncia ao trocar de tela (WCAG 2.4.2). Quem não pode ver a tela vê a
+  // página de acesso negado, e a aba diz isso em vez de anunciar a tela negada (BUG-018).
   useEffect(() => {
     if (pathname === '/') return;
     const tela = TELAS.find((t) => t.caminho === pathname);
-    const rotulo = ENDERECO_DA_ALTERACAO.test(pathname) ? 'Alterar reserva' : (tela?.rotulo ?? 'Página não encontrada');
+    const alteracao = ENDERECO_DA_ALTERACAO.test(pathname);
+    const permitidos = alteracao ? PERFIS_DA_ALTERACAO : tela?.perfis;
+    const negado = !!perfil && !!permitidos && !permitidos.includes(perfil);
+    const rotulo = negado ? 'Acesso negado' : alteracao ? 'Alterar reserva' : (tela?.rotulo ?? 'Página não encontrada');
     document.title = `${rotulo} · Organização de Recursos`;
-  }, [pathname]);
+  }, [pathname, perfil]);
 
   return (
     <Routes>

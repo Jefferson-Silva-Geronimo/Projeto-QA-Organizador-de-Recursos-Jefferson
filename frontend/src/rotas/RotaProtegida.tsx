@@ -24,10 +24,13 @@ export function RotaProtegida({ perfis, children }: Props) {
   if (perfis && !perfis.includes(sessao.perfil)) {
     const { mensagem, acao } = mensagemPara('ACESSO_NEGADO');
     return (
-      <div role="alert">
-        <p>{mensagem}</p>
-        <p>{acao}</p>
-      </div>
+      <section aria-labelledby="titulo-da-tela">
+        <h1 id="titulo-da-tela">Acesso negado</h1>
+        <div role="alert">
+          <p>{mensagem}</p>
+          <p>{acao}</p>
+        </div>
+      </section>
     );
   }
   return <>{children}</>;
