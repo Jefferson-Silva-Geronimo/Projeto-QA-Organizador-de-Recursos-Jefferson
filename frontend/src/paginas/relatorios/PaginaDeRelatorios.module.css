@@ -1,0 +1,26 @@
+.resultado {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.resultado:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.periodo {
+  margin: 0;
+  color: var(--cor-texto-suave);
+}
+
+.paginacao {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-3);
+}
+
+.pagina {
+  margin: 0;
+  font-weight: 600;
+}
