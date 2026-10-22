@@ -52,13 +52,15 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
     @Override
     public List<RegistroDeAuditoria> listar(EntidadeAuditada entidade, Long entidadeId) {
         return jdbc.sql("""
-                        select id, ocorrido_em, ator_tipo::text as ator_tipo, ator_id, entidade::text as entidade,
-                               entidade_id, acao, estado_anterior, estado_novo,
-                               valores_antes::text as antes, valores_depois::text as depois, motivo, correlacao_id
-                          from auditoria_eventos
-                         where (cast(:entidade as text) is null or entidade::text = :entidade)
-                           and (cast(:entidadeId as bigint) is null or entidade_id = :entidadeId)
-                         order by ocorrido_em, id
+                        select a.id, a.ocorrido_em, a.ator_tipo::text as ator_tipo, a.ator_id, u.nome as ator_nome,
+                               a.entidade::text as entidade, a.entidade_id, a.acao, a.estado_anterior, a.estado_novo,
+                               a.valores_antes::text as antes, a.valores_depois::text as depois, a.motivo,
+                               a.correlacao_id
+                          from auditoria_eventos a
+                          left join usuarios u on u.id = a.ator_id
+                         where (cast(:entidade as text) is null or a.entidade::text = :entidade)
+                           and (cast(:entidadeId as bigint) is null or a.entidade_id = :entidadeId)
+                         order by a.ocorrido_em, a.id
                         """)
                 .param("entidade", entidade == null ? null : entidade.name())
                 .param("entidadeId", entidadeId)
@@ -71,7 +73,7 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
                             EntidadeAuditada.valueOf(rs.getString("entidade")), rs.getLong("entidade_id"),
                             rs.getString("acao"), rs.getString("estado_anterior"), rs.getString("estado_novo"),
                             ler(rs.getString("antes")), ler(rs.getString("depois")), rs.getString("motivo"),
-                            (UUID) rs.getObject("correlacao_id")), null);
+                            (UUID) rs.getObject("correlacao_id")), rs.getString("ator_nome"));
                 })
                 .list();
     }
