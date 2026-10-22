@@ -71,7 +71,7 @@ class JdbcAuditoriaRepository implements AuditoriaRepository {
                             EntidadeAuditada.valueOf(rs.getString("entidade")), rs.getLong("entidade_id"),
                             rs.getString("acao"), rs.getString("estado_anterior"), rs.getString("estado_novo"),
                             ler(rs.getString("antes")), ler(rs.getString("depois")), rs.getString("motivo"),
-                            (UUID) rs.getObject("correlacao_id")));
+                            (UUID) rs.getObject("correlacao_id")), null);
                 })
                 .list();
     }
