@@ -745,6 +745,8 @@ export interface components {
             exigeAprovacao: boolean;
             motivo?: string;
             recursoIds: number[];
+            podeAprovar: boolean;
+            podeRejeitar: boolean;
         };
         ItemRelatorioResposta: {
             /** Format: int64 */
