@@ -199,6 +199,16 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
+  it('o Administrador abre Usuários de verdade, e não o marcador de lugar', async () => {
+    entrarComo('ADMINISTRADOR');
+
+    montar('/usuarios', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Nada cadastrado')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Novo usuário' })).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 
