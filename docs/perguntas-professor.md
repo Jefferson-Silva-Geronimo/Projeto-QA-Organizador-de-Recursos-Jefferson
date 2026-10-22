@@ -62,5 +62,6 @@ marcado como tal.
 | Pergunta | Suposição adotada | Impacto se estiver errada |
 | --- | --- | --- |
 | O Responsável pode registrar o início do uso (ou a primeira retirada de material) antes do horário de início da reserva APROVADA? RN-20 não fala de horário | Sim, sem limite de horário: o `UsoService` só confere o estado e a resposta da reserva (F6-16) devolve `podeIniciar` verdadeiro em reserva APROVADA mesmo antes do início | Se o início só valer a partir do horário, o servidor precisa recusá-lo (código de erro a definir) e `podeIniciar` passa a ser falso antes dele; os testes CT-150 e CT-152 mudam |
+| Trocar o perfil de um Responsável também deve ser recusado quando deixar menos de dois Responsáveis ativos? A D14 só fala da desativação | Não: o servidor só aplica o mínimo na desativação, e a tela de Usuários (T11) mostra qualquer recusa que o servidor devolver | Se a troca também deve ser recusada, o servidor passa a recusar com `MINIMO_DE_RESPONSAVEIS` (a mensagem e a ação já estão na tabela de erros e a T11 já as mostra); se não, o Administrador pode deixar o sistema com um só Responsável |
 
 Obrigado.
