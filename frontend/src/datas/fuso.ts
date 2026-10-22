@@ -79,6 +79,11 @@ export function formatarIntervalo(inicioIso: string, fimIso: string, fuso: strin
     : `${dia.format(inicio)}, ${hora.format(inicio)} até ${dia.format(fim)}, ${hora.format(fim)}`;
 }
 
+/** Esqueleto: hora e minuto na hora do fuso ("14:02"); o comportamento nasce no commit verde. */
+export function formatarHora(_iso: string, _fuso: string): string {
+  return '';
+}
+
 /** Soma dias a uma data e hora locais ("2026-10-20T12:00"), mantendo a hora do relógio. */
 export function somarDias(local: string, dias: number): string {
   const m = PADRAO_LOCAL.exec(local);

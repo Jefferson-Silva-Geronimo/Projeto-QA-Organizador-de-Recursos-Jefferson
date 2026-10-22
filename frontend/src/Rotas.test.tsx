@@ -165,10 +165,34 @@ describe('Rotas', () => {
     },
   );
 
+  it('a rota Retiradas mostra a tela de verdade, e não o marcador de lugar', async () => {
+    entrarComo('RESPONSAVEL');
+
+    montar('/retiradas', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Nada para registrar')).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it.each(['SOLICITANTE', 'ADMINISTRADOR'] as const)(
+    '%s abrindo Retiradas vê acesso negado, sem a tela e sem consultar as reservas',
+    (perfil) => {
+      entrarComo(perfil);
+      const falso = vi.fn(async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+      montar('/retiradas', falso);
+
+      expect(screen.getByRole('alert')).toHaveTextContent(mensagemPara('ACESSO_NEGADO').mensagem);
+      expect(screen.queryByRole('heading', { level: 1, name: 'Retiradas' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /^(Iniciar|Retirar|Devolver|Concluir)/ })).not.toBeInTheDocument();
+      expect(falso).not.toHaveBeenCalled();
+    },
+  );
+
   it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
     entrarComo('RESPONSAVEL');
 
-    montar('/retiradas');
+    montar('/catalogo');
 
     expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
   });
