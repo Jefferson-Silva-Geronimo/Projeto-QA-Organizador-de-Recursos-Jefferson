@@ -51,6 +51,10 @@ class NotificacaoApiIT extends ApiIT {
     static void provedor(DynamicPropertyRegistry registro) {
         registro.add("app.notificacao.url", () -> "http://localhost:" + PROVEDOR.port() + "/webhook");
         registro.add("app.notificacao.token", () -> TOKEN_DO_PROVEDOR);
+        // Estes testes verificam o contrato do corpo e o estado das notificações, não o tempo. O limite de leitura
+        // de produção (1,5 s) deixava o primeiro teste da classe exposto a paradas do ambiente (BUG-017, R-25). O
+        // tempo limite em si é testado em NotificacaoTempoLimiteApiIT, com o limite de produção.
+        registro.add("app.notificacao.timeout-leitura", () -> "PT10S");
     }
 
     @AfterAll
@@ -204,20 +208,6 @@ class NotificacaoApiIT extends ApiIT {
                 + "and proxima_tentativa_em is not null")).isEqualTo(2);
         assertThat(jdbc.queryForObject("select estado::text from reservas where id = ?", String.class, id))
                 .isEqualTo("SOLICITADA");
-    }
-
-    @Test
-    void int04_respostaMaisLentaQueOLimiteInterrompeEMarcaPendente() throws Exception {
-        reservarComRestrito();
-        PROVEDOR.stubFor(post(urlEqualTo("/webhook")).willReturn(aResponse().withStatus(200).withFixedDelay(4000)));
-
-        long inicio = System.nanoTime();
-        despacho.despachar();
-        long duracaoMs = (System.nanoTime() - inicio) / 1_000_000;
-
-        assertThat(contar("select count(*) from notificacoes where status = 'PENDENTE' and tentativas = 1"))
-                .isEqualTo(2);
-        assertThat(duracaoMs).as("cada envio é interrompido no limite, sem esperar o provedor").isLessThan(4500);
     }
 
     @Test

@@ -308,3 +308,35 @@ O cálculo está em `PermissoesDeDecisao` e `PoliticaDeDecisao` (regra pura, em 
 | O que foi descartado | Corrida com o agendador (desligado nos testes); notificação "ainda não elegível" pelo relógio fixo; estado vazado de outro teste; atraso de 4 s do `int04` (roda depois); contexto Spring reaproveitado; carga de CPU sozinha (3 rodadas com os 4 núcleos saturados, 0 falhas); 3 ciclos completos sem carga, 0 falhas |
 | Limite de 1,5 s | Valor inicial **"a validar"** do plano da equipe (ADR-007; `timeout-conexao` PT0.5S e `timeout-leitura` PT1.5S no `application.yml`). A especificação não define limites. Nenhuma validação foi feita |
 | Conduta | A ocorrência segue vigiada em [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) e entra no relatório final como risco aceito, com nome e motivo. **Se falhar na CI de um PR:** repetir o job uma única vez; se passar, mesclar e registrar a ocorrência 3 com o run das duas execuções; se falhar de novo, parar e avisar Jefferson com os logs, sem repetir mais. Falha de qualquer outro teste nunca entra nessa regra. **Na terceira ocorrência:** abrir BUG-xxx em `docs/defeitos/`, ligado ao RF-11, e levar a proposta (inclusive dar a cada teste o seu controle de tempo) antes de qualquer mudança. Proibido: `@Disabled`, aumentar espera, repetição automática dentro do teste |
+
+### R-26. Limite de leitura de 10 s só nos testes de contrato da notificação (BUG-017, 22/10/2026)
+
+Terceira ocorrência do R-25 (22/10/2026, suíte completa local). Opção B da proposta prevista no R-25, **escolhida por Jefferson em 22/10/2026**.
+
+| Item | Registro |
+| --- | --- |
+| **Decisão** | `NotificacaoApiIT` sobrescreve **só** `app.notificacao.timeout-leitura` para `PT10S` no `@DynamicPropertySource`. O `int04` (resposta mais lenta que o limite) muda para a classe `NotificacaoTempoLimiteApiIT`, que **não registra** a propriedade e roda com o limite de produção (1,5 s). Nenhuma asserção do `int01` nem do `int04` mudou, e o corpo do `int04` é idêntico ao original (conferido por diff). **Mudança de localização do `int04` aprovada por Jefferson** |
+| **Interpretação registrada** | Dar ao `int01` o limite de 10 s **não conta como "aumentar espera"** (proibição do R-25): o `int01` testa o contrato do corpo e o estado das notificações, não o tempo, e o tempo limite continua testado, com o valor de produção, no `int04`. Não há `@Disabled` nem repetição dentro do teste |
+| **O que não mudou** | O produto e o limite de produção (`PT1.5S`, `PT0.5S`): `src/main` sem diff. O valor do limite segue lacuna (D3), "a validar" (ADR-007) |
+| **Causa** | **Continua desconhecida.** A hipótese (parada de mais de 3 s do WireMock ou do cliente HTTP na primeira chamada, por coleta de lixo, antivírus ou agendamento do Windows) segue sem prova. A mudança reduz a exposição do `int01` a paradas menores que 10 s e **pode mascarar** a causa; **não** a corrige |
+| **Estado do BUG-017** | **Mitigado**, não corrigido ([defeitos](defeitos/README.md), issue 39). Severidade Média, prioridade Média (rara, só em suíte completa local; passou na CI dos PRs 36, 37, 38 e 40) |
+| **Estado do R-25** | **Permanece aberto** e entra no relatório final como risco aceito, com a causa desconhecida |
+| **Se voltar a falhar** | Parar e avisar Jefferson com os logs. A regra de repetir o job da CI uma única vez continua valendo |
+
+**Prova de que os testes continuam protegendo (quebras de propósito, ambas revertidas; `src/main` ficou sem diff):**
+
+| Quebra | Teste esperado vermelho | Resultado |
+| --- | --- | --- |
+| Campo extra (`email`) no corpo enviado pelo adaptador | `NotificacaoApiIT.int01ECt103` | Vermelho por asserção, `containsExactlyInAnyOrder`, campo `email` inesperado (linha 176) |
+| Remover `setReadTimeout` do adaptador | `NotificacaoTempoLimiteApiIT.int04` | Vermelho por asserção, `expected: 2` (linha 94) |
+
+**Custo do contexto Spring extra (uma execução de cada, sem repetição; a máquina varia de uma rodada para outra, então a diferença não prova ganho nem perda):**
+
+| Medida | Antes (`main`, `8ce9edf`) | Depois (`24095c4`) |
+| --- | --- | --- |
+| Suíte completa (`./mvnw -B -ntp clean verify`) | 10:36 min, 593 testes, 0 falhas | 9:48 min, 593 testes, 0 falhas |
+| `NotificacaoApiIT` | 23,68 s (10 testes) | 12,02 s (9 testes) |
+| `NotificacaoTempoLimiteApiIT` | não existia | 6,20 s (1 teste) |
+| Soma das duas classes | 23,68 s | 18,22 s |
+
+Nessa execução o contexto extra não apareceu como custo visível acima da variação da máquina.
