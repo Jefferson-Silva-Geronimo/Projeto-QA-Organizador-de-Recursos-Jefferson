@@ -2249,6 +2249,9 @@
             "type" : "integer",
             "format" : "int64"
           },
+          "atorNome" : {
+            "type" : "string"
+          },
           "entidade" : {
             "type" : "string"
           },

@@ -188,7 +188,7 @@ Notebook 3   não retirado     [ Retirar ]
 
 - **Objetivo:** cadastrar e manter salas, professores e materiais. **Endpoints:** `GET /api/recursos`, `POST /api/salas`, `POST /api/professores`, `POST /api/materiais`, `PUT /api/recursos/{id}/restrito`, `POST /api/recursos/{id}/desativacao`.
 - **Dados:** os atributos de `RecursoResposta`. Sala: capacidade, localização, tipo de sala, janela e dias. Material: código de patrimônio. Professor: competências e vínculo opcional com usuário.
-- **Ações:** cadastrar, marcar ou desmarcar restrito, desativar. Alterar "restrito" não muda reservas existentes (RF-02, critério 4) e a tela avisa isso.
+- **Ações:** cadastrar, marcar ou desmarcar restrito, desativar. Alterar "restrito" não muda reservas existentes (RF-02, critério 4) e a tela avisa isso. Desativar não tem campo "pode" (F6-17): a tela oferece a ação ao Administrador e, se o servidor recusar com `RECURSO_COM_RESERVA_FUTURA`, mostra a mensagem e a ação do mapa de erros e a lista de reservas afetadas em `itens`.
 - **Estados:** carregando, vazio, erro, sucesso. Solicitante e Responsável só consultam.
 - **Erros:** `VALIDACAO_FALHOU`, `PATRIMONIO_JA_EXISTE`, `VINCULO_JA_EXISTE`, `RECURSO_COM_RESERVA_FUTURA`, `NAO_ENCONTRADO`, `ACESSO_NEGADO`.
 
@@ -217,7 +217,7 @@ Reservas afetadas: #41, #44   [ Confirmar e cancelar ]  [ Voltar ]
 ### T09. Histórico de auditoria
 
 - **Objetivo:** consultar o que mudou. **Endpoints:** `GET /api/reservas/{id}/historico` (Responsável e Administrador) e `GET /api/auditoria` com `entidade` e `entidadeId` (só Administrador).
-- **Dados:** instante, ator (inclusive SISTEMA), ação, estado anterior e novo, motivo.
+- **Dados:** instante, ator (o nome em `atorNome`, nunca o e-mail ou o número; o SISTEMA aparece como SISTEMA, sem nome, L-10 e F6-17), ação, estado anterior e novo, motivo.
 - **Ações:** filtrar por reserva (Responsável) ou por entidade (Administrador). Não existe edição nem exclusão de evento (RF-10, critério 3).
 - **Estados:** carregando, vazio, erro, sucesso. O filtro por período é feito no front sobre a lista inteira, porque a consulta não é paginada (F6-06, lacuna **L-03**).
 - **Erros:** `ACESSO_NEGADO` (Responsável na auditoria completa), `NAO_ENCONTRADO`.
@@ -234,7 +234,7 @@ Reservas afetadas: #41, #44   [ Confirmar e cancelar ]  [ Voltar ]
 
 - **Objetivo:** gerir usuários. **Endpoints:** `GET /api/usuarios`, `POST /api/usuarios`, `PUT /api/usuarios/{id}/perfil`, `POST /api/usuarios/{id}/desativacao`.
 - **Dados:** nome, e-mail, perfil, ativo. A senha só é enviada na criação e nunca é exibida nem guardada.
-- **Ações:** criar com um único perfil, trocar perfil, desativar. Desativar revoga as sessões do usuário (fato, resumo do endpoint).
+- **Ações:** criar com um único perfil, trocar perfil, desativar. Desativar revoga as sessões do usuário (fato, resumo do endpoint). Desativar não tem campo "pode" (F6-17): se o servidor recusar (`MINIMO_DE_RESPONSAVEIS` ou `USUARIO_COM_RESERVA_FUTURA`), a tela mostra a mensagem e a ação do mapa de erros e a lista de reservas afetadas em `itens`.
 - **Estados:** carregando, vazio, erro, sucesso.
 - **Erros:** `USUARIO_JA_EXISTE`, `MINIMO_DE_RESPONSAVEIS`, `USUARIO_COM_RESERVA_FUTURA`, `VALIDACAO_FALHOU`, `NAO_ENCONTRADO`, `ACESSO_NEGADO`.
 
@@ -315,6 +315,7 @@ Todas decididas por Jefferson em 18/10/2026 (F6-05, F6-06 e F6-10).
 | L-07 | A resposta de reserva não dizia o que o usuário pode fazer com ela (alterar e cancelar dependem do dono, do perfil e do início) | A T04 mostraria ações que o servidor recusa | **Decidida (F6-14, 19/10/2026), alternativa C:** o back end devolve `podeAlterar` e `podeCancelar` por reserva, pelas políticas e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 | L-08 | O item da fila não dizia o que o Responsável pode decidir (aprovar e rejeitar dependem do dono e do início da reserva) | A T05 mostraria ações que o servidor recusa (`ACESSO_NEGADO` na própria reserva, `APROVACAO_APOS_INICIO`) | **Decidida (F6-15, 22/10/2026):** o back end devolve `podeAprovar` e `podeRejeitar` por item, pelas mesmas regras e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 | L-09 | O histórico de movimentações não dizia quem registrou (só `registradoPorId`; o nome só estava em `GET /api/usuarios`, do Administrador) nem qual movimentação é a atual de cada unidade (o front teria de interpretar a sequência) | A T06 mostraria só o número de quem registrou e repetiria a regra de `ultimaPorMaterial`; o botão Não compareceu apareceria mesmo com a tolerância em curso | **Decidida (F6-16, 22/10/2026):** o back end devolve `registradoPorNome` (só o nome) e `atual` em cada movimentação, e `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento` em cada reserva; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
+| L-10 | O histórico de auditoria só trazia `atorId` (o nome estava em `GET /api/usuarios`, do Administrador) | A T09 mostraria o número no lugar do nome, e o Responsável, que consulta o histórico da reserva, nem teria como resolvê-lo | **Decidida (F6-17, 22/10/2026):** o back end devolve `atorNome` (só o nome, nunca o e-mail; o SISTEMA fica sem nome) em cada evento. Mudança aditiva do contrato, com `openapi.json` regenerado |
 
 As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 
