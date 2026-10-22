@@ -298,6 +298,27 @@ Os campos são calculados por `PermissoesDaReserva` (regra pura, em `model.regra
 
 O cálculo está em `PermissoesDeDecisao` e `PoliticaDeDecisao` (regra pura, em `model.regra`) e a montagem em `RespostasDeReserva.daFila`. As respostas de aprovar e rejeitar não mudaram.
 
+### F6-16. A reserva diz o que o Responsável pode fazer no uso, e o histórico diz quem registrou e o que é atual (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, ao preparar a tela Retirada e devolução (T06), no mesmo molde da F6-14 e da F6-15.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-16 | **(a)** A resposta de toda reserva traz `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento`, calculados no servidor para o usuário logado, pelas mesmas regras que hoje recusam (`PoliticaDeUso`, usada também por `UsoService`) e pelo `Clock` injetado (ADR-005). **(b)** Cada movimentação do histórico traz `registradoPorNome`, só o nome e nunca o e-mail (mesmo molde da L-04), inclusive de quem foi desativado depois. **(c)** Cada movimentação traz `atual`, verdadeiro na mais recente de cada material, pela mesma função (`MovimentacoesAtuais`) com que o servidor recusa `MATERIAL_JA_RETIRADO` e `DEVOLUCAO_SEM_RETIRADA`. O front só mostra ou esconde a ação e lê `atual`: não ordena nem compara sequências, não guarda id, não chama `GET /api/usuarios` e não olha o relógio. A recusa pelo código estável continua como defesa (ADR-004). Mudança **aditiva e só de contrato**: os campos entram no `required` e o `openapi.json` foi regenerado (CT-115 falhou de propósito; CT-114 não mudou). Quem já via o histórico continua vendo, e ninguém ganhou acesso novo | Derivar tudo no front (repetiria regra do servidor e mostraria "Não compareceu" mesmo com a tolerância em curso); lista de materiais com estado e ações por unidade (estrutura nova, PR quase duas vezes maior, segunda fonte de verdade); o front ordenar as movimentações por conta própria (aprovada a marcação `atual` no back end) |
+
+**Suposições registradas (o cálculo não decidiu nenhuma lacuna A1 a A8 nem D1; segue o que o back end já fazia):**
+
+| # | Suposição | Origem | Impacto se estiver errada |
+| --- | --- | --- | --- |
+| 1 | **Iniciar o uso não tem limite de horário**: `podeIniciar` é verdadeiro em reserva APROVADA mesmo antes do horário de início. O servidor só confere o estado, e RN-20 não fala de horário | `UsoService.iniciar`; RN-20 | Se o início só valer a partir do horário da reserva, `podeIniciar` passa a ser falso antes dele e o servidor também precisa recusar |
+| 2 | **Tolerância não configurada (D1) deixa `podeMarcarNaoComparecimento` falso**; o servidor responderia `TOLERANCIA_NAO_CONFIGURADA`. O valor da tolerância continua lacuna: nada foi inventado | `UsoService.marcarNaoCompareceu`; D1 | Se o professor definir um valor padrão, o campo passa a ser verdadeiro sem configuração; a tela não explica por que a ação não aparece |
+| 3 | **A marcação de não comparecimento não tem fim de janela**: depois de início mais tolerância ela vale a qualquer hora, e no instante exato já vale (`!agora.isBefore(início + tolerância)`) | `UsoService.marcarNaoCompareceu`; RN-21 | Se houver um limite superior, o campo e o servidor mudam juntos |
+| 4 | `podeConcluir` é falso enquanto houver unidade retirada e não devolvida (RN-23), e a tela precisa devolver primeiro. Reserva em uso com material só reservado e nunca retirado pode concluir | `UsoService.concluir`; RN-23 | Só muda se a regra de conclusão mudar; a recusa `MATERIAL_PENDENTE` com a lista de pendentes continua como defesa |
+| 5 | Só o Responsável recebe os três campos verdadeiros, seja ou não o dono da reserva (D13); para Solicitante e Administrador são falsos (os endpoints já respondem 403) | `@PreAuthorize` de `UsoController`; RN-20 e D13 | Nenhum efeito visível hoje, porque eles não operam o uso |
+| 6 | `atual` usa o maior `id` da movimentação de cada material, o que equivale à ordem cronológica porque o servidor numera na ordem do registro e ordena por `id` | `JdbcMovimentacaoRepository.listar`; RF-09 | Se um dia a movimentação puder ser registrada fora de ordem, a regra de "atual" precisa olhar o instante |
+
+Os campos de uso são calculados por `PermissoesDeUso` (regra pura, em `model.regra`) e montados por `UsoService.permissoes` e `RespostasDeReserva`; as respostas de criar, alterar, cancelar, aprovar, rejeitar e do uso de material trazem os mesmos campos. A lista de reservas lê a tolerância uma vez por chamada e consulta as movimentações só das reservas em uso do Responsável (ver [fase-7-pendencias.md](fase-7-pendencias.md)).
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |

@@ -172,8 +172,8 @@ Prova de Estatística · Maria Souza · 22/10, 08:00 às 10:00 · Laboratório d
 ### T06. Retirada e devolução
 
 - **Objetivo:** registrar uso de material e o ciclo da reserva. **Endpoints:** `POST /api/reservas/{id}/inicio`, `/retiradas`, `/devolucoes`, `/conclusao`, `/nao-comparecimento`; `GET /api/reservas/{id}/movimentacoes`.
-- **Dados:** reservas APROVADA e EM_USO, unidades de material e seu estado (retirada ou devolvida), quem registrou e quando.
-- **Ações:** iniciar uso, retirar unidade, devolver unidade, concluir, marcar não compareceu.
+- **Dados:** reservas APROVADA e EM_USO, unidades de material e seu estado (retirada ou devolvida), quem registrou e quando. O histórico traz `registradoPorNome` (só o nome, nunca o e-mail, L-09) e marca com `atual` a movimentação mais recente de cada material, que dá o estado da unidade (F6-16): a tela não ordena nem compara sequências.
+- **Ações:** iniciar uso, retirar unidade, devolver unidade, concluir, marcar não compareceu. A tela mostra Iniciar, Concluir e Não compareceu conforme `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento`, devolvidos pelo servidor em cada reserva (F6-16, L-09); Retirar e Devolver saem da movimentação `atual` de cada unidade. A recusa pelo código estável continua como defesa (ADR-004).
 - **Estados:** carregando, vazio, erro, sucesso.
 - **Erros:** `TRANSICAO_PROIBIDA`, `MATERIAL_FORA_DA_RESERVA`, `MATERIAL_JA_RETIRADO`, `DEVOLUCAO_SEM_RETIRADA`, `MATERIAL_PENDENTE` (a lista de pendentes vem em `itens`, se o servidor a enviar), `TOLERANCIA_NAO_CONFIGURADA`, `TOLERANCIA_NAO_ENCERRADA`, `ACESSO_NEGADO`.
 
@@ -314,6 +314,7 @@ Todas decididas por Jefferson em 18/10/2026 (F6-05, F6-06 e F6-10).
 | L-06 | Os esquemas de resposta do OpenAPI não declaravam `required`, então todo campo de resposta virava opcional no tipo gerado | As telas teriam de validar cada resposta | **Decidida e feita (F6-10, 18/10/2026):** alternativa B, o back end marca como obrigatórios só os campos que nunca são nulos (só documentação). Cliente regenerado; as telas já nascem com tipos precisos. Campos de fora e motivos em [decisoes-equipe.md](../decisoes-equipe.md) |
 | L-07 | A resposta de reserva não dizia o que o usuário pode fazer com ela (alterar e cancelar dependem do dono, do perfil e do início) | A T04 mostraria ações que o servidor recusa | **Decidida (F6-14, 19/10/2026), alternativa C:** o back end devolve `podeAlterar` e `podeCancelar` por reserva, pelas políticas e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 | L-08 | O item da fila não dizia o que o Responsável pode decidir (aprovar e rejeitar dependem do dono e do início da reserva) | A T05 mostraria ações que o servidor recusa (`ACESSO_NEGADO` na própria reserva, `APROVACAO_APOS_INICIO`) | **Decidida (F6-15, 22/10/2026):** o back end devolve `podeAprovar` e `podeRejeitar` por item, pelas mesmas regras e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
+| L-09 | O histórico de movimentações não dizia quem registrou (só `registradoPorId`; o nome só estava em `GET /api/usuarios`, do Administrador) nem qual movimentação é a atual de cada unidade (o front teria de interpretar a sequência) | A T06 mostraria só o número de quem registrou e repetiria a regra de `ultimaPorMaterial`; o botão Não compareceu apareceria mesmo com a tolerância em curso | **Decidida (F6-16, 22/10/2026):** o back end devolve `registradoPorNome` (só o nome) e `atual` em cada movimentação, e `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento` em cada reserva; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 
 As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 
@@ -334,7 +335,8 @@ Os nomes de arquivo e os commits entram na linha de RF-13 da [RTM](../../RTM.md)
 | T01 Login | Pronta (PR 34) | Implementada em TDD (CT-141) e verificada em navegador real contra a API (RTM, execução E-7) |
 | T04 Minhas reservas e cancelamento | Pronta (PR 36); ações pelos campos do servidor (F6-14) | Implementada em TDD (CT-142 e CT-143) e verificada em navegador real contra a API (RTM, execuções E-8 e E-10) |
 | T05 Fila de aprovações | Pronta; ações pelos campos do servidor (F6-15) | Implementada em TDD (CT-148 e CT-149) e verificada em navegador real contra a API (RTM, execução E-13) |
-| T06 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
+| T06 Retirada e devolução | Back end pronto (F6-16); a tela vem em PR próprio | Contrato com `podeIniciar`, `podeConcluir`, `podeMarcarNaoComparecimento`, `registradoPorNome` e `atual`, verificado por CT-150 a CT-153 (RTM, execução E-14) |
+| T07 a T11 | Marcador de lugar | Uma tela por PR, na ordem do mapa de telas (F6-11) |
 
 Padrão aprovado (F6-11), para repetir nas demais telas: cartões e formulário em blocos com `fieldset` e legenda; mensagens
 com ícone, rótulo em texto e papel ARIA correto; recusas pela tabela de erros da seção 5, com o foco levado à mensagem;
