@@ -215,6 +215,18 @@ describe('PaginaDeRetiradas: erros e acessibilidade', () => {
     expect(await screen.findByText('Nada para registrar')).toBeInTheDocument();
   });
 
+  it('falha ao consultar as movimentações: mostra a mensagem da tabela no cartão e não oferece Retirar nem Devolver às cegas', async () => {
+    montarRetiradas({
+      reservas: [AULA_EM_USO],
+      consultarMovimentacoes: () => resposta(500, { status: 500, code: 'ERRO_INTERNO' }),
+    });
+
+    const cartao = await screen.findByRole('article', { name: 'Aula de informática' });
+
+    expect(await within(cartao).findByRole('alert')).toHaveTextContent(mensagemPara('ERRO_INTERNO').mensagem);
+    expect(within(cartao).queryByRole('button', { name: /^(Retirar|Devolver)/ })).not.toBeInTheDocument();
+  });
+
   it('a lista não tem violação de acessibilidade (axe)', async () => {
     const { container } = montarRetiradas({
       reservas: [AULA_EM_USO, EM_USO],

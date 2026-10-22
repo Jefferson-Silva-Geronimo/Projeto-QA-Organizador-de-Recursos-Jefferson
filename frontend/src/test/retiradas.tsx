@@ -23,6 +23,8 @@ export interface Cenario {
    * Resposta ao registro de uso. Pode mudar o estado do servidor antes de responder. Sem retorno, o servidor devolve
    * 200 com a reserva como está.
    */
+  /** Resposta à consulta das movimentações de uma reserva. Sem retorno, devolve o histórico do cenário. */
+  consultarMovimentacoes?: (reservaId: number) => Response | undefined;
   registrar?: (acao: string, reservaId: number, corpo: unknown, estado: EstadoDoServidor) => Response | Promise<Response> | undefined;
 }
 
@@ -30,7 +32,7 @@ export const recusa = (status: number, code: string, extra: Record<string, unkno
   resposta(status, { status, code, ...extra });
 
 /** Monta a página como a aplicação a monta: Responsável logado e a API simulada na fronteira do fetch. */
-export function montarRetiradas({ reservas, movimentacoes = {}, registrar }: Cenario) {
+export function montarRetiradas({ reservas, movimentacoes = {}, consultarMovimentacoes, registrar }: Cenario) {
   const estado: EstadoDoServidor = { reservas: [...reservas], movimentacoes: { ...movimentacoes }, chamadas: [], listagens: 0 };
   const rotas: Parameters<typeof rotearFetch>[0] = {
     'GET /api/reservas': () => {
@@ -43,7 +45,8 @@ export function montarRetiradas({ reservas, movimentacoes = {}, registrar }: Cen
     'GET /api/recursos/8': () => resposta(200, NOTEBOOK),
   };
   for (const id of IDS) {
-    rotas[`GET /api/reservas/${id}/movimentacoes`] = () => resposta(200, estado.movimentacoes[id] ?? []);
+    rotas[`GET /api/reservas/${id}/movimentacoes`] = () =>
+      consultarMovimentacoes?.(id) ?? resposta(200, estado.movimentacoes[id] ?? []);
     for (const acao of ACOES) {
       rotas[`POST /api/reservas/${id}/${acao}`] = async (pedido) => {
         const texto = await pedido.text();
