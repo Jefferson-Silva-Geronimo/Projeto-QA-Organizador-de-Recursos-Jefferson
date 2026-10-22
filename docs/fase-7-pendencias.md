@@ -91,6 +91,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 22/10/2026 | Back end do `atorNome` (F6-17) e regras de velocidade (F6-18) | `atorNome` no histórico; Desativar sem campo "pode" nas telas T07 e T11; suíte completa local só quando a consulta, a regra, a política ou a migração mudam |
 | 22/10/2026 | T06 Retirada e devolução | Limitação do axe nos diálogos, no aviso e na barra; custo da lista e das movimentações por cartão; unidade que some se a consulta do recurso falhar |
 | 22/10/2026 | Back end da T06: campos de uso e histórico (F6-16) | Campos de uso por reserva, `registradoPorNome` e `atual`; dúvida sobre iniciar o uso antes do horário; custo da lista do Responsável |
 | 22/10/2026 | T05 Fila de aprovações | Fila sem paginação, limitação do axe nos diálogos e no aviso, BUG-018 (acesso negado sem título) |
