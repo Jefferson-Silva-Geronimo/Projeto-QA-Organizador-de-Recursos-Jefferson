@@ -60,8 +60,8 @@ class ReservaController {
 
     @GetMapping("/fila")
     @PreAuthorize("hasRole('RESPONSAVEL')")
-    List<ReservaDaFilaResposta> fila() {
-        return aprovacoes.fila().stream().map(ReservaDaFilaResposta::de).toList();
+    List<ReservaDaFilaResposta> fila(@AuthenticationPrincipal UsuarioAutenticado ator) {
+        return aprovacoes.fila().stream().map(item -> respostas.daFila(ator, item)).toList();
     }
 
     @PostMapping
