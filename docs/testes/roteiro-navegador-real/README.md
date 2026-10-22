@@ -28,6 +28,8 @@ dele. Nada aqui contém segredo: as credenciais são geradas na hora, ficam em `
 
 | `prototipo.cjs relatorios` | Relatórios (T10) **pela interface, com a API real**, em 360 e 1280 px, nos dois temas: sem período, período obrigatório com o foco no primeiro campo, relatório gerado (contagem igual à do servidor e linha da Sala 101), recarregar mantendo os filtros, tipo Professor com "Não se aplica", período sem uso, Limpar filtros, Administrador vendo a tela, Solicitante com "Acesso negado", e o fluxo só com teclado (data, Tab, hora, Enter em Gerar). A paginação não é exercida aqui: o banco do roteiro tem menos recursos que uma página de 20 (coberta pelos testes de componente). O modo só lê, e a rodada leva poucos minutos
 
+| `prototipo.cjs usuarios` | Usuários e perfis (T11) **pela interface, com a API real**, em 360 e 1280 px, nos dois temas: lista, cadastro em branco (foco no primeiro campo), cadastro certo (aviso com o foco, senha fora da tela, usuário no servidor), e-mail repetido recusado com o campo marcado, desativar um dos dois Responsáveis recusado por mínimo, desativar com reserva futura recusado com a lista de reservas afetadas, trocar perfil, desativar com sucesso, Responsável e Solicitante com "Acesso negado", e o fluxo só com teclado (cadastrar e trocar perfil). O modo cria usuários e uma reserva futura por combinação e **não testa** a recusa de trocar perfil por mínimo de Responsáveis, porque o servidor só a aplica na desativação. Num banco que já teve uma rodada, recomece no banco limpo (os e-mails são fixos)
+
 Saída: capturas (`.jpg` da janela e `-completa.png` da página) e `relatorio.json` (violações do axe, verificações
 incompletas, paradas de Tab e conferências).
 
