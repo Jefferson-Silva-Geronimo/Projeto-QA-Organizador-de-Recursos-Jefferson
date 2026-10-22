@@ -1489,9 +1489,13 @@ async function fluxoTecladoRelatorios(navegador, semente, atores) {
   await ate('Início');
   const per = periodoDoRelatorio();
   const dig = (iso) => iso.slice(8, 10) + iso.slice(5, 7) + iso.slice(0, 4);
-  await page.keyboard.type(dig(per.inicio) + '0000');
+  await page.keyboard.type(dig(per.inicio));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('0000');
   await ate('Fim');
-  await page.keyboard.type(dig(per.fim) + '2359');
+  await page.keyboard.type(dig(per.fim));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('2359');
   await ate('Gerar relatório');
   await page.keyboard.press('Enter');
   await page.getByRole('table', { name: 'Utilização por recurso' }).waitFor();
