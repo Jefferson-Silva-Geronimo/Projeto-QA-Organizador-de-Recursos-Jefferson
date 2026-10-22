@@ -51,4 +51,10 @@ marcado como tal.
 | --- | --- | --- |
 | Reservas e bloqueios aceitam precisão de segundos? | Sim: o período usa `Instant` sem arredondamento, e os cenários de fronteira incluem a diferença de um segundo | Se a granularidade mínima for o minuto, as duas linhas de um segundo em `bdd-aprovacao-bloqueio.md` mudam e a API passa a recusar segundos |
 
+## Rejeição depois do início da reserva
+
+| Pergunta | Suposição adotada | Impacto se estiver errada |
+| --- | --- | --- |
+| O Responsável pode rejeitar uma reserva SOLICITADA depois do horário de início? A aprovação já para no início (D2 e D10), mas a especificação não diz nada sobre a rejeição | Sim, sem limite de horário: o `AprovacaoService` já funciona assim e a fila (F6-15) devolve `podeRejeitar` verdadeiro mesmo depois do início | Se a rejeição também parar no início, o servidor precisa recusá-la (código de erro a definir) e `podeRejeitar` passa a ser falso no início e depois; os testes CT-146 e CT-147 mudam |
+
 Obrigado.
