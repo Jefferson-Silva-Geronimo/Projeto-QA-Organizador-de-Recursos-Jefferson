@@ -15,6 +15,9 @@ export const AULA_EXTRA: Reserva = {
   recursoIds: [1],
   podeAlterar: true,
   podeCancelar: true,
+  podeIniciar: false,
+  podeConcluir: false,
+  podeMarcarNaoComparecimento: false,
 };
 
 /** Reserva SOLICITADA do Laboratório 3 e do Projetor, quinta 22/10/2026 das 08:00 às 10:00 no campus. */
@@ -29,4 +32,7 @@ export const PROVA: Reserva = {
   recursoIds: [3, 7],
   podeAlterar: true,
   podeCancelar: true,
+  podeIniciar: false,
+  podeConcluir: false,
+  podeMarcarNaoComparecimento: false,
 };

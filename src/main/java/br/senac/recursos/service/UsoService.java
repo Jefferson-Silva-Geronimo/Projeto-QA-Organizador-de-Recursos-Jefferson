@@ -11,7 +11,8 @@ import br.senac.recursos.model.Reserva;
 import br.senac.recursos.model.TipoMovimentacao;
 import br.senac.recursos.model.TipoRecurso;
 import br.senac.recursos.model.UsuarioAutenticado;
-import br.senac.recursos.model.regra.MaquinaDeEstados;
+import br.senac.recursos.model.regra.PermissoesDeUso;
+import br.senac.recursos.model.regra.PoliticaDeUso;
 import br.senac.recursos.repository.AuditoriaRepository;
 import br.senac.recursos.repository.ConfiguracaoRepository;
 import br.senac.recursos.repository.MovimentacaoRepository;
@@ -20,8 +21,10 @@ import br.senac.recursos.repository.ReservaRepository;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +56,7 @@ public class UsoService {
     @Transactional
     public Reserva iniciar(UsuarioAutenticado ator, long id) {
         Reserva r = carregar(id);
-        MaquinaDeEstados.exigir(r.estado(), EstadoReserva.EM_USO);
+        recusarSeHouver(PoliticaDeUso.avaliarInicio(r.estado()));
         return mudarEstado(ator, r, EstadoReserva.EM_USO, "RESERVA_INICIADA", relogio.instant());
     }
 
@@ -64,9 +67,7 @@ public class UsoService {
             throw new ErroDeNegocio(CodigoErro.TRANSICAO_PROIBIDA);
         }
         exigirMaterialDaReserva(r, materialId);
-        if (movimentacoes.ultimaPorMaterial(id).get(materialId) == TipoMovimentacao.RETIRADA) {
-            throw new ErroDeNegocio(CodigoErro.MATERIAL_JA_RETIRADO);
-        }
+        recusarSeHouver(PoliticaDeUso.avaliarRetirada(movimentacoes.ultimaPorMaterial(id).get(materialId)));
         Instant agora = relogio.instant();
         movimentacoes.registrar(id, materialId, TipoMovimentacao.RETIRADA, ator.id(), agora);
         auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "MATERIAL_RETIRADO",
@@ -84,9 +85,7 @@ public class UsoService {
             throw new ErroDeNegocio(CodigoErro.TRANSICAO_PROIBIDA);
         }
         exigirMaterialDaReserva(r, materialId);
-        if (movimentacoes.ultimaPorMaterial(id).get(materialId) != TipoMovimentacao.RETIRADA) {
-            throw new ErroDeNegocio(CodigoErro.DEVOLUCAO_SEM_RETIRADA);
-        }
+        recusarSeHouver(PoliticaDeUso.avaliarDevolucao(movimentacoes.ultimaPorMaterial(id).get(materialId)));
         Instant agora = relogio.instant();
         movimentacoes.registrar(id, materialId, TipoMovimentacao.DEVOLUCAO, ator.id(), agora);
         auditoria.registrar(EventoAuditoria.transicaoDeUsuario(agora, ator.id(), id, "MATERIAL_DEVOLVIDO",
@@ -97,14 +96,13 @@ public class UsoService {
     @Transactional
     public Reserva concluir(UsuarioAutenticado ator, long id) {
         Reserva r = carregar(id);
-        MaquinaDeEstados.exigir(r.estado(), EstadoReserva.CONCLUIDA);
         List<String> pendentes = movimentacoes.ultimaPorMaterial(id).entrySet().stream()
                 .filter(e -> e.getValue() == TipoMovimentacao.RETIRADA)
                 .map(e -> String.valueOf(e.getKey())).toList();
-        if (!pendentes.isEmpty()) {                                                  // RN-23
-            throw new ErroDeNegocio(CodigoErro.MATERIAL_PENDENTE,
-                    CodigoErro.MATERIAL_PENDENTE.mensagemPadrao(), pendentes);
-        }
+        PoliticaDeUso.avaliarConclusao(r.estado(), !pendentes.isEmpty()).ifPresent(codigo -> {   // RN-23
+            throw codigo == CodigoErro.MATERIAL_PENDENTE
+                    ? new ErroDeNegocio(codigo, codigo.mensagemPadrao(), pendentes) : new ErroDeNegocio(codigo);
+        });
         Instant agora = relogio.instant();
         Reserva concluida = mudarEstado(ator, r, EstadoReserva.CONCLUIDA, "RESERVA_CONCLUIDA", agora);
         reservas.inativarOcupacoes(id);
@@ -114,16 +112,35 @@ public class UsoService {
     @Transactional
     public Reserva marcarNaoCompareceu(UsuarioAutenticado ator, long id) {
         Reserva r = carregar(id);
-        MaquinaDeEstados.exigir(r.estado(), EstadoReserva.NAO_COMPARECEU);
-        Duration tolerancia = configuracao.toleranciaNaoComparecimento()
-                .orElseThrow(() -> new ErroDeNegocio(CodigoErro.TOLERANCIA_NAO_CONFIGURADA));
         Instant agora = relogio.instant();
-        if (agora.isBefore(r.inicio().plus(tolerancia))) {
-            throw new ErroDeNegocio(CodigoErro.TOLERANCIA_NAO_ENCERRADA);
-        }
+        recusarSeHouver(PoliticaDeUso.avaliarNaoComparecimento(r.estado(), configuracao.toleranciaNaoComparecimento(),
+                agora, r.inicio()));
         Reserva marcada = mudarEstado(ator, r, EstadoReserva.NAO_COMPARECEU, "RESERVA_NAO_COMPARECEU", agora);
         reservas.inativarOcupacoes(id);
         return marcada;
+    }
+
+    /**
+     * O que o usuário pode fazer no uso de cada reserva (F6-16), pelas mesmas regras que recusam a operação e pelo
+     * relógio injetado. A tolerância é lida uma vez por chamada, e o material pendente só é consultado para reserva
+     * em uso. Só o Responsável recebe ação (RN-20); para os outros perfis nada é consultado.
+     */
+    @Transactional(readOnly = true)
+    public Map<Long, PermissoesDeUso> permissoes(UsuarioAutenticado ator, List<Reserva> lista) {
+        Map<Long, PermissoesDeUso> resultado = new HashMap<>();
+        if (ator.perfil() != Perfil.RESPONSAVEL) {
+            lista.forEach(r -> resultado.put(r.id(), PermissoesDeUso.nenhuma()));
+            return resultado;
+        }
+        Instant agora = relogio.instant();
+        Optional<Duration> tolerancia = lista.stream().anyMatch(r -> r.estado() == EstadoReserva.APROVADA)
+                ? configuracao.toleranciaNaoComparecimento() : Optional.empty();
+        for (Reserva r : lista) {
+            boolean pendente = r.estado() == EstadoReserva.EM_USO
+                    && movimentacoes.ultimaPorMaterial(r.id()).containsValue(TipoMovimentacao.RETIRADA);
+            resultado.put(r.id(), PermissoesDeUso.de(r, ator.perfil(), pendente, tolerancia, agora));
+        }
+        return resultado;
     }
 
     @Transactional(readOnly = true)
@@ -136,6 +153,13 @@ public class UsoService {
     }
 
     // ---- apoio
+
+    /** As recusas do uso vêm de {@link PoliticaDeUso}, a mesma regra que alimenta os campos "pode..." das respostas. */
+    private static void recusarSeHouver(Optional<CodigoErro> recusa) {
+        recusa.ifPresent(codigo -> {
+            throw new ErroDeNegocio(codigo);
+        });
+    }
 
     private Reserva carregar(long id) {
         return reservas.buscarTravando(id).orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));

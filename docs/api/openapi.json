@@ -1825,9 +1825,18 @@
           },
           "podeCancelar" : {
             "type" : "boolean"
+          },
+          "podeIniciar" : {
+            "type" : "boolean"
+          },
+          "podeConcluir" : {
+            "type" : "boolean"
+          },
+          "podeMarcarNaoComparecimento" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "podeAlterar", "podeCancelar", "recursoIds", "solicitanteId", "titulo" ]
+        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "podeAlterar", "podeCancelar", "podeConcluir", "podeIniciar", "podeMarcarNaoComparecimento", "recursoIds", "solicitanteId", "titulo" ]
       },
       "RestritoRequisicao" : {
         "type" : "object",
@@ -2205,16 +2214,22 @@
             "type" : "string",
             "enum" : [ "RETIRADA", "DEVOLUCAO" ]
           },
+          "atual" : {
+            "type" : "boolean"
+          },
           "registradoPorId" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "registradoPorNome" : {
+            "type" : "string"
           },
           "registradoEm" : {
             "type" : "string",
             "format" : "date-time"
           }
         },
-        "required" : [ "id", "materialId", "registradoEm", "registradoPorId", "tipo" ]
+        "required" : [ "atual", "id", "materialId", "registradoEm", "registradoPorId", "registradoPorNome", "tipo" ]
       },
       "EventoAuditoriaResposta" : {
         "type" : "object",

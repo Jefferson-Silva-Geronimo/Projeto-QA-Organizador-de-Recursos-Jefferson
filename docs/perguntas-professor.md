@@ -57,4 +57,10 @@ marcado como tal.
 | --- | --- | --- |
 | O Responsável pode rejeitar uma reserva SOLICITADA depois do horário de início? A aprovação já para no início (D2 e D10), mas a especificação não diz nada sobre a rejeição | Sim, sem limite de horário: o `AprovacaoService` já funciona assim e a fila (F6-15) devolve `podeRejeitar` verdadeiro mesmo depois do início | Se a rejeição também parar no início, o servidor precisa recusá-la (código de erro a definir) e `podeRejeitar` passa a ser falso no início e depois; os testes CT-146 e CT-147 mudam |
 
+## Início do uso antes do horário da reserva
+
+| Pergunta | Suposição adotada | Impacto se estiver errada |
+| --- | --- | --- |
+| O Responsável pode registrar o início do uso (ou a primeira retirada de material) antes do horário de início da reserva APROVADA? RN-20 não fala de horário | Sim, sem limite de horário: o `UsoService` só confere o estado e a resposta da reserva (F6-16) devolve `podeIniciar` verdadeiro em reserva APROVADA mesmo antes do início | Se o início só valer a partir do horário, o servidor precisa recusá-lo (código de erro a definir) e `podeIniciar` passa a ser falso antes dele; os testes CT-150 e CT-152 mudam |
+
 Obrigado.
