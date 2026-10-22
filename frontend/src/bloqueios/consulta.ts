@@ -29,12 +29,16 @@ export function useCriarBloqueio() {
   });
 }
 
-/** Levanta um bloqueio ativo. Não reativa as reservas que ele cancelou. */
+/**
+ * Levanta um bloqueio ativo. Não reativa as reservas que ele cancelou. O servidor exige o motivo (`MOTIVO_OBRIGATORIO`),
+ * embora o contrato o marque como opcional (lacuna registrada nas pendências).
+ */
 export function useLevantarBloqueio(id: number) {
   const { cliente } = useSessao();
   const consultas = useQueryClient();
   return useMutation({
-    mutationFn: () => executar(cliente.POST('/api/bloqueios/{id}/levantamento', { params: { path: { id } }, body: {} })),
+    mutationFn: (motivo: string) =>
+      executar(cliente.POST('/api/bloqueios/{id}/levantamento', { params: { path: { id } }, body: { motivo } })),
     onSuccess: () => consultas.invalidateQueries(),
   });
 }
