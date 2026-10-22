@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|relatorios|usuarios]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|relatorios|usuarios|auditoria]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | relatorios | usuarios
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | relatorios | usuarios | auditoria
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -1700,6 +1700,152 @@ async function fluxoTecladoUsuarios(navegador, semente, atores) {
   RELATORIO.foco.push(...passos);
   await ctx.close();
 }
+/** Histórico de auditoria (T09): Responsável por reserva, Administrador na auditoria completa, período e acesso por perfil. */
+async function fluxoAuditoria(navegador, c, semente, atores, indice) {
+  const S = String(indice + 1);
+  const { maria, carlos, admin } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+
+  // Uma reserva com três eventos (criada, aprovada pelo sistema e cancelada), feita pela API
+  const reserva = await criarReservaPelaApi(maria.token, `Reserva do histórico ${S}`, c.dia, '08:00', '09:00', [R.sala203]);
+  const cancelada = await api('POST', `/api/reservas/${reserva.id}/cancelamento`, { motivo: 'Mudança de planos' }, maria.token);
+  conferir(P('api-cancelou-a-reserva'), cancelada.status === 200, String(cancelada.status));
+  const hoje = new Date();
+  const ontem = new Date(hoje.getTime() - 86_400_000);
+  const dia = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+  // ---- Responsável
+  let ctx = await contexto(navegador, c, carlos);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/auditoria');
+  await page.getByRole('heading', { level: 1, name: 'Histórico' }).waitFor();
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Histórico'), await page.title());
+  await page.getByText('Informe a reserva').waitFor();
+  conferir(P('responsavel-sem-escolha-de-entidade'), (await page.getByLabel('Entidade').count()) === 0);
+  await foto(page, P('auditoria-1-sem-reserva'));
+  await auditar(page, P('auditoria-1-sem-reserva'));
+  await semRolagemHorizontal(page, P('auditoria-sem-reserva'));
+
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByText('Informe o número da reserva.').waitFor();
+  conferir(P('sem-reserva-foco-no-campo'), await page.getByLabel(/^Reserva/).evaluate((el) => el === document.activeElement));
+  await foto(page, P('auditoria-2-reserva-obrigatoria'));
+  await auditar(page, P('auditoria-2-reserva-obrigatoria'));
+
+  await page.getByLabel(/^Reserva/).fill(String(reserva.id));
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByText('3 eventos').waitFor();
+  const lista = await page.locator('#conteudo ol').first().innerText();
+  conferir(P('historico-tem-criada-aprovada-e-cancelada'), lista.includes('Reserva criada') && lista.includes('Reserva aprovada') && lista.includes('Reserva cancelada'), lista.replace(/\s+/g, ' ').slice(0, 200));
+  conferir(P('historico-mostra-o-nome-de-quem-agiu'), lista.includes('Maria Souza'));
+  conferir(P('historico-aprovacao-automatica-e-do-sistema'), lista.includes('SISTEMA'));
+  conferir(P('historico-mostra-o-motivo'), lista.includes('Mudança de planos'));
+  conferir(P('historico-sem-email'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  conferir(P('endereco-guarda-a-reserva'), page.url().includes(`reserva=${reserva.id}`), page.url());
+  await foto(page, P('auditoria-3-historico'));
+  await auditar(page, P('auditoria-3-historico'));
+  await semRolagemHorizontal(page, P('auditoria-historico'));
+
+  await page.reload();
+  await page.getByText('3 eventos').waitFor();
+  conferir(P('recarregar-mantem-o-historico'), true);
+
+  // período na tela: um dia sem eventos esvazia a lista sem pedir de novo ao servidor
+  await page.getByLabel('De').fill('2000-01-01');
+  await page.getByLabel('Até').fill('2000-01-02');
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByText('Nada registrado').waitFor();
+  await foto(page, P('auditoria-4-periodo-sem-eventos'));
+  await auditar(page, P('auditoria-4-periodo-sem-eventos'));
+  await page.getByLabel('De').fill(dia(ontem));
+  await page.getByLabel('Até').fill(dia(hoje));
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByText('3 eventos').waitFor();
+  conferir(P('periodo-de-hoje-mostra-os-eventos'), true);
+
+  // reserva que não existe
+  await page.getByRole('button', { name: 'Limpar filtros' }).click();
+  await page.getByText('Informe a reserva').waitFor();
+  await page.getByLabel(/^Reserva/).fill('99999999');
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByRole('alert').waitFor();
+  conferir(P('reserva-inexistente-mensagem'), (await page.getByRole('alert').innerText()).includes('Não encontramos o item pedido'));
+  await foto(page, P('auditoria-5-reserva-inexistente'));
+  await auditar(page, P('auditoria-5-reserva-inexistente'));
+  await ctx.close();
+
+  // ---- Administrador: auditoria completa e filtros
+  ctx = await contexto(navegador, c, admin);
+  page = await ctx.newPage();
+  await page.goto(FRONT + '/auditoria');
+  await page.getByRole('heading', { level: 1, name: 'Histórico' }).waitFor();
+  await page.getByText(/\d+ eventos?/).first().waitFor();
+  conferir(P('administrador-ve-a-auditoria-inteira'), (await page.getByRole('listitem').count()) >= 3);
+  conferir(P('administrador-tem-escolha-de-entidade'), (await page.getByLabel('Entidade').count()) === 1);
+  conferir(P('administrador-sem-email-na-tela'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  await foto(page, P('auditoria-6-administrador'));
+  await auditar(page, P('auditoria-6-administrador'));
+  await semRolagemHorizontal(page, P('auditoria-administrador'));
+
+  await page.getByLabel('Entidade').selectOption('RESERVA');
+  await page.getByLabel('Número').fill(String(reserva.id));
+  await page.getByRole('button', { name: 'Consultar' }).click();
+  await page.getByText('3 eventos').waitFor();
+  conferir(P('administrador-filtra-por-entidade-e-numero'), page.url().includes('entidade=RESERVA') && page.url().includes(`numero=${reserva.id}`), page.url());
+  const doServidor = await api('GET', `/api/auditoria?entidade=RESERVA&entidadeId=${reserva.id}`, undefined, admin.token);
+  conferir(P('contagem-igual-a-do-servidor'), doServidor.corpo.length === 3, String(doServidor.corpo.length));
+  await foto(page, P('auditoria-7-filtrado'));
+  await auditar(page, P('auditoria-7-filtrado'));
+  await ctx.close();
+
+  // ---- Solicitante: acesso negado
+  ctx = await contexto(navegador, c, maria);
+  page = await ctx.newPage();
+  await page.goto(FRONT + '/auditoria');
+  await page.getByRole('heading', { level: 1, name: 'Acesso negado' }).waitFor();
+  conferir(P('solicitante-acesso-negado'), (await page.title()).startsWith('Acesso negado'), await page.title());
+  conferir(P('solicitante-sem-menu-de-historico'), (await page.getByRole('link', { name: 'Histórico' }).count()) === 0);
+  await foto(page, P('auditoria-8-acesso-negado'));
+  await auditar(page, P('auditoria-8-acesso-negado'));
+  await ctx.close();
+}
+
+/** Histórico só com o teclado: preencher a reserva, consultar com Enter e chegar aos eventos. */
+async function fluxoTecladoAuditoria(navegador, semente, atores) {
+  const c = { id: 'teclado-auditoria', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  const reserva = await criarReservaPelaApi(atores.maria.token, 'Reserva do histórico com teclado', c.dia, '08:00', '09:00', [semente.recursos.sala203]);
+  const ctx = await contexto(navegador, c, atores.carlos);
+  const page = await ctx.newPage();
+  const passos = [];
+  await page.goto(FRONT + '/auditoria');
+  await page.getByRole('heading', { level: 1, name: 'Histórico' }).waitFor();
+  const ate = async (nome, limite = 40) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await descrever(page);
+      passos.push({ acao: 'Tab', ...d });
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  await ate('Reserva (número)');
+  await page.keyboard.type(String(reserva.id));
+  // O campo de data tem três segmentos e o ícone do calendário: a captura de cada parada mostra o anel de foco.
+  await ate('De');
+  await foto(page, 'teclado-auditoria-de-segmento');
+  for (let i = 0; i < 3; i++) await page.keyboard.press('Tab');
+  passos.push({ acao: 'Tab até o ícone do calendário de De', ...(await descrever(page)) });
+  await foto(page, 'teclado-auditoria-de-icone-do-calendario');
+  await ate('Consultar');
+  await page.keyboard.press('Enter');
+  await page.getByText('2 eventos').waitFor();
+  passos.push({ acao: 'Enter em Consultar', ...(await descrever(page)) });
+  conferir('teclado-auditoria-consultou-com-enter', (await page.locator('#conteudo ol > li').count()) === 2);
+  await auditar(page, 'teclado-auditoria-resultado');
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -1710,8 +1856,8 @@ function resumoDoModo(arquivo) {
   console.log('verificações incompletas, por regra:', JSON.stringify(inc));
   const f = RELATORIO.notas.filter((n) => n.ok === false || n.semRolagemHorizontal === false);
   console.log('conferências:', RELATORIO.notas.length, '| falhas:', f.length, '| rolagem horizontal conferida:', RELATORIO.notas.filter((n) => 'semRolagemHorizontal' in n).length);
-  const icone = RELATORIO.foco.filter((p) => !p.visivel && p.tipo === 'datetime-local');
-  const semFoco = RELATORIO.foco.filter((p) => !p.visivel && p.tipo !== 'datetime-local');
+  const icone = RELATORIO.foco.filter((p) => !p.visivel && ['datetime-local', 'date'].includes(p.tipo));
+  const semFoco = RELATORIO.foco.filter((p) => !p.visivel && !['datetime-local', 'date'].includes(p.tipo));
   console.log('paradas de Tab:', RELATORIO.foco.length, '| sem foco visível:', semFoco.length, '| no ícone do calendário:', icone.length);
   for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
 }
@@ -1754,6 +1900,21 @@ function resumoDoModo(arquivo) {
     await fluxoTecladoRetiradas(navegador, semente, atores);
     await navegador.close();
     resumoDoModo('relatorio-retiradas.json');
+    return;
+  }
+  if (SO === 'auditoria') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('auditoria', c.id);
+      await fluxoAuditoria(navegador, c, semente, atores, COMBOS.indexOf(c));
+    }
+    console.log('auditoria teclado');
+    await fluxoTecladoAuditoria(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-auditoria.json');
     return;
   }
   if (SO === 'usuarios') {
@@ -1856,8 +2017,8 @@ function resumoDoModo(arquivo) {
   for (const a of RELATORIO.axe) for (const i of a.incompletas) incompletos[i.id] = (incompletos[i.id] || 0) + 1;
   console.log('verificações incompletas (axe não conseguiu decidir), por regra:', JSON.stringify(incompletos));
   for (const a of comViolacao) console.log(' -', a.estado, JSON.stringify(a.violacoes));
-  const icone = RELATORIO.foco.filter((p) => !p.visivel && p.tipo === 'datetime-local');
-  const semFoco = RELATORIO.foco.filter((p) => !p.visivel && p.tipo !== 'datetime-local');
+  const icone = RELATORIO.foco.filter((p) => !p.visivel && ['datetime-local', 'date'].includes(p.tipo));
+  const semFoco = RELATORIO.foco.filter((p) => !p.visivel && !['datetime-local', 'date'].includes(p.tipo));
   console.log('paradas de Tab:', RELATORIO.foco.length, '| sem foco visível:', semFoco.length, '| no ícone do calendário (anel do navegador, verificado por captura):', icone.length);
   for (const p of semFoco) console.log(' -', p.acao, '|', p.papel, '|', p.nome);
 })().catch((e) => { console.error('FALHOU:', e.message.split('\n').slice(0, 8).join('\n')); process.exit(1); });
