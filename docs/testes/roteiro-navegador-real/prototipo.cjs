@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|usuarios]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | usuarios
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -1370,6 +1370,201 @@ async function fluxoTecladoCatalogo(navegador, semente, atores) {
   await ctx.close();
 }
 
+/** Usuários e perfis (T11): cadastro, trocar perfil, desativar com recusa e acesso só do Administrador. */
+async function fluxoUsuarios(navegador, c, semente, atores, indice) {
+  const S = String(indice + 1); // cada combinação tem nomes e e-mails próprios: a lista acumula todos
+  const { maria, carlos, admin } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+  const nomeNovo = `Rita Gomes ${S}`;
+  const emailNovo = `rita.gomes.${S}@exemplo.test`;
+  const nomeTeo = `Teo Barros ${S}`;
+
+  // Um usuário com reserva futura, criado pela API, para a recusa de desativar
+  const criado = await api('POST', '/api/usuarios', { nome: nomeTeo, email: `teo.barros.${S}@exemplo.test`, senha: env.SOL_SENHA, perfil: 'SOLICITANTE' }, admin.token);
+  conferir(P('api-criou-usuario-com-reserva'), criado.status === 201, String(criado.status));
+  const teo = await entrar(`teo.barros.${S}@exemplo.test`, env.SOL_SENHA);
+  const futura = await criarReservaPelaApi(teo.token, `Reserva do Teo ${S}`, c.dia, '15:00', '16:00', [R.sala203]);
+
+  let ctx = await contexto(navegador, c, admin);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/usuarios');
+  await page.getByRole('heading', { level: 1, name: 'Usuários' }).waitFor();
+  const cartaoDe = (nome) => page.getByRole('article', { name: nome, exact: true });
+  await cartaoDe('Carlos Lima').waitFor();
+
+  // ---- lista
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Usuários'), await page.title());
+  conferir(P('lista-tem-os-semeados'), (await page.getByRole('article').count()) >= 5);
+  conferir(P('sem-senha-na-tela'), !/senha/i.test(await page.locator('#conteudo').innerText()));
+  await foto(page, P('usuarios-1-lista'));
+  await auditar(page, P('usuarios-1-lista'));
+  await semRolagemHorizontal(page, P('usuarios-lista'));
+
+  // ---- cadastro: em branco, depois certo, depois e-mail repetido
+  await page.getByRole('button', { name: 'Novo usuário' }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('cadastro-dialogo-foco-entra'), await foiParaODialogo(page));
+  conferir(P('cadastro-senha-e-campo-de-senha'), (await page.getByRole('dialog').getByLabel(/^Senha/).getAttribute('type')) === 'password');
+  await foto(page, P('usuarios-2-dialogo-novo'));
+  await auditar(page, P('usuarios-2-dialogo-novo'));
+  await semRolagemHorizontal(page, P('usuarios-dialogo-novo'));
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByRole('dialog').getByText('Informe o nome.').waitFor();
+  conferir(P('cadastro-sem-dados-foco-no-primeiro-campo'), await page.getByRole('dialog').getByLabel(/^Nome/).evaluate((el) => el === document.activeElement));
+  await foto(page, P('usuarios-3-cadastro-em-branco'));
+  await auditar(page, P('usuarios-3-cadastro-em-branco'));
+  const d = page.getByRole('dialog');
+  await d.getByLabel(/^Nome/).fill(nomeNovo);
+  await d.getByLabel(/^E-mail/).fill(emailNovo);
+  await d.getByLabel(/^Senha/).fill(env.SOL_SENHA);
+  await d.getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByText(`Usuário "${nomeNovo}" cadastrado.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('cadastro-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  await cartaoDe(nomeNovo).waitFor();
+  conferir(P('cadastro-senha-nao-fica-na-tela'), !(await page.content()).includes(env.SOL_SENHA));
+  const noServidor = await api('GET', '/api/usuarios', undefined, admin.token);
+  conferir(P('servidor-criou-o-usuario'), noServidor.corpo.some((u) => u.email === emailNovo && u.perfil === 'SOLICITANTE'));
+  await foto(page, P('usuarios-4-cadastrado'));
+  await auditar(page, P('usuarios-4-cadastrado'));
+
+  await page.getByRole('button', { name: 'Novo usuário' }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByLabel(/^Nome/).fill(`${nomeNovo} repetida`);
+  await page.getByRole('dialog').getByLabel(/^E-mail/).fill(emailNovo);
+  await page.getByRole('dialog').getByLabel(/^Senha/).fill(env.SOL_SENHA);
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByRole('dialog').getByRole('alert').waitFor();
+  conferir(P('email-repetido-mensagem'), (await page.getByRole('dialog').getByRole('alert').innerText()).includes('Já existe um usuário com este e-mail'));
+  conferir(P('email-repetido-campo-invalido'), (await page.getByRole('dialog').getByLabel(/^E-mail/).getAttribute('aria-invalid')) === 'true');
+  conferir(P('email-repetido-foco-na-mensagem'), await focoEmPapel(page, 'alert'));
+  await foto(page, P('usuarios-5-email-repetido'));
+  await auditar(page, P('usuarios-5-email-repetido'));
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  const aposEscape = await descrever(page);
+  conferir(P('cadastro-escape-devolve-o-foco'), aposEscape.nome.includes('Novo usuário'), aposEscape.nome);
+
+  // ---- mínimo de Responsáveis (D14): desativar um dos dois Responsáveis é recusado. Trocar o perfil NÃO é recusado
+  // pelo servidor (lacuna registrada em fase-7-pendencias.md), então este modo não testa essa recusa.
+  await cartaoDe('Carlos Lima').getByRole('button', { name: 'Desativar Carlos Lima' }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();
+  await page.getByRole('dialog').getByRole('alert').waitFor();
+  const minimo = await page.getByRole('dialog').innerText();
+  conferir(P('desativar-minimo-mensagem'), minimo.includes('menos de dois Responsáveis') && !minimo.includes('Reservas afetadas'), minimo.replace(/\s+/g, ' '));
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+
+  // ---- desativar com reserva futura: recusa com a lista de reservas afetadas
+  await cartaoDe(nomeTeo).getByRole('button', { name: `Desativar ${nomeTeo}` }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('desativar-dialogo-foco-entra'), await foiParaODialogo(page));
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();
+  await page.getByRole('dialog').getByRole('alert').waitFor();
+  const afetadas = await page.getByRole('dialog').innerText();
+  conferir(P('desativar-recusa-com-lista'), afetadas.includes('Reservas afetadas:') && afetadas.includes(`nº ${futura.id}`), afetadas.replace(/\s+/g, ' '));
+  conferir(P('desativar-recusa-foco-na-mensagem'), await focoEmPapel(page, 'alert'));
+  await foto(page, P('usuarios-7-desativar-recusado'));
+  await auditar(page, P('usuarios-7-desativar-recusado'));
+  await semRolagemHorizontal(page, P('usuarios-desativar-recusado'));
+  let dentro = true;
+  for (let i = 0; i < 4; i++) { await page.keyboard.press('Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  conferir(P('desativar-tab-preso'), dentro);
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  conferir(P('desativar-recusado-usuario-continua-ativo'), (await cartaoDe(nomeTeo).innerText()).includes('Ativo'));
+
+  // ---- trocar perfil com sucesso, depois desativar quem não tem reserva
+  await cartaoDe(nomeNovo).getByRole('button', { name: `Trocar perfil ${nomeNovo}` }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByLabel('Perfil').selectOption('RESPONSAVEL');
+  await foto(page, P('usuarios-8-dialogo-perfil'));
+  await auditar(page, P('usuarios-8-dialogo-perfil'));
+  await page.getByRole('dialog').getByRole('button', { name: 'Salvar perfil' }).click();
+  await page.getByText(`Perfil de "${nomeNovo}" agora é Responsável.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('perfil-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('perfil-sucesso-na-lista'), (await cartaoDe(nomeNovo).innerText()).includes('Responsável'));
+  const depoisDoPerfil = await api('GET', '/api/usuarios', undefined, admin.token);
+  conferir(P('servidor-trocou-o-perfil'), depoisDoPerfil.corpo.find((u) => u.email === emailNovo).perfil === 'RESPONSAVEL');
+
+  await cartaoDe(nomeNovo).getByRole('button', { name: `Desativar ${nomeNovo}` }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();
+  await page.getByText(`Usuário "${nomeNovo}" desativado.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('desativar-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('desativado-sem-acoes'), (await cartaoDe(nomeNovo).getByRole('button').count()) === 0 && (await cartaoDe(nomeNovo).innerText()).includes('Desativado'));
+  const depoisDeDesativar = await api('GET', '/api/usuarios', undefined, admin.token);
+  conferir(P('servidor-desativou'), depoisDeDesativar.corpo.find((u) => u.email === emailNovo).ativo === false);
+  await foto(page, P('usuarios-9-desativado'));
+  await auditar(page, P('usuarios-9-desativado'));
+  await ctx.close();
+
+  // ---- Responsável e Solicitante: acesso negado
+  for (const [quem, sessao] of [['responsavel', carlos], ['solicitante', maria]]) {
+    ctx = await contexto(navegador, c, sessao);
+    page = await ctx.newPage();
+    await page.goto(FRONT + '/usuarios');
+    await page.getByRole('heading', { level: 1, name: 'Acesso negado' }).waitFor();
+    conferir(P(`${quem}-acesso-negado`), (await page.title()).startsWith('Acesso negado'), await page.title());
+    conferir(P(`${quem}-sem-menu-de-usuarios`), (await page.getByRole('link', { name: 'Usuários' }).count()) === 0);
+    if (quem === 'solicitante') {
+      await foto(page, P('usuarios-10-acesso-negado'));
+      await auditar(page, P('usuarios-10-acesso-negado'));
+    }
+    await ctx.close();
+  }
+}
+
+/** Usuários só com o teclado: cadastrar e trocar o perfil sem mouse. */
+async function fluxoTecladoUsuarios(navegador, semente, atores) {
+  const c = { id: 'teclado-usuarios', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  const ctx = await contexto(navegador, c, atores.admin);
+  const page = await ctx.newPage();
+  const passos = [];
+  await page.goto(FRONT + '/usuarios');
+  await page.getByRole('heading', { level: 1, name: 'Usuários' }).waitFor();
+  const ate = async (nome, limite = 60) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await descrever(page);
+      passos.push({ acao: 'Tab', ...d });
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  await ate('Novo usuário');
+  await page.keyboard.press('Enter');
+  await page.getByRole('dialog').waitFor();
+  passos.push({ acao: 'Enter em Novo usuário', ...(await descrever(page)) });
+  conferir('teclado-usuarios-foco-entra-no-nome', (await descrever(page)).nome.includes('Nome'));
+  await page.keyboard.type('Rita Teclado');
+  await ate('E-mail');
+  await page.keyboard.type('rita.teclado@exemplo.test');
+  await ate('Senha');
+  await page.keyboard.type(env.SOL_SENHA);
+  await ate('Cadastrar');
+  await page.keyboard.press('Enter');
+  await page.getByText('Usuário "Rita Teclado" cadastrado.').waitFor();
+  await page.waitForTimeout(300);
+  conferir('teclado-usuarios-cadastrou-com-enter', (await page.getByRole('article', { name: 'Rita Teclado', exact: true }).count()) === 1);
+  await ate('Trocar perfil Rita Teclado');
+  await page.keyboard.press('Enter');
+  await page.getByRole('dialog').waitFor();
+  conferir('teclado-usuarios-perfil-foco-entra-na-lista', (await descrever(page)).nome.includes('Perfil'));
+  await page.keyboard.press('ArrowDown');
+  await ate('Salvar perfil');
+  await page.keyboard.press('Enter');
+  await page.getByText(/Perfil de "Rita Teclado" agora é/).waitFor();
+  passos.push({ acao: 'Enter em Salvar perfil', ...(await descrever(page)) });
+  const noServidor = await api('GET', '/api/usuarios', undefined, atores.admin.token);
+  conferir('teclado-usuarios-servidor-trocou-o-perfil', noServidor.corpo.find((u) => u.email === 'rita.teclado@exemplo.test').perfil === 'RESPONSAVEL');
+  await auditar(page, 'teclado-usuarios-resultado');
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -1424,6 +1619,21 @@ function resumoDoModo(arquivo) {
     await fluxoTecladoRetiradas(navegador, semente, atores);
     await navegador.close();
     resumoDoModo('relatorio-retiradas.json');
+    return;
+  }
+  if (SO === 'usuarios') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('usuarios', c.id);
+      await fluxoUsuarios(navegador, c, semente, atores, COMBOS.indexOf(c));
+    }
+    console.log('usuarios teclado');
+    await fluxoTecladoUsuarios(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-usuarios.json');
     return;
   }
   if (SO === 'catalogo') {
