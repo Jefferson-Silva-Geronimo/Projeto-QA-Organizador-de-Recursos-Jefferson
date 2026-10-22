@@ -88,27 +88,66 @@ describe('PaginaDeBloqueios: lista (T08, RN-22)', () => {
   });
 });
 
-describe('PaginaDeBloqueios: levantar', () => {
-  it('Levantar envia o levantamento, anuncia com o foco e o cartão passa a Levantado, sem ação', async () => {
-    const { estado } = montarBloqueios();
-    const sala = await cartao('Sala 101');
+describe('PaginaDeBloqueios: levantar (o servidor exige o motivo)', () => {
+  async function abrir(nome = 'Sala 101') {
+    const cartaoDoBloqueio = await cartao(nome);
+    const abridor = within(cartaoDoBloqueio).getByRole('button', { name: `Levantar bloqueio ${nome}` });
+    await userEvent.click(abridor);
+    return { abridor, dialogo: await screen.findByRole('dialog') };
+  }
 
-    await userEvent.click(within(sala).getByRole('button', { name: 'Levantar bloqueio Sala 101' }));
+  async function levantarComMotivo(dialogo: HTMLElement, motivo = 'Obra concluída') {
+    await userEvent.type(within(dialogo).getByLabelText(/^Motivo/), motivo);
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Levantar bloqueio' }));
+  }
+
+  it('Levantar abre um diálogo modal com o recurso em questão e o foco no motivo', async () => {
+    montarBloqueios();
+
+    const { dialogo } = await abrir();
+
+    expect(dialogo).toHaveAttribute('aria-modal', 'true');
+    expect(dialogo).toHaveAccessibleName('Levantar este bloqueio?');
+    expect(dialogo).toHaveAccessibleDescription(/Sala 101/);
+    expect(within(dialogo).getByLabelText(/^Motivo/)).toBeRequired();
+    expect(within(dialogo).getByLabelText(/^Motivo/)).toHaveFocus();
+    expect(within(dialogo).getByRole('button', { name: 'Voltar' })).toBeInTheDocument();
+  });
+
+  it('sem motivo aponta o campo, com o foco, e não envia nada', async () => {
+    const { estado } = montarBloqueios();
+    const { dialogo } = await abrir();
+
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Levantar bloqueio' }));
+
+    expect(within(dialogo).getByText('Informe o motivo.')).toBeInTheDocument();
+    expect(within(dialogo).getByLabelText(/^Motivo/)).toHaveAttribute('aria-invalid', 'true');
+    expect(within(dialogo).getByLabelText(/^Motivo/)).toHaveFocus();
+    expect(estado.chamadas).toEqual([]);
+  });
+
+  it('envia o motivo sem espaços nas pontas, anuncia com o foco e o cartão passa a Levantado, sem ação', async () => {
+    const { estado } = montarBloqueios();
+    const { dialogo } = await abrir();
+
+    await levantarComMotivo(dialogo, '  Obra concluída ');
 
     const texto = await screen.findByText('Bloqueio de "Sala 101" levantado.');
     await waitFor(() => expect(texto.closest('[role="status"]')).toHaveFocus());
-    expect(estado.chamadas).toEqual([{ rota: 'levantamento:5', corpo: {} }]);
+    expect(estado.chamadas).toEqual([{ rota: 'levantamento:5', corpo: { motivo: 'Obra concluída' } }]);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     await waitFor(() => expect(within(screen.getByRole('article', { name: 'Sala 101' })).getByText('Levantado')).toBeInTheDocument());
     expect(within(screen.getByRole('article', { name: 'Sala 101' })).queryByRole('button')).not.toBeInTheDocument();
   });
 
   it('enquanto envia, o botão fica ocupado e um clique duplo envia um único pedido', async () => {
     const { estado } = montarBloqueios({ responder: () => new Promise<Response>(() => {}) });
-    const sala = await cartao('Sala 101');
+    const { dialogo } = await abrir();
+    await userEvent.type(within(dialogo).getByLabelText(/^Motivo/), 'Obra concluída');
 
-    await userEvent.dblClick(within(sala).getByRole('button', { name: 'Levantar bloqueio Sala 101' }));
+    await userEvent.dblClick(within(dialogo).getByRole('button', { name: 'Levantar bloqueio' }));
 
-    expect(within(sala).getByRole('button', { name: /Levantando/ })).toBeDisabled();
+    expect(within(dialogo).getByRole('button', { name: 'Levantando…' })).toBeDisabled();
     expect(estado.chamadas).toHaveLength(1);
   });
 
@@ -116,27 +155,69 @@ describe('PaginaDeBloqueios: levantar', () => {
     [403, 'ACESSO_NEGADO'],
     [404, 'NAO_ENCONTRADO'],
     [500, 'ERRO_INTERNO'],
-  ])('%i %s: a mensagem e a ação da tabela de erros aparecem no cartão, com o foco, e o botão volta a funcionar', async (status, code) => {
+  ])('%i %s: a mensagem e a ação da tabela de erros aparecem no diálogo, com o foco, e o botão volta a funcionar', async (status, code) => {
     montarBloqueios({ responder: () => recusa(status, code) });
-    const sala = await cartao('Sala 101');
+    const { dialogo } = await abrir();
 
-    await userEvent.click(within(sala).getByRole('button', { name: 'Levantar bloqueio Sala 101' }));
+    await levantarComMotivo(dialogo);
 
-    const alerta = await within(sala).findByRole('alert');
+    const alerta = await within(dialogo).findByRole('alert');
     expect(alerta).toHaveTextContent(mensagemPara(code).mensagem);
     expect(alerta).toHaveTextContent(mensagemPara(code).acao);
     expect(alerta).toHaveFocus();
-    expect(within(sala).getByRole('button', { name: 'Levantar bloqueio Sala 101' })).toBeEnabled();
-    expect(within(sala).getByText('Ativo')).toBeInTheDocument();
+    expect(within(dialogo).getByRole('button', { name: 'Levantar bloqueio' })).toBeEnabled();
+    expect(within(screen.getByRole('article', { name: 'Sala 101' })).getByText('Ativo')).toBeInTheDocument();
+  });
+
+  it('MOTIVO_OBRIGATORIO do servidor marca o motivo', async () => {
+    montarBloqueios({ responder: () => recusa(400, 'MOTIVO_OBRIGATORIO') });
+    const { dialogo } = await abrir();
+
+    await levantarComMotivo(dialogo);
+
+    expect(await within(dialogo).findByRole('alert')).toHaveTextContent(mensagemPara('MOTIVO_OBRIGATORIO').mensagem);
+    expect(within(dialogo).getByLabelText(/^Motivo/)).toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('Voltar fecha sem levantar e devolve o foco ao botão que abriu', async () => {
+    const { estado } = montarBloqueios();
+    const { abridor, dialogo } = await abrir();
+
+    await userEvent.click(within(dialogo).getByRole('button', { name: 'Voltar' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(abridor).toHaveFocus();
+    expect(estado.chamadas).toEqual([]);
+  });
+
+  it('Escape fecha o diálogo e o Tab fica preso dentro dele enquanto está aberto', async () => {
+    montarBloqueios();
+    const { abridor, dialogo } = await abrir();
+
+    for (let i = 0; i < 4; i++) {
+      await userEvent.tab();
+      expect(dialogo.contains(document.activeElement)).toBe(true);
+    }
+    await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+    expect(abridor).toHaveFocus();
   });
 
   it('o bloqueio com reservas canceladas também pode ser levantado, e o aviso não promete reativar as reservas', async () => {
     montarBloqueios({ bloqueios: [COM_CANCELADAS, LEVANTADO] });
-    const projetor = await cartao('Projetor P-007');
+    const { dialogo } = await abrir('Projetor P-007');
 
-    await userEvent.click(within(projetor).getByRole('button', { name: 'Levantar bloqueio Projetor P-007' }));
+    await levantarComMotivo(dialogo);
 
     expect(await screen.findByText('Bloqueio de "Projetor P-007" levantado.')).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/reativ/i);
+  });
+
+  it('o diálogo não tem violações de acessibilidade', async () => {
+    montarBloqueios();
+    const { dialogo } = await abrir();
+
+    expect(await axe(dialogo)).toHaveNoViolations();
   });
 });
