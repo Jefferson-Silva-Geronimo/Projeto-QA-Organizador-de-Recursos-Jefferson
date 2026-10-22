@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useSessao } from '@/autenticacao/useSessao';
 import { Estrutura } from '@/layout/Estrutura';
 import { NaoEncontrada } from '@/paginas/NaoEncontrada';
+import { PaginaDeAprovacoes } from '@/paginas/aprovacoes/PaginaDeAprovacoes';
 import { PaginaDeBusca } from '@/paginas/busca/PaginaDeBusca';
 import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
@@ -19,6 +20,7 @@ function ConteudoDaTela({ tela }: { tela: Tela }) {
   if (tela.id === 'T02') return <PaginaDeBusca />;
   if (tela.id === 'T03') return <PaginaDeNovaReserva />;
   if (tela.id === 'T04') return <PaginaDeReservas />;
+  if (tela.id === 'T05') return <PaginaDeAprovacoes />;
   return <PaginaDeTela tela={tela} />;
 }
 
