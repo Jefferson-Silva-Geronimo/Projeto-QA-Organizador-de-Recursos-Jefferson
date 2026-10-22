@@ -84,6 +84,18 @@ export function formatarHora(iso: string, fuso: string): string {
   return new Intl.DateTimeFormat('pt-BR', { timeZone: fuso, hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).format(new Date(iso));
 }
 
+/** Dia na hora do fuso ("2026-10-24"), para decidir em que dia do campus um instante caiu. */
+export function diaNoCampus(iso: string, fuso: string): string {
+  const { ano, mes, dia } = partesNoFuso(new Date(iso), fuso);
+  return `${ano}-${mes}-${dia}`;
+}
+
+/** Data e hora na hora do fuso ("21/10/2026 10:30"), para dizer quando algo foi registrado. */
+export function formatarDataHora(iso: string, fuso: string): string {
+  const { ano, mes, dia, hora, minuto } = partesNoFuso(new Date(iso), fuso);
+  return `${dia}/${mes}/${ano} ${hora}:${minuto}`;
+}
+
 /** Soma dias a uma data e hora locais ("2026-10-20T12:00"), mantendo a hora do relógio. */
 export function somarDias(local: string, dias: number): string {
   const m = PADRAO_LOCAL.exec(local);
