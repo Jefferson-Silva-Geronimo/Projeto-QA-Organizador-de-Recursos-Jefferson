@@ -14,12 +14,12 @@ async function abrir(botao: string, aba?: string) {
 }
 
 async function preencherSala(dialogo: HTMLElement, nome = 'Sala 305') {
-  await userEvent.type(within(dialogo).getByLabelText('Nome'), nome);
-  await userEvent.type(within(dialogo).getByLabelText('Capacidade'), '35');
-  await userEvent.type(within(dialogo).getByLabelText('Localização'), 'Bloco C, 3º andar');
+  await userEvent.type(within(dialogo).getByLabelText(/^Nome/), nome);
+  await userEvent.type(within(dialogo).getByLabelText(/^Capacidade/), '35');
+  await userEvent.type(within(dialogo).getByLabelText(/^Localização/), 'Bloco C, 3º andar');
   await userEvent.type(within(dialogo).getByLabelText(/^Tipo de sala/), 'AULA');
-  await userEvent.type(within(dialogo).getByLabelText('Abre às'), '07:30');
-  await userEvent.type(within(dialogo).getByLabelText('Fecha às'), '21:00');
+  await userEvent.type(within(dialogo).getByLabelText(/^Abre às/), '07:30');
+  await userEvent.type(within(dialogo).getByLabelText(/^Fecha às/), '21:00');
   await userEvent.click(within(dialogo).getByRole('checkbox', { name: 'Segunda' }));
   await userEvent.click(within(dialogo).getByRole('checkbox', { name: 'Quarta' }));
 }
@@ -33,26 +33,26 @@ describe('PaginaDoCatalogo: diálogo de cadastro', () => {
     expect(dialogo).toHaveAttribute('aria-modal', 'true');
     expect(dialogo).toHaveAccessibleName('Nova sala');
     for (const campo of ['Nome', 'Capacidade', 'Localização', 'Abre às', 'Fecha às']) {
-      expect(within(dialogo).getByLabelText(campo)).toBeInTheDocument();
+      expect(within(dialogo).getByLabelText(new RegExp(`^${campo}`))).toBeInTheDocument();
     }
     expect(within(dialogo).getByRole('group', { name: 'Dias de funcionamento' })).toBeInTheDocument();
     expect(within(dialogo).getAllByRole('checkbox', { name: /^(Segunda|Terça|Quarta|Quinta|Sexta|Sábado|Domingo)$/ })).toHaveLength(7);
     expect(within(dialogo).getByRole('checkbox', { name: /^Restrito/ })).not.toBeChecked();
-    expect(within(dialogo).getByLabelText('Nome')).toHaveFocus();
+    expect(within(dialogo).getByLabelText(/^Nome/)).toHaveFocus();
   });
 
   it('Novo professor e Novo material trazem os campos de cada tipo', async () => {
     montarCatalogo();
 
     const professor = (await abrir('Novo professor', 'Professores')).dialogo;
-    expect(within(professor).getByLabelText('Nome')).toBeInTheDocument();
+    expect(within(professor).getByLabelText(/^Nome/)).toBeInTheDocument();
     expect(within(professor).getByLabelText(/^Competências/)).toBeInTheDocument();
     expect(within(professor).getByLabelText(/^Usuário vinculado/)).toBeInTheDocument();
     await userEvent.keyboard('{Escape}');
 
     const material = (await abrir('Novo material', 'Materiais')).dialogo;
-    expect(within(material).getByLabelText('Nome')).toBeInTheDocument();
-    expect(within(material).getByLabelText('Código de patrimônio')).toBeInTheDocument();
+    expect(within(material).getByLabelText(/^Nome/)).toBeInTheDocument();
+    expect(within(material).getByLabelText(/^Código de patrimônio/)).toBeInTheDocument();
     expect(within(material).getByLabelText(/^Descrição/)).toBeInTheDocument();
   });
 
@@ -70,18 +70,18 @@ describe('PaginaDoCatalogo: diálogo de cadastro', () => {
   it('Voltar fecha o diálogo, e o que foi digitado se perde: um novo diálogo abre vazio', async () => {
     montarCatalogo();
     const { dialogo } = await abrir('Nova sala');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'rascunho');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'rascunho');
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Voltar' }));
     await userEvent.click(screen.getByRole('button', { name: 'Nova sala' }));
 
-    expect(within(await screen.findByRole('dialog')).getByLabelText('Nome')).toHaveValue('');
+    expect(within(await screen.findByRole('dialog')).getByLabelText(/^Nome/)).toHaveValue('');
   });
 
   it('o Tab não sai do diálogo: do último elemento volta ao primeiro', async () => {
     montarCatalogo();
     const { dialogo } = await abrir('Nova sala');
-    const nome = within(dialogo).getByLabelText('Nome');
+    const nome = within(dialogo).getByLabelText(/^Nome/);
     const voltar = within(dialogo).getByRole('button', { name: 'Voltar' });
 
     voltar.focus();
@@ -125,11 +125,11 @@ describe('PaginaDoCatalogo: cadastrar sala', () => {
   it('o tipo de sala é opcional: em branco, o campo não é enviado; restrito marcado é enviado verdadeiro', async () => {
     const { estado } = montarCatalogo();
     const { dialogo } = await abrir('Nova sala');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Auditório 2');
-    await userEvent.type(within(dialogo).getByLabelText('Capacidade'), '120');
-    await userEvent.type(within(dialogo).getByLabelText('Localização'), 'Bloco A');
-    await userEvent.type(within(dialogo).getByLabelText('Abre às'), '08:00');
-    await userEvent.type(within(dialogo).getByLabelText('Fecha às'), '18:00');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Auditório 2');
+    await userEvent.type(within(dialogo).getByLabelText(/^Capacidade/), '120');
+    await userEvent.type(within(dialogo).getByLabelText(/^Localização/), 'Bloco A');
+    await userEvent.type(within(dialogo).getByLabelText(/^Abre às/), '08:00');
+    await userEvent.type(within(dialogo).getByLabelText(/^Fecha às/), '18:00');
     await userEvent.click(within(dialogo).getByRole('checkbox', { name: 'Sexta' }));
     await userEvent.click(within(dialogo).getByRole('checkbox', { name: /^Restrito/ }));
 
@@ -159,8 +159,8 @@ describe('PaginaDoCatalogo: cadastrar sala', () => {
     expect(within(dialogo).getByText('Informe a hora de abertura.')).toBeVisible();
     expect(within(dialogo).getByText('Informe a hora de fechamento.')).toBeVisible();
     expect(within(dialogo).getByText('Marque ao menos um dia.')).toBeVisible();
-    expect(within(dialogo).getByLabelText('Nome')).toBeInvalid();
-    expect(within(dialogo).getByLabelText('Nome')).toHaveFocus();
+    expect(within(dialogo).getByLabelText(/^Nome/)).toBeInvalid();
+    expect(within(dialogo).getByLabelText(/^Nome/)).toHaveFocus();
     expect(estado.chamadas).toHaveLength(0);
   });
 
@@ -174,10 +174,10 @@ describe('PaginaDoCatalogo: cadastrar sala', () => {
     const alerta = await within(screen.getByRole('dialog')).findByRole('alert');
     expect(alerta).toHaveTextContent(mensagemPara('VALIDACAO_FALHOU').mensagem);
     expect(alerta).toHaveTextContent(mensagemPara('VALIDACAO_FALHOU').acao);
-    expect(within(screen.getByRole('dialog')).getByLabelText('Capacidade')).toBeInvalid();
-    expect(within(screen.getByRole('dialog')).getByLabelText('Fecha às')).toBeInvalid();
-    expect(within(screen.getByRole('dialog')).getByLabelText('Nome')).toHaveValue('Sala 305');
-    expect(within(screen.getByRole('dialog')).getByLabelText('Nome')).not.toBeInvalid();
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Capacidade/)).toBeInvalid();
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Fecha às/)).toBeInvalid();
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Nome/)).toHaveValue('Sala 305');
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Nome/)).not.toBeInvalid();
     expect(alerta).toHaveFocus();
   });
 
@@ -227,8 +227,9 @@ describe('PaginaDoCatalogo: cadastrar professor', () => {
   it('envia o nome, as competências sem espaços nas pontas, o usuário escolhido e restrito', async () => {
     const { estado } = montarCatalogo();
     const { dialogo } = await abrir('Novo professor', 'Professores');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Prof. Paulo Mendes');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Prof. Paulo Mendes');
     await userEvent.type(within(dialogo).getByLabelText(/^Competências/), ' Redes , Segurança da informação ,, ');
+    await within(dialogo).findByRole('option', { name: 'Carlos Lima (Responsável)' });
     await userEvent.selectOptions(within(dialogo).getByLabelText(/^Usuário vinculado/), 'Carlos Lima (Responsável)');
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Cadastrar' }));
@@ -245,7 +246,7 @@ describe('PaginaDoCatalogo: cadastrar professor', () => {
   it('o vínculo é opcional: sem escolher, o usuário não é enviado; as opções mostram só nome e perfil, nunca o e-mail', async () => {
     const { estado } = montarCatalogo();
     const { dialogo } = await abrir('Novo professor', 'Professores');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Prof. Paulo Mendes');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Prof. Paulo Mendes');
     const opcoes = within(within(dialogo).getByLabelText(/^Usuário vinculado/)).getAllByRole('option').map((o) => o.textContent);
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Cadastrar' }));
@@ -269,7 +270,8 @@ describe('PaginaDoCatalogo: cadastrar professor', () => {
   it('VINCULO_JA_EXISTE: a mensagem da tabela aparece e o campo do usuário é marcado', async () => {
     montarCatalogo({ responder: () => recusa(409, 'VINCULO_JA_EXISTE') });
     const { dialogo } = await abrir('Novo professor', 'Professores');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Prof. Paulo Mendes');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Prof. Paulo Mendes');
+    await within(dialogo).findByRole('option', { name: 'Carlos Lima (Responsável)' });
     await userEvent.selectOptions(within(dialogo).getByLabelText(/^Usuário vinculado/), 'Carlos Lima (Responsável)');
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Cadastrar' }));
@@ -285,8 +287,8 @@ describe('PaginaDoCatalogo: cadastrar material', () => {
   it('envia o nome, o código de patrimônio e a descrição', async () => {
     const { estado } = montarCatalogo();
     const { dialogo } = await abrir('Novo material', 'Materiais');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Caixa de som S-02');
-    await userEvent.type(within(dialogo).getByLabelText('Código de patrimônio'), 'PAT-S002');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Caixa de som S-02');
+    await userEvent.type(within(dialogo).getByLabelText(/^Código de patrimônio/), 'PAT-S002');
     await userEvent.type(within(dialogo).getByLabelText(/^Descrição/), 'Caixa de som portátil');
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Cadastrar' }));
@@ -311,16 +313,16 @@ describe('PaginaDoCatalogo: cadastrar material', () => {
   it('PATRIMONIO_JA_EXISTE: a mensagem da tabela aparece e o campo do código é marcado', async () => {
     montarCatalogo({ responder: () => recusa(409, 'PATRIMONIO_JA_EXISTE') });
     const { dialogo } = await abrir('Novo material', 'Materiais');
-    await userEvent.type(within(dialogo).getByLabelText('Nome'), 'Caixa de som S-02');
-    await userEvent.type(within(dialogo).getByLabelText('Código de patrimônio'), 'PAT-P007');
+    await userEvent.type(within(dialogo).getByLabelText(/^Nome/), 'Caixa de som S-02');
+    await userEvent.type(within(dialogo).getByLabelText(/^Código de patrimônio/), 'PAT-P007');
 
     await userEvent.click(within(dialogo).getByRole('button', { name: 'Cadastrar' }));
 
     const alerta = await within(screen.getByRole('dialog')).findByRole('alert');
     expect(alerta).toHaveTextContent(mensagemPara('PATRIMONIO_JA_EXISTE').mensagem);
     expect(alerta).toHaveTextContent(mensagemPara('PATRIMONIO_JA_EXISTE').acao);
-    expect(within(screen.getByRole('dialog')).getByLabelText('Código de patrimônio')).toBeInvalid();
-    expect(within(screen.getByRole('dialog')).getByLabelText('Nome')).toHaveValue('Caixa de som S-02');
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Código de patrimônio/)).toBeInvalid();
+    expect(within(screen.getByRole('dialog')).getByLabelText(/^Nome/)).toHaveValue('Caixa de som S-02');
   });
 });
 

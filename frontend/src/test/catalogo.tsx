@@ -36,7 +36,8 @@ export const recusa = (status: number, code: string, extra: Record<string, unkno
 
 /** Monta a página como a aplicação a monta: com sessão, consultas e a API simulada na fronteira do fetch. */
 export function montarCatalogo({ perfil = 'ADMINISTRADOR', recursos = TODOS_OS_RECURSOS, usuarios = [CARLOS, MARIA], responder }: Cenario = {}) {
-  const estado: EstadoDoCatalogo = { recursos: [...recursos], chamadas: [], consultas: [] };
+  // Cada teste muda os próprios recursos: copiar cada objeto evita contaminar as fixtures compartilhadas.
+  const estado: EstadoDoCatalogo = { recursos: recursos.map((r) => ({ ...r })), chamadas: [], consultas: [] };
   let proximoId = 100;
 
   const escrever = (rota: string, padrao: (corpo: Record<string, unknown>) => Response) =>
