@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import type { ItemDaFila } from '@/aprovacoes/consulta';
+import type { TipoDeDecisao } from '@/aprovacoes/decidir';
 import { FUSO_DO_CAMPUS, formatarIntervalo } from '@/datas/fuso';
 import estilos from '@/paginas/reservas/CartaoDeReserva.module.css';
 import { useRecursosDaReserva } from '@/reservas/consulta';
@@ -19,6 +20,8 @@ const MENSAGEM_SEM_ACAO = 'Você não pode aprovar nem rejeitar esta solicitaç�
 
 interface Props {
   item: ItemDaFila;
+  /** Abre a confirmação. O botão que abriu vai junto, para o foco voltar a ele ao fechar. */
+  aoDecidir: (tipo: TipoDeDecisao, item: ItemDaFila, botao: HTMLButtonElement) => void;
 }
 
 /**
@@ -27,7 +30,7 @@ interface Props {
  * o front não olha dono, perfil nem relógio, e a recusa pelo código estável continua valendo como defesa (ADR-004).
  * Reaproveita o estilo do cartão de reservas (F6-11).
  */
-export function CartaoDaFila({ item }: Props) {
+export function CartaoDaFila({ item, aoDecidir }: Props) {
   const idTitulo = useId();
   const idMensagem = useId();
   const semAcao = !item.podeAprovar && !item.podeRejeitar;
@@ -58,12 +61,12 @@ export function CartaoDaFila({ item }: Props) {
       {!semAcao && (
         <div className={estilos.acoes}>
           {item.podeAprovar && (
-            <Botao>
+            <Botao onClick={(e) => aoDecidir('aprovar', item, e.currentTarget)}>
               Aprovar <span className="somente-leitor">{item.titulo}</span>
             </Botao>
           )}
           {item.podeRejeitar && (
-            <Botao variante="secundario">
+            <Botao variante="secundario" onClick={(e) => aoDecidir('rejeitar', item, e.currentTarget)}>
               Rejeitar <span className="somente-leitor">{item.titulo}</span>
             </Botao>
           )}

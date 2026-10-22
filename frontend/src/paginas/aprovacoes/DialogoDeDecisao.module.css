@@ -1,0 +1,10 @@
+.formulario {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
