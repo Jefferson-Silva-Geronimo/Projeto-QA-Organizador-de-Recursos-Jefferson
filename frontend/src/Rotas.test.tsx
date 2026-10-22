@@ -229,10 +229,22 @@ describe('Rotas', () => {
     expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
   });
 
-  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
-    entrarComo('RESPONSAVEL');
+  it.each([
+    ['RESPONSAVEL', 'Informe a reserva'],
+    ['ADMINISTRADOR', 'Nada registrado'],
+  ] as const)('%s abre o Histórico de verdade, e não o marcador de lugar', async (perfil, texto) => {
+    entrarComo(perfil);
 
-    montar('/auditoria');
+    montar('/auditoria', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText(texto)).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('as outras telas seguem como marcador de lugar até a aprovação do padrão', () => {
+    entrarComo('ADMINISTRADOR');
+
+    montar('/bloqueios');
 
     expect(screen.getByText('Esta tela será construída na etapa 6.C.')).toBeInTheDocument();
   });
