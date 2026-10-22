@@ -1,0 +1,48 @@
+.formulario {
+  display: grid;
+  gap: var(--espaco-3);
+}
+
+.duplo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: var(--espaco-3);
+}
+
+.grupo {
+  display: grid;
+  gap: var(--espaco-2);
+  margin: 0;
+  padding: var(--espaco-3);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: var(--raio-grande);
+}
+
+.legenda {
+  padding: 0 var(--espaco-2);
+  font-weight: 700;
+}
+
+.dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2) var(--espaco-4);
+}
+
+.marcador {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  min-height: 44px;
+}
+
+.marcador input {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}

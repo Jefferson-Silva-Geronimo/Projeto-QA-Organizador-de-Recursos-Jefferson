@@ -1,0 +1,43 @@
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-3);
+}
+
+.abas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-2);
+}
+
+.aba {
+  min-height: 44px;
+  padding: 0 var(--espaco-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--cor-texto);
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda-campo);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+/* A aba escolhida também é dita em texto pelo leitor de tela (aria-selected); a cor só reforça (WCAG 1.4.1). */
+.aba[aria-selected='true'] {
+  color: var(--cor-sobre-destaque);
+  background: var(--cor-destaque);
+  border-color: var(--cor-destaque);
+}
+
+.aba:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.nota {
+  margin: 0;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}

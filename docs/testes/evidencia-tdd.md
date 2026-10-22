@@ -184,4 +184,5 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Tela de acesso negado ganha o título "Acesso negado" na página e na aba (BUG-018, achado no navegador real) | `611db6e` | `55b37c7` |
 | Reserva traz `podeIniciar`, `podeConcluir` e `podeMarcarNaoComparecimento`; histórico traz `registradoPorNome` e a movimentação `atual` de cada material (F6-16; regra pura e API; cálculo e serviço usam a mesma `PoliticaDeUso` e a mesma `MovimentacoesAtuais`) | `053762a` | `1aa933f` (refactor `5df6676`, contrato `7045c37`) |
 | Retirada e devolução (T06): lista de aprovadas e em uso, unidade pela movimentação atual, ações pelos campos do servidor, confirmação do irreversível e recusas pelo mapa (F6-16; 65 testes da tela, `formatarHora` e a rota) | `22eb383`, `fa48bb1` | `4b98d3e` |
+| Catálogo de recursos (T07): abas por tipo, lista, restrito, desativar com a lista de reservas afetadas e cadastro por tipo (F6-17; 61 testes da tela, 3 de rota; lint corrigido em `9c10927`) | `e90007c` | `9850afd` |
 | Histórico de auditoria traz `atorNome`, só o nome e nunca o e-mail, e o usuário desativado mantém o nome (F6-17) | `cb31a0c` | `1c7fc09` (contrato `5b861e3`) |
