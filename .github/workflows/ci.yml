@@ -165,7 +165,8 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Instalar o Chromium do Playwright
-        run: npx playwright install --with-deps chromium
+        # Binário local, na versão do package-lock.json: sem npx, que instalaria pacote sob demanda (SonarCloud S6505 e S8543).
+        run: ./node_modules/.bin/playwright install --with-deps chromium
 
       - name: Testes E2E
         run: npm run e2e
