@@ -105,7 +105,7 @@ describe('PaginaDeBloqueios: novo bloqueio (RN-22)', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Confirmar e cancelar' }));
 
     expect(await screen.findByText(/Bloqueio de "Sala 101" criado\./)).toBeInTheDocument();
-    expect(screen.getByText(/Reservas canceladas: nº 41, nº 44/)).toBeInTheDocument();
+    expect(within(screen.getByRole('status')).getByText(/Reservas canceladas: nº 41, nº 44/)).toBeInTheDocument();
     expect(estado.chamadas).toHaveLength(2);
     expect(estado.chamadas[1]?.corpo).toEqual({
       recursoId: 1,
