@@ -176,7 +176,7 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | INT-01 | Resposta 200 válida | I | WireMock responde 200 | Notificação ENVIADA | RN-28 |
 | INT-02 | Resposta 404 | I | WireMock responde 404 | Erro próprio do domínio, sem repetir a chamada na mesma tentativa; registrada | RN-28 |
 | INT-03 | Resposta 500 | I | WireMock responde 500 | Reserva continua válida; notificação PENDENTE com próxima tentativa | RN-28, CEN-05 |
-| INT-04 | Resposta mais lenta que o limite | I | WireMock com atraso acima do limite de teste | Interrompe dentro do limite; PENDENTE | RN-28, CEN-05 |
+| INT-04 | Resposta mais lenta que o limite | I | WireMock com atraso acima do limite de teste (`NotificacaoTempoLimiteApiIT`, com o limite de produção; antes em `NotificacaoApiIT`, movido no BUG-017) | Interrompe dentro do limite; PENDENTE | RN-28, CEN-05 |
 | INT-05 | JSON inválido ou campo ausente | I | WireMock responde corpo malformado | Conteúdo rejeitado; correlação registrada | RN-28 |
 | INT-06 | Provedor devolve o próprio token | I | WireMock devolve o token no corpo do erro | 0 ocorrências do token na resposta da API e no log | RNF-07, CEN-09 |
 | CT-102 | Destinatários por evento | I | Pendente, aprovada, rejeitada, cancelada | Pendente para cada Responsável; os demais para o Solicitante | RF-11, RN-28 |

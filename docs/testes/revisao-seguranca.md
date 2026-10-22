@@ -106,7 +106,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
 - **Evidência:** `TratadorDeErros` devolve erro genérico com código estável e nunca pilha (`DocumentacaoApiIT`,
   `AutenticacaoApiIT#ct006`); falha ao auditar desfaz a transição (`AuditoriaApiIT#ct097`); impasse do banco tratado
   como conflito (BUG-007); falha ao gravar a tentativa de conflito mantém o 409 (BUG-009); falha do provedor não desfaz a
-  reserva (`NotificacaoApiIT#int03`, `#int04`).
+  reserva (`NotificacaoApiIT#int03`, `NotificacaoTempoLimiteApiIT#int04`).
 - **Ação:** nenhuma.
 
 ## Achados desta revisão
