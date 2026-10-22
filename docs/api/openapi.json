@@ -2312,9 +2312,15 @@
               "type" : "integer",
               "format" : "int64"
             }
+          },
+          "podeAprovar" : {
+            "type" : "boolean"
+          },
+          "podeRejeitar" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "recursoIds", "solicitanteId", "solicitanteNome", "titulo" ]
+        "required" : [ "estado", "exigeAprovacao", "fim", "id", "inicio", "podeAprovar", "podeRejeitar", "recursoIds", "solicitanteId", "solicitanteNome", "titulo" ]
       },
       "ItemRelatorioResposta" : {
         "type" : "object",

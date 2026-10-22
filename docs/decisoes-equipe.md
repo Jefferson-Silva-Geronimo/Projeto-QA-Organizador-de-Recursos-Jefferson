@@ -280,6 +280,24 @@ Alternativas descartadas: **A** (validar no front, sem mexer no back end: duplic
 
 Os campos são calculados por `PermissoesDaReserva` (regra pura, em `model.regra`) e montados por `RespostasDeReserva` no pacote `controller`; as respostas de criar, alterar, cancelar, aprovar, rejeitar e do uso de material trazem os mesmos campos. A fila de aprovações (`ReservaDaFilaResposta`) não mudou.
 
+### F6-15. A fila de aprovações diz o que o Responsável pode decidir (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, ao preparar a tela Fila de aprovações (T05), no mesmo molde da F6-14.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-15 | **Cada item de `GET /api/reservas/fila` traz `podeAprovar` e `podeRejeitar`**, calculados no servidor para o Responsável logado, pelas mesmas regras que hoje recusam (`PoliticaDeDecisao`, usada também por `AprovacaoService`) e pelo `Clock` injetado (ADR-005). Cobre a posse (RN-16 e RN-33), o estado e o início da reserva (D2 e D10). O front só mostra ou esconde a ação: não guarda o id do usuário nem olha o relógio. A recusa pelo código estável (`ACESSO_NEGADO`, `APROVACAO_APOS_INICIO`) continua como defesa (ADR-004). Mudança **aditiva e só de contrato**: os dois campos entram no `required` e o `openapi.json` foi regenerado (CT-115 falhou de propósito; CT-114 não mudou) | Sempre mostrar as duas ações e tratar a recusa; guardar o id do usuário no front (contra F6-02 e ADR-004) |
+
+**Suposições registradas (o cálculo não decidiu nenhuma lacuna A1 a A8; segue o que o back end já fazia):**
+
+| # | Suposição | Origem | Impacto se estiver errada |
+| --- | --- | --- | --- |
+| 1 | O motivo da rejeição conta como informado: `podeRejeitar` é verdadeiro sem olhar o motivo; o servidor segue exigindo-o e responde `MOTIVO_OBRIGATORIO` se faltar (RN-24) | `AprovacaoService.rejeitar`; mesmo tratamento da F6-14 | Só muda se a tela deveria avisar antes; hoje o diálogo exige o motivo |
+| 2 | **A rejeição não tem limite de horário**: uma reserva SOLICITADA pode ser rejeitada mesmo depois do instante de início. Só a aprovação para no início (D2 e D10) | `AprovacaoService.rejeitar` não compara com o início; D2 trata só da aprovação | Se a regra for rejeitar só antes do início, `podeRejeitar` passa a ser falso no início e depois, e o servidor também precisa mudar. **Suposição aceita por Jefferson em 22/10/2026**; o servidor não muda. A dúvida segue em [perguntas-professor.md](perguntas-professor.md) e em [fase-7-pendencias.md](fase-7-pendencias.md) |
+| 3 | Só o perfil Responsável tem os campos verdadeiros; para Solicitante e Administrador são falsos (a fila já lhes responde 403) | `@PreAuthorize` de `GET /api/reservas/fila`; RN-06 | Nenhum efeito visível hoje, porque eles não recebem a fila |
+
+O cálculo está em `PermissoesDeDecisao` e `PoliticaDeDecisao` (regra pura, em `model.regra`) e a montagem em `RespostasDeReserva.daFila`. As respostas de aprovar e rejeitar não mudaram.
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |

@@ -159,7 +159,7 @@ Prova       · 22/10 08:00-10:00 · Sala 203 · SOLICITADA [Alterar][Cancelar]
 
 - **Objetivo:** decidir reservas com recurso restrito. **Endpoints:** `GET /api/reservas/fila`, `POST /api/reservas/{id}/aprovacao`, `POST /api/reservas/{id}/rejeicao`.
 - **Dados:** título, período, recursos, identificador do solicitante. A resposta da fila traz `solicitanteNome`, só o nome e nunca o e-mail (F6-06b, lacuna **L-04**, CT-125 e CT-126), além de `solicitanteId`.
-- **Ações:** aprovar (motivo opcional, suposição: o contrato aceita `DecisaoRequisicao`) e rejeitar (motivo obrigatório, RN-24).
+- **Ações:** aprovar (motivo opcional, suposição: o contrato aceita `DecisaoRequisicao`) e rejeitar (motivo obrigatório, RN-24). A tela mostra cada ação conforme `podeAprovar` e `podeRejeitar`, devolvidos pelo servidor em cada item (F6-15, L-08); o front não decide por dono, perfil nem relógio, e a recusa pelo código estável continua como defesa.
 - **Estados:** carregando, vazio ("sem pendências"), erro, sucesso (o item sai da fila).
 - **Erros:** `MOTIVO_OBRIGATORIO`, `ACESSO_NEGADO` (dono tenta decidir, RN-16 e RN-33), `APROVACAO_APOS_INICIO`, `TRANSICAO_PROIBIDA`, `NAO_ENCONTRADO`.
 
@@ -313,6 +313,7 @@ Todas decididas por Jefferson em 18/10/2026 (F6-05, F6-06 e F6-10).
 | L-05 | Fuso do campus: o front assume `America/Sao_Paulo`, que é a decisão A6 da equipe; não há resposta do professor sobre isso | Datas exibidas no fuso errado se a decisão mudar | Variável de ambiente do front; muda sem alterar código |
 | L-06 | Os esquemas de resposta do OpenAPI não declaravam `required`, então todo campo de resposta virava opcional no tipo gerado | As telas teriam de validar cada resposta | **Decidida e feita (F6-10, 18/10/2026):** alternativa B, o back end marca como obrigatórios só os campos que nunca são nulos (só documentação). Cliente regenerado; as telas já nascem com tipos precisos. Campos de fora e motivos em [decisoes-equipe.md](../decisoes-equipe.md) |
 | L-07 | A resposta de reserva não dizia o que o usuário pode fazer com ela (alterar e cancelar dependem do dono, do perfil e do início) | A T04 mostraria ações que o servidor recusa | **Decidida (F6-14, 19/10/2026), alternativa C:** o back end devolve `podeAlterar` e `podeCancelar` por reserva, pelas políticas e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
+| L-08 | O item da fila não dizia o que o Responsável pode decidir (aprovar e rejeitar dependem do dono e do início da reserva) | A T05 mostraria ações que o servidor recusa (`ACESSO_NEGADO` na própria reserva, `APROVACAO_APOS_INICIO`) | **Decidida (F6-15, 22/10/2026):** o back end devolve `podeAprovar` e `podeRejeitar` por item, pelas mesmas regras e pelo `Clock`; o front só mostra ou esconde. Mudança aditiva do contrato, com `openapi.json` regenerado |
 
 As colunas "Opções" listam o que foi considerado; a decisão está marcada em cada linha.
 
