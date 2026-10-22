@@ -8,7 +8,7 @@ import br.senac.recursos.model.EventoNotificacao;
 import br.senac.recursos.model.Reserva;
 import br.senac.recursos.model.ReservaDaFila;
 import br.senac.recursos.model.UsuarioAutenticado;
-import br.senac.recursos.model.regra.MaquinaDeEstados;
+import br.senac.recursos.model.regra.PoliticaDeDecisao;
 import br.senac.recursos.repository.AuditoriaRepository;
 import br.senac.recursos.repository.ReservaRepository;
 import java.time.Clock;
@@ -42,15 +42,12 @@ public class AprovacaoService {
         Instant agora = relogio.instant();
         Reserva reserva = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
-        exigirNaoDono(ator, reserva);
-        MaquinaDeEstados.exigir(reserva.estado(), EstadoReserva.APROVADA);
-        if (reserva.estado() != EstadoReserva.SOLICITADA) {
-            throw new ErroDeNegocio(CodigoErro.TRANSICAO_PROIBIDA);
-        }
-        if (!agora.isBefore(reserva.inicio())) {
-            // D2 e D10: no instante de início a reserva já começou e só resta o cancelamento por SEM_DECISAO.
-            throw new ErroDeNegocio(CodigoErro.APROVACAO_APOS_INICIO);
-        }
+        // Mesma política que alimenta podeAprovar na fila. D2 e D10: no instante de início a reserva já começou
+        // e só resta o cancelamento por SEM_DECISAO.
+        PoliticaDeDecisao.avaliarAprovacao(reserva.estado(), reserva.solicitanteId() == ator.id(), agora, reserva.inicio())
+                .ifPresent(codigo -> {
+                    throw new ErroDeNegocio(codigo);
+                });
         String motivoGravado = vazioParaNulo(motivo);
         // O motivo da aprovação, opcional, fica em aprovacoes. Em reservas só guarda o motivo de cancelar e rejeitar.
         reservas.atualizar(id, reserva.titulo(), reserva.descricao(), reserva.periodo(), EstadoReserva.APROVADA,
@@ -67,12 +64,12 @@ public class AprovacaoService {
         Instant agora = relogio.instant();
         Reserva reserva = reservas.buscarTravando(id)
                 .orElseThrow(() -> new ErroDeNegocio(CodigoErro.NAO_ENCONTRADO));
-        exigirNaoDono(ator, reserva);
         String motivoGravado = vazioParaNulo(motivo);
-        if (motivoGravado == null) {
-            throw new ErroDeNegocio(CodigoErro.MOTIVO_OBRIGATORIO);                 // RN-24
-        }
-        MaquinaDeEstados.exigir(reserva.estado(), EstadoReserva.REJEITADA);
+        // Mesma política que alimenta podeRejeitar na fila; o motivo é obrigatório (RN-24).
+        PoliticaDeDecisao.avaliarRejeicao(reserva.estado(), reserva.solicitanteId() == ator.id(), motivoGravado != null)
+                .ifPresent(codigo -> {
+                    throw new ErroDeNegocio(codigo);
+                });
         reservas.atualizar(id, reserva.titulo(), reserva.descricao(), reserva.periodo(), EstadoReserva.REJEITADA,
                 reserva.exigeAprovacao(), motivoGravado, agora);
         reservas.inativarOcupacoes(id);
@@ -86,12 +83,6 @@ public class AprovacaoService {
     @Transactional(readOnly = true)
     public List<ReservaDaFila> fila() {
         return reservas.listarFila();
-    }
-
-    private static void exigirNaoDono(UsuarioAutenticado ator, Reserva reserva) {
-        if (reserva.solicitanteId() == ator.id()) {
-            throw new ErroDeNegocio(CodigoErro.ACESSO_NEGADO);                      // RN-16, RN-33
-        }
     }
 
     private static String vazioParaNulo(String valor) {

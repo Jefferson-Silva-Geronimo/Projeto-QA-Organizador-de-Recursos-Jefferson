@@ -21,6 +21,6 @@ public record PermissoesDeDecisao(boolean podeAprovar, boolean podeRejeitar) {
         boolean dono = reserva.solicitanteId() == atorId;
         return new PermissoesDeDecisao(
                 PoliticaDeDecisao.avaliarAprovacao(reserva.estado(), dono, agora, reserva.inicio()).isEmpty(),
-                PoliticaDeDecisao.avaliarRejeicao(reserva.estado(), dono).isEmpty());
+                PoliticaDeDecisao.avaliarRejeicao(reserva.estado(), dono, true).isEmpty());
     }
 }

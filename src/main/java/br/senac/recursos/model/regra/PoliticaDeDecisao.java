@@ -28,10 +28,16 @@ public final class PoliticaDeDecisao {
         return Optional.empty();
     }
 
-    /** Devolve o código da recusa, ou vazio se a rejeição é permitida. O serviço não limita a rejeição por horário. */
-    public static Optional<CodigoErro> avaliarRejeicao(EstadoReserva estado, boolean dono) {
+    /**
+     * Devolve o código da recusa, ou vazio se a rejeição é permitida. O motivo é obrigatório (RN-24); a ordem das
+     * recusas é a do serviço: posse, motivo, estado. O serviço não limita a rejeição por horário.
+     */
+    public static Optional<CodigoErro> avaliarRejeicao(EstadoReserva estado, boolean dono, boolean motivoInformado) {
         if (dono) {
             return Optional.of(CodigoErro.ACESSO_NEGADO);
+        }
+        if (!motivoInformado) {
+            return Optional.of(CodigoErro.MOTIVO_OBRIGATORIO);
         }
         if (!MaquinaDeEstados.permitida(estado, EstadoReserva.REJEITADA)) {
             return Optional.of(CodigoErro.TRANSICAO_PROIBIDA);
