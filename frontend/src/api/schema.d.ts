@@ -579,6 +579,9 @@ export interface components {
             recursoIds: number[];
             podeAlterar: boolean;
             podeCancelar: boolean;
+            podeIniciar: boolean;
+            podeConcluir: boolean;
+            podeMarcarNaoComparecimento: boolean;
         };
         RestritoRequisicao: {
             restrito?: boolean;
@@ -699,8 +702,10 @@ export interface components {
             materialId: number;
             /** @enum {string} */
             tipo: "RETIRADA" | "DEVOLUCAO";
+            atual: boolean;
             /** Format: int64 */
             registradoPorId: number;
+            registradoPorNome: string;
             /** Format: date-time */
             registradoEm: string;
         };
