@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo|relatorios]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo | relatorios
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -1370,6 +1370,141 @@ async function fluxoTecladoCatalogo(navegador, semente, atores) {
   await ctx.close();
 }
 
+/** Período largo, em torno de hoje: pega a reserva semeada e as criadas pelas outras rodadas. */
+function periodoDoRelatorio() {
+  const f = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  const ini = new Date(); ini.setDate(ini.getDate() - 30);
+  const fim = new Date(); fim.setDate(fim.getDate() + 60);
+  return { inicio: f(ini) + 'T00:00', fim: f(fim) + 'T23:59', inicioApi: f(ini) + 'T00:00:00-03:00', fimApi: f(fim) + 'T23:59:00-03:00' };
+}
+
+/** Relatórios (T10): período obrigatório, filtros no endereço, tabela do servidor, e acesso por perfil. */
+async function fluxoRelatorios(navegador, c, semente, atores, indice) {
+  const { maria, carlos, admin } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const per = periodoDoRelatorio();
+  const doServidor = await api('GET', `/api/relatorios/utilizacao?inicio=${encodeURIComponent(per.inicioApi)}&fim=${encodeURIComponent(per.fimApi)}&tamanho=20&pagina=0`, undefined, carlos.token);
+  conferir(P('api-devolveu-relatorio'), doServidor.status === 200 && doServidor.corpo.total >= 1, String(doServidor.status));
+
+  // ---- Responsável: vazio, período obrigatório, gerar, filtrar
+  let ctx = await contexto(navegador, c, carlos);
+  let page = await ctx.newPage();
+  await page.goto(FRONT + '/relatorios');
+  await page.getByRole('heading', { level: 1, name: 'Relatórios' }).waitFor();
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Relatórios'), await page.title());
+  await page.getByText('Informe o período').waitFor();
+  await foto(page, P('relatorios-1-sem-periodo'));
+  await auditar(page, P('relatorios-1-sem-periodo'));
+  await semRolagemHorizontal(page, P('relatorios-sem-periodo'));
+
+  await page.getByRole('button', { name: 'Gerar relatório' }).click();
+  await page.getByText('Informe o início do período.').waitFor();
+  await page.getByText('Informe o fim do período.').waitFor();
+  conferir(P('sem-periodo-foco-no-primeiro-campo'), await page.getByLabel(/^Início/).evaluate((el) => el === document.activeElement));
+  conferir(P('sem-periodo-nao-consulta'), (await page.getByRole('table').count()) === 0);
+  await foto(page, P('relatorios-2-periodo-obrigatorio'));
+  await auditar(page, P('relatorios-2-periodo-obrigatorio'));
+
+  await page.getByLabel(/^Início/).fill(per.inicio);
+  await page.getByLabel(/^Fim/).fill(per.fim);
+  await page.getByRole('button', { name: 'Gerar relatório' }).click();
+  await page.getByRole('table', { name: 'Utilização por recurso' }).waitFor();
+  conferir(P('contagem-igual-ao-servidor'), await page.getByText(`${doServidor.corpo.total} recursos no relatório`).or(page.getByText('1 recurso no relatório')).first().isVisible());
+  conferir(P('endereco-guarda-os-filtros'), page.url().includes('inicio=') && page.url().includes('fim='), page.url());
+  const linhas = await page.getByRole('row').count();
+  conferir(P('linhas-da-tabela'), linhas - 1 === Math.min(doServidor.corpo.total, 20), String(linhas));
+  conferir(P('sala-101-na-tabela'), (await page.getByRole('row', { name: /Sala 101/ }).count()) === 1);
+  conferir(P('sem-email-na-tela'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  await foto(page, P('relatorios-3-resultado'));
+  await auditar(page, P('relatorios-3-resultado'));
+  await semRolagemHorizontal(page, P('relatorios-resultado'));
+
+  // recarregar mantém o relatório (filtros no endereço)
+  await page.reload();
+  await page.getByRole('table', { name: 'Utilização por recurso' }).waitFor();
+  conferir(P('recarregar-mantem-o-relatorio'), (await page.getByRole('row', { name: /Sala 101/ }).count()) === 1);
+
+  // professor: utilização não se aplica
+  await page.getByLabel('Tipo').selectOption('PROFESSOR');
+  await page.getByRole('button', { name: 'Gerar relatório' }).click();
+  await page.getByRole('table', { name: 'Utilização por recurso' }).waitFor();
+  await page.waitForTimeout(300);
+  const cabecalhos = (await page.getByRole('row').count()) - 1;
+  const naoSeAplica = await page.getByText('Não se aplica').count();
+  conferir(P('professor-utilizacao-nao-se-aplica'), cabecalhos === 0 || naoSeAplica === cabecalhos, `${naoSeAplica}/${cabecalhos}`);
+  await foto(page, P('relatorios-4-professor'));
+  await auditar(page, P('relatorios-4-professor'));
+
+  // sem resultado: um período no passado distante
+  await page.getByLabel(/^Início/).fill('2000-01-01T00:00');
+  await page.getByLabel(/^Fim/).fill('2000-01-02T00:00');
+  await page.getByLabel('Tipo').selectOption('');
+  await page.getByRole('button', { name: 'Gerar relatório' }).click();
+  await page.waitForTimeout(600);
+  await foto(page, P('relatorios-5-periodo-sem-uso'));
+  await auditar(page, P('relatorios-5-periodo-sem-uso'));
+
+  // limpar volta ao estado inicial
+  await page.getByRole('button', { name: 'Limpar filtros' }).click();
+  await page.getByText('Informe o período').waitFor();
+  conferir(P('limpar-volta-ao-vazio'), !page.url().includes('inicio='), page.url());
+  await ctx.close();
+
+  // ---- Administrador também vê; Solicitante recebe acesso negado
+  ctx = await contexto(navegador, c, admin);
+  page = await ctx.newPage();
+  await page.goto(FRONT + '/relatorios');
+  await page.getByRole('heading', { level: 1, name: 'Relatórios' }).waitFor();
+  conferir(P('administrador-ve-a-tela'), true);
+  await ctx.close();
+
+  ctx = await contexto(navegador, c, maria);
+  page = await ctx.newPage();
+  await page.goto(FRONT + '/relatorios');
+  await page.getByRole('heading', { level: 1, name: 'Acesso negado' }).waitFor();
+  conferir(P('solicitante-acesso-negado'), (await page.title()).startsWith('Acesso negado'), await page.title());
+  conferir(P('solicitante-sem-menu-de-relatorios'), (await page.getByRole('link', { name: 'Relatórios' }).count()) === 0);
+  await foto(page, P('relatorios-6-acesso-negado'));
+  await auditar(page, P('relatorios-6-acesso-negado'));
+  await ctx.close();
+}
+
+/** Relatórios só com o teclado: preencher o período digitando, gerar com Enter e chegar à tabela. */
+async function fluxoTecladoRelatorios(navegador, semente, atores) {
+  const c = { id: 'teclado-relatorios', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  const ctx = await contexto(navegador, c, atores.carlos);
+  const page = await ctx.newPage();
+  const passos = [];
+  await page.goto(FRONT + '/relatorios');
+  await page.getByRole('heading', { level: 1, name: 'Relatórios' }).waitFor();
+  const ate = async (nome, limite = 40) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await descrever(page);
+      passos.push({ acao: 'Tab', ...d });
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  await ate('Início');
+  const per = periodoDoRelatorio();
+  const dig = (iso) => iso.slice(8, 10) + iso.slice(5, 7) + iso.slice(0, 4);
+  await page.keyboard.type(dig(per.inicio));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('0000');
+  await ate('Fim');
+  await page.keyboard.type(dig(per.fim));
+  await page.keyboard.press('Tab');
+  await page.keyboard.type('2359');
+  await ate('Gerar relatório');
+  await page.keyboard.press('Enter');
+  await page.getByRole('table', { name: 'Utilização por recurso' }).waitFor();
+  conferir('teclado-relatorios-gerou-com-enter', (await page.getByRole('row', { name: /Sala 101/ }).count()) === 1);
+  passos.push({ acao: 'Enter no Gerar relatório', ...(await descrever(page)) });
+  await auditar(page, 'teclado-relatorios-resultado');
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -1424,6 +1559,21 @@ function resumoDoModo(arquivo) {
     await fluxoTecladoRetiradas(navegador, semente, atores);
     await navegador.close();
     resumoDoModo('relatorio-retiradas.json');
+    return;
+  }
+  if (SO === 'relatorios') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('relatorios', c.id);
+      await fluxoRelatorios(navegador, c, semente, atores, COMBOS.indexOf(c));
+    }
+    console.log('relatorios teclado');
+    await fluxoTecladoRelatorios(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-relatorios.json');
     return;
   }
   if (SO === 'catalogo') {

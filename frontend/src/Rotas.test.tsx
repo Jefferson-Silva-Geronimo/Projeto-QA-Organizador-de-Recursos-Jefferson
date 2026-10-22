@@ -189,6 +189,26 @@ describe('Rotas', () => {
     },
   );
 
+  it.each(['RESPONSAVEL', 'ADMINISTRADOR'] as const)('%s abre os Relatórios de verdade, e não o marcador de lugar', async (perfil) => {
+    entrarComo(perfil);
+
+    montar('/relatorios', async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    expect(await screen.findByText('Informe o período')).toBeInTheDocument();
+    expect(screen.queryByText('Esta tela será construída na etapa 6.C.')).not.toBeInTheDocument();
+  });
+
+  it('Solicitante abrindo os Relatórios vê acesso negado, sem a tela e sem consultar nada', () => {
+    entrarComo('SOLICITANTE');
+    const falso = vi.fn(async () => new Response('[]', { status: 200, headers: { 'Content-Type': 'application/json' } }));
+
+    montar('/relatorios', falso);
+
+    expect(screen.getByRole('alert')).toHaveTextContent(mensagemPara('ACESSO_NEGADO').mensagem);
+    expect(screen.queryByRole('heading', { level: 1, name: 'Relatórios' })).not.toBeInTheDocument();
+    expect(falso).not.toHaveBeenCalled();
+  });
+
   it.each(['SOLICITANTE', 'RESPONSAVEL', 'ADMINISTRADOR'] as const)('%s abre o Catálogo de verdade, e não o marcador de lugar', async (perfil) => {
     entrarComo(perfil);
 

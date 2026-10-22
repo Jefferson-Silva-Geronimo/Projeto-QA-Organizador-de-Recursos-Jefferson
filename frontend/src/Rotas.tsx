@@ -10,6 +10,7 @@ import { PaginaDeEntrada } from '@/paginas/entrada/PaginaDeEntrada';
 import { PaginaDeTela } from '@/paginas/PaginaDeTela';
 import { PaginaDeAlteracao } from '@/paginas/reserva/PaginaDeAlteracao';
 import { PaginaDeNovaReserva } from '@/paginas/reserva/PaginaDeNovaReserva';
+import { PaginaDeRelatorios } from '@/paginas/relatorios/PaginaDeRelatorios';
 import { PaginaDeReservas } from '@/paginas/reservas/PaginaDeReservas';
 import { PaginaDeRetiradas } from '@/paginas/retiradas/PaginaDeRetiradas';
 import { destinoDepoisDoLogin } from '@/rotas/destino';
@@ -24,6 +25,7 @@ function ConteudoDaTela({ tela }: { tela: Tela }) {
   if (tela.id === 'T04') return <PaginaDeReservas />;
   if (tela.id === 'T05') return <PaginaDeAprovacoes />;
   if (tela.id === 'T06') return <PaginaDeRetiradas />;
+  if (tela.id === 'T10') return <PaginaDeRelatorios />;
   if (tela.id === 'T07') return <PaginaDoCatalogo />;
   return <PaginaDeTela tela={tela} />;
 }
