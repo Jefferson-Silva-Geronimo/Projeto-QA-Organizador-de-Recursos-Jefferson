@@ -54,7 +54,7 @@ class JdbcMovimentacaoRepository implements MovimentacaoRepository {
                 .param("reserva", reservaId)
                 .query((rs, n) -> new Movimentacao(rs.getLong("id"), rs.getLong("reserva_id"),
                         rs.getLong("material_id"), TipoMovimentacao.valueOf(rs.getString("tipo")),
-                        rs.getLong("registrado_por_id"),
+                        rs.getLong("registrado_por_id"), null,
                         rs.getObject("registrado_em", OffsetDateTime.class).toInstant()))
                 .list();
     }
