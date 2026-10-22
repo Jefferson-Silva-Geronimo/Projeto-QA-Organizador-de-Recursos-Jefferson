@@ -2,7 +2,7 @@
  * Roteiro de verificação em navegador real (etapa 6.C): front de produção contra a API real, no Chromium.
  * Capturas, auditoria axe e navegação só por teclado. Ver README.md desta pasta.
  *
- * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas]
+ * Uso: node prototipo.cjs <pasta-de-saida> [tudo|visual|teclado|login|reservas|aprovacoes|retiradas|catalogo]
  * Variável opcional: DESLOCAMENTO (dias a partir de hoje para o primeiro dia útil usado; padrão 7). Troque o valor
  * a cada execução no mesmo banco, porque o roteiro cria reservas de verdade e o mesmo horário não fica livre duas vezes.
  */
@@ -14,7 +14,7 @@ const AxeBuilder = require(require.resolve('@axe-core/playwright', { paths: [fro
 
 const LOCAL = path.join(__dirname, 'local'); // credenciais e dados fictícios, ignorados pelo Git
 const SAIDA = process.argv[2];
-const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas
+const SO = process.argv[3] || 'tudo'; // tudo | visual | teclado | login | reservas | aprovacoes | retiradas | catalogo
 fs.mkdirSync(SAIDA, { recursive: true });
 const env = Object.fromEntries(
   fs.readFileSync(path.join(LOCAL, 'proto.env'), 'utf-8').split('\n').filter((l) => l.includes('=')).map((l) => [l.split('=')[0], l.slice(l.indexOf('=') + 1).trim()]),
@@ -1151,6 +1151,225 @@ async function fluxoTecladoRetiradas(navegador, semente, atores) {
   await ctx.close();
 }
 
+/** Catálogo de recursos (T07): abas, restrito, cadastro por tipo, desativar com recusa e acesso por perfil. */
+async function fluxoCatalogo(navegador, c, semente, atores, indice) {
+  const S = String(indice + 1); // cada combinação tem nomes próprios: o catálogo acumula todos
+  const { maria, carlos, admin } = atores;
+  const P = (nome) => `${c.id}-${nome}`;
+  const R = semente.recursos;
+  const futura = await criarReservaPelaApi(maria.token, `Reserva futura ${S}`, c.dia, '10:00', '11:00', [R.sala203]);
+
+  let ctx = await contexto(navegador, c, admin);
+  let page = await ctx.newPage();
+  const pedidos = [];
+  page.on('request', (r) => { pedidos.push(new URL(r.url()).pathname); });
+  await page.goto(FRONT + '/catalogo');
+  await page.getByRole('heading', { level: 1, name: 'Catálogo' }).waitFor();
+  const cartaoDe = (nome) => page.getByRole('article', { name: nome });
+  await cartaoDe('Sala 101').waitFor();
+
+  // ---- lista e abas
+  conferir(P('titulo-da-pagina'), (await page.title()).startsWith('Catálogo'), await page.title());
+  conferir(P('abas'), (await page.getByRole('tab').count()) === 3 && (await page.getByRole('tab', { name: 'Salas' }).getAttribute('aria-selected')) === 'true');
+  conferir(P('quatro-salas-ou-mais'), (await page.getByRole('article').count()) >= 4);
+  conferir(P('aviso-de-restrito'), await page.getByText('Mudar "restrito" vale só para as próximas reservas').isVisible());
+  conferir(P('sem-email-na-tela'), !(await page.locator('#conteudo').innerText()).includes('@'));
+  await foto(page, P('catalogo-1-lista'));
+  await auditar(page, P('catalogo-1-lista'));
+  await semRolagemHorizontal(page, P('catalogo-lista'));
+
+  // ---- restrito: marcar e voltar ao que era
+  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).check();
+  await page.getByText('"Sala 101" agora exige aprovação.').waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('restrito-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  const marcada = await api('GET', `/api/recursos/${R.sala101}`, undefined, admin.token);
+  conferir(P('servidor-marcou-restrito'), marcada.corpo.restrito === true);
+  await foto(page, P('catalogo-2-restrito'));
+  await auditar(page, P('catalogo-2-restrito'));
+  await cartaoDe('Sala 101').getByRole('checkbox', { name: 'Restrito Sala 101' }).uncheck();
+  await page.getByText('"Sala 101" deixou de exigir aprovação.').waitFor();
+
+  // ---- cadastrar sala: validação, diálogo, foco
+  await page.getByRole('button', { name: 'Nova sala' }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('sala-dialogo-foco-entra'), await foiParaODialogo(page));
+  await foto(page, P('catalogo-3-dialogo-sala'));
+  await auditar(page, P('catalogo-3-dialogo-sala'));
+  await semRolagemHorizontal(page, P('catalogo-dialogo-sala'));
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByRole('dialog').getByText('Informe o nome.').waitFor();
+  conferir(P('sala-sem-dados-foco-no-primeiro-campo'), await page.getByRole('dialog').getByLabel(/^Nome/).evaluate((el) => el === document.activeElement));
+  await foto(page, P('catalogo-4-sala-sem-dados'));
+  await auditar(page, P('catalogo-4-sala-sem-dados'));
+  const d = page.getByRole('dialog');
+  await d.getByLabel(/^Nome/).fill(`Sala Nova ${S}`);
+  await d.getByLabel(/^Capacidade/).fill('25');
+  await d.getByLabel(/^Localização/).fill('Bloco D, térreo');
+  await d.getByLabel(/^Tipo de sala/).fill('AULA');
+  await d.getByLabel(/^Abre às/).fill('07:30');
+  await d.getByLabel(/^Fecha às/).fill('21:00');
+  await d.getByRole('checkbox', { name: 'Segunda' }).check();
+  await d.getByRole('checkbox', { name: 'Quarta' }).check();
+  await d.getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByText(`Sala "Sala Nova ${S}" cadastrada.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('sala-cadastrada-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  await cartaoDe(`Sala Nova ${S}`).waitFor();
+  conferir(P('sala-cadastrada-na-lista'), (await cartaoDe(`Sala Nova ${S}`).innerText()).includes('25 pessoas'));
+  await foto(page, P('catalogo-5-sala-cadastrada'));
+  await auditar(page, P('catalogo-5-sala-cadastrada'));
+
+  // ---- professor com vínculo
+  await page.getByRole('tab', { name: 'Professores' }).click();
+  await page.getByRole('button', { name: 'Novo professor' }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByRole('option', { name: /Carlos Lima/ }).waitFor({ state: 'attached' });
+  conferir(P('professor-opcoes-sem-email'), !(await page.getByRole('dialog').innerText()).includes('@'));
+  await foto(page, P('catalogo-6-dialogo-professor'));
+  await auditar(page, P('catalogo-6-dialogo-professor'));
+  await page.getByRole('dialog').getByLabel(/^Nome/).fill(`Prof. Novo ${S}`);
+  await page.getByRole('dialog').getByLabel(/^Competências/).fill('Redes, Segurança');
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByText(`Professor "Prof. Novo ${S}" cadastrado.`).waitFor();
+  await cartaoDe(`Prof. Novo ${S}`).waitFor();
+
+  // ---- material, e patrimônio repetido
+  await page.getByRole('tab', { name: 'Materiais' }).click();
+  await page.getByRole('button', { name: 'Novo material' }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByLabel(/^Nome/).fill(`Cabo HDMI ${S}`);
+  await page.getByRole('dialog').getByLabel(/^Código de patrimônio/).fill(`PAT-NOVO-${S}`);
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByText(`Material "Cabo HDMI ${S}" cadastrado.`).waitFor();
+  await page.getByRole('button', { name: 'Novo material' }).click();
+  await page.getByRole('dialog').waitFor();
+  await page.getByRole('dialog').getByLabel(/^Nome/).fill(`Cabo HDMI repetido ${S}`);
+  await page.getByRole('dialog').getByLabel(/^Código de patrimônio/).fill(`PAT-NOVO-${S}`);
+  await page.getByRole('dialog').getByRole('button', { name: 'Cadastrar' }).click();
+  await page.getByRole('dialog').getByRole('alert').waitFor();
+  conferir(P('patrimonio-repetido-mensagem'), (await page.getByRole('dialog').getByRole('alert').innerText()).includes('código de patrimônio'));
+  conferir(P('patrimonio-repetido-campo-invalido'), (await page.getByRole('dialog').getByLabel(/^Código de patrimônio/).getAttribute('aria-invalid')) === 'true');
+  conferir(P('patrimonio-repetido-foco-na-mensagem'), await focoEmPapel(page, 'alert'));
+  await foto(page, P('catalogo-7-patrimonio-repetido'));
+  await auditar(page, P('catalogo-7-patrimonio-repetido'));
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  const aposEscape = await descrever(page);
+  conferir(P('cadastro-escape-devolve-o-foco'), aposEscape.nome.includes('Novo material'), aposEscape.nome);
+
+  // ---- desativar: recusa com a lista, depois sucesso
+  await page.getByRole('tab', { name: 'Salas' }).click();
+  await cartaoDe('Sala 203').waitFor();
+  await cartaoDe('Sala 203').getByRole('button', { name: 'Desativar Sala 203' }).click();
+  await page.getByRole('dialog').waitFor();
+  conferir(P('desativar-dialogo-foco-entra'), await foiParaODialogo(page));
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();
+  await page.getByRole('dialog').getByRole('alert').waitFor();
+  const afetadas = await page.getByRole('dialog').innerText();
+  conferir(P('desativar-recusa-com-lista'), afetadas.includes('Reservas afetadas:') && afetadas.includes(`nº ${futura.id}`), afetadas.replace(/\s+/g, ' '));
+  conferir(P('desativar-recusa-foco-na-mensagem'), await focoEmPapel(page, 'alert'));
+  await foto(page, P('catalogo-8-desativar-recusado'));
+  await auditar(page, P('catalogo-8-desativar-recusado'));
+  await semRolagemHorizontal(page, P('catalogo-desativar-recusado'));
+  let dentro = true;
+  for (let i = 0; i < 4; i++) { await page.keyboard.press('Tab'); dentro = dentro && (await foiParaODialogo(page)); }
+  conferir(P('desativar-tab-preso'), dentro);
+  await page.keyboard.press('Escape');
+  await page.getByRole('dialog').waitFor({ state: 'detached' });
+  conferir(P('desativar-recusado-sala-continua'), (await cartaoDe('Sala 203').count()) === 1);
+  await cartaoDe(`Sala Nova ${S}`).getByRole('button', { name: `Desativar Sala Nova ${S}` }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();
+  await page.getByText(`Recurso "Sala Nova ${S}" desativado.`).waitFor();
+  await page.waitForTimeout(300);
+  conferir(P('desativar-sucesso-recebe-o-foco'), await focoEmPapel(page, 'status'));
+  conferir(P('desativada-sai-da-lista'), (await cartaoDe(`Sala Nova ${S}`).count()) === 0);
+  const aindaAtivas = await api('GET', '/api/recursos?tipo=SALA', undefined, admin.token);
+  conferir(P('servidor-desativou'), !aindaAtivas.corpo.some((r) => r.nome === `Sala Nova ${S}`));
+  await foto(page, P('catalogo-9-desativada'));
+  await auditar(page, P('catalogo-9-desativada'));
+  conferir(P('usuarios-so-consultados-pelo-cadastro-de-professor'), pedidos.filter((p) => p.startsWith('/api/usuarios')).length >= 1);
+  await ctx.close();
+
+  // ---- Solicitante e Responsável só consultam
+  for (const [nome, ator] of [['solicitante', maria], ['responsavel', carlos]]) {
+    ctx = await contexto(navegador, c, ator);
+    page = await ctx.newPage();
+    await page.goto(FRONT + '/catalogo');
+    await page.getByRole('heading', { level: 1, name: 'Catálogo' }).waitFor();
+    await page.getByRole('article', { name: 'Sala 101' }).waitFor();
+    conferir(P(`${nome}-so-consulta`), (await page.getByRole('button', { name: /^(Nova|Novo|Desativar)/ }).count()) === 0 && (await page.getByRole('checkbox').count()) === 0);
+    conferir(P(`${nome}-sem-aviso-de-restrito`), (await page.getByText('Mudar "restrito"').count()) === 0);
+    await foto(page, P(`catalogo-10-${nome}`));
+    await auditar(page, P(`catalogo-10-${nome}`));
+    await ctx.close();
+  }
+}
+
+/** Só teclado no Catálogo: abas por setas, cadastro e a caixa Restrito. */
+async function fluxoTecladoCatalogo(navegador, semente, atores) {
+  const c = { id: 'teclado-catalogo', largura: 1280, altura: 800, esquema: 'light', dia: DIAS[4] };
+  const ctx = await contexto(navegador, c, atores.admin);
+  const page = await ctx.newPage();
+  const passos = [];
+  const registrar = async (acao) => { const d = await descrever(page); passos.push({ acao, ...d }); return d; };
+  const ate = async (nome, limite = 200) => {
+    for (let i = 0; i < limite; i++) {
+      await page.keyboard.press('Tab');
+      const d = await registrar('Tab');
+      if (d.nome.includes(nome)) return d;
+    }
+    throw new Error('Teclado do catálogo: não cheguei em "' + nome + '" em ' + limite + ' Tab');
+  };
+  try {
+    await page.goto(FRONT + '/catalogo');
+    await page.getByRole('article', { name: 'Sala 101' }).waitFor();
+    await ate('Pular para o conteúdo');
+    await page.keyboard.press('Enter');
+    await registrar('Enter (pular para o conteúdo)');
+
+    const naAba = await ate('Salas');
+    conferir('teclado-catalogo-foco-na-aba', naAba.nome.includes('Salas'), naAba.nome);
+    await foto(page, 'teclado-catalogo-1-foco-na-aba');
+    await page.keyboard.press('ArrowRight');
+    await page.getByRole('article', { name: 'Profa. Helena Costa' }).waitFor().catch(() => {});
+    const aposSeta = await registrar('Seta para a direita');
+    conferir('teclado-catalogo-seta-troca-de-aba', aposSeta.nome.includes('Professores') && (await page.getByRole('tab', { name: 'Professores' }).getAttribute('aria-selected')) === 'true', aposSeta.nome);
+    await page.keyboard.press('Home');
+    const aposHome = await registrar('Home');
+    conferir('teclado-catalogo-home-volta-a-primeira', aposHome.nome.includes('Salas'), aposHome.nome);
+
+    await ate('Nova sala');
+    await page.keyboard.press('Enter');
+    await page.getByRole('dialog').waitFor();
+    const noDialogo = await registrar('Enter em Nova sala (abre o diálogo)');
+    conferir('teclado-catalogo-foco-entra-no-dialogo', await foiParaODialogo(page), noDialogo.nome);
+    await foto(page, 'teclado-catalogo-2-dialogo');
+    await page.keyboard.press('Escape');
+    await page.getByRole('dialog').waitFor({ state: 'detached' });
+    const aposEscape = await registrar('Escape (fecha)');
+    conferir('teclado-catalogo-escape-devolve-o-foco', aposEscape.nome.includes('Nova sala'), aposEscape.nome);
+
+    await ate('Restrito Sala 101');
+    await page.keyboard.press('Space');
+    await page.getByText('"Sala 101" agora exige aprovação.').waitFor();
+    await page.waitForTimeout(300);
+    const aposMarcar = await registrar('Espaço em Restrito Sala 101');
+    conferir('teclado-catalogo-foco-no-resultado', await focoEmPapel(page, 'status'), aposMarcar.nome);
+    await ate('Restrito Sala 101');
+    await page.keyboard.press('Space');
+    await page.getByText('"Sala 101" deixou de exigir aprovação.').waitFor();
+    await foto(page, 'teclado-catalogo-3-restrito');
+  } catch (e) {
+    await page.screenshot({ path: path.join(SAIDA, 'teclado-catalogo-FALHA.png') });
+    console.log('PASSOS ATE A FALHA:', passos.map((p) => p.acao + ' -> ' + p.nome).join(' | '));
+    console.log('URL:', page.url());
+    throw e;
+  }
+  RELATORIO.foco.push(...passos);
+  await ctx.close();
+}
+
 function resumoDoModo(arquivo) {
   fs.writeFileSync(path.join(SAIDA, arquivo), JSON.stringify(RELATORIO, null, 1));
   const v = RELATORIO.axe.filter((a) => a.violacoes.length);
@@ -1205,6 +1424,21 @@ function resumoDoModo(arquivo) {
     await fluxoTecladoRetiradas(navegador, semente, atores);
     await navegador.close();
     resumoDoModo('relatorio-retiradas.json');
+    return;
+  }
+  if (SO === 'catalogo') {
+    const maria = await entrar(semente.usuarios.solicitante.email, env.SOL_SENHA);
+    const carlos = await entrar(semente.usuarios.responsavel.email, env.RESP_SENHA);
+    const admin = await entrar(env.ADMIN_EMAIL, env.ADMIN_SENHA);
+    const atores = { maria, carlos, admin };
+    for (const c of COMBOS) {
+      console.log('catalogo', c.id);
+      await fluxoCatalogo(navegador, c, semente, atores, COMBOS.indexOf(c));
+    }
+    console.log('catalogo teclado');
+    await fluxoTecladoCatalogo(navegador, semente, atores);
+    await navegador.close();
+    resumoDoModo('relatorio-catalogo.json');
     return;
   }
   if (SO === 'aprovacoes') {
