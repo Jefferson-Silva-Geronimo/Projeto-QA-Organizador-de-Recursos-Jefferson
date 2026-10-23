@@ -347,6 +347,14 @@ Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão 
 | --- | --- | --- |
 | F6-19 | **O `required` de `NovoBloqueioRequisicao` ganha `motivo` (fica `recursoId`, `inicio`, `fim` e `motivo`) e `LevantamentoRequisicao` ganha `required: [motivo]`.** Mudança **só de documentação**, como a F6-10: o comportamento HTTP não muda, e o código de erro continua `MOTIVO_OBRIGATORIO`. Fica em `ObrigatoriedadeDasRequisicoesConfig.java`, num ponto só. `ContratoDeRequisicoesApiIT` confere o contrato (CT-166) e que o servidor continua recusando sem motivo, sem gravar nada (CT-167). `openapi.json` regenerado: o CT-115 falhou de propósito e voltou a passar sem alterar o teste; o CT-114, o CT-134 e o CT-135 não mudaram. Diff do contrato verificado: só os dois `required`. Front: cliente regenerado (2 linhas: `motivo` deixa de ser opcional nos dois esquemas), 910 testes, lint, tipos e build sem tocar em teste nem em tela | Marcar o campo com `@NotBlank` (Bean Validation): mudaria o código de erro de `MOTIVO_OBRIGATORIO` para `VALIDACAO_FALHOU`, ou seja, o comportamento, e quebraria o mapa de erros |
 
+### F6-20. A porta de saída da Fase 6 vale para os RF com interação humana (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, resolvendo a ressalva do fechamento da Fase 6: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela, e a porta de saída diz "Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil" (plano mestre, seção 10, porta de saída da Fase 6).
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-20 | **A frase da porta de saída vale para os RF com interação humana.** Fundamento: o **Anexo A do plano mestre** (cobertura dos 14 requisitos funcionais) já diz "Sem tela própria" para RF-11 (teste principal INT-01 a INT-06) e para RF-14 (teste principal: contrato OpenAPI). **Nenhuma tela nova é criada.** É uma **interpretação declarada**: entra em `fase-7-pendencias.md` e no relatório final como tal, não como cumprimento literal da frase. RF-11 está provado pelos testes INT-01 a INT-06 e RF-14 pelo OpenAPI e pelos testes de contrato; a prova, com os arquivos e a execução na CI, está em [relatorio-sessao-fase-6-fechamento.md](relatorio-sessao-fase-6-fechamento.md), seção 1.1 | Criar uma tela de notificações simuladas e um link para o OpenAPI só para cumprir a frase: aumentaria o escopo sem ganho de prova, e o próprio Anexo A não a pede |
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
