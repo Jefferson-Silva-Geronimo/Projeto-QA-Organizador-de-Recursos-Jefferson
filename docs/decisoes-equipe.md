@@ -355,6 +355,26 @@ Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão 
 | --- | --- | --- |
 | F6-20 | **A frase da porta de saída vale para os RF com interação humana.** Fundamento: o **Anexo A do plano mestre** (cobertura dos 14 requisitos funcionais) já diz "Sem tela própria" para RF-11 (teste principal INT-01 a INT-06) e para RF-14 (teste principal: contrato OpenAPI). **Nenhuma tela nova é criada.** É uma **interpretação declarada**: entra em `fase-7-pendencias.md` e no relatório final como tal, não como cumprimento literal da frase. RF-11 está provado pelos testes INT-01 a INT-06 e RF-14 pelo OpenAPI e pelos testes de contrato; a prova, com os arquivos e a execução na CI, está em [relatorio-sessao-fase-6-fechamento.md](relatorio-sessao-fase-6-fechamento.md), seção 1.1 | Criar uma tela de notificações simuladas e um link para o OpenAPI só para cumprir a frase: aumentaria o escopo sem ganho de prova, e o próprio Anexo A não a pede |
 
+### F6-21. O job `e2e` passa a ser check obrigatório na `main` (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, depois de três execuções verdes seguidas do job `e2e` em pull requests reais, do commit final de cada um: #54 `39880389131`, #55 `39881122909` e #56 `39881853920` (e antes #52 `39872935422` e #53). Combinado de 18/10/2026: o `e2e` só vira obrigatório depois de visto verde em PR real, como o `frontend`.
+
+| ID | Decisão | Como foi aplicado |
+| --- | --- | --- |
+| F6-21 | **`test`, `frontend` e `e2e` são os checks obrigatórios da `main`.** O `e2e` entra ao lado dos dois que já valiam; o resto da proteção não muda | A proteção foi lida antes (`gh api repos/<dono>/<repositório>/branches/main/protection`), o `e2e` foi acrescentado com `POST .../protection/required_status_checks/contexts` (que só mexe nos contextos) e a proteção foi lida de volta. **Diferença entre o antes e o depois: só `required_status_checks.contexts` e `required_status_checks.checks`, que ganharam `e2e`.** |
+
+| Item da proteção da `main` | Antes | Depois |
+| --- | --- | --- |
+| Checks obrigatórios | `test`, `frontend` | **`test`, `frontend`, `e2e`** |
+| Branch atualizada antes de mesclar (`strict`) | sim | sim |
+| Aprovações exigidas em pull request | 0 (o PR é obrigatório) | 0 |
+| Vale para administrador (`enforce_admins`) | sim | sim |
+| Force push | não | não |
+| Exclusão da branch | não | não |
+| Histórico linear, conversas resolvidas, assinatura, bloqueio de criação | não | não |
+
+Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da proteção (nunca estiveram); a prática combinada de só mesclar com eles verdes continua valendo por regra de trabalho, não por proteção.
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |

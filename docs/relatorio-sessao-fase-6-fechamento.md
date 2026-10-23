@@ -55,7 +55,7 @@ A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-13
 
 - **R-25** (`NotificacaoApiIT.int01ECt103`, causa desconhecida) segue aberto como risco aceito para o relatório final.
 - **RNF-08b** não é atendido (p95 de 568 a 886 ms contra 300 ms, hipótese não validada pelo professor), herdado da Fase 5.
-- **O job `e2e` ainda não é obrigatório na `main`.** Os passos estão em [testes/e2e/README.md](testes/e2e/README.md); dependem do "pode" do responsável pelo repositório.
+- **O job `e2e` é check obrigatório na `main` desde 22/10/2026 (F6-21)**, depois de três execuções verdes seguidas em PRs reais; passos e runs em [testes/e2e/README.md](testes/e2e/README.md).
 - **E2E só em Chromium**, e a suíte não é repetível no mesmo banco (a CI sempre sobe um novo).
 - **Contraste:** o axe deixa verificações `color-contrast` incompletas em diálogos, no aviso e na barra inferior fixa (RTM E-17 a E-21); o contraste dos pares de cores foi medido à mão e coberto por teste de tokens.
 - **`BLOQUEIO_COM_RESERVA_EM_USO` e a paginação do relatório** não foram exercidos no navegador (só em teste de componente e integração).
@@ -72,7 +72,7 @@ A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-13
 
 ## 6. Ações pendentes
 
-1. **Você decide:** tornar o `e2e` obrigatório na `main`, depois de três execuções verdes seguidas em pull requests reais (a leitura de RF-11 e RF-14 já foi decidida: F6-20).
+1. ~~Tornar o `e2e` obrigatório na `main`~~ Feito em 22/10/2026 (F6-21); a leitura de RF-11 e RF-14 já foi decidida (F6-20).
 2. ~~Marcar o motivo como obrigatório no OpenAPI de bloqueios~~ Feito pela F6-19.
 3. Fase 7: relatório final só com números que têm origem, R-25 como risco aceito, RNF-08b não atendido, SEC-03 e SEC-04, dúvidas ao professor, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud e ADR-015 citando o plano mestre sem link.
 4. Limpeza: `mvnw.cmd` aparece modificado só por fim de linha e não deve ser commitado.
