@@ -26,7 +26,7 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 | RF-11, INT-06 | Token devolvido no corpo do erro: 0 ocorrências na resposta e no log | `NotificacaoApiIT.int06_...` | `NotificacaoApiIT` |
 | RF-14 | O contrato publicado existe, tem perfis, parâmetros, respostas e códigos de erro (CT-114), corresponde ao comportamento (CT-115) e não vaza segredo (CT-116) | `DocumentacaoApiIT` e `docs/api/openapi.json` | `DocumentacaoApiIT`: 5 testes, 0 falhas |
 | RF-14 | Campos obrigatórios das respostas conferem com respostas reais (CT-134 e CT-135, F6-10) | `ContratoObrigatoriosApiIT` | 2 testes, 0 falhas |
-| RF-14 | Motivo do bloqueio obrigatório no contrato e recusado pelo servidor (CT-166 e CT-167, F6-19) | `ContratoDeRequisicoesApiIT` | entra na CI do PR #54 |
+| RF-14 | Motivo do bloqueio obrigatório no contrato e recusado pelo servidor (CT-166 e CT-167, F6-19) | `ContratoDeRequisicoesApiIT` | CI do PR #54, run `39879651094`: 2 testes, 0 falhas (job `test`: 659 testes, 0 falhas) |
 
 A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-134, CT-135, CT-166 e CT-167. O front consome o contrato por tipos gerados (`npm run gerar:api`), e o job `frontend` falha se o cliente divergir do `openapi.json`.
 
@@ -65,7 +65,7 @@ A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-13
 ## 5. Suposições, lacunas e dúvidas abertas
 
 - **Interpretação declarada (F6-20):** a porta de saída vale para os RF com interação humana, conforme o Anexo A do plano mestre ("Sem tela própria" para RF-11 e RF-14). Nenhuma tela foi criada. Entra no relatório final como interpretação, não como cumprimento literal.
-- **Contrato diz motivo opcional, servidor exige** ao criar e ao levantar bloqueio (`MOTIVO_OBRIGATORIO`): a tela pede o motivo; falta marcar `required` no OpenAPI (muda `openapi.json` e o cliente; conferir CT-114 e CT-115).
+- **Contrato dizia motivo opcional, servidor exige** ao criar e ao levantar bloqueio (`MOTIVO_OBRIGATORIO`): **resolvido pela F6-19** (OpenAPI com `required`, CT-166 e CT-167, cliente regenerado); a tela já pedia o motivo.
 - **Mínimo de Responsáveis** só vale na desativação (D14), não na troca de perfil: o Administrador pode deixar o sistema com um Responsável só. Pergunta ao professor em [perguntas-professor.md](perguntas-professor.md).
 - Suposições da tela: tamanho de página do relatório = 20 (D4); perfil do cadastro de usuário começa em Solicitante; tabela de 18 ações na grafia da pessoa (T09), que precisa acompanhar ação nova do back end.
 - A lista completa e viva está em [fase-7-pendencias.md](fase-7-pendencias.md).
@@ -73,7 +73,7 @@ A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-13
 ## 6. Ações pendentes
 
 1. **Você decide:** tornar o `e2e` obrigatório na `main`, depois de três execuções verdes seguidas em pull requests reais (a leitura de RF-11 e RF-14 já foi decidida: F6-20).
-2. Marcar o motivo como obrigatório no OpenAPI de bloqueios (pequena mudança de back end, em PR próprio).
+2. ~~Marcar o motivo como obrigatório no OpenAPI de bloqueios~~ Feito pela F6-19.
 3. Fase 7: relatório final só com números que têm origem, R-25 como risco aceito, RNF-08b não atendido, SEC-03 e SEC-04, dúvidas ao professor, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud e ADR-015 citando o plano mestre sem link.
 4. Limpeza: `mvnw.cmd` aparece modificado só por fim de linha e não deve ser commitado.
 

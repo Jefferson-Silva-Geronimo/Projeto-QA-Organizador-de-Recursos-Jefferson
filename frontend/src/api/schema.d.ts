@@ -665,7 +665,7 @@ export interface components {
             inicio: string;
             /** Format: date-time */
             fim: string;
-            motivo?: string;
+            motivo: string;
             reservasConfirmadas?: number[];
         };
         BloqueioResposta: {
@@ -682,7 +682,7 @@ export interface components {
             reservasCanceladas: number[];
         };
         LevantamentoRequisicao: {
-            motivo?: string;
+            motivo: string;
         };
         LoginRequisicao: {
             email: string;

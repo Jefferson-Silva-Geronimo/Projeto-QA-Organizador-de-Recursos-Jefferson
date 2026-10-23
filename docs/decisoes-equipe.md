@@ -339,6 +339,14 @@ Os testes da T07 e da T11 cobrem a recusa com a lista de reservas afetadas (test
 
 Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão já aprovado (T04, T05 e T06) e permissões no molde da F6-14, da F6-15 e da F6-16 não são perguntados, e entram no resumo do PR; só se pergunta o que for novo ou conflitar com a especificação ou o plano mestre; enquanto a CI de um PR roda, a próxima tela começa em branch novo; nas telas simples (Usuários e Catálogo) o navegador real roda só o modo da própria tela, com axe nos dois temas e tamanhos, teclado e rolagem, e o PR declara o que deixou de rodar.
 
+### F6-19. O contrato declara o motivo do bloqueio como obrigatório (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, ao receber o achado da T08: o servidor exige o motivo ao criar e ao levantar um bloqueio (`MOTIVO_OBRIGATORIO`, RN-22 e D15), mas o OpenAPI o declarava opcional, e o cliente gerado aceitava um corpo que o servidor recusa com 400. Pedido: corrigir agora, em PR próprio de back end, no molde da F6-10.
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-19 | **O `required` de `NovoBloqueioRequisicao` ganha `motivo` (fica `recursoId`, `inicio`, `fim` e `motivo`) e `LevantamentoRequisicao` ganha `required: [motivo]`.** Mudança **só de documentação**, como a F6-10: o comportamento HTTP não muda, e o código de erro continua `MOTIVO_OBRIGATORIO`. Fica em `ObrigatoriedadeDasRequisicoesConfig.java`, num ponto só. `ContratoDeRequisicoesApiIT` confere o contrato (CT-166) e que o servidor continua recusando sem motivo, sem gravar nada (CT-167). `openapi.json` regenerado: o CT-115 falhou de propósito e voltou a passar sem alterar o teste; o CT-114, o CT-134 e o CT-135 não mudaram. Diff do contrato verificado: só os dois `required`. Front: cliente regenerado (2 linhas: `motivo` deixa de ser opcional nos dois esquemas), 910 testes, lint, tipos e build sem tocar em teste nem em tela | Marcar o campo com `@NotBlank` (Bean Validation): mudaria o código de erro de `MOTIVO_OBRIGATORIO` para `VALIDACAO_FALHOU`, ou seja, o comportamento, e quebraria o mapa de erros |
+
 ### F6-20. A porta de saída da Fase 6 vale para os RF com interação humana (22/10/2026)
 
 **Decisão da equipe (Jefferson), 22/10/2026**, resolvendo a ressalva do fechamento da Fase 6: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela, e a porta de saída diz "Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil" (plano mestre, seção 10, porta de saída da Fase 6).
