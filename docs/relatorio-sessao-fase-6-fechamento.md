@@ -49,7 +49,7 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 ## 5. Suposições, lacunas e dúvidas abertas
 
 - **Decisão sua pendente (porta de saída):** ler "RF 01 a 14 acessíveis pela interface" como valendo só para os requisitos que têm interação humana (RF-11 e RF-14 não têm), ou pedir uma tela (por exemplo, uma lista das notificações simuladas e um link para o OpenAPI). Escolhi não inventar tela e registrar a lacuna.
-- **Contrato diz motivo opcional, servidor exige** ao criar e ao levantar bloqueio (`MOTIVO_OBRIGATORIO`): a tela pede o motivo; falta marcar `required` no OpenAPI (muda `openapi.json` e o cliente; conferir CT-114 e CT-115).
+- **Contrato dizia motivo opcional, servidor exige** ao criar e ao levantar bloqueio (`MOTIVO_OBRIGATORIO`): **resolvido pela F6-19** (OpenAPI com `required`, CT-166 e CT-167, cliente regenerado); a tela já pedia o motivo.
 - **Mínimo de Responsáveis** só vale na desativação (D14), não na troca de perfil: o Administrador pode deixar o sistema com um Responsável só. Pergunta ao professor em [perguntas-professor.md](perguntas-professor.md).
 - Suposições da tela: tamanho de página do relatório = 20 (D4); perfil do cadastro de usuário começa em Solicitante; tabela de 18 ações na grafia da pessoa (T09), que precisa acompanhar ação nova do back end.
 - A lista completa e viva está em [fase-7-pendencias.md](fase-7-pendencias.md).
@@ -57,7 +57,7 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 ## 6. Ações pendentes
 
 1. **Você decide:** tornar o `e2e` obrigatório na `main` (depois de algumas execuções verdes) e a leitura de RF-11 e RF-14 acima.
-2. Marcar o motivo como obrigatório no OpenAPI de bloqueios (pequena mudança de back end, em PR próprio).
+2. ~~Marcar o motivo como obrigatório no OpenAPI de bloqueios~~ Feito pela F6-19.
 3. Fase 7: relatório final só com números que têm origem, R-25 como risco aceito, RNF-08b não atendido, SEC-03 e SEC-04, dúvidas ao professor, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud e ADR-015 citando o plano mestre sem link.
 4. Limpeza: `mvnw.cmd` aparece modificado só por fim de linha e não deve ser commitado.
 

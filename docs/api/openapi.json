@@ -2119,7 +2119,7 @@
             }
           }
         },
-        "required" : [ "fim", "inicio", "recursoId" ]
+        "required" : [ "fim", "inicio", "motivo", "recursoId" ]
       },
       "BloqueioResposta" : {
         "type" : "object",
@@ -2164,7 +2164,8 @@
             "maxLength" : 1000,
             "minLength" : 0
           }
-        }
+        },
+        "required" : [ "motivo" ]
       },
       "LoginRequisicao" : {
         "type" : "object",

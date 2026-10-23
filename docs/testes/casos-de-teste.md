@@ -270,6 +270,8 @@ Testes de `frontend/src`. O nome do arquivo está na coluna de passos; o resulta
 | CT-163 | Responsável aprova recurso restrito (E2E) | E | A Solicitante pede o laboratório (restrito) e vê "enviada para aprovação"; o Responsável abre Aprovações, aprova com a confirmação e vê "aprovada"; a Solicitante vê a reserva Aprovada (`jornadas.spec.ts`) | O ciclo SOLICITADA para APROVADA acontece de verdade, por pessoas diferentes | RF-07, RN-16, F6-11 |
 | CT-164 | Solicitante não vê a ação de aprovar (E2E) | E | Com um pedido do laboratório aguardando decisão, a Solicitante não tem o item Aprovações no menu, vê o pedido como Solicitada sem Aprovar nem Rejeitar, e abrir /aprovacoes mostra "Acesso negado" (`jornadas.spec.ts`) | A ação de aprovar não é oferecida a quem não tem perfil | RF-07, RF-13, ADR-004, F6-11 |
 | CT-165 | Fluxo principal em celular, 360 por 640 (E2E) | E | No viewport 360 por 640, a Solicitante busca e reserva uma sala e a encontra na lista; a página não rola na horizontal antes nem depois (`jornadas.spec.ts`) | Jornada completa utilizável em celular | RF-13, F6-07, F6-11 |
+| CT-166 | Motivo do bloqueio obrigatório no contrato | A | Ler `/v3/api-docs`: o `required` de `NovoBloqueioRequisicao` e de `LevantamentoRequisicao` (`ContratoDeRequisicoesApiIT`) | `NovoBloqueioRequisicao` exige `recursoId`, `inicio`, `fim` e `motivo`, e `LevantamentoRequisicao` exige `motivo` | RF-08, RF-14, R-15, F6-19 |
+| CT-167 | Servidor recusa sem motivo como o contrato diz | A | Criar bloqueio sem `motivo`; levantar com corpo `{}` e sem corpo (`ContratoDeRequisicoesApiIT`) | 400 `MOTIVO_OBRIGATORIO` nos três casos, nada gravado na criação e o bloqueio continua ativo | RF-08, RF-14, RN-22, D15, F6-19 |
 
 ## 4. Cobertura por regra crítica
 

@@ -30,8 +30,8 @@ export function useCriarBloqueio() {
 }
 
 /**
- * Levanta um bloqueio ativo. Não reativa as reservas que ele cancelou. O servidor exige o motivo (`MOTIVO_OBRIGATORIO`),
- * embora o contrato o marque como opcional (lacuna registrada nas pendências).
+ * Levanta um bloqueio ativo. Não reativa as reservas que ele cancelou. O motivo é obrigatório (D15): o servidor recusa sem
+ * ele (`MOTIVO_OBRIGATORIO`) e o contrato o declara como obrigatório (F6-19).
  */
 export function useLevantarBloqueio(id: number) {
   const { cliente } = useSessao();
