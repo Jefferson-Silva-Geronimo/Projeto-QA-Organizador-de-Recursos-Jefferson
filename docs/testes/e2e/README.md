@@ -40,16 +40,11 @@ Se a API demorar a subir, espere `http://localhost:8080/actuator/health` respond
 
 O job `e2e` gera as credenciais fictícias na hora (`openssl rand`, mascaradas no log), sobe o compose, espera a API, instala o Chromium e roda `npm run e2e`. O **relatório HTML e os traces** (de todos os testes, passando ou falhando) e os **logs dos serviços** sobem como artifacts com `if: always()` (`relatorio-e2e` e `logs-e2e`, sete dias). Para ver um trace: baixe o artifact e rode `npx playwright show-trace <arquivo>.zip`, ou abra `playwright-report/index.html`.
 
-## Passos para tornar o `e2e` obrigatório na `main`
+## O `e2e` é check obrigatório na `main`
 
-O check `frontend` já é obrigatório. O `e2e` ainda **não** é: só depois do "pode" do responsável pelo repositório, e depois de algumas execuções verdes seguidas.
+Desde **22/10/2026** (F6-21, [decisoes-equipe.md](../../decisoes-equipe.md)) a proteção da `main` exige `test`, `frontend` e `e2e`, depois de três execuções verdes seguidas em pull requests reais: #54 `39880389131`, #55 `39881122909` e #56 `39881853920` (e antes #52 `39872935422` e #53). O resto da proteção não mudou: pull request obrigatório, 0 aprovações, valendo para administrador, `strict` (branch atualizada), sem force push e sem exclusão da branch.
 
-1. No GitHub, abra **Settings → Branches** (ou **Rules → Rulesets**) e edite a regra da `main`.
-2. Em **Require status checks to pass before merging**, procure o check **`e2e`** (o nome do job; ele só aparece na busca depois de ter rodado ao menos uma vez) e adicione-o, ao lado de `test`, `frontend`, `segredos` e do SonarCloud.
-3. Mantenha marcada **Require branches to be up to date before merging**, para que o `e2e` rode sobre a `main` mais recente.
-4. Salve. Teste abrindo um pull request: o botão de mesclar deve ficar bloqueado enquanto o `e2e` não estiver verde.
-
-Pela linha de comando, com permissão de administração do repositório (não faça isto sem o "pode"): leia as regras atuais com `gh api repos/<dono>/<repositório>/branches/main/protection` e acrescente `e2e` a `required_status_checks.contexts` com `PATCH .../required_status_checks`.
+Como foi aplicado (e como reaplicar, só com autorização do responsável pelo repositório): leia a proteção com `gh api repos/<dono>/<repositório>/branches/main/protection`, acrescente o contexto com `POST repos/<dono>/<repositório>/branches/main/protection/required_status_checks/contexts` (corpo `["e2e"]`, que só altera os contextos) e leia de novo para conferir que só `required_status_checks.contexts` e `.checks` mudaram. Pela interface: **Settings → Branches**, regra da `main`, **Require status checks to pass before merging**, adicione `e2e` e mantenha **Require branches to be up to date before merging**.
 
 ## Limites conhecidos
 
