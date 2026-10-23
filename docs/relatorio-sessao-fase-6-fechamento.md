@@ -8,11 +8,27 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 
 | Item | Situação | Evidência |
 | --- | --- | --- |
-| Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil | **Atingido com uma ressalva que precisa de decisão** | RF-01 a RF-10, RF-12 e RF-13 têm tela (mapa de telas, T01 a T11). **RF-11 (notificação simulada) e RF-14 (documentação) não têm tela:** o primeiro é do sistema para um provedor, e o segundo é o OpenAPI e os fluxos. O mapa de telas aprovado também não traz tela para eles; não inventei uma. Ver seção 5 |
+| Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil | **Atingido, pela interpretação declarada F6-20** | RF-01 a RF-10, RF-12 e RF-13 têm tela (mapa de telas, T01 a T11). **RF-11 (notificação simulada) e RF-14 (documentação) não têm tela**, e o **Anexo A do plano mestre** os marca como "Sem tela própria". A equipe decidiu em 22/10/2026 (F6-20) que a frase vale para os RF com interação humana; **não é cumprimento literal da frase**, e o relatório final deve dizer isso. A prova de RF-11 e de RF-14 está na seção 1.1 |
 | Cada código de erro estável tem mensagem compreensível testada | **Atingido** | [mensagens.test.ts](../frontend/src/erros/mensagens.test.ts): os 34 códigos da documentação, os mesmos 34 de `CodigoErro.java`, cada um com mensagem e ação; as telas testam as recusas que mostram |
 | Os testes E2E passam na CI, incluindo o conflito e o viewport de celular | **Atingido** | Job `e2e`, run `39872935422`: 5 de 5, entre eles CT-162 (conflito) e CT-165 (360 por 640). Relatório e traces publicados como artifact |
 | Nenhuma regra de negócio foi duplicada no front end | **Atingido por construção, sem auditoria formal** | O front só mostra ou esconde o que o servidor decide: campos `pode...` (F6-14 a F6-16) e recusas pelo código estável (ADR-004). Sustentado pelos testes de componente (servidor simulado na fronteira) e pelos roteiros em navegador real; **não houve revisão independente**, e recomendo uma revisão assistida na Fase 7 |
 | A linha de RF-13 na RTM aponta para testes de componente e E2E com execução | **Atingido** | [RTM.md](../RTM.md), RF-13 `testado`, execuções E-4 a E-22 |
+
+### 1.1 Onde RF-11 e RF-14 estão provados (sem tela, por decisão F6-20)
+
+| RF | Prova | Arquivo e casos | Execução (CI do PR #52, run `39872935422`, job `test`: 657 testes, 0 falhas) |
+| --- | --- | --- | --- |
+| RF-11, INT-01 | Resposta 200 do provedor: notificação ENVIADA, corpo só com o contrato mínimo | `NotificacaoApiIT.int01ECt103_...` (CT-103) | `NotificacaoApiIT`: 9 testes, 0 falhas |
+| RF-11, INT-02 | Resposta 404: falha definitiva, sem repetir a chamada | `NotificacaoApiIT.int02_...` | mesma classe |
+| RF-11, INT-03 | Resposta 500: notificação PENDENTE e a reserva continua válida | `NotificacaoApiIT.int03_...` | mesma classe |
+| RF-11, INT-04 | Resposta mais lenta que o limite: interrompe e marca pendente | `NotificacaoTempoLimiteApiIT.int04_...` (movido do `NotificacaoApiIT` pelo R-26) | `NotificacaoTempoLimiteApiIT`: 1 teste, 0 falhas |
+| RF-11, INT-05 | Corpo inválido do provedor: descartado sem quebrar o envio | `NotificacaoApiIT.int05_...` | `NotificacaoApiIT` |
+| RF-11, INT-06 | Token devolvido no corpo do erro: 0 ocorrências na resposta e no log | `NotificacaoApiIT.int06_...` | `NotificacaoApiIT` |
+| RF-14 | O contrato publicado existe, tem perfis, parâmetros, respostas e códigos de erro (CT-114), corresponde ao comportamento (CT-115) e não vaza segredo (CT-116) | `DocumentacaoApiIT` e `docs/api/openapi.json` | `DocumentacaoApiIT`: 5 testes, 0 falhas |
+| RF-14 | Campos obrigatórios das respostas conferem com respostas reais (CT-134 e CT-135, F6-10) | `ContratoObrigatoriosApiIT` | 2 testes, 0 falhas |
+| RF-14 | Motivo do bloqueio obrigatório no contrato e recusado pelo servidor (CT-166 e CT-167, F6-19) | `ContratoDeRequisicoesApiIT` | entra na CI do PR #54 |
+
+A [RTM](../RTM.md) liga RF-11 a INT-01 a INT-06 e RF-14 a CT-114 a CT-116, CT-134, CT-135, CT-166 e CT-167. O front consome o contrato por tipos gerados (`npm run gerar:api`), e o job `frontend` falha se o cliente divergir do `openapi.json`.
 
 ## 2. O que foi feito
 
@@ -48,7 +64,7 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 
 ## 5. Suposições, lacunas e dúvidas abertas
 
-- **Decisão sua pendente (porta de saída):** ler "RF 01 a 14 acessíveis pela interface" como valendo só para os requisitos que têm interação humana (RF-11 e RF-14 não têm), ou pedir uma tela (por exemplo, uma lista das notificações simuladas e um link para o OpenAPI). Escolhi não inventar tela e registrar a lacuna.
+- **Interpretação declarada (F6-20):** a porta de saída vale para os RF com interação humana, conforme o Anexo A do plano mestre ("Sem tela própria" para RF-11 e RF-14). Nenhuma tela foi criada. Entra no relatório final como interpretação, não como cumprimento literal.
 - **Contrato diz motivo opcional, servidor exige** ao criar e ao levantar bloqueio (`MOTIVO_OBRIGATORIO`): a tela pede o motivo; falta marcar `required` no OpenAPI (muda `openapi.json` e o cliente; conferir CT-114 e CT-115).
 - **Mínimo de Responsáveis** só vale na desativação (D14), não na troca de perfil: o Administrador pode deixar o sistema com um Responsável só. Pergunta ao professor em [perguntas-professor.md](perguntas-professor.md).
 - Suposições da tela: tamanho de página do relatório = 20 (D4); perfil do cadastro de usuário começa em Solicitante; tabela de 18 ações na grafia da pessoa (T09), que precisa acompanhar ação nova do back end.
@@ -56,7 +72,7 @@ Meta não atingida consta como não atingida. Estado do repositório: `main` com
 
 ## 6. Ações pendentes
 
-1. **Você decide:** tornar o `e2e` obrigatório na `main` (depois de algumas execuções verdes) e a leitura de RF-11 e RF-14 acima.
+1. **Você decide:** tornar o `e2e` obrigatório na `main`, depois de três execuções verdes seguidas em pull requests reais (a leitura de RF-11 e RF-14 já foi decidida: F6-20).
 2. Marcar o motivo como obrigatório no OpenAPI de bloqueios (pequena mudança de back end, em PR próprio).
 3. Fase 7: relatório final só com números que têm origem, R-25 como risco aceito, RNF-08b não atendido, SEC-03 e SEC-04, dúvidas ao professor, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud e ADR-015 citando o plano mestre sem link.
 4. Limpeza: `mvnw.cmd` aparece modificado só por fim de linha e não deve ser commitado.

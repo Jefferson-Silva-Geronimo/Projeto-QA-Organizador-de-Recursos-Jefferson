@@ -339,6 +339,14 @@ Os testes da T07 e da T11 cobrem a recusa com a lista de reservas afetadas (test
 
 Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão já aprovado (T04, T05 e T06) e permissões no molde da F6-14, da F6-15 e da F6-16 não são perguntados, e entram no resumo do PR; só se pergunta o que for novo ou conflitar com a especificação ou o plano mestre; enquanto a CI de um PR roda, a próxima tela começa em branch novo; nas telas simples (Usuários e Catálogo) o navegador real roda só o modo da própria tela, com axe nos dois temas e tamanhos, teclado e rolagem, e o PR declara o que deixou de rodar.
 
+### F6-20. A porta de saída da Fase 6 vale para os RF com interação humana (22/10/2026)
+
+**Decisão da equipe (Jefferson), 22/10/2026**, resolvendo a ressalva do fechamento da Fase 6: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela, e a porta de saída diz "Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil" (plano mestre, seção 10, porta de saída da Fase 6).
+
+| ID | Decisão | Alternativa descartada |
+| --- | --- | --- |
+| F6-20 | **A frase da porta de saída vale para os RF com interação humana.** Fundamento: o **Anexo A do plano mestre** (cobertura dos 14 requisitos funcionais) já diz "Sem tela própria" para RF-11 (teste principal INT-01 a INT-06) e para RF-14 (teste principal: contrato OpenAPI). **Nenhuma tela nova é criada.** É uma **interpretação declarada**: entra em `fase-7-pendencias.md` e no relatório final como tal, não como cumprimento literal da frase. RF-11 está provado pelos testes INT-01 a INT-06 e RF-14 pelo OpenAPI e pelos testes de contrato; a prova, com os arquivos e a execução na CI, está em [relatorio-sessao-fase-6-fechamento.md](relatorio-sessao-fase-6-fechamento.md), seção 1.1 | Criar uma tela de notificações simuladas e um link para o OpenAPI só para cumprir a frase: aumentaria o escopo sem ganho de prova, e o próprio Anexo A não a pede |
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
