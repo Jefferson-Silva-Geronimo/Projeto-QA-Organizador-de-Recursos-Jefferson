@@ -80,7 +80,7 @@ Há textos escritos na própria tela, fora do mapa. **Decisão ([F7-03](../decis
 | | "Informe o início/fim do período." | `relatorios/parametros.ts:75-76` |
 | Mensagens de ação ausente (aprovadas nas telas T04, T05 e T06) | "Você não pode alterar nem cancelar esta reserva agora."; "Você não pode aprovar nem rejeitar esta solicitação agora."; "Você não pode registrar o uso desta reserva agora." | Telas T04, T05 e T06, `navegacao-telas.md`, seção 9 |
 
-**Proposta, não aplicada:** ajustar a frase da seção 5 de [navegacao-telas.md](../prd/navegacao-telas.md) (linha 15 da tabela de princípios: "Toda mensagem de erro vem da tabela da seção 5, indexada pelo código estável. O texto cru do servidor nunca aparece") para "Toda mensagem de recusa do servidor vem da tabela da seção 5, indexada pelo código estável. O texto cru do servidor nunca aparece". O texto do documento só muda com a sua decisão.
+**Proposta, aplicada depois pela F7-12 (24/10/2026):** ajustar a frase da seção 5 de [navegacao-telas.md](../prd/navegacao-telas.md) (linha 15 da tabela de princípios: "Toda mensagem de erro vem da tabela da seção 5, indexada pelo código estável. O texto cru do servidor nunca aparece") para "Toda mensagem de recusa do servidor vem da tabela da seção 5, indexada pelo código estável. O texto cru do servidor nunca aparece". A frase aplicada em `navegacao-telas.md` é: "Toda mensagem de recusa do servidor vem da tabela da seção 5; dicas de preenchimento e as mensagens de ação ausente aprovadas ficam na seção 9. O texto cru do back end nunca aparece na tela".
 
 **Reabre como defeito se** algum texto passar a explicar regra ou a exibir texto do servidor.
 
