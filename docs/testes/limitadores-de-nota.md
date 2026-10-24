@@ -144,6 +144,8 @@ Reproduzido em **worktree descartável** (`git worktree add --detach`, fora do p
 | `ct065` a tentativa persiste mesmo se a reserva é desfeita | Falha por asserção (`expected: 1L`) | `:210` |
 | `ct063` sem a constraint a reserva duplica | **Erro, não asserção:** o teste tenta remover (`alter table ... drop constraint`) uma constraint que já não existe. Em condições normais, ele faz sozinho, dentro do teste, a prova de duplicidade (`:220` a `:247`) | `ConcorrenciaApiIT.java:223` |
 
+**Atualização (BUG-023, F7-05, 24/10/2026):** depois da correção, sem a constraint o `ct063` também falha por asserção (pré-condição "a constraint de exclusão existe", linha 226), e não mais por erro de SQL; a tabela acima registra o estado de `e6dbc51`, anterior à correção.
+
 O `expected: 1L` mostra que a contagem verificada (a asserção em cada linha citada) deixou de ser 1 sem a constraint. O valor obtido em cada linha não foi lido um a um; só o `ct060` (linha 115) confere diretamente as reservas aceitas (`contarStatus(respostas, 201)`).
 
 ### 5.3 Histórico
