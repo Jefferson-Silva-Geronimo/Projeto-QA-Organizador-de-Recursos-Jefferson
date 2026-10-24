@@ -12,7 +12,7 @@ Legenda: **fato** (vem do repositório, com arquivo), **decisão** (da equipe, c
 | --- | --- |
 | O front nunca decide sobreposição, aprovação, posse nem transição de estado. Ele envia o pedido e mostra a resposta do servidor | ADR-004; plano mestre, seção 10.3 (3) |
 | Esconder um botão por perfil é conveniência. A segurança é o 403 do servidor, e o front também sabe exibir esse 403 | ADR-004; RF-01 |
-| Toda mensagem de erro vem da tabela da seção 5, indexada pelo código estável. O texto cru do servidor nunca aparece | ADR-008; plano mestre, seção 10.3 (2) |
+| Toda mensagem de recusa do servidor vem da tabela da seção 5; dicas de preenchimento e as mensagens de ação ausente aprovadas ficam na seção 9. O texto cru do back end nunca aparece na tela | ADR-008; plano mestre, seção 10.3 (2) |
 | Nenhuma mensagem identifica terceiros | RF-13, critério 2; B3 |
 | Layout *mobile-first*, validado em 360 px e 1280 px. Todo campo tem rótulo, todo elemento interativo tem foco visível e o contraste é conferido | F6-04; plano mestre, seção 10.3 (5) |
 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset. O fuso é configuração do front (padrão `America/Sao_Paulo`, decisão A6) | ADR-005; ADR-015 |

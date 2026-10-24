@@ -105,6 +105,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | Frase da seção 5 de `navegacao-telas.md` (F7-12) | Ajuste aplicado: a regra passa a dizer "mensagem de recusa do servidor"; o desvio da letra declarado na F7-03 deixa de existir |
 | 24/10/2026 | Escolhas do item 2.5 (F7-05 a F7-13) | Decisões de Jefferson registradas; justificativa dos 27 alertas do Dependabot; SEC-03, modelo de ameaças, ADR-015 e `segredos` obrigatório decididos; jsdom 30 adiado; 14 dias da Busca declarados como suposição |
 | 24/10/2026 | Auditoria da RTM (Fase 7, 2.3, prompt 7.A) | Relatório `testes/auditoria-rtm.md`; BUG-020 a BUG-027 abertos e triados (nenhum corrigido); "apague a regra" em RN-01, RN-03 e RN-06; README restante vira BUG-027 |
 | 24/10/2026 | Limitadores de nota (Fase 7, 2.2) | Evidência dos quatro limitadores em `testes/limitadores-de-nota.md`; F7-04 (vermelho intencional, PR descartável #59); BUG-019 fechado; limites declarados |
