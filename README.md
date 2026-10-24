@@ -26,7 +26,7 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 
 ## Como subir
 
-Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, Node 22.12 ou mais novo. O Maven vem pelo wrapper (`./mvnw`). Os comandos abaixo são de um shell Bash (Git Bash no Windows, Linux ou macOS).
+Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, Node 22.12 ou mais novo. O Maven vem pelo wrapper (`./mvnw`), que em Linux exige `unzip` (veja "Limitações conhecidas"). Os comandos abaixo são de um shell Bash (Git Bash no Windows, Linux ou macOS).
 
 1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias com valores **locais** (senhas inventadas por você, nunca reais). O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
 
@@ -59,7 +59,7 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 | `ArquiteturaTest` | Seis regras de camada MVC: o model não depende de Spring, persistência nem das outras camadas, o controller não acessa repository, o service não depende de controller nem de DTO (ADR-014) |
 | `ContextoIT` | A aplicação sobe com PostgreSQL real, o Flyway aplica a baseline e o relógio é UTC (ADR-005, ADR-009) |
 
-A suíte cresce a partir da Fase 4. O gate de cobertura (80% de linhas e 70% de branches) liga na primeira fatia de domínio (ADR-011).
+O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). Na última execução da CI na `main` (E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe e por arquivo está em [docs/testes/execucao-e24.md](docs/testes/execucao-e24.md).
 
 ### Front end
 
@@ -81,7 +81,7 @@ Os testes de contraste leem `src/estilo/tokens.css` de verdade e exigem WCAG AA 
 
 ## Integração contínua
 
-O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda `./mvnw -B verify` em todo pull request e em push na `main`. Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem segredos no build, sem `continue-on-error` e sem `pull_request_target`. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact. O job `frontend` instala com `npm ci`, confere que os tipos da API batem com o contrato, e roda lint, tipos, testes e build.
+O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda quatro jobs em todo pull request e em push na `main`: `test` (`./mvnw -B verify` com PostgreSQL real, JaCoCo e análise do SonarCloud), `frontend` (`npm ci`, tipos da API conferidos contra o contrato, lint, tipos, testes e build), `e2e` (PostgreSQL, API e front reais por `compose.e2e.yaml` e testes Playwright) e `segredos` (varredura com gitleaks). Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem `continue-on-error` e sem `pull_request_target`; o único segredo é o `SONAR_TOKEN` do passo do SonarCloud. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact.
 
 ### Execuções registradas
 
@@ -92,6 +92,9 @@ O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda `./mvnw
 | `38786300308` | Vermelho, intencional | Asserção de `ContextoIT` quebrada de propósito (commit `test(red)`) |
 | `38786508100` | Verde | Recuperação depois do `revert` |
 | `38786781324` | Verde | JaCoCo publicado e SonarCloud ignorado com aviso, por falta do token |
+| `40099734514` | Vermelho, intencional | Asserção de `PeriodoTest` invertida num PR descartável, com o check obrigatório `test` barrando o merge (F7-04); PR fechado sem mesclar |
+| `40109437336` | Vermelho, intencional | Soma SHA-256 do Maven errada num PR descartável, com `test` e `e2e` barrando (F7-06); PR fechado sem mesclar |
+| [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) | Verde | `main` em `c9240cd`: back end 665 testes, front 910 e E2E 5 (E-24) |
 
 ### SonarCloud (passos da equipe)
 
@@ -101,28 +104,30 @@ O agente não vê nem grava o token. Quem administra a organização faz:
 2. No GitHub, em *Settings → Secrets and variables → Actions*, cadastrar o secret `SONAR_TOKEN` e as variáveis `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY`.
 3. Abrir ou atualizar um pull request: o passo "Análise do SonarCloud" passa a executar e a esperar o Quality Gate.
 
-Enquanto isso não for feito, o passo apenas avisa e o build segue.
+Estado atual (24/10/2026): configurado. O Quality Gate roda dentro do job `test` (`-Dsonar.qualitygate.wait=true`) e reprova o job. Sem os segredos (PRs do Dependabot), o passo apenas avisa e o build segue.
 
 ### Proteção da `main` (passos de quem administra o repositório)
 
 Em *Settings → Branches → Add branch ruleset* (ou regra de proteção) para `main`:
 
-1. Exigir pull request antes do merge, com ao menos uma aprovação (revisão por par, exigência da especificação, seção 7).
-2. Exigir o check de status `test` do workflow `qualidade`, com a branch atualizada.
-3. Bloquear push direto e force push.
-4. Não permitir contornar a regra como rotina (sem merge administrativo).
+1. Exigir pull request antes do merge, com **0 aprovações**: a equipe é uma pessoa e a revisão é assistida (veja "Limitações conhecidas").
+2. Exigir os checks de status `test`, `frontend`, `e2e` e `segredos` do workflow `qualidade`, com a branch atualizada (`strict`).
+3. Bloquear push direto, force push e a exclusão da branch.
+4. Valer também para administrador (sem merge administrativo).
+
+**Estado atual**, lido pela API do GitHub em 24/10/2026 (F6-21 e F7-10): é exatamente isso. SonarCloud verde segue como regra de trabalho (o Quality Gate já reprova o job `test`); o check externo "SonarCloud Code Analysis" não é obrigatório porque não roda nos PRs do Dependabot.
 
 ## Estrutura de pastas
 
-Itens marcados como *vazio* ou *previsto* ainda não têm conteúdo.
+Todos os itens abaixo existem no repositório (conferido em 24/10/2026).
 
 ```text
 README.md              visão do projeto
-RTM.md                 matriz de rastreabilidade: uma linha por RF e por RN, status não iniciado
+RTM.md                 matriz de rastreabilidade: uma linha por RF, por RN e por RNF, com caso de teste, evidência e status
 AGENTS.md              regras do projeto para agentes
 docs/
   prd.md               visão, escopo, restrições e métricas
-  plano-de-teste.md    plano de teste em esqueleto
+  plano-de-teste.md    plano de teste e riscos R-xx
   prd/
     personas/          Solicitante, Responsável e Administrador
     perguntas-abertas.md   registro de decisões e lacunas
@@ -135,21 +140,22 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança, ocorrências a vigiar e o roteiro de verificação em navegador real
+  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execução E-24, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   fase-7-pendencias.md   lista viva do que entra no fechamento da Fase 7, com origem e arquivo de cada item
   perguntas-professor.md   mensagem consolidada ao professor
-  performance/         rnf.md (requisito e modelo de carga) e resultado-01.md
+  performance/         rnf.md (requisito e modelo de carga), resultado-01.md e resultado-02.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
-frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil e navegação; as telas entram na etapa 6.C
+frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil, as 11 telas (T01 a T11), testes de componente e `e2e/` (Playwright)
 pom.xml, mvnw          projeto Maven, Java 21 e Spring Boot 3.5.16, com o wrapper
 compose.yaml           PostgreSQL local; credenciais pelo arquivo .env (modelo em .env.example)
+compose.e2e.yaml, Dockerfile   PostgreSQL, API e front reais para o E2E; o Dockerfile é o da API (frontend/Dockerfile é o do front)
 src/main/java/br/senac/recursos/   MVC (ADR-014): controller, dto, service, repository, model, exception, config, security
 src/main/resources/    application.yml (só variáveis de ambiente) e db/migration (Flyway)
 src/test/java/         testes de unidade, de arquitetura, de API (MockMvc + PostgreSQL real) e Cucumber (bdd/)
 src/test/resources/features/   cenários BDD de aprovação e bloqueio
-.github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md e workflows/ci.yml (Fase 3)
+.github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md, dependabot.yml e workflows/ci.yml (jobs test, frontend, e2e e segredos)
 .aiox-core/            framework de agentes, instalado, com as skills do projeto
 .claude/, .codex/, .cursor/, .gemini/, .antigravity/, .grok/, .kimi/   configuração de agentes e IDEs, geradas pelo aiox-core
 ```
@@ -164,8 +170,8 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 mesclado na `main` em 17/10/2026 |
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Pendências: respostas do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
-| 6 | Front end | Prevista |
-| 7 | Fechamento, relatório de qualidade e prova oral | Prevista |
+| 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório consolidado](docs/relatorio-fase-6-consolidado.md) |
+| 7 | Fechamento, relatório de qualidade e prova oral | Em andamento desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças e decisões F7-01 a F7-14 ([pendências](docs/fase-7-pendencias.md)). Pendentes: leitura de cobertura e do SonarCloud, relatório de qualidade e release candidate |
 
 ## Metas de qualidade
 
@@ -183,10 +189,11 @@ Fonte: especificação, seção 6.
 - **Revisão por pares:** a equipe é uma pessoa, então não há revisão por par humano. No lugar, cada pull request
   recebe uma revisão crítica assistida, registrada como comentário e identificada como tal, e a `main` deve exigir pull
   request e check obrigatório com zero aprovações (o autor não pode aprovar o próprio PR). **Estado atual:** proteção
-  aplicada em 17/10/2026 (check `test` obrigatório, PR obrigatório, 0 aprovações). A pergunta ao professor
+  PR obrigatório com 0 aprovações e checks `test`, `frontend`, `e2e` e `segredos` obrigatórios (veja "Proteção da `main`"). A pergunta ao professor
   está em [docs/perguntas-professor.md](docs/perguntas-professor.md).
 - **Valores sem decisão (D1, D3, D4, D9, D17):** sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
-- **SonarCloud:** análise ligada na CI e Quality Gate aprovado no PR 2.
+- **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números atuais de cobertura e do SonarCloud são lidos no fechamento (item 2.4 da Fase 7), não neste README.
+- **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 24/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções
