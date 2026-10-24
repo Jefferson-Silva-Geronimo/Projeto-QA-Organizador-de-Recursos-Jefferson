@@ -419,6 +419,14 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 | --- | --- | --- | --- |
 | F7-14 | **Instalar `unzip` no estágio de compilação do `Dockerfile` da API** (`apt-get install -y --no-install-recommends unzip`, limpando as listas do apt). **Uma soma só** (`distributionSha256Sum` do `.zip`), igual no Linux e no Windows. O PR 75 só é mesclado com `test`, `frontend`, `e2e`, `segredos` e SonarCloud verdes no commit final, **sem repetir job para mascarar falha**. A prova de que a CI barra soma errada (PR descartável 74) continua valendo | (1) instalar `unzip` (escolhida); (2) duas somas, com o Dockerfile usando a do `.tar.gz`; (3) compilar com a imagem oficial do Maven por digest; (4) desistir da soma e declarar SEC-03 como dívida | `test(red)` `9f941ef` visto vermelho por asserção (`MavenWrapperTest.dockerfileDaApiInstalaUnzipAntesDeRodarOMvnw`; os testes da imagem final sem `unzip` e das bases por digest nasceram verdes, por declaração); `feat(green)` `7cf3da6`. **Verificado localmente:** `MavenWrapperTest` 5 de 5; build completo da imagem com saída 0; `unzip` **ausente** na imagem final; as duas imagens-base seguem por digest. **Declarado, e levado ao README e ao relatório final:** (a) o pacote do apt **não tem versão fixada** no estágio de build (a imagem-base é fixada por digest); (b) em Linux sem `unzip`, o `mvnw` baixa o `.tar.gz`, cuja soma não confere com a do `.zip`, e falha fechado; (c) ligado ao BUG-027 (README) |
 
+### F7-15. Três PRs do Dependabot ficam abertos até depois da tag (24/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026**, entre mesclar os três agora, deixá-los abertos e fechá-los sem mesclar.
+
+| ID | Decisão | Fatos da consulta de 24/10/2026 | Condição e declaração |
+| --- | --- | --- | --- |
+| F7-15 | **Deixar os PRs 81, 82 e 83 do Dependabot abertos até depois da tag, sem mesclar e sem fechar.** Razão: não alterar o `package-lock.json` do front entre a leitura final da cobertura (item 2.4) e a prova de clone limpo (item 2.7) | PR 81: `vite` 8.3.4 para 8.3.5 (patch). PR 82: `@tanstack/react-query` 5.104.4 para 5.104.5 (patch). PR 83: `typescript-eslint` 8.71.2 para 8.72.0 (minor). Os três em `frontend/`, com `test`, `frontend`, `e2e` e `segredos` verdes (o `segredos` rodou nos três, o que confirma o F7-10 para PRs do Dependabot). **Sem alerta de segurança:** 27 alertas abertos, todos em `.aiox-core/`, 0 em `frontend/` e 0 no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md)) | **Se qualquer um virar alerta de segurança antes da tag, parar e avisar Jefferson.** Declarado no relatório final como atualização deliberadamente adiada |
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
