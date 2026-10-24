@@ -114,7 +114,7 @@ O README ([Execuções registradas](../../README.md)) já listava um run vermelh
 | Outros casos da classe | `ct118` (posse: o Solicitante não lê nem altera reserva de outro), `ct119` (token ausente, inválido, revogado e expirado, 401), e os demais da classe, somando 141 |
 | Operações cobertas | As 34 de [matriz-autorizacao.md](matriz-autorizacao.md), de `POST /api/auth/logout` a `GET /api/relatorios/utilizacao`, mais a pública `POST /api/auth/login` |
 
-Defeito já achado e corrigido por essa matriz: BUG-008. Limite: o texto de [revisao-seguranca.md](revisao-seguranca.md) fala em "137 casos" (valor da época); o número atual da classe, na CI e no local, é 141.
+Defeito já achado e corrigido por essa matriz: BUG-008. Nota: [revisao-seguranca.md](revisao-seguranca.md) e a RTM diziam "137 casos" (valor da época) e foram corrigidos pelo BUG-022; o número atual da classe, na CI e no local, é 141.
 
 ## 5. d) Dupla reserva: verde com a constraint, vermelho sem ela
 
