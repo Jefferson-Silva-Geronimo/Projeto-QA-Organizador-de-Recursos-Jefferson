@@ -385,6 +385,14 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 | F7-02 | **S1, S2 e S3: observações, sem BUG; nada muda em código nesta fase.** S1 (recursos da própria reserva na alteração) e S3 (texto de ajuda do cancelamento) só apresentam e o servidor decide no envio. **S2** (`DIAS_DA_JANELA_PADRAO = 14` em `PaginaDeBusca.tsx:24`) entra como **suposição sem origem**, com o impacto: só a janela inicial da Busca, que a pessoa pode alterar. Registrada em `revisao-assistida-front.md`, `fase-7-pendencias.md` e no relatório final | Revisão assistida; RN-18 (S3) | Algum dos três passar a decidir regra |
 | F7-03 | **Textos fixos fora do mapa de 34 códigos: desvio da letra da seção 5, não da intenção; observação, sem BUG.** São dicas de preenchimento e as três mensagens de ação ausente (T04, T05 e T06); não são recusas do servidor, não explicam regra e não usam texto do servidor. A frase da seção 5 de `navegacao-telas.md` fica como está; o ajuste proposto ("Toda mensagem de recusa do servidor vem da tabela...") **não foi aplicado** | [navegacao-telas.md](prd/navegacao-telas.md), seções 5 e 9 | Algum texto passar a explicar regra ou a exibir texto do servidor |
 
+### F7-04. Como provar o vermelho intencional do pipeline (24/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026**, entre alternativas conformes à especificação (seção 8) e ao plano mestre (seção 11.4). Alternativas apresentadas: A (uma asserção invertida no job `test`), B (uma asserção do E2E, job `e2e`) e C (três quebras, uma por check obrigatório).
+
+| ID | Decisão | Como foi aplicado |
+| --- | --- | --- |
+| F7-04 | **Alternativa A.** PR descartável que inverte uma asserção de um teste unitário de regra crítica (a fronteira do `Periodo`), no job `test`. A `main` nunca recebe a quebra; o PR fica sem mesclar, é fechado e o branch é apagado. Commit e título dizem que é quebra intencional e descartável | PR #59 (`teste(descartavel): quebra intencional para provar o check obrigatorio (NAO MESCLAR)`), commit `f19d3e0`, `PeriodoTest.java` linha 34 (`encosta no fim`: `false` para `true`). Run vermelho `40099734514`, `mergeStateStatus` `BLOCKED`, PR fechado sem mesclar, branch apagada no local e no remoto. Detalhes em [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 3 |
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
