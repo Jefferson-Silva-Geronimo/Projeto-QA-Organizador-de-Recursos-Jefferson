@@ -13,7 +13,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Versão e estado | 0.3, com os números medidos ao fechar a Fase 4 |
 | Data | 17/10/2026 |
 | Responsável | Equipe: Jefferson Silva (única pessoa do projeto) |
-| Aprovação | Equipe: Jefferson Silva, nas decisões de [decisoes-equipe.md](decisoes-equipe.md). Professor: pendente, perguntas em [perguntas-professor.md](perguntas-professor.md) |
+| Aprovação | Equipe: Jefferson Silva, nas decisões de [decisoes-equipe.md](decisoes-equipe.md). Professor: não validou; as lacunas foram decididas pela equipe em 24/10/2026 (F7-16), registradas em [perguntas-professor.md](perguntas-professor.md) |
 
 ## 2. Objetivo e referências
 
@@ -101,7 +101,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 | Requisitos, regras, modelo de dados e fluxos versionados e verificados pela skill analyze-docs | Atendido ao fim da Etapa 1 |
 | Cenários de qualidade e arquitetura definidos | Atendido: CEN-01 a CEN-11 em [ciclo-00.md](avaliacao-arquitetural/ciclo-00.md) |
 | Casca do projeto, integração contínua e processo de defeitos | Atendido na Fase 3 (PR 1): `./mvnw -B verify` e workflow `qualidade`; defeitos em [docs/defeitos](defeitos/README.md) |
-| Decisões A1, A3 e A5 confirmadas com o professor | TODO: aguarda a resposta do professor ([perguntas-professor.md](perguntas-professor.md)) |
+| Decisões A1 a A8 | Decididas pela equipe em 24/10/2026, não validadas com o professor ([perguntas-professor.md](perguntas-professor.md)) |
 | Lacunas D2 e D10 a D16 decididas em 15/10/2026 | Atendido |
 
 ### 5.2 Critérios de saída
@@ -208,7 +208,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 
 | Risco | Observação |
 | --- | --- |
-| Decisões A1, A3 e A5 podem ser alteradas pelo professor | A3 é a de maior impacto no modelo de dados |
+| Decisões A1 a A8 não foram validadas com o professor e podem estar erradas | A3 é a de maior impacto no modelo de dados |
 | Prazo até a semana 46 | Cronograma na seção 9 |
 | Lacunas D1, D3, D4, D9 e D17 sem valor | Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md) |
 
@@ -219,8 +219,8 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva (única pessoa do projeto) |
-| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; pergunta ao professor em [perguntas-professor.md](perguntas-professor.md) |
-| Professor | Validar as decisões pendentes de confirmação | A definir pela equipe; mensagem pronta em [perguntas-professor.md](perguntas-professor.md) |
+| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; decisão da equipe de 24/10/2026 (F7-16, item 14) em [perguntas-professor.md](perguntas-professor.md) |
+| Professor | Validar as decisões da equipe | Não validadas: decididas pela equipe em 24/10/2026, sem mensagem a enviar ([perguntas-professor.md](perguntas-professor.md)) |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
 ### 9.2 Cronograma (especificação, seção 9)
@@ -257,7 +257,7 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 | Cenários de qualidade (CEN-xx) e ADRs | Fase 2 |
 | Ferramentas de API em caixa-preta e de ponta a ponta | Fase 2 e Fase 3 |
 | Política de dados e de limpeza dos testes | Fase 3 |
-| Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe e professor |
-| Confirmação de A1, A3 e A5 | Professor |
+| Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe (decididos em 24/10/2026, F7-16) |
+| Validação de A1 a A8 | Não feita: decididas pela equipe em 24/10/2026 (F7-16) |
 | ~~Escolha da funcionalidade de TDD ou BDD~~ | Feito na Fase 4 |
 | Nomes e prazos dos responsáveis | Equipe |

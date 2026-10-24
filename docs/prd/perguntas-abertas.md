@@ -16,21 +16,21 @@ O nome do arquivo foi mantido (`perguntas-abertas.md`) para não quebrar links. 
 Observações importantes:
 
 - As **decisões e os status** vêm da equipe. As **justificativas e as alternativas consideradas** foram redigidas a partir das decisões e do texto da especificação; a equipe deve revisá-las e corrigir onde não refletirem o que foi discutido.
-- "Decidida (equipe), confirmar com o professor" significa que a decisão vale para o projeto, mas a especificação deixa o ponto em aberto e o professor ainda não a validou. Se ele discordar, o impacto descrito em cada item mostra o que muda.
+- "Decidida (equipe), 24/10/2026, não validada com o professor" significa que a decisão vale para o projeto, que a especificação deixa o ponto em aberto e que a validação externa não foi obtida (decisão F7-16 e interpretação F7-17 em [decisoes-equipe.md](../decisoes-equipe.md)). Se a decisão estiver errada, o impacto descrito em cada item mostra o que muda.
 - Data das decisões: 12/10/2026, exceto D2 e D10 a D16, de 15/10/2026. Responsável: equipe.
 
 ## Resumo
 
 | ID | Tema | Decisão em uma linha | Status |
 | --- | --- | --- | --- |
-| A1 | Recurso restrito | Atributo do recurso, definido pelo Administrador; aprovação automática quando não há recurso restrito | Decidida (equipe), confirmar com o professor |
-| A2 | Fronteira de horário | Intervalos semiabertos [início, fim) | Decidida (equipe) |
-| A3 | Material | Unidade identificada, com código de patrimônio; cada unidade é um recurso | Decidida (equipe), confirmar com o professor |
-| A4 | Professor e usuário | Professor é recurso; vínculo com usuário é opcional | Decidida (equipe) |
-| A5 | Notificação | Porta com adapter HTTP de webhook, envio após o commit | Decidida (equipe), confirmar com o professor |
-| A6 | Fuso e janela de funcionamento | America/Sao_Paulo, armazenamento em UTC, janela por sala | Decidida (equipe) |
-| A7 | Bloqueio sobre reservas existentes | 409 com lista, confirmação do Administrador e cancelamento pelo sistema | Decidida (equipe) |
-| A8 | Cancelamento, uso e não comparecimento | Matriz por estado e perfil, sem antecedência mínima | Decidida (equipe) |
+| A1 | Recurso restrito | Atributo do recurso, definido pelo Administrador; aprovação automática quando não há recurso restrito | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A2 | Fronteira de horário | Intervalos semiabertos [início, fim) | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A3 | Material | Unidade identificada, com código de patrimônio; cada unidade é um recurso | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A4 | Professor e usuário | Professor é recurso; vínculo com usuário é opcional | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A5 | Notificação | Porta com adapter HTTP de webhook, envio após o commit | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A6 | Fuso e janela de funcionamento | America/Sao_Paulo, armazenamento em UTC, janela por sala | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A7 | Bloqueio sobre reservas existentes | 409 com lista, confirmação do Administrador e cancelamento pelo sistema | Decidida (equipe), 24/10/2026, não validada com o professor |
+| A8 | Cancelamento, uso e não comparecimento | Matriz por estado e perfil, sem antecedência mínima | Decidida (equipe), 24/10/2026, não validada com o professor |
 | B1 | Responsável reserva | Sim, mas ninguém aprova a própria reserva | Decidida (equipe) |
 | B2 | Administrador | Não aprova nem reserva; um perfil por usuário | Decidida (equipe) |
 | B3 | Visibilidade | Por perfil, sem expor quem reservou ao Solicitante | Decidida (equipe) |
@@ -70,9 +70,9 @@ Observações importantes:
   - RF e RN: RF-02, RF-07, RN-06, RN-09, RN-10 (e RN-05, RN-08 para estados e auditoria).
   - Modelo de dados: campo `restrito` no recurso; campo `exige_aprovacao` na reserva; auditoria precisa aceitar o ator SISTEMA.
   - Testes: tabela de decisão perfil × tipo de recurso (RN-06); aprovação automática com ator SISTEMA; mudança do atributo não afeta reserva existente.
-- **Status:** Decidida (equipe), confirmar com o professor.
+- **Status:** Decidida (equipe), 24/10/2026, não validada com o professor.
 - **Data:** 12/10/2026. **Responsável:** equipe.
-- **Se o professor discordar:** o fluxo de aprovação (RF-07) e a regra de aprovação automática mudam; o ator SISTEMA pode deixar de existir.
+- **Se a decisão estiver errada:** o fluxo de aprovação (RF-07) e a regra de aprovação automática mudam; o ator SISTEMA pode deixar de existir.
 
 ### A2. Reserva que termina às 10h conflita com outra que começa às 10h?
 
@@ -99,9 +99,9 @@ Observações importantes:
   - RF e RN: RF-02, RF-09, RN-02, RN-03, RN-12.
   - Modelo de dados: material com código de patrimônio, uma linha por unidade; retirada e devolução ligadas à unidade.
   - Testes: sobreposição e concorrência valem igualmente para material; não há teste de saldo.
-- **Status:** Decidida (equipe), confirmar com o professor.
+- **Status:** Decidida (equipe), 24/10/2026, não validada com o professor.
 - **Data:** 12/10/2026. **Responsável:** equipe.
-- **Se o professor discordar:** é a decisão de maior retrabalho, porque o controle por quantidade muda o modelo de dados e a proteção contra dupla reserva para materiais.
+- **Se a decisão estiver errada:** é a decisão de maior retrabalho, porque o controle por quantidade muda o modelo de dados e a proteção contra dupla reserva para materiais.
 
 ### A4. Professor também é usuário do sistema?
 
@@ -128,7 +128,7 @@ Observações importantes:
   - RF e RN: RF-11, RN-28.
   - Modelo de dados: registro de notificação com status e número de tentativas.
   - Testes: matriz de respostas do provedor (200, 404, 500, lentidão, JSON inválido) com WireMock; falha do provedor não altera o estado da reserva.
-- **Status:** Decidida (equipe), confirmar com o professor.
+- **Status:** Decidida (equipe), 24/10/2026, não validada com o professor.
 - **Data:** 12/10/2026. **Responsável:** equipe.
 - **Suposição:** o endpoint de teste da demonstração será suficiente como "integração com API externa" para RF-11. Impacto se estiver errada: pode ser exigido um provedor real, com credenciais e contrato.
 
@@ -184,7 +184,7 @@ Observações importantes:
   - Testes: tabela de transição de estados cobrindo as proibidas; cancelamento por perfil e estado; marcação de não compareceu antes e depois da tolerância.
 - **Status:** Decidida (equipe).
 - **Data:** 12/10/2026. **Responsável:** equipe.
-- **Suposição S4:** o valor padrão da tolerância fica sem número até validação com o professor ou a coordenação (D1). Impacto se estiver errada: reservas não usadas ficam ocupando o recurso por mais tempo, ou são marcadas cedo demais.
+- **Suposição S4:** o valor padrão da tolerância fica sem número, por decisão da equipe de 24/10/2026, não validada com o professor nem com a coordenação (D1). Impacto se estiver errada: reservas não usadas ficam ocupando o recurso por mais tempo, ou são marcadas cedo demais.
 
 ## B. Dúvidas surgidas na redação dos documentos
 
@@ -504,14 +504,14 @@ As lacunas D1 a D9 surgiram ao aplicar as decisões C. Em 12/10/2026 a equipe de
   - Testes: valor limite em trinca (um instante antes, no instante, um instante depois do instante atual).
 - **Status:** Decidida (equipe). **Data:** 15/10/2026. **Responsável:** equipe.
 
-### Lacunas que seguem abertas
+### Lacunas decididas pela equipe em 24/10/2026
 
-**Nenhuma está decidida e nenhum valor foi inventado.** Cada uma fica registrada, com validação pendente. Responsável pela validação: equipe. Prazo: TODO: a definir pela equipe.
+**Decisão da equipe (Jefferson), 24/10/2026, não validada com o professor** (F7-16 em [decisoes-equipe.md](../decisoes-equipe.md)). Nenhum valor foi inventado: onde não havia valor, a decisão é continuar sem valor padrão no código.
 
 | ID | Pergunta | Afeta | Impacto se assumir errado | Estado |
 | --- | --- | --- | --- | --- |
-| D1 | Qual o valor padrão da tolerância de não comparecimento (S4)? | A8, RN-21 | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais | Aberta, valor sem definição |
-| D3 | Qual o valor padrão de tentativas e de intervalo do reenvio de notificação (S7)? | C6, RF-11, RN-28 | Notificações perdidas ou carga sobre o provedor | Aberta, valor sem definição |
-| D4 | Qual o tamanho da página do relatório RF-12? | C5, RF-12, RN-31 | Relatório lento ou incômodo de navegar | Aberta, valor sem definição |
-| D9 | Qual a retenção da auditoria e das notificações, e o tratamento de dados pessoais nelas? | RF-10, RF-11, C6, C7 | Dado pessoal guardado além do necessário | Aberta |
-| D17 | Qual a duração e a expiração do token de acesso (sessão)? A decisão de token opaco com revogação exige um prazo | RF-01, RN-17, RNF-06 | Sessão que nunca expira, ou que expira cedo demais para o uso | Aberta, valor sem definição |
+| D1 | Qual o valor padrão da tolerância de não comparecimento (S4)? | A8, RN-21 | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais | Decidida (equipe), 24/10/2026, não validada com o professor: sem valor padrão |
+| D3 | Qual o valor padrão de tentativas e de intervalo do reenvio de notificação (S7)? | C6, RF-11, RN-28 | Notificações perdidas ou carga sobre o provedor | Decidida (equipe), 24/10/2026, não validada com o professor: sem valor padrão |
+| D4 | Qual o tamanho da página do relatório RF-12? | C5, RF-12, RN-31 | Relatório lento ou incômodo de navegar | Decidida (equipe), 24/10/2026, não validada com o professor: sem valor padrão |
+| D9 | Qual a retenção da auditoria e das notificações, e o tratamento de dados pessoais nelas? | RF-10, RF-11, C6, C7 | Dado pessoal guardado além do necessário | Decidida (equipe), 24/10/2026, não validada com o professor: nada é apagado nem anonimizado, sem expurgo |
+| D17 | Qual a duração e a expiração do token de acesso (sessão)? A decisão de token opaco com revogação exige um prazo | RF-01, RN-17, RNF-06 | Sessão que nunca expira, ou que expira cedo demais para o uso | Decidida (equipe), 24/10/2026, não validada com o professor: sem valor padrão |

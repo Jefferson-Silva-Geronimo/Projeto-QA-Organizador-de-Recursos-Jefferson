@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Aceito em 15/10/2026 (aprovação do usuário). A5 aguarda confirmação do professor |
+| Status | Aceito em 15/10/2026 (aprovação do usuário). A5 decidida pela equipe em 24/10/2026, não validada com o professor (F7-16) |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 6 da equipe; A5, C6; [arquitetura.md](../arquitetura.md), seções 12, 12.1 e 13.4 |
 | Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |

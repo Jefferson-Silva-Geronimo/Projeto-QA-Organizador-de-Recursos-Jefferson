@@ -100,18 +100,18 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 
 ### 4.4 Decisões da equipe que moldam o escopo
 
-Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Confirmar" indica o que ainda depende do professor.
+Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Validado pelo professor" é "Não" em todas as linhas: nenhuma decisão foi validada com ele. As lacunas A1 a A8 (seção 10 da especificação) foram decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
 
-| ID | Tema | RF e RN afetados | Confirmar com o professor |
+| ID | Tema | RF e RN afetados | Validado pelo professor |
 | --- | --- | --- | --- |
-| A1 | Recurso restrito e aprovação automática | RF-02, RF-07, RN-09, RN-10 | Sim |
-| A2 | Fronteira de horário [início, fim) | RN-11 | Não |
-| A3 | Material por unidade identificada | RF-02, RF-09, RN-12 | Sim |
-| A4 | Professor como recurso, vínculo opcional | RF-02, RF-05, RN-13 | Não |
-| A5 | Notificação por webhook, após o commit | RF-11, RN-28 | Sim |
-| A6 | Fuso, UTC e janela da sala | RF-03, RF-04, RN-14, RN-15 | Não |
-| A7 | Bloqueio sobre reservas existentes | RF-08, RN-22 | Não |
-| A8 | Cancelamento, início de uso e não comparecimento | RF-04, RF-09, RF-16, RN-18, RN-20, RN-21 | Não |
+| A1 | Recurso restrito e aprovação automática | RF-02, RF-07, RN-09, RN-10 | Não (decisão da equipe, 24/10/2026) |
+| A2 | Fronteira de horário [início, fim) | RN-11 | Não (decisão da equipe, 24/10/2026) |
+| A3 | Material por unidade identificada | RF-02, RF-09, RN-12 | Não (decisão da equipe, 24/10/2026) |
+| A4 | Professor como recurso, vínculo opcional | RF-02, RF-05, RN-13 | Não (decisão da equipe, 24/10/2026) |
+| A5 | Notificação por webhook, após o commit | RF-11, RN-28 | Não (decisão da equipe, 24/10/2026) |
+| A6 | Fuso, UTC e janela da sala | RF-03, RF-04, RN-14, RN-15 | Não (decisão da equipe, 24/10/2026) |
+| A7 | Bloqueio sobre reservas existentes | RF-08, RN-22 | Não (decisão da equipe, 24/10/2026) |
+| A8 | Cancelamento, início de uso e não comparecimento | RF-04, RF-09, RF-16, RN-18, RN-20, RN-21 | Não (decisão da equipe, 24/10/2026) |
 | B1 | Responsável também reserva, sem aprovar a própria | RF-04, RF-07, RN-16 | Não |
 | B2 | Administrador não reserva nem aprova | RF-01, RF-15, RN-17 | Não |
 | B3 | Visibilidade por perfil | RF-03, RF-10, RN-26 | Não |
@@ -166,7 +166,7 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 | Item | Natureza | Observação |
 | --- | --- | --- |
 | Funcionalidades do Foot Fanatics | Fato | A especificação diz que ele é só o case de demonstração das aulas |
-| Controle de material por quantidade em estoque e consumíveis | Decisão A3 | Cada material é uma unidade identificada. Se o professor discordar, o modelo de dados muda |
+| Controle de material por quantidade em estoque e consumíveis | Decisão A3 | Cada material é uma unidade identificada. Se a decisão estiver errada, o modelo de dados muda |
 | Reserva que cruza a meia-noite local | Decisão A6 (suposição S3) | Impacto se estiver errada: eventos noturnos ficam impossíveis de reservar |
 | Reservas próprias do Administrador | Decisão B2 | O Administrador administra; quem precisa reservar usa outro perfil |
 | Cobrança de atraso na devolução de material | Decisão C3 | Só se exige devolução para concluir; a cobrança não existe nesta versão |
@@ -198,9 +198,9 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 ## 8. Lacunas e decisões pendentes de confirmação
 
 - As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
-- Três decisões aguardam confirmação do professor: A1, A3 e A5.
+- As lacunas A1 a A8 foram decididas pela equipe em 24/10/2026 e **não foram validadas com o professor** (F7-16 e F7-17 em [decisoes-equipe.md](decisoes-equipe.md)). A3 é a de maior retrabalho se estiver errada.
 - As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
-- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 seguem abertas, sem valor assumido.
+- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 foram decididas pela equipe em 24/10/2026, sem valor padrão e sem validação do professor (F7-16).
 - Sete ambiguidades (D10 a D16) foram registradas na revisão das Fases 0 e 1. D10, D11, D12 e D13 (instante de "até o início", "reserva futura", recálculo de "exige aprovação" e operação da própria reserva pelo Responsável dono) foram **decididas** em 15/10/2026. D14, D15 e D16 (desativação de usuário, levantamento de bloqueio e reserva com início no passado) também foram **decididas** em 15/10/2026, junto com D2 (mecanismo de SEM_DECISAO). D17 (duração da sessão) foi aberta em 15/10/2026 e segue sem valor.
 - Duas decisões carregam suposição a validar: C2 (S6) e C6 (S7).
 
