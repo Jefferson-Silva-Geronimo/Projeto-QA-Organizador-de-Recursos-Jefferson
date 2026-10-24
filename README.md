@@ -26,14 +26,25 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 
 ## Como subir
 
-Pré-requisitos: Java 21 (Temurin ou equivalente) e Docker. O Maven vem pelo wrapper (`./mvnw`).
+Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, Node 22.12 ou mais novo. O Maven vem pelo wrapper (`./mvnw`). Os comandos abaixo são de um shell Bash (Git Bash no Windows, Linux ou macOS).
 
-1. Copie `.env.example` para `.env` e preencha valores **locais**. O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
+1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias com valores **locais** (senhas inventadas por você, nunca reais). O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
+
+   | Variável | O que colocar |
+   | --- | --- |
+   | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Nome, usuário e senha do banco local |
+   | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Os mesmos valores, no formato `jdbc:postgresql://localhost:5432/<POSTGRES_DB>` |
+   | `SESSAO_DURACAO` | Duração da sessão em ISO-8601, por exemplo `PT30M` |
+   | `LOGIN_TENTATIVAS`, `LOGIN_JANELA` | Já vêm preenchidos (`5` e `PT10M`); mantenha |
+   | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_SENHA` | O primeiro Administrador, criado só se não houver usuário. Sem ele não há como entrar |
+   | `CORS_ORIGENS` | `http://localhost:5173` para usar o front em desenvolvimento |
+
+   `SESSAO_DURACAO`, `LOGIN_TENTATIVAS` e `LOGIN_JANELA` não têm valor padrão: sem eles a aplicação não sobe.
 2. Suba o banco: `docker compose up -d postgres`.
-3. Exporte `DB_URL`, `DB_USER` e `DB_PASSWORD` com os mesmos valores do `.env` e rode `./mvnw spring-boot:run`.
-4. Verifique a saúde: `GET http://localhost:8080/actuator/health`. Todo o resto exige autenticação, que entra na Fase 4 (ADR-004).
-
-Estado atual: casca do projeto. Não há regra de negócio nem endpoint de negócio ainda.
+3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`.
+4. Verifique a saúde: `GET http://localhost:8080/actuator/health` deve responder `{"status":"UP"}`.
+5. Entre com o Administrador do passo 1: `POST http://localhost:8080/api/auth/login` com o corpo `{"email": "<BOOTSTRAP_ADMIN_EMAIL>", "senha": "<BOOTSTRAP_ADMIN_SENHA>"}`. A resposta traz o token; as demais operações exigem `Authorization: Bearer <token>` (ADR-004).
+6. Front end (opcional): em outro terminal, `cd frontend`, `npm ci`, `cp .env.example .env` e `npm run dev`; abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
 
 ## Como testar
 
