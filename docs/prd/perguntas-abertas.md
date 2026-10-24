@@ -57,12 +57,12 @@ Observações importantes:
 | D15 | Levantamento de bloqueio | O Administrador levanta com motivo e auditoria; o período volta a ser reservável; reservas canceladas não voltam | Decidida (equipe) |
 | D16 | Reserva com início no passado | Recusada quando o início é anterior ou igual ao instante atual | Decidida (equipe) |
 
-## A. Lacunas da seção 10 da especificação
+## A. Lacunas da seção 5.3 do plano de projeto
 
 ### A1. O que torna um recurso restrito?
 
 - **Pergunta:** quem define que um recurso é restrito e por qual critério? Vale para sala, professor e material?
-- **Fato:** RF-07 exige aprovação para recursos restritos e RN-06 diz que somente responsáveis os aprovam. A especificação não define o critério (seção 10, item 1).
+- **Fato:** RF-07 exige aprovação para recursos restritos e RN-06 diz que somente responsáveis os aprovam. A especificação não define o critério ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 1).
 - **Decisão:** a restrição é o atributo "restrito" no cadastro do recurso, definido pelo Administrador, válido para sala, professor e material. Reserva com ao menos um recurso restrito exige aprovação de um Responsável. Reserva sem recurso restrito passa de SOLICITADA para APROVADA automaticamente, com auditoria cujo ator é SISTEMA. A reserva guarda "exige aprovação" no momento da criação; mudar o atributo depois não altera reservas existentes.
 - **Justificativa:** mantém a regra num só lugar (o cadastro), sob controle do Administrador, e dá previsibilidade ao Solicitante. Guardar o valor na reserva evita que uma mudança de cadastro invalide ou reabra aprovações já dadas.
 - **Alternativas consideradas:** restrição por tipo de recurso (por exemplo, todo material); restrição escolhida pelo Solicitante na reserva; todas as reservas passarem por aprovação.
@@ -77,7 +77,7 @@ Observações importantes:
 ### A2. Reserva que termina às 10h conflita com outra que começa às 10h?
 
 - **Pergunta:** reservas consecutivas, com o fim de uma igual ao início da outra, são permitidas?
-- **Fato:** RN-02 proíbe sobreposição e RN-01 exige término posterior ao início. A especificação não define a fronteira (seção 10, item 2).
+- **Fato:** RN-02 proíbe sobreposição e RN-01 exige término posterior ao início. A especificação não define a fronteira ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 2).
 - **Decisão:** intervalos semiabertos [início, fim). Terminar às 10h e começar às 10h não conflita. Há conflito se e somente se `inicioA < fimB` e `inicioB < fimA`. Duração zero é inválida (RN-01). A mesma convenção vale para bloqueios de manutenção.
 - **Justificativa:** uma única fórmula vale para sala, professor, material e bloqueio, o que simplifica regra, banco e testes. Permite reservas em sequência no mesmo recurso.
 - **Alternativas consideradas:** intervalos fechados (fim igual ao início conflita); exigir folga entre reservas.
@@ -91,7 +91,7 @@ Observações importantes:
 ### A3. Material é controlado por unidade identificada ou por quantidade?
 
 - **Pergunta:** cada material é uma unidade identificável ou há quantidade em estoque reservada por período?
-- **Fato:** RN-02 lista material entre os recursos que não podem se sobrepor (seção 10, item 3 da especificação).
+- **Fato:** RN-02 lista material entre os recursos que não podem se sobrepor ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 6).
 - **Decisão:** unidade identificada, com código de patrimônio, e cada unidade é um recurso. Consumíveis e controle por quantidade ficam fora do escopo.
 - **Justificativa:** trata material como sala e professor: um recurso, um período, sem sobreposição. Evita um segundo modelo de disponibilidade (saldo de estoque).
 - **Alternativas consideradas:** controle por quantidade em estoque; modelo híbrido (unidade para equipamento e quantidade para consumível).
@@ -106,7 +106,7 @@ Observações importantes:
 ### A4. Professor também é usuário do sistema?
 
 - **Pergunta:** o professor alocado precisa de login ou é apenas um recurso cadastrado?
-- **Fato:** professor é recurso alocável (RN-02, RF-05) e o Solicitante é descrito como "professor ou coordenador" (seção 10, item 4).
+- **Fato:** professor é recurso alocável (RN-02, RF-05) e o Solicitante é descrito como "professor ou coordenador" (escopo e perfis da especificação); a dúvida está no [plano de projeto](../plano-de-projeto.md), seção 5.2.
 - **Decisão:** professor é recurso alocável e o vínculo com usuário é opcional. O professor pode não ter login.
 - **Justificativa:** o catálogo precisa conter docentes que nunca usarão o sistema, e o Solicitante pode ser professor, então o vínculo não pode ser obrigatório nem proibido.
 - **Alternativas consideradas:** professor sempre com usuário; professor nunca com usuário (cadastros totalmente separados).
@@ -120,7 +120,7 @@ Observações importantes:
 ### A5. Notificação simulada ou API externa?
 
 - **Pergunta:** qual opção a equipe adota e, se for API externa, qual provedor?
-- **Fato:** RF-11 aceita "notificação simulada ou integração com API externa" (seção 10, item 5). A especificação exige WireMock para integrações externas (seção 5).
+- **Fato:** RF-11 aceita "notificação simulada ou integração com API externa" ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 8). A especificação exige WireMock para integrações externas (seção 5).
 - **Decisão:** porta com adapter HTTP de webhook, configurável por variável de ambiente. Em demonstração aponta para um endpoint de teste; nos testes é WireMock. Eventos: solicitação pendente, reserva aprovada, rejeitada e cancelada. Envio após o commit, com status e tentativas registrados para reenvio. A falha do provedor nunca desfaz a reserva.
 - **Justificativa:** satisfaz RF-11 sem depender de provedor real e permite teste com WireMock sem alterar o código de produção. Enviar após o commit mantém a reserva válida mesmo com provedor fora do ar.
 - **Alternativas consideradas:** simulação interna apenas com registro em tabela; e-mail; integração com serviço de terceiros específico; envio dentro da transação.
@@ -135,7 +135,7 @@ Observações importantes:
 ### A6. Fuso horário e horário de funcionamento
 
 - **Pergunta:** qual fuso vale e existe janela em que uma sala pode ser reservada?
-- **Fato:** a especificação não define fuso nem horário de funcionamento (seção 10, item 6).
+- **Fato:** a especificação não define fuso nem horário de funcionamento ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 7).
 - **Decisão:** fuso America/Sao_Paulo, configurável, com armazenamento em UTC e conversão apenas na borda. A sala tem hora de abertura e de fechamento, e a reserva precisa caber na janela. Professor e material não têm janela. A reserva não cruza a meia-noite local nesta versão.
 - **Justificativa:** o armazenamento em UTC evita ambiguidade entre ambientes; a janela por sala dá base ao cálculo de utilização (B4) e a uma regra de validação objetiva.
 - **Alternativas consideradas:** usar o fuso do servidor; gravar horário local sem conversão; fuso por usuário; sala sem janela, aberta o dia todo; permitir reserva que cruza a meia-noite.
@@ -150,7 +150,7 @@ Observações importantes:
 ### A7. Bloqueio de manutenção sobre reservas existentes
 
 - **Pergunta:** o que acontece com as reservas existentes quando um bloqueio é criado sobre elas?
-- **Fato:** RN-04 proíbe reservar recurso em manutenção; RN-07 proíbe apagar reservas iniciadas (seção 10, item 7).
+- **Fato:** RN-04 proíbe reservar recurso em manutenção; RN-07 proíbe apagar reservas iniciadas ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 5).
 - **Decisão:** a criação do bloqueio primeiro responde 409 listando as reservas conflitantes, sem gravar. O Administrador pode confirmar, e então as reservas SOLICITADA e APROVADA conflitantes são canceladas pelo sistema com motivo MANUTENCAO, com auditoria e notificação. Se houver reserva EM_USO no período, o bloqueio é recusado, sem opção de forçar (RN-07).
 - **Justificativa:** o Administrador vê o efeito antes de aplicar; nenhuma reserva em uso é interrompida; todo cancelamento fica rastreado.
 - **Alternativas consideradas:** recusar o bloqueio sempre que houver reserva; cancelar automaticamente sem confirmação; remanejar reservas para outro recurso.
@@ -164,7 +164,7 @@ Observações importantes:
 ### A8. Cancelamento, início de uso e não comparecimento
 
 - **Pergunta:** quem cancela em cada estado, até quando, e qual a janela para marcar não compareceu?
-- **Fato:** RN-05 lista os estados; RN-07 proíbe apagar reservas iniciadas (seção 10, item 8).
+- **Fato:** RN-05 lista os estados; RN-07 proíbe apagar reservas iniciadas ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacunas 3 e 4).
 - **Decisão:**
 
 | Estado | Quem cancela | Condição |
@@ -188,7 +188,7 @@ Observações importantes:
 
 ## B. Dúvidas surgidas na redação dos documentos
 
-Não estão na seção 10 da especificação. Foram levantadas ao escrever o PRD e as personas.
+Não estão entre as lacunas da seção 5.3 do plano de projeto. Foram levantadas ao escrever o PRD e as personas.
 
 ### B1. O Responsável também cria reservas?
 

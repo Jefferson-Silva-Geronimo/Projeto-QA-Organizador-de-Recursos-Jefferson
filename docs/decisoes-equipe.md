@@ -19,7 +19,7 @@ Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md), com status "Dec
 
 | Grupo | IDs | Data | Aceita por | Observação |
 | --- | --- | --- | --- | --- |
-| Lacunas da seção 10 | A1 a A8 | 12/10/2026 | Equipe (Jefferson) | Decisão da equipe (Jefferson), 24/10/2026, não validada com o professor (F7-16 e F7-17) |
+| Lacunas do plano de projeto (seção 5.3) | A1 a A8 | 12/10/2026 | Equipe (Jefferson) | Decisão da equipe (Jefferson), 24/10/2026, não validada com o professor (F7-16 e F7-17) |
 | Dúvidas do PRD | B1 a B4 | 12/10/2026 | Equipe (Jefferson) | — |
 | Decisões ao aplicar A e B | C1 a C8 | 12/10/2026 | Equipe (Jefferson) | C2 com a suposição S6 |
 | Decisões ao aplicar C | D5 a D8 | 12/10/2026 | Equipe (Jefferson) | — |
@@ -37,10 +37,10 @@ para a visão hexagonal original.
 | ID | Decisão | Alternativa descartada | Motivo | Origem |
 | --- | --- | --- | --- | --- |
 | DS-01 | ADR-001 passa a "Aceito, emendado" pelos ADR-013 e ADR-014; o texto original fica preservado com uma nota de emenda | Marcar como "Substituído" | Seguem valendo o monólito de um artefato, o Spring Boot 3.x, a transação local e o domínio sem Spring. Só mudaram a estrutura de pacotes e o acesso a dados | ADR-014; ADR-013; código em `src/main` |
-| DS-02 | `arquitetura.md`, seção 10.3, redesenhada só com a estrutura MVC e os nomes reais de componente; tabela 10.4 acrescenta a integração e o relógio; nota aponta o ADR-001 e o histórico do Git para a visão hexagonal original | Manter o diagrama hexagonal com uma tabela de correspondência; manter os dois diagramas (risco de divergir de novo, como em BUG-005) | O diagrama divergia do código; a tabela sozinha obrigava o leitor a traduzir | Plano mestre, Bloco B; `ArquiteturaTest` |
+| DS-02 | `arquitetura.md`, seção 10.3, redesenhada só com a estrutura MVC e os nomes reais de componente; tabela 10.4 acrescenta a integração e o relógio; nota aponta o ADR-001 e o histórico do Git para a visão hexagonal original | Manter o diagrama hexagonal com uma tabela de correspondência; manter os dois diagramas (risco de divergir de novo, como em BUG-005) | O diagrama divergia do código; a tabela sozinha obrigava o leitor a traduzir | [Plano de projeto](plano-de-projeto.md), Bloco B; `ArquiteturaTest` |
 | DS-03 | A imagem do PostgreSQL é fixada por digest do índice multi-arquitetura, lido do Docker Hub em 17/10/2026, no `compose.yaml` e no Testcontainers | Manter a tag móvel `17` | A tag mudou de digest entre a máquina local (7 semanas) e o registro; o banco do teste mudaria sem alteração de código | Registro Docker Hub; `verify` verde com o digest |
 | DS-04 | **Nenhuma correção** do tratamento do impasse 40P01 (BUG-007) e nenhum BUG-009 | Não contar o impasse em `tentativas_conflito` | A RN-30 manda gravar o pedido perdedor de uma disputa simultânea; o ADR-003 manda tratar o impasse como conflito; o CT-060 exige exatamente uma tentativa por recusa. Não há inflação | RN-30; ADR-003; `ConcorrenciaApiIT` |
-| DS-05 | PIT só como relatório, no pacote `model`, fora do `verify`, sem meta | Gate de mutação | O plano pede relatório; a especificação não define meta de mutação | Plano mestre, Bloco C |
+| DS-05 | PIT só como relatório, no pacote `model`, fora do `verify`, sem meta | Gate de mutação | O plano pede relatório; a especificação não define meta de mutação | [Plano de projeto](plano-de-projeto.md), Bloco C |
 | DS-06 | Cucumber 7.23.0, com `cucumber-spring` | Cucumber 7.34.9 | A versão 7.24+ exige JUnit Platform 1.13 e o Spring Boot 3.5.16 gerencia a 1.12 (falha de descoberta observada) | Prompt 4.F; falha reproduzida |
 | DS-07 | Remoção de `EstadoReserva.ocupaRecurso` e `Periodo.duracao`, sem uso | Cobri-los com teste | Teste só para chamar código morto sobe o número sem proteger comportamento | PIT; busca por usos em `src/main` |
 | DS-08 | BUG-009 corrigido: falha ao gravar a tentativa mantém o 409 e vai para o log (`61ce37d`) | Deixar o 500 e atualizar o ADR-003 | A decisão de 15/10/2026 já dizia que o 409 é mantido; o código divergia. Corrigir o código cumpre a decisão aprovada | ADR-003; `arquitetura.md` seção 13.2; ciclo-01 DV-01 |
@@ -71,7 +71,7 @@ O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%
 
 ## 4. Suposições da equipe, não validadas com o professor
 
-Em 24/10/2026 Jefferson decidiu manter cada uma como **decisão da equipe, não validada com o professor** (F7-16, com o impacto e o teste de cada item; F7-17, com a interpretação da seção 10 da especificação). O rótulo "Suposição" fica porque a premissa segue sem validação externa.
+Em 24/10/2026 Jefferson decidiu manter cada uma como **decisão da equipe, não validada com o professor** (F7-16, com o impacto e o teste de cada item; F7-17, com a correção de origem das lacunas). O rótulo "Suposição" fica porque a premissa segue sem validação externa.
 
 | ID | Suposição | Impacto se estiver errada | Teste que a isola |
 | --- | --- | --- | --- |
@@ -86,7 +86,7 @@ Em 24/10/2026 Jefferson decidiu manter cada uma como **decisão da equipe, não 
 
 ## 5. Decisões da Fase 5 (17/10/2026)
 
-**Decisão da equipe (Jefferson), 17/10/2026.** Origem: plano mestre, seção 9 e Prompts 5.A a 5.C. Cada uma foi apresentada
+**Decisão da equipe (Jefferson), 17/10/2026.** Origem: [plano de projeto](plano-de-projeto.md), seção 9 e Prompts 5.A a 5.C. Cada uma foi apresentada
 com alternativas e escolhida por Jefferson.
 
 | ID | Decisão | Alternativas descartadas | Ajustes pedidos por Jefferson |
@@ -147,18 +147,18 @@ simultâneas podem passar de N por pouco, porque a checagem e o registro não s�
 ## 7. Fechamento da Fase 5 antes da Fase 6 (17/10/2026)
 
 **Decisão da equipe (Jefferson), 17/10/2026**, aceitando as recomendações apresentadas, sempre dentro da especificação e do
-plano mestre. Origem: plano mestre, seção 9 (porta de saída da Fase 5) e Prompt 5.B.
+[plano de projeto](plano-de-projeto.md). Origem: [plano de projeto](plano-de-projeto.md), seção 9 (porta de saída da Fase 5) e Prompt 5.B.
 
 | ID | Decisão | Alternativa descartada |
 | --- | --- | --- |
 | F5-01 | **Rodada 02 de carga agora**, para separar o efeito da máquina do custo por requisição. Uma variável por vez: rodada 02 com 50 usuários e alvos sorteados, e rodada 03 com 25 usuários, ambas com métricas de CPU e do pool. Otimização só se o dado apontar o código, em TDD, com teste de desempenho antes | Refazer a medição só na Fase 7 |
 | F5-02 | **`analyze-docs` completo antes da Fase 6** (ortografia, IDs cruzados, termos canônicos, números sem origem), além das checagens mecânicas já feitas | Deixar para a Fase 7 |
 | F5-03 | **Apagar as branches já mescladas** na `main` (fases 3, 4 e 5 e as de documentação) | Mantê-las |
-| F5-04 | **`tutorial.md` não se aplica a esta fase.** O documento serviu de base só para as fases iniciais (sugestões de prompts e escolhas); a referência passa a ser a especificação e o plano mestre. Registrado como não aplicável, não como pendência | Procurar ou recriar o arquivo |
+| F5-04 | **`tutorial.md` não se aplica a esta fase.** O documento serviu de base só para as fases iniciais (sugestões de prompts e escolhas); a referência passa a ser a especificação e o [plano de projeto](plano-de-projeto.md). Registrado como não aplicável, não como pendência | Procurar ou recriar o arquivo |
 
 Dependências já tratadas na mesma sessão, todas respeitando a especificação: PRs #14 (Spring Boot 4.1.1) e #13 (springdoc 3.1.1)
 **fechados sem mesclar**, porque a especificação exige Spring Boot 3.x; PR #11 (PIT 1.30.1) e PR #12 (Maven 3.10.0) mesclados
-com CI verde, pois nem a especificação nem o plano mestre fixam essas versões.
+com CI verde, pois nem a especificação nem o [plano de projeto](plano-de-projeto.md) fixam essas versões.
 
 ### Resultado de F5-01 (17/10/2026)
 
@@ -170,7 +170,7 @@ professor, e o relatório final declara RNF-08b como não atendido nesta máquin
 
 ## 8. Decisões de front end da Fase 6 (18/10/2026)
 
-**Decisão da equipe (Jefferson), 18/10/2026**, escolhendo entre alternativas que respeitam a especificação e o plano mestre
+**Decisão da equipe (Jefferson), 18/10/2026**, escolhendo entre alternativas que respeitam a especificação e o [plano de projeto](plano-de-projeto.md)
 (seção 10.3). Texto completo, mitigações e alternativas descartadas em [ADR-015](adr/ADR-015-stack-do-front-end.md).
 
 | ID | Decisão | Alternativa descartada |
@@ -220,7 +220,7 @@ entre três paletas com contraste calculado (102 pares, 0 falhas). Valores dos t
 | Condição imposta por Jefferson | Como é atendida |
 | --- | --- |
 | Contraste acessível vale mais que o visual: todo par com no mínimo WCAG AA, validado antes do protótipo. Se uma cor não passar, ajusta-se a cor, não o critério | Pares calculados por script; o anel de foco ganhou espaço de 2 px em vez de afrouxar o critério |
-| *Mobile-first*, 360 px e 1280 px, rótulos, foco visível, CSS Modules sem biblioteca de UI | F6-04 e plano mestre, seção 10.3 |
+| *Mobile-first*, 360 px e 1280 px, rótulos, foco visível, CSS Modules sem biblioteca de UI | F6-04 e [plano de projeto](plano-de-projeto.md), seção 10.3 |
 | Cor vibrante só nos destaques, base neutra, sem fundo todo saturado | Tokens `fundo` e `superficie` neutros; `destaque` só em botão, indicador e estado |
 | Cantos arredondados e sombras suaves, telas densas legíveis, tabelas compactas no desktop e cartões no celular | Regra de projeto para Fila, Relatórios, Auditoria e Catálogo |
 | Neutralidade de marca | Nenhum nome, logotipo ou paleta de instituição real |
@@ -339,7 +339,7 @@ Os testes da T07 e da T11 cobrem a recusa com a lista de reservas afetadas (test
 | --- | --- | --- |
 | F6-18 | Em **PR de front puro ou de campo aditivo**, roda-se local só as classes de teste afetadas, o contrato (CT-114, CT-115 e CT-134) e a arquitetura (ArchUnit), e a suíte completa fica para a CI | Se o PR mudar **regra de negócio, política, migração ou consulta**, a suíte completa roda local antes de abrir o PR. O PR declara o que rodou local e o que ficou para a CI. **Os números de testes da RTM e dos relatórios vêm sempre da CI, nunca do local.** A regra de repetir o job da CI uma única vez para `NotificacaoApiIT.int01ECt103` (R-25 e R-26) continua; qualquer outro teste falhando, pára e avisa |
 
-Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão já aprovado (T04, T05 e T06) e permissões no molde da F6-14, da F6-15 e da F6-16 não são perguntados, e entram no resumo do PR; só se pergunta o que for novo ou conflitar com a especificação ou o plano mestre; enquanto a CI de um PR roda, a próxima tela começa em branch novo; nas telas simples (Usuários e Catálogo) o navegador real roda só o modo da própria tela, com axe nos dois temas e tamanhos, teclado e rolagem, e o PR declara o que deixou de rodar.
+Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão já aprovado (T04, T05 e T06) e permissões no molde da F6-14, da F6-15 e da F6-16 não são perguntados, e entram no resumo do PR; só se pergunta o que for novo ou conflitar com a especificação ou o [plano de projeto](plano-de-projeto.md); enquanto a CI de um PR roda, a próxima tela começa em branch novo; nas telas simples (Usuários e Catálogo) o navegador real roda só o modo da própria tela, com axe nos dois temas e tamanhos, teclado e rolagem, e o PR declara o que deixou de rodar.
 
 ### F6-19. O contrato declara o motivo do bloqueio como obrigatório (22/10/2026)
 
@@ -351,11 +351,11 @@ Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão 
 
 ### F6-20. A porta de saída da Fase 6 vale para os RF com interação humana (22/10/2026)
 
-**Decisão da equipe (Jefferson), 22/10/2026**, resolvendo a ressalva do fechamento da Fase 6: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela, e a porta de saída diz "Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil" (plano mestre, seção 10, porta de saída da Fase 6).
+**Decisão da equipe (Jefferson), 22/10/2026**, resolvendo a ressalva do fechamento da Fase 6: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela, e a porta de saída diz "Todo RF de 01 a 14 é acessível pela interface por pelo menos um perfil" ([plano de projeto](plano-de-projeto.md), seção 10, porta de saída da Fase 6).
 
 | ID | Decisão | Alternativa descartada |
 | --- | --- | --- |
-| F6-20 | **A frase da porta de saída vale para os RF com interação humana.** Fundamento: o **Anexo A do plano mestre** (cobertura dos 14 requisitos funcionais) já diz "Sem tela própria" para RF-11 (teste principal INT-01 a INT-06) e para RF-14 (teste principal: contrato OpenAPI). **Nenhuma tela nova é criada.** É uma **interpretação declarada**: entra em `fase-7-pendencias.md` e no relatório final como tal, não como cumprimento literal da frase. RF-11 está provado pelos testes INT-01 a INT-06 e RF-14 pelo OpenAPI e pelos testes de contrato; a prova, com os arquivos e a execução na CI, está em [relatorio-sessao-fase-6-fechamento.md](relatorio-sessao-fase-6-fechamento.md), seção 1.1 | Criar uma tela de notificações simuladas e um link para o OpenAPI só para cumprir a frase: aumentaria o escopo sem ganho de prova, e o próprio Anexo A não a pede |
+| F6-20 | **A frase da porta de saída vale para os RF com interação humana.** Fundamento: o **Anexo A do [plano de projeto](plano-de-projeto.md)** (cobertura dos 14 requisitos funcionais) já diz "Sem tela própria" para RF-11 (teste principal INT-01 a INT-06) e para RF-14 (teste principal: contrato OpenAPI). **Nenhuma tela nova é criada.** É uma **interpretação declarada**: entra em `fase-7-pendencias.md` e no relatório final como tal, não como cumprimento literal da frase. RF-11 está provado pelos testes INT-01 a INT-06 e RF-14 pelo OpenAPI e pelos testes de contrato; a prova, com os arquivos e a execução na CI, está em [relatorio-qualidade.md](relatorio-qualidade.md), seção "Prova da interpretação F6-20" | Criar uma tela de notificações simuladas e um link para o OpenAPI só para cumprir a frase: aumentaria o escopo sem ganho de prova, e o próprio Anexo A não a pede |
 
 ### F6-21. O job `e2e` passa a ser check obrigatório na `main` (22/10/2026)
 
@@ -379,7 +379,7 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 
 ### F7-01 a F7-03. Revisão assistida independente do front end (24/10/2026)
 
-**Decisões da equipe (Jefferson), 24/10/2026**, sobre os achados de [revisao-assistida-front.md](testes/revisao-assistida-front.md), conforme a especificação e o plano mestre. Nenhuma abre BUG; cada uma traz a condição que a reabre como defeito.
+**Decisões da equipe (Jefferson), 24/10/2026**, sobre os achados de [revisao-assistida-front.md](testes/revisao-assistida-front.md), conforme a especificação e o [plano de projeto](plano-de-projeto.md). Nenhuma abre BUG; cada uma traz a condição que a reabre como defeito.
 
 | ID | Decisão | Origem | Reabre como defeito se |
 | --- | --- | --- | --- |
@@ -389,7 +389,7 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 
 ### F7-04. Como provar o vermelho intencional do pipeline (24/10/2026)
 
-**Decisão da equipe (Jefferson), 24/10/2026**, entre alternativas conformes à especificação (seção 8) e ao plano mestre (seção 11.4). Alternativas apresentadas: A (uma asserção invertida no job `test`), B (uma asserção do E2E, job `e2e`) e C (três quebras, uma por check obrigatório).
+**Decisão da equipe (Jefferson), 24/10/2026**, entre alternativas conformes à especificação (seção 8) e ao [plano de projeto](plano-de-projeto.md) (seção 11.4). Alternativas apresentadas: A (uma asserção invertida no job `test`), B (uma asserção do E2E, job `e2e`) e C (três quebras, uma por check obrigatório).
 
 | ID | Decisão | Como foi aplicado |
 | --- | --- | --- |
@@ -397,7 +397,7 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 
 ### F7-05 a F7-13. Escolhas do item 2.5 e plano de correção dos defeitos da 7.A (24/10/2026)
 
-**Decisões da equipe (Jefferson), 24/10/2026.** Para cada uma, as alternativas conformes à especificação e ao plano mestre foram apresentadas com a recomendação, o custo e o impacto; a coluna "Alternativas" resume o que foi apresentado. Nada foi implementado antes da escolha.
+**Decisões da equipe (Jefferson), 24/10/2026.** Para cada uma, as alternativas conformes à especificação e ao [plano de projeto](plano-de-projeto.md) foram apresentadas com a recomendação, o custo e o impacto; a coluna "Alternativas" resume o que foi apresentado. Nada foi implementado antes da escolha.
 
 | ID | Decisão | Alternativas apresentadas | Como será aplicado |
 | --- | --- | --- | --- |
@@ -405,7 +405,7 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 | F7-06 | **SEC-03: implementar a soma de verificação do Maven no wrapper (`distributionSha256Sum` em `maven-wrapper.properties`)**, em PR próprio e sem mexer em regra de negócio. **SBOM e SEC-04 (alerta além do log) ficam declarados como dívida técnica no relatório final**, com plano de evolução e sem código novo; A03 e A09 seguem "parcial" para esses dois | (1) só a soma, SBOM e SEC-04 dívida (escolhida); (2) soma e SBOM na CI; (3) os três; (4) nenhum, tudo dívida | **Aplicado em 24/10/2026.** Teste `MavenWrapperTest` (`test(red)` visto vermelho por asserção em `b00569e`; `feat(green)` em `99da303`; o teste da URL do Maven Central nasceu verde, por declaração). A soma foi calculada de `apache-maven-3.10.0-bin.zip` baixado do Maven Central, cujo SHA-512 confere com o publicado (o Central não publica SHA-256: resposta 404). `mvnw` e `mvnw.cmd` recusam soma errada ao baixar (provado localmente com cache novo). **Prova na CI:** PR descartável #74, run [`40109437336`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40109437336), `test` e `e2e` vermelhos com "Failed to validate Maven distribution SHA-256", `mergeStateStatus` `BLOCKED`, PR fechado sem mesclar e branch apagado no local e no remoto; a `main` nunca recebeu a quebra. **Limite:** o wrapper só valida ao baixar o Maven. **Consequência descoberta no PR 75 (F7-14):** a soma é a do `.zip`, mas o `mvnw` troca o `.zip` pelo `.tar.gz` quando não há `unzip` na máquina; no `Dockerfile` da API (imagem do JDK, sem `unzip`) o job `e2e` ficou vermelho com "Failed to validate Maven distribution SHA-256" mesmo com a soma certa (run [`40109690777`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40109690777)), enquanto o job `test` passou porque o runner tem `unzip`. Resolvido pela F7-14. **Quem subir a versão do Maven precisa atualizar a soma:** o Dependabot já alterou o Maven do wrapper uma vez (PR 12, commit `dc0f23d`, de 3.9.9 para 3.10.0), então um PR dele passará a ficar vermelho até a soma ser atualizada |
 | F7-07 | **Fazer o modelo de ameaças curto (uma página), só documentação, em PR próprio.** Cada ameaça cita a evidência que a cobre (teste, ADR, decisão ou risco, como CEN-02, CEN-09, R-03, R-12 e ADR-004). **Ameaça sem evidência vira lacuna declarada, nunca "mitigada"**; não se inventa ameaça nem se afirma cobertura não verificada. A06 em `revisao-seguranca.md` só muda no que a evidência sustentar | Fazer o modelo curto (escolhida) ou declarar como não feito | **Aplicado em 24/10/2026** em [modelo-de-ameacas.md](testes/modelo-de-ameacas.md): 18 ameaças com evidência (8 cobertas, 6 parciais, 2 de risco aceito, 2 lacunas). A06 em `revisao-seguranca.md` atualizado só no que a evidência sustenta e **segue "parcial"**. PR de documentação com analyze-docs completo |
 | F7-08 | **Os 27 alertas do Dependabot são declarados "não se aplicam ao produto", sem dispensa no GitHub.** Justificativa, fatos e data da consulta em [alertas-dependabot.md](testes/alertas-dependabot.md): 27 abertos, todos em `.aiox-core/` (26 no painel de diagnóstico e 1 na raiz do framework), **0 em `frontend/` e 0 no Maven**; os 22 antigos (17/10/2026) mais 5 novos (22/10/2026). Entra no relatório final como risco declarado. Se algum alerta aparecer fora de `.aiox-core/`, parar e avisar Jefferson | (1) declarar e dispensar no GitHub; (2) só declarar (escolhida); (3) atualizar pelo canal do framework (canal desconhecido, lacuna) | Documento criado neste PR; consulta repetida na leitura final (2.4) e antes da tag (2.7) |
-| F7-09 | **Trocar a Origem do ADR-015 (linha 7) por documentos versionados**: `decisoes-equipe.md` (seção 8, F6-01 a F6-05), RF-13 e RNF-10, sem citar o plano mestre (regra 7 do AGENTS). **Muda só a origem, nunca o conteúdo da decisão.** Antes de aplicar, conferir decisão por decisão se essas fontes sustentam o que o ADR diz; o que não bater é mostrado a Jefferson, sem ajuste por conta própria | (1) origem em documentos versionados (escolhida); (2) "plano mestre, seção 10.3" sem link (contraria a regra 7); (3) manter o link e declarar o aviso | **Aplicado em 24/10/2026.** A lista inicial da origem (decisoes-equipe.md F6-01 a F6-05, RF-13 e RNF-10) foi **ampliada após a conferência decisão por decisão**: ela sustenta as decisões 1 (F6-01), 4 (F6-02), 5 (F6-03) e 6 (F6-04), mas não sozinha a 2 (tabela de erros), a 3 (rotas por perfil) nem a 7 (datas no fuso, "ISO-8601 com offset" só aparece na tabela de princípios de `navegacao-telas.md`, linha 18). Foram acrescentadas à origem a tabela de princípios de `navegacao-telas.md`, o ADR-004, o ADR-005 e o ADR-008. Jefferson também aprovou trocar as 7 citações de texto ao plano mestre (o Contexto e seis células "Plano 10.3 (n)") pelas mesmas fontes, decisão por decisão. **Só origem e citações mudaram; o conteúdo de nenhuma decisão mudou** (8 linhas trocadas, todas na linha 7, no Contexto e na coluna Origem). **Duas menções ao plano mestre ficam, por não serem origem:** a linha 81 ("sem relação com a especificação nem com o plano mestre") e a condição da escolha 4 ("nem o plano"). O aviso do ADR-015 no analyze-docs some |
+| F7-09 | **Trocar a Origem do ADR-015 (linha 7) por documentos versionados**: `decisoes-equipe.md` (seção 8, F6-01 a F6-05), RF-13 e RNF-10, sem citar o plano de projeto, então chamado plano mestre e ignorado pelo Git (regra 7 do AGENTS na época). **Muda só a origem, nunca o conteúdo da decisão.** Antes de aplicar, conferir decisão por decisão se essas fontes sustentam o que o ADR diz; o que não bater é mostrado a Jefferson, sem ajuste por conta própria | (1) origem em documentos versionados (escolhida); (2) "seção 10.3 do plano" sem link (contraria a regra 7 da época); (3) manter o link e declarar o aviso | **Aplicado em 24/10/2026.** A lista inicial da origem (decisoes-equipe.md F6-01 a F6-05, RF-13 e RNF-10) foi **ampliada após a conferência decisão por decisão**: ela sustenta as decisões 1 (F6-01), 4 (F6-02), 5 (F6-03) e 6 (F6-04), mas não sozinha a 2 (tabela de erros), a 3 (rotas por perfil) nem a 7 (datas no fuso, "ISO-8601 com offset" só aparece na tabela de princípios de `navegacao-telas.md`, linha 18). Foram acrescentadas à origem a tabela de princípios de `navegacao-telas.md`, o ADR-004, o ADR-005 e o ADR-008. Jefferson também aprovou trocar as 7 citações de texto ao [plano de projeto](plano-de-projeto.md) (o Contexto e seis células "Plano 10.3 (n)") pelas mesmas fontes, decisão por decisão. **Só origem e citações mudaram; o conteúdo de nenhuma decisão mudou** (8 linhas trocadas, todas na linha 7, no Contexto e na coluna Origem). **Duas menções ao [plano de projeto](plano-de-projeto.md) ficam, por não serem origem:** a linha 81 ("sem relação com a especificação nem com o [plano de projeto](plano-de-projeto.md)") e a condição da escolha 4 ("nem o plano"). O aviso do ADR-015 no analyze-docs some |
 | F7-10 | **Tornar o check `segredos` obrigatório na proteção da `main`**, que passa a exigir `test`, `frontend`, `e2e` e `segredos`. SonarCloud continua barrando por dentro do job `test` (`-Dsonar.qualitygate.wait=true`, `ci.yml` linha 71) e, no check externo, segue como regra de trabalho. **Verificações prévias feitas em 24/10/2026:** `segredos` rodou com sucesso em todos os PRs só de documentação (58, 61, 62 e 71) e nos do Dependabot (24, 12 e 11); o `ci.yml` usa `on: pull_request` sem filtro de caminho | (1) só `segredos` (escolhida); (2) `segredos` e o check externo do SonarCloud (bloquearia os PRs do Dependabot, que não recebem segredos); (3) manter como regra de trabalho | **Aplicado em 24/10/2026**, depois do merge dos PRs 72 a 79: a proteção foi lida antes e depois pela API, com `AIOX_ACTIVE_AGENT=devops` em comando isolado (`POST .../branches/main/protection/required_status_checks/contexts`, que só mexe nos contextos). **Diferença entre o antes e o depois: dos 16 campos comparados, só `required_status_checks.contexts` e `required_status_checks.checks` mudaram (ganharam `segredos`); os outros 14 ficaram iguais**, inclusive `strict` (sim), aprovações exigidas (0), vale para administrador (sim), force push (não) e exclusão da branch (não). Contextos depois: `test`, `frontend`, `e2e`, `segredos`. A descrição da proteção no README foi atualizada no PR 4 (BUG-027) |
 | F7-11 | **Adiar o salto do `jsdom` 29 para 30 e declarar como dívida técnica, sem prazo.** Fatos da consulta de 24/10/2026: versão do projeto 29.1.1, última publicada 30.1.3 (`npm view jsdom`), sem alerta de segurança no `jsdom`. O `.github/dependabot.yml` continua ignorando saltos maiores do `jsdom`. Nenhum código nem teste muda | (1) adiar e declarar (escolhida); (2) avaliar em PR nosso com a suíte completa do front | Entra no relatório final como dívida técnica |
 | F7-12 | **Aplicar o ajuste da frase da linha 15 de `docs/prd/navegacao-telas.md`**: "Toda mensagem de recusa do servidor vem da tabela da seção 5; dicas de preenchimento e as mensagens de ação ausente aprovadas ficam na seção 9. O texto cru do back end nunca aparece na tela." Muda só essa frase, sem tocar em código nem teste. A F7-03 passa a referenciar o ajuste | (1) aplicar o ajuste (escolhida); (2) só declarar o desvio | **Aplicado** em `docs/prd/navegacao-telas.md`, linha 15 (PR de documentação); a F7-03 e `testes/revisao-assistida-front.md` referenciam o ajuste |
@@ -415,7 +415,7 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 
 ### F7-14. `unzip` no estágio de compilação do Dockerfile, para a soma do Maven valer (24/10/2026)
 
-**Decisão da equipe (Jefferson), 24/10/2026**, entre alternativas conformes à especificação e ao plano mestre, apresentadas com custo e impacto. Origem: consequência da F7-06 descoberta no PR 75.
+**Decisão da equipe (Jefferson), 24/10/2026**, entre alternativas conformes à especificação e ao [plano de projeto](plano-de-projeto.md), apresentadas com custo e impacto. Origem: consequência da F7-06 descoberta no PR 75.
 
 | ID | Decisão | Alternativas apresentadas | Como foi aplicado e o que fica declarado |
 | --- | --- | --- | --- |
@@ -454,13 +454,38 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 | F7-16-17 | Início do uso antes do horário | Sem limite: `podeIniciar` é verdadeiro em reserva APROVADA antes do início | Se o início só valer a partir do horário, o servidor precisa recusá-lo, `podeIniciar` passa a ser falso antes dele, e CT-150 e CT-152 mudam | CT-152 (`PermissoesDeUsoApiIT.ct152_responsavelPodeIniciarReservaAprovadaAntesDoInicio`); CT-150 (`PermissoesDeUsoTest`) |
 | F7-16-18 | Troca de perfil e mínimo de Responsáveis (D14) | A troca de perfil **não** é recusada por causa do mínimo de dois Responsáveis ativos; o mínimo só vale na desativação | **Brecha funcional conhecida:** o Administrador pode deixar o sistema com um só Responsável, e então reserva de Responsável em recurso restrito nunca é aprovada (B1) | CT-015 (`UsuariosApiIT.ct015_desativacaoQueDeixariaMenosDeDoisResponsaveisEhRecusada`) isola só a desativação. **Lacuna:** nenhum teste afirma que a troca de perfil não é recusada; só a rodada manual E-19 viu |
 
-### F7-17. Para a seção 10 da especificação, a validação é da equipe (24/10/2026)
+### F7-17. As lacunas A1 a A8 são análise da equipe, e a decisão é da equipe (24/10/2026)
+
+**Correção de origem (24/10/2026).** A versão anterior desta decisão citava uma "seção 10" da especificação, com a frase "não podem ser decididas sem validação". A página oficial da [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) **não tem** essa seção, nem lista de lacunas, nem essa frase: o texto vinha de um resumo local, e foi retirado de todos os documentos. A origem das lacunas é o [plano de projeto](plano-de-projeto.md), seção 5.3 ("Lacunas que a especificação deixa em aberto (nenhuma pode ser decidida pelo agente)"), a seção 5.2 (professor) e o Anexo E.
 
 **Decisão da equipe (Jefferson), 24/10/2026**, no molde da F6-20: é uma **interpretação declarada**, e não uma validação externa.
 
 | ID | Interpretação | Alternativa descartada |
 | --- | --- | --- |
-| F7-17 | A seção 10 da [especificação](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) diz que as lacunas "**não podem ser decididas sem validação**; cada um vira lacuna, suposição ou pergunta aberta nos documentos". **Interpretação da equipe:** como o projeto é de uma pessoa e não há resposta do professor, a validação é a da própria equipe (Jefferson), registrada com data, impacto e teste em F7-16. **Isto não é validação externa**: o relatório final declara as lacunas A1 a A8, D1, D3, D4, D9, D17 e as demais como decididas pela equipe, sem validação do professor, e destaca A3 (maior retrabalho se estiver errada), D14 (brecha funcional conhecida) e a revisão por pares (limitação do entregável) | Esperar uma resposta que não virá antes da entrega; retirar as decisões do projeto |
+| F7-17 | As lacunas A1 a A8 são **análise da equipe**, feita no plano de projeto, e **não** vêm da especificação oficial. O plano diz que nenhuma pode ser decidida pelo agente; como a equipe é uma pessoa, a decisão é de Jefferson, registrada com data, impacto e teste em F7-16. **Isto não é validação externa**: o relatório final declara as lacunas A1 a A8, D1, D3, D4, D9, D17 e as demais como decididas pela equipe, sem validação do professor, e destaca A3 (maior retrabalho se estiver errada), D14 (brecha funcional conhecida) e a revisão por pares (limitação do entregável) | Esperar uma resposta que não virá antes da entrega; retirar as decisões do projeto |
+
+Correspondência entre os IDs do projeto e o plano de projeto. A numeração A1 a A8 do projeto segue a ordem de um resumo local antigo e difere da ordem da seção 5.3; esta tabela é a ligação.
+
+| ID | Tema | Plano de projeto |
+| --- | --- | --- |
+| A1 | Recurso restrito | Seção 5.3, lacuna 1; Anexo E, pergunta 1 |
+| A2 | Fronteira de horário | Seção 5.3, lacuna 2; Anexo E, pergunta 2 |
+| A3 | Material por unidade ou quantidade | Seção 5.3, lacuna 6; Anexo E, pergunta 3 |
+| A4 | Professor e usuário | Seção 5.2 ("uma lacuna já visível"); Anexo E, pergunta 4 |
+| A5 | Notificação simulada ou externa | Seção 5.3, lacuna 8; Anexo E, pergunta 5 |
+| A6 | Fuso e janela de funcionamento | Seção 5.3, lacuna 7; Anexo E, pergunta 6 |
+| A7 | Bloqueio sobre reservas existentes | Seção 5.3, lacuna 5; Anexo E, pergunta 7 |
+| A8 | Cancelamento e não comparecimento | Seção 5.3, lacunas 3 e 4; Anexo E, pergunta 8 |
+
+### F7-18. Repositório oficial só com documentação oficial (24/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026**, na preparação da entrega, conforme a página "Entrega do trabalho final" (Aula 14) e a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+
+| ID | Decisão | Consequência |
+| --- | --- | --- |
+| F7-18-01 | **O repositório oficial fica só com documentação oficial.** Os relatórios de sessão e de fase (`relatorio-sessao-*.md` e `relatorio-fase-*.md`) saem do remoto (`git rm --cached`) e ficam só na máquina de Jefferson, ignorados pelo `.gitignore` | Os arquivos **continuam no histórico do Git**; o histórico não foi reescrito. O que existia só neles foi preservado em `evidencia-tdd.md` (pull requests por fase) e em `resultado-01.md`; as citações passaram para `relatorio-qualidade.md`, `revisao-assistida-front.md`, `execucao-e24.md` e `alertas-dependabot.md` |
+| F7-18-02 | **O plano de trabalho fica versionado, com nome profissional, em `docs/plano-de-projeto.md`** (antes `docs/plano_mestre.md`, ignorado pelo Git) | **É só renomeação**: o conteúdo técnico, os números e as fases não mudaram. Saíram apenas expressões de conversa ("Sua resposta", "@Jefferson", "fotos da lousa enviadas na conversa"), e as menções a `docs/especificacao.md` nos prompts passaram para a URL oficial. Toda menção a "plano mestre" nos documentos versionados virou "plano de projeto", com link. Entradas anteriores deste arquivo (por exemplo F7-09) falam de decisões tomadas quando o plano estava fora do Git; o nome foi atualizado e o contexto histórico foi dito na própria entrada |
+| F7-18-03 | **A especificação é sempre citada pela URL oficial**; o arquivo local `docs/especificacao.md` continua fora do Git | Regra nova no `AGENTS.md` (regra 7): nenhum documento versionado pode linkar ou citar como fonte um arquivo ignorado pelo Git. A checagem foi acrescentada ao script local do `analyze-docs` |
 
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 

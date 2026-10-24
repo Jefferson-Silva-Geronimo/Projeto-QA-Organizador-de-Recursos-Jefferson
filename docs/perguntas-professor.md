@@ -3,11 +3,11 @@
 Este arquivo guardava a mensagem consolidada ao professor. Em **24/10/2026** Jefferson decidiu que as 18 perguntas viram
 **decisões da equipe, não validadas com o professor**, com o impacto já declarado. **A mensagem deixou de existir e nada é
 enviado a ninguém.** O nome do arquivo foi mantido para não quebrar links. Cada decisão tem o teste que a isola (ou a
-lacuna, quando não há teste) em [decisoes-equipe.md](decisoes-equipe.md), bloco **F7-16**; a interpretação de que, para a
-seção 10 da especificação, a validação é da equipe está em **F7-17** e **não é validação externa**. Os textos de origem estão
+lacuna, quando não há teste) em [decisoes-equipe.md](decisoes-equipe.md), bloco **F7-16**; a correção de origem das lacunas (análise da equipe no plano de projeto, seção 5.3, e decisão da equipe)
+está em **F7-17**; **não é validação externa**. Os textos de origem estão
 em [perguntas-abertas.md](prd/perguntas-abertas.md).
 
-## Lacunas da seção 10 da especificação (itens 1 a 8)
+## Lacunas do plano de projeto, seção 5.3 (A1 a A8)
 
 Decisão da equipe (Jefferson), 24/10/2026, não validada com o professor.
 

@@ -1,7 +1,7 @@
 # Avaliação arquitetural, ciclo 01: com o código de pé
 
 Compara, cenário a cenário (CEN-01 a CEN-09), o que a arquitetura promete em [ciclo-00.md](ciclo-00.md) e
-[arquitetura.md](../arquitetura.md) com o que o código faz. Prompt 4.I do plano mestre. Este passo **não alterou
+[arquitetura.md](../arquitetura.md) com o que o código faz. Prompt 4.I do [plano de projeto](../plano-de-projeto.md). Este passo **não alterou
 código**: as divergências viram ações priorizadas. A correção de DV-01 veio depois, em passo próprio com TDD (seção 5). Data da medição: 17/10/2026, branch `fase-4/backend`.
 
 ## 1. Como ler

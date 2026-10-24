@@ -78,7 +78,7 @@ nunca encosta no botão, e o critério de 3:1 vale contra o fundo e o cartão.
 
 ## Ajustes de versão na etapa 6.B (18/10/2026)
 
-Escolhas técnicas de compatibilidade, sem relação com a especificação nem com o plano mestre. Versões exatas em
+Escolhas técnicas de compatibilidade, sem relação com a especificação nem com o [plano de projeto](../plano-de-projeto.md). Versões exatas em
 `frontend/package.json` e `package-lock.json`.
 
 | Ajuste | Motivo (verificado na instalação) |

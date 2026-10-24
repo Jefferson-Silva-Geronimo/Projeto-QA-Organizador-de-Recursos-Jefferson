@@ -1,6 +1,5 @@
 # Material de apoio, não versionar
 docs/especificacao.md
-docs/plano_mestre.md
 
 # Environment & Secrets (AIOX)
 .env
@@ -43,3 +42,7 @@ docs/testes/roteiro-navegador-real/local/
 # Saídas do Playwright (E2E)
 frontend/playwright-report/
 frontend/test-results/
+
+# Relatórios de sessão e de fase: ficam só na máquina de quem trabalha (F7-18); continuam no histórico do Git
+docs/relatorio-sessao-*.md
+docs/relatorio-fase-*.md
