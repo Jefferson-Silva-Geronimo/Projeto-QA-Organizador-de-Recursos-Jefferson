@@ -1,6 +1,6 @@
 # Auditoria da RTM (prompt 7.A)
 
-Auditoria de qualidade da [RTM.md](../../RTM.md), feita em 24/10/2026 na `main` em `6d49292`. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Nada foi corrigido nesta auditoria:** cada achado virou defeito (BUG-020 a BUG-027, seção 7), com issue, e será corrigido em PR próprio. Nenhuma linha foi marcada "testada" sem execução.
+Auditoria de qualidade da [RTM.md](../../RTM.md), feita em 24/10/2026 na `main` em `6d49292`. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Nada foi corrigido nesta auditoria:** cada achado virou defeito (BUG-020 a BUG-027, seção 7), com issue, e foi corrigido depois, em PR próprio. As seções 1 a 9 descrevem o **estado inicial** de 24/10/2026 (`main` em `6d49292`); o resultado das correções está na seção 10. Nenhuma linha foi marcada "testada" sem execução.
 
 ## 1. Resumo
 
@@ -206,3 +206,60 @@ Outras observações, que **não** viraram defeito:
 | Script de apoio | Limite | Fora do repositório; a repetição exige reescrevê-lo a partir dos critérios da seção 2 |
 | Amostragem | Limite | Três regras, uma rodada cada, uma máquina. A sobrevivência de mutantes nas demais regras críticas **não** foi medida |
 | Mutação automática | Lacuna | Existe [mutacao.md](mutacao.md) da Fase 4; não foi relido nem repetido nesta auditoria |
+
+## 10. Reexecução depois das correções (24/10/2026)
+
+Mesmos critérios e mesmo script de apoio das seções 1 a 9, rodados sobre a `main` depois dos PRs 77 e 78 e das mudanças da RTM e de `casos-de-teste.md` (BUG-020, BUG-021, BUG-024 e BUG-025). Execução de referência: E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) (back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas; [execucao-e24.md](execucao-e24.md)).
+
+| Medida | Antes | Depois | Defeito |
+| --- | --- | --- | --- |
+| RN com CT rotulado ausente da linha ou CT sem rótulo na linha (de 33) | 33 | **0** | BUG-020 |
+| CT definidos que não aparecem em nenhuma linha da RTM | 46 | **0** | BUG-020 |
+| Resumo da RTM (testadas, parciais) contra a matriz | 48 e 1 contra 49 e 0 | **49 e 0** | BUG-021 |
+| Linhas sem execução com run de CI citado (de 55) | 38 | **1** (RNF-08, medido por carga) | BUG-025 |
+| Classes citadas sem execução verde na CI atual | 0 | **0** | |
+| CT de front e E2E sem arquivo de teste identificado em tabela | 27 | **0** (tabela CT-arquivo, 28 CT, seção 4.1 de `casos-de-teste.md`) | BUG-024 |
+| CT de front e E2E com `CT-nnn` dentro do teste | 0 | 0 (por decisão F7-05: sem renomear teste) | BUG-024 |
+
+**O que a reexecução não resolve:** a tabela CT-arquivo prova o **arquivo** de cada CT de front, não o teste que cobre cada trecho; a relevância semântica de cada CT em cada linha de RN foi julgada à mão por título (seção 10.1); e o BUG-022 (o "137 casos") e o BUG-027 (README) ficam para o PR 4. BUG-026 e BUG-023 foram corrigidos nos PRs 77 e 78.
+
+### 10.1 CT retirados e acrescentados em cada linha de RN
+
+Julgamento por par: o título do CT contra o nome da regra. O CT que sai da linha de uma RN continua na linha do RF que o motiva e em `casos-de-teste.md`; só deixa de ser apresentado como prova daquela regra. Os CT acrescentados ganharam o rótulo da regra na coluna Rastreio.
+
+| Regra | Retirados da linha (eram cópia de bloco) | Acrescentados à linha |
+| --- | --- | --- |
+| RN-01 | CT-040, CT-042, CT-045, CT-047, CT-052, CT-055 | CT-010, CT-039 |
+| RN-02 | CT-027, CT-028, CT-029, CT-030, CT-031, CT-032 | CT-034, CT-035, CT-057, CT-061 |
+| RN-03 | — | CT-007, CT-009 |
+| RN-04 | CT-027, CT-028, CT-030, CT-031, CT-032 | CT-076, CT-080, CT-081 |
+| RN-05 | CT-033, CT-040, CT-042, CT-045, CT-047, CT-052, CT-055 | CT-075, CT-096 |
+| RN-06 | CT-001, CT-002, CT-003, CT-004, CT-005, CT-043, CT-118, CT-119 | CT-066, CT-067, CT-146, CT-148 |
+| RN-07 | CT-033, CT-040, CT-042, CT-045, CT-047, CT-052, CT-055 | CT-056, CT-079 |
+| RN-08 | CT-095, CT-099, CT-100, CT-101 | CT-097, CT-155 |
+| RN-09 | CT-033, CT-042, CT-045, CT-047, CT-052, CT-055 | CT-041, CT-049, CT-070, CT-098 |
+| RN-10 | CT-017, CT-018, CT-019, CT-020, CT-021, CT-025, CT-026 | CT-041, CT-042, CT-048 |
+| RN-11 | CT-027, CT-029, CT-030, CT-031, CT-032 | CT-007, CT-008, CT-034, CT-080 |
+| RN-12 | CT-017, CT-018, CT-020, CT-021, CT-022, CT-025, CT-026 | — |
+| RN-13 | CT-017, CT-018, CT-019, CT-022, CT-025, CT-026 | CT-058 |
+| RN-14 | CT-018, CT-019, CT-020, CT-021, CT-022, CT-025, CT-026 | CT-030, CT-036, CT-037 |
+| RN-15 | CT-027, CT-028, CT-029, CT-030, CT-031, CT-032 | CT-038 |
+| RN-16 | CT-068, CT-070 | CT-014, CT-015, CT-044, CT-067, CT-092, CT-117, CT-146, CT-147, CT-148, CT-163 |
+| RN-17 | CT-002, CT-003, CT-004, CT-005, CT-118, CT-119 | CT-012, CT-013, CT-067, CT-083, CT-122, CT-132, CT-143, CT-144 |
+| RN-18 | CT-033, CT-040, CT-042, CT-045, CT-047, CT-055 | CT-053, CT-054, CT-069 |
+| RN-19 | CT-033, CT-040, CT-042, CT-052, CT-055 | CT-046, CT-050, CT-051 |
+| RN-20 | CT-088, CT-089, CT-095 | CT-085, CT-086, CT-087, CT-144, CT-150, CT-152, CT-154 |
+| RN-21 | CT-075, CT-085, CT-086 | CT-094, CT-150, CT-152, CT-154 |
+| RN-22 | CT-076, CT-083 | CT-079, CT-082, CT-124, CT-167 |
+| RN-23 | CT-084, CT-095 | CT-090, CT-091, CT-150, CT-152, CT-154 |
+| RN-24 | CT-066, CT-070 | CT-148 |
+| RN-25 | CT-066, CT-068, CT-070 | CT-071, CT-072, CT-073, CT-074, CT-098 |
+| RN-26 | CT-001, CT-002, CT-003, CT-004, CT-005, CT-043, CT-119 | CT-031, CT-100, CT-113, CT-125, CT-142, CT-145, CT-153 |
+| RN-27 | CT-033, CT-040, CT-042, CT-045, CT-047, CT-052 | CT-056, CT-101, CT-142 |
+| RN-28 | — | CT-104, CT-105 |
+| RN-29 | CT-017, CT-018, CT-019, CT-020, CT-021, CT-022, CT-025 | CT-005, CT-016, CT-099, CT-122 |
+| RN-30 | CT-034, CT-035, CT-057, CT-058 | CT-065, CT-081, CT-111 |
+| RN-31 | CT-112 | CT-108, CT-109, CT-110, CT-111 |
+| RN-32 | CT-017, CT-018, CT-019, CT-020, CT-021, CT-022, CT-026 | CT-023, CT-024, CT-156 |
+| RN-33 | CT-066, CT-068, CT-070 | CT-069, CT-146, CT-147, CT-148 |
+

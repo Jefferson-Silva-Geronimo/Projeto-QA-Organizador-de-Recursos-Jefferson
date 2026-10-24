@@ -106,6 +106,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | RTM e casos de teste (F7-05, PR 3 de 4) | BUG-020, 021, 024 e 025: linhas de RN pelos CT rotulados, Resumo da RTM, tabela CT-arquivo, execução E-24; BUG-023 fechado no índice |
 | 24/10/2026 | BUG-023: pré-condição no `ct063` (F7-05, PR 2 de 4) | `ct063` falha por asserção, e não por erro de SQL, sem a constraint; BUG-026 fechado no índice com o run da CI do PR 77 |
 | 24/10/2026 | BUG-026: teste que isola a RN-06 (F7-05, PR 1 de 4) | Teste novo com Solicitante que não é dono; vermelho por asserção sem o portão de perfil; diagnóstico do `ct117`; prioridades dos 8 defeitos no índice |
 | 24/10/2026 | Modelo de ameaças (F7-07) | Modelo curto (STRIDE) com 18 ameaças e a evidência de cada uma: 8 cobertas, 6 parciais, 2 de risco aceito e 2 lacunas; A06 atualizado só no que a evidência sustenta |
