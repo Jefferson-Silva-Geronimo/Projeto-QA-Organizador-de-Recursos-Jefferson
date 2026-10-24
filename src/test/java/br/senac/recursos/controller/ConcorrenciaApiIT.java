@@ -220,6 +220,10 @@ class ConcorrenciaApiIT extends ApiIT {
     @Test
     void ct063_semAConstraintAReservaDuplicaEOTesteDetecta() throws Exception {
         long sala = salaSql("Sala A", false);
+        // BUG-023: sem a constraint o teste deve falhar por asserção, não por erro de SQL no drop abaixo.
+        assertThat(contar("select count(*) from pg_constraint where conname = 'ocupacoes_sem_sobreposicao'"))
+                .as("pré-condição: a constraint de exclusão existe antes de o teste removê-la (ADR-003)")
+                .isEqualTo(1);
         jdbc.execute("alter table ocupacoes drop constraint ocupacoes_sem_sobreposicao");
         try {
             boolean duplicou = false;
