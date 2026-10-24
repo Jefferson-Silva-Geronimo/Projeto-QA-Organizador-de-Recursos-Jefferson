@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida no commit da tag (item 2.7), pois o commit mudará até lá.
+Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5.
 
 ### 2.1 Método
 
@@ -51,6 +51,35 @@ Front end (verificado no clone da rodada 1, passo 6 do README): `npm ci` 302 s, 
 ### 2.4 Fechamento do defeito
 
 PR #61 mesclado (`84c58eb`), run verde da `main` `40102847090` (`test`, `frontend`, `e2e` e `segredos` com sucesso). Issue 60 fechada.
+
+### 2.5 Rodada 3: commit da tag `v1.0.0-rc1` (`276224b`), 24/10/2026 — PASSOU na quarta tentativa
+
+**Método:** o mesmo da seção 2.1 (clone do repositório público numa pasta fora do projeto, só a seção "Como subir" do README, `.env` gerado na hora com valores fictícios, nunca impresso), num script que repete os comandos do README. Ambiente: Windows 11, Git Bash, Java 21.0.6, Node 22.13.1, Docker 29.8.2; portas 5432, 8080 e 5173 livres; **cache do Maven presente** (um computador sem cache leva mais tempo; não medido).
+
+**Resultado da tentativa que passou** (tempos acumulados desde o início do script, medidos pelo script):
+
+| Passo do README | Resultado | Tempo acumulado |
+| --- | --- | --- |
+| Clone no commit `276224b` | feito | 24 s |
+| 1. `.env` | preenchido; 0 variáveis obrigatórias vazias | 24 s |
+| 2. `docker compose up -d postgres` | feito; banco `healthy` | 40 s e 65 s |
+| 3 e 4. `./mvnw spring-boot:run` e `GET /actuator/health` | HTTP 200, `{"status":"UP"}`; `Started OrganizacaoRecursosApplication in 11.433 seconds` | **143 s** (clone até a aplicação no ar) |
+| 5. `POST /api/auth/login` (Administrador do bootstrap) e `GET /api/auth/eu` | HTTP 200 com perfil `ADMINISTRADOR`; HTTP 200 | 145 s |
+| 6. `npm ci` | saiu com 0 | 524 s (**cerca de 380 s** só do `npm ci`) |
+| 6. `npm run dev` e `GET http://localhost:5173/` | HTTP 200; preflight de CORS da origem `http://localhost:5173` devolve `Access-Control-Allow-Origin` igual a ela | **528 s** (do clone até o front no ar) |
+
+Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o banco foi derrubado com `docker compose down -v`; as portas 8080, 5173 e 5432 ficaram livres.
+
+**As três tentativas anteriores falharam por ambiente, antes de chegar à aplicação.** As três pararam no passo 2 do README (`docker compose up -d postgres`) com a mesma mensagem: `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`. O Docker tentou baixar a imagem `postgres:17` fixada por digest e não achou o auxiliar de credenciais:
+
+| Tentativa | Como foi executada | Resultado |
+| --- | --- | --- |
+| 1 | Pelo shell Git Bash da sessão | Falhou no passo 2 |
+| 2 | Pelo mesmo shell, com o diretório `resources/bin` do Docker Desktop acrescentado ao `PATH` | Falhou no passo 2, mesma mensagem |
+| 3 | Pelo PowerShell, chamando o Git Bash com o `PATH` acrescentado | Falhou no passo 2, mesma mensagem |
+| 4 | Depois de um `docker pull` da imagem fixada por digest feito no PowerShell (resposta: "Image is up to date") | **Passou** (tabela acima) |
+
+**O que isto é e o que não é.** O README não foi alterado entre as tentativas e o passo 2 é o do README; não é defeito do projeto, e sim do ambiente desta máquina. **Lacuna:** não foi investigado por que o auxiliar de credenciais não foi achado no shell da sessão, mesmo com o diretório no `PATH`, nem se uma máquina sem a imagem em cache e sem o auxiliar de credenciais encontraria o mesmo erro. Nas três tentativas que falharam, os passos 3 a 6 **não foram executados**; só a quarta os exercitou. O tempo de 528 s é o da quarta tentativa e não inclui as anteriores.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 

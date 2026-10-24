@@ -108,6 +108,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | Tag `v1.0.0-rc1` em `276224b` e clone limpo registrado | Tag publicada com a confirmação de Jefferson; SonarCloud no commit: Quality Gate OK, 0 bugs, 0 vulnerabilidades; clone limpo em [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5 |
 | 24/10/2026 | Perguntas ao professor viram decisões da equipe | F7-16 e F7-17; seções 4 e 5 atualizadas; token do SonarCloud confirmado por Jefferson |
 | 24/10/2026 | Relatório final de qualidade (item 2.6, prompt 7.B) | `docs/relatorio-qualidade.md` com os dez blocos e a tabela de entregáveis; **recomendação: liberar com ressalvas; a decisão de qualidade é de Jefferson e está pendente**; origem do BUG-019 corrigida no índice de defeitos |
 | 24/10/2026 | Leitura final de cobertura e análise estática (item 2.4) | JaCoCo, SonarCloud e testes lidos no run final da `main`; lacuna da cobertura do front declarada |
