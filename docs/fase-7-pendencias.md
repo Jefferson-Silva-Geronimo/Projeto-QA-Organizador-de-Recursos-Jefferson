@@ -108,6 +108,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | Relatório final de qualidade (item 2.6, prompt 7.B) | `docs/relatorio-qualidade.md` com os dez blocos e a tabela de entregáveis; **recomendação: liberar com ressalvas; a decisão de qualidade é de Jefferson e está pendente**; origem do BUG-019 corrigida no índice de defeitos |
 | 24/10/2026 | Leitura final de cobertura e análise estática (item 2.4) | JaCoCo, SonarCloud e testes lidos no run final da `main`; lacuna da cobertura do front declarada |
 | 24/10/2026 | PRs do Dependabot adiados (F7-15) e estado dos defeitos | PRs 81 a 83 ficam abertos até depois da tag; BUG-022 e BUG-027 fechados no índice (PR 80) |
 | 24/10/2026 | ADR-015: origem em documentos versionados (F7-09) | Linha 7, Contexto e seis células de origem trocadas; conteúdo das decisões intacto; aviso do analyze-docs resolvido |
