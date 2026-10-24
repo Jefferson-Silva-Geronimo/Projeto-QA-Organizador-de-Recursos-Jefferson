@@ -142,7 +142,7 @@ Reproduzido em **worktree descartável** (`git worktree add --detach`, fora do p
 | `ct064` ordens opostas, vários recursos | Falha por asserção (`expected: 1L`) | `:179` |
 | `ct064` conjuntos que só se cruzam no projetor | Falha por asserção (`expected: 1L`) | `:197` |
 | `ct065` a tentativa persiste mesmo se a reserva é desfeita | Falha por asserção (`expected: 1L`) | `:210` |
-| `ct063` sem a constraint a reserva duplica | **Erro, não asserção:** o teste tenta remover (`alter table ... drop constraint`) uma constraint que já não existe (`:223`); o `ct063` faz sozinho, dentro do teste, a prova de duplicidade (`:220` a `:247`) |
+| `ct063` sem a constraint a reserva duplica | **Erro, não asserção:** o teste tenta remover (`alter table ... drop constraint`) uma constraint que já não existe. Em condições normais, ele faz sozinho, dentro do teste, a prova de duplicidade (`:220` a `:247`) | `ConcorrenciaApiIT.java:223` |
 
 O `expected: 1L` mostra que a contagem verificada (a asserção em cada linha citada) deixou de ser 1 sem a constraint. O valor obtido em cada linha não foi lido um a um; só o `ct060` (linha 115) confere diretamente as reservas aceitas (`contarStatus(respostas, 201)`).
 
