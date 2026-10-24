@@ -145,6 +145,8 @@ docs/
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   fase-7-pendencias.md   lista viva do que entra no fechamento da Fase 7, com origem e arquivo de cada item
   perguntas-professor.md   registro das decisões sobre as lacunas
+  roteiro-demonstracao.md   roteiro da demonstração de dez minutos, sem slides
+  guia-de-evidencias.md   onde achar cada evidência: os seis exercícios da prova oral
   performance/         rnf.md (requisito e modelo de carga), resultado-01.md e resultado-02.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
 frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil, as 11 telas (T01 a T11), testes de componente e `e2e/` (Playwright)
