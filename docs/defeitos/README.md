@@ -129,7 +129,7 @@ Observações:
 - Um número sem origem em ADR-008 (contagem de regras ligadas a RF-13) foi apontado na revisão e corrigido **antes** do commit, por isso não entra no índice.
 - Defeitos escapados por etapa: BUG-001 a BUG-005 nasceram em documentação e foram achados em revisão; BUG-006 nasceu na casca do projeto e foi achado na CI.
 - BUG-019 nasceu na casca do projeto (README da Fase 3, nunca atualizado quando a aplicação passou a exigir `SESSAO_DURACAO` e `LOGIN_*`) e foi achado só na prova de clone limpo da Fase 7: escapou da Fase 3 à Fase 6.
-- BUG-020 a BUG-027 foram achados pela auditoria da RTM (Fase 7, 7.A): BUG-020 a BUG-022, BUG-024, BUG-025 e BUG-027 nasceram em documentação (RTM, revisão de segurança e README) e BUG-023 e BUG-026 em teste; todos foram achados na Fase 7, os de documentação e o de teste do RN-06 já existiam desde as Fases 3 a 6. Detalhes em [auditoria-rtm.md](../testes/auditoria-rtm.md).
+- BUG-020 a BUG-027 foram achados na Fase 7 pela auditoria da RTM (7.A). Seis são de documentação (BUG-020, BUG-021, BUG-022, BUG-024, BUG-025 e BUG-027) e dois de teste (BUG-023 e BUG-026). A etapa em que cada um nasceu fica para a análise de causa raiz na correção, sem palpite aqui. Detalhes em [auditoria-rtm.md](../testes/auditoria-rtm.md).
 - BUG-010 a BUG-014 nasceram no front (etapas 6.B e 6.C) e foram achados pelo **roteiro em navegador real**
   ([roteiro-navegador-real](../testes/roteiro-navegador-real/README.md)), não pelos 391 testes de componente. Os testes de
   componente usam uma API simulada e o jsdom, que não reproduzem a troca de foco entre telas, o foco em pseudo-elemento
