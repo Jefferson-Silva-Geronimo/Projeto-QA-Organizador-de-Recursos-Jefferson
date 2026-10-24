@@ -173,7 +173,22 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório consolidado](docs/relatorio-fase-6-consolidado.md) |
-| 7 | Fechamento, relatório de qualidade e prova oral | Em andamento desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças e decisões F7-01 a F7-14 ([pendências](docs/fase-7-pendencias.md)). Pendentes: leitura de cobertura e do SonarCloud, relatório de qualidade e release candidate |
+| 7 | Fechamento, relatório de qualidade e prova oral | Em andamento desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-17, [roteiro da demonstração](docs/roteiro-demonstracao.md) e [guia de evidências](docs/guia-de-evidencias.md) ([pendências](docs/fase-7-pendencias.md)). Pendente: a tag do release candidate `v1.0.0-rc1`, que depende de confirmação expressa |
+
+## Pacote de evidências (release candidate)
+
+Os números abaixo vêm do run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376) da `main`; os commits posteriores mudaram só documentação. A decisão de qualidade é **liberar com ressalvas** (Jefferson Silva, 24/10/2026), e as ressalvas estão no [relatório final](docs/relatorio-qualidade.md).
+
+| Evidência | Resultado | Onde |
+| --- | --- | --- |
+| Testes na CI | Back end 665 (231 de unidade e arquitetura, 434 de integração e BDD), front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | [docs/testes/execucao-e24.md](docs/testes/execucao-e24.md) |
+| JaCoCo | Linhas 97,01% (meta 80%) e branches 86,88% (meta 70%) | Artefato `relatorio-jacoco` do run; [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) |
+| SonarCloud | Quality Gate aprovado, 0 bugs, 0 vulnerabilidades, 0 issues abertas | [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson) |
+| Rastreabilidade | 55 linhas na RTM, 100% das linhas críticas com teste e execução verde | [RTM.md](RTM.md); [docs/testes/auditoria-rtm.md](docs/testes/auditoria-rtm.md) |
+| Limitadores de nota | Clone limpo sobe, pipeline com vermelho intencional barrado, matriz de autorização (141 testes), dupla reserva barrada | [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md) |
+| Defeitos | 27 registrados: 26 fechados e 1 mitigado (BUG-017) | [docs/defeitos/README.md](docs/defeitos/README.md) |
+| Desempenho | RNF-08b **não atendido** (p95 de 568 a 886 ms contra 300 ms) | [docs/performance/resultado-02.md](docs/performance/resultado-02.md) |
+| Prova oral | Roteiro de dez minutos e guia dos seis exercícios | [docs/roteiro-demonstracao.md](docs/roteiro-demonstracao.md); [docs/guia-de-evidencias.md](docs/guia-de-evidencias.md) |
 
 ## Metas de qualidade
 
@@ -194,7 +209,7 @@ Fonte: especificação, seção 6.
   PR obrigatório com 0 aprovações e checks `test`, `frontend`, `e2e` e `segredos` obrigatórios (veja "Proteção da `main`"). A decisão da equipe sobre
   essa exigência está em [docs/perguntas-professor.md](docs/perguntas-professor.md) (F7-16, item 14).
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
-- **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números atuais de cobertura e do SonarCloud são lidos no fechamento (item 2.4 da Fase 7), não neste README.
+- **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40120487376`); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
 - **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 24/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
