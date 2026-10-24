@@ -14,7 +14,7 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 - **Stack exigida:** Java 21 e Spring Boot 3.x.
 - **Decisões da equipe:** PostgreSQL, Maven e front end React + Vite (a especificação não as exige).
 - **Escopo:** os 14 requisitos funcionais (RF-01 a RF-14) e as 8 regras críticas (RN-01 a RN-08) da especificação, mais RF-15 e RF-16 (acréscimos da equipe) e as regras RN-09 a RN-33 (decisões da equipe). Detalhes em [docs/prd.md](docs/prd.md).
-- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4, C1 a C8, D2, D5 a D8 e D10 a D16) e as lacunas que seguem abertas (D1, D3, D4, D9 e D17). A1, A3 e A5 aguardam confirmação do professor; S6 e S7 são suposições a validar. As regras estão em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
+- **Decisões e lacunas:** [docs/prd/perguntas-abertas.md](docs/prd/perguntas-abertas.md) registra as decisões da equipe (A1 a A8, B1 a B4, C1 a C8, D2, D5 a D8 e D10 a D16) e as lacunas D1, D3, D4, D9 e D17, todas decididas pela equipe em 24/10/2026, sem validação do professor ([docs/decisoes-equipe.md](docs/decisoes-equipe.md), F7-16 e F7-17). S6 e S7 são suposições a validar. As regras estão em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
 
 ## Perfis
 
@@ -144,7 +144,7 @@ docs/
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   fase-7-pendencias.md   lista viva do que entra no fechamento da Fase 7, com origem e arquivo de cada item
-  perguntas-professor.md   mensagem consolidada ao professor
+  perguntas-professor.md   registro das decisões sobre as lacunas
   performance/         rnf.md (requisito e modelo de carga), resultado-01.md e resultado-02.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
 frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil, as 11 telas (T01 a T11), testes de componente e `e2e/` (Playwright)
@@ -166,9 +166,9 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | --- | --- | --- |
 | 0 | Preparação do ambiente e regras do projeto | Concluída |
 | 1 | Requisitos funcionais: contexto, personas, regras, RF, modelo de dados, fluxos, RTM e plano de teste em esqueleto | Concluída e revisada; lacunas D1, D3, D4, D9 e D17 seguem abertas |
-| 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. Pendentes: respostas do professor (A1, A3, A5 e hipóteses) |
+| 2 | Requisitos não funcionais, arquitetura e ATAM | Concluída em 15/10/2026; ADR aceitos. A1 a A8 decididas pela equipe em 24/10/2026, sem validação do professor |
 | 3 | Casca Maven, integração contínua e processo de defeitos | Concluída; PR 1 mesclado na `main` em 17/10/2026 |
-| 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Pendências: respostas do professor |
+| 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório consolidado](docs/relatorio-fase-6-consolidado.md) |
 | 7 | Fechamento, relatório de qualidade e prova oral | Em andamento desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças e decisões F7-01 a F7-14 ([pendências](docs/fase-7-pendencias.md)). Pendentes: leitura de cobertura e do SonarCloud, relatório de qualidade e release candidate |
@@ -189,9 +189,9 @@ Fonte: especificação, seção 6.
 - **Revisão por pares:** a equipe é uma pessoa, então não há revisão por par humano. No lugar, cada pull request
   recebe uma revisão crítica assistida, registrada como comentário e identificada como tal, e a `main` deve exigir pull
   request e check obrigatório com zero aprovações (o autor não pode aprovar o próprio PR). **Estado atual:** proteção
-  PR obrigatório com 0 aprovações e checks `test`, `frontend`, `e2e` e `segredos` obrigatórios (veja "Proteção da `main`"). A pergunta ao professor
-  está em [docs/perguntas-professor.md](docs/perguntas-professor.md).
-- **Valores sem decisão (D1, D3, D4, D9, D17):** sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
+  PR obrigatório com 0 aprovações e checks `test`, `frontend`, `e2e` e `segredos` obrigatórios (veja "Proteção da `main`"). A decisão da equipe sobre
+  essa exigência está em [docs/perguntas-professor.md](docs/perguntas-professor.md) (F7-16, item 14).
+- **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números atuais de cobertura e do SonarCloud são lidos no fechamento (item 2.4 da Fase 7), não neste README.
 - **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 24/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.

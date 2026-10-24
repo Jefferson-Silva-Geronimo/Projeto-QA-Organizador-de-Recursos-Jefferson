@@ -91,7 +91,7 @@ Fonte: [defeitos/README.md](defeitos/README.md). Todos os defeitos do front nasc
 | BUG-017 | `NotificacaoApiIT.int01ECt103` intermitente | **Mitigado, não corrigido** (causa desconhecida; R-25 aberto) | `24095c4` (R-26) |
 | BUG-018 | Tela de acesso negado sem título (`h1`) | Fechado | `55b37c7` |
 
-Dois achados não viraram BUG porque não eram defeito da regra do servidor: o servidor exige o motivo do bloqueio e o contrato dizia que era opcional (corrigido pela F6-19), e o mínimo de dois Responsáveis só vale na desativação (D14), não na troca de perfil (pergunta ao professor).
+Dois achados não viraram BUG porque não eram defeito da regra do servidor: o servidor exige o motivo do bloqueio e o contrato dizia que era opcional (corrigido pela F6-19), e o mínimo de dois Responsáveis só vale na desativação (D14), não na troca de perfil (decisão da equipe de 24/10/2026, F7-16, item 18).
 
 ## 5. Números de testes (só da CI)
 
@@ -134,13 +134,13 @@ Aplicada em 22/10/2026 (F6-21), depois de três execuções verdes seguidas do `
 | Não exercidos no navegador real | `BLOQUEIO_COM_RESERVA_EM_USO` e a paginação do relatório | RTM E-18 e E-21 |
 | RNF-08b | Criação de reserva com p95 de 568 a 886 ms contra a hipótese de 300 ms; não atendido (Fase 5) | [performance/](performance/) |
 
-## 8. O que depende do professor
+## 8. O que dependia do professor (decidido pela equipe em 24/10/2026)
 
-Lista viva em [perguntas-professor.md](perguntas-professor.md): lacunas A1 a A8, D1, D3, D4, D9 e D17, "revisão por pares" para equipe de uma pessoa, precisão de segundos em reservas e bloqueios, rejeitar reserva depois do início, iniciar o uso antes do horário e, nova, **trocar o perfil de um Responsável deixando menos de dois** (D14). Mais a **interpretação F6-20** (RF-11 e RF-14 sem tela), que deve constar do relatório final como interpretação.
+Registro em [perguntas-professor.md](perguntas-professor.md), decidido pela equipe em 24/10/2026 sem validação do professor ([F7-16 e F7-17](decisoes-equipe.md)): lacunas A1 a A8, D1, D3, D4, D9 e D17, "revisão por pares" para equipe de uma pessoa, precisão de segundos em reservas e bloqueios, rejeitar reserva depois do início, iniciar o uso antes do horário e, nova, **trocar o perfil de um Responsável deixando menos de dois** (D14). Mais a **interpretação F6-20** (RF-11 e RF-14 sem tela), que deve constar do relatório final como interpretação.
 
 ## 9. O que ficou para a Fase 7
 
-Tudo está em [fase-7-pendencias.md](fase-7-pendencias.md). Na ordem de execução proposta: (1) a **revisão assistida independente** de "nenhuma regra de negócio duplicada no front"; (2) os itens da lista (R-25 como risco, RNF-08b, SEC-03 e SEC-04, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud, ADR-015 citando o plano mestre sem link, dúvidas ao professor); (3) os prompts 7.A a 7.C do plano mestre. A Fase 7 não começou.
+Tudo está em [fase-7-pendencias.md](fase-7-pendencias.md). Na ordem de execução proposta: (1) a **revisão assistida independente** de "nenhuma regra de negócio duplicada no front"; (2) os itens da lista (R-25 como risco, RNF-08b, SEC-03 e SEC-04, alertas do Dependabot em `.aiox-core/`, token antigo do SonarCloud, ADR-015 citando o plano mestre sem link, decisões sobre as dúvidas ao professor, F7-16); (3) os prompts 7.A a 7.C do plano mestre. A Fase 7 não começou.
 
 ## 10. Lacunas (sem origem nesta sessão)
 

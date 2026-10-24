@@ -61,13 +61,13 @@ Critério de seleção: requisito ou regra cujo cumprimento restringe a estrutur
 | # | Tema | Exigência | Origem | Risco | Lacuna ou suposição ligada |
 | --- | --- | --- | --- | --- | --- |
 | 1 | Dupla reserva sob concorrência | Duas solicitações simultâneas para o mesmo recurso e horário produzem uma única reserva aceita; teste automatizado obrigatório | RF-06, RN-03; especificação, seção 5 | R-01 | — |
-| 2 | Sobreposição por tipo de recurso | Sala, professor e material obedecem à mesma regra de não sobreposição, com fronteira semiaberta [início, fim) | RF-05, RN-02, RN-11; A2, A4, A3 | R-02 | A3 a confirmar com o professor |
+| 2 | Sobreposição por tipo de recurso | Sala, professor e material obedecem à mesma regra de não sobreposição, com fronteira semiaberta [início, fim) | RF-05, RN-02, RN-11; A2, A4, A3 | R-02 | A3: decisão da equipe, 24/10/2026, não validada com o professor |
 | 3 | Reserva com vários recursos | A reserva é a unidade de aprovação, uso e auditoria; ocupa vários recursos de uma vez e é aceita ou recusada por inteiro | RF-04, RN-02, RN-22; D7 | R-01, R-05 | — |
 | 4 | Bloqueio disputa a mesma garantia | Reservas e bloqueios de manutenção concorrem pelo mesmo período do mesmo recurso | RF-08, RN-04, RN-22; A7 | R-08 | D15 (decidida) |
 | 5 | Alteração atômica | Trocar período ou recurso reavalia RN-01, RN-02 e RN-04 na mesma transação; em conflito, nada muda | RF-04, RN-19; C1 | R-05 | D10, D12 |
 | 6 | Auditoria na mesma transação | Toda mudança de estado gera registro; cadastros, usuários, perfis e bloqueios também; ator pode ser SISTEMA | RF-10, RN-08, RN-29; C7 | R-07 | D9 (retenção) |
 | 7 | Autorização por perfil e posse | Operação permitida depende do perfil, do estado da reserva e de quem é o dono; segregação de funções | RF-01, RF-07, RN-06, RN-16, RN-17, RN-18, RN-26, RN-33; B1 a B3, D8 | R-03, R-12 | D13 |
-| 8 | Notificação sem acoplar a reserva | Envio após o commit; falha do provedor nunca desfaz a reserva; reenvio com chave de idempotência | RF-11, RN-28; A5, C6 | R-10 | A5 a confirmar com o professor; S5; D3, D9 |
+| 8 | Notificação sem acoplar a reserva | Envio após o commit; falha do provedor nunca desfaz a reserva; reenvio com chave de idempotência | RF-11, RN-28; A5, C6 | R-10 | A5: decisão da equipe, 24/10/2026, não validada com o professor; S5; D3, D9 |
 | 9 | Tempo e fuso | Armazenamento em UTC, fuso configurável, janela e dias de funcionamento por sala, reserva sem cruzar a meia-noite | RN-01, RN-14, RN-15; A6, C5 | R-09 | S3 |
 | 10 | Transições dirigidas pelo tempo | Reserva SOLICITADA sem decisão é cancelada ao chegar o início; reserva APROVADA sem uso pode ser marcada como não compareceu | RN-21, RN-25; A8, C2 | R-06, R-16 | D1, S4, S6 |
 | 11 | Registro de recusa por conflito | Toda recusa por RN-02, RN-03 ou RN-04 é gravada como tentativa de conflito | RN-30; B4 | R-11 | Ver observação abaixo |
@@ -188,9 +188,11 @@ D2 e D10 a D16 foram decididas pela equipe em 15/10/2026 (ver 8.2.1). As demais 
 | S7 | Valor de reenvio definido depois | Só configuração | [prd.md](prd.md), seção 9 |
 | — | p95 de 300 ms para 50 usuários (RNF-08) | Cenários de desempenho e teste de carga sem critério de aceite | Seção 5 deste documento |
 
-### 8.4 Decisões a confirmar com o professor
+### 8.4 Decisões não validadas com o professor
 
-| ID | Decisão | Retrabalho se o professor discordar |
+Decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
+
+| ID | Decisão | Retrabalho se a decisão estiver errada |
 | --- | --- | --- |
 | A1 | Atributo "restrito" no recurso e aprovação automática | Fluxo de aprovação e ator SISTEMA mudam |
 | A3 | Material por unidade identificada | **Maior retrabalho**: a constraint de exclusão não basta para controle por quantidade, e o modelo muda |
@@ -553,7 +555,7 @@ Nenhuma alternativa é escolhida aqui. Cada linha diz o que falta para decidir.
 | Acesso a dados | Mapeamento objeto-relacional; SQL direto parametrizado | Suporte a `tstzrange`, a SQL nativo e a teste com banco real | Prova de conceito na Fase 4 |
 | Somente inserção da auditoria | Gatilho; permissões do papel; ambos | Vale para o dono do esquema; simplicidade de migração | Decidido: gatilho com revogação de permissões (seção 13.2) |
 | Transições automáticas | Job agendado; avaliação sob demanda; marcação manual | Seção 13.7 | Decidido (D2): job para SEM_DECISAO e marcação manual de não compareceu |
-| Notificação | Envio dentro da transação; evento em memória após o commit; linha PENDENTE gravada na transação e envio posterior | RN-28; sem perda; reserva nunca desfeita pelo provedor | Decidido: linha PENDENTE na transação e envio posterior; resta confirmar A5 com o professor |
+| Notificação | Envio dentro da transação; evento em memória após o commit; linha PENDENTE gravada na transação e envio posterior | RN-28; sem perda; reserva nunca desfeita pelo provedor | Decidido: linha PENDENTE na transação e envio posterior; A5 foi decidida pela equipe em 24/10/2026, sem validação do professor |
 
 ## 16. Escolhas sem requisito correspondente
 
@@ -621,7 +623,7 @@ As doze decisões iniciais da equipe e os doze ADR do plano não são um para um
 | — | Estratégia de testes e metas | [ADR-011](adr/ADR-011-estrategia-de-testes-e-metas-de-cobertura.md) |
 | — | Job de SEM_DECISAO (D2) | [ADR-012](adr/ADR-012-job-agendado-de-sem-decisao.md) |
 
-Status: os doze ADR estão **Aceitos** por aprovação do usuário em 15/10/2026. A3 (ADR-002) e A5 (ADR-007) seguem aguardando o professor.
+Status: os doze ADR estão **Aceitos** por aprovação do usuário em 15/10/2026. A3 (ADR-002) e A5 (ADR-007) foram decididas pela equipe em 24/10/2026, sem validação do professor.
 
 ## 20. Revisão cruzada: painel de seis papéis
 
@@ -636,7 +638,7 @@ O painel foi conduzido pelo mesmo analista que escreveu a arquitetura, assumindo
 | Dados | `auditoria_eventos` e `tentativas_conflito` crescem sem retenção definida | D9 | **Aberta** |
 | Segurança | Consulta de sessão a cada requisição pode degradar o p95 | R-21; TO-04; CEN-04 | **Resolvida provisoriamente**: sem cache na primeira versão e medição em CEN-04 (ADR-004) |
 | Segurança | O gatilho não protege contra o papel que migra o esquema | R-23 | **Parcial**: papel de migração distinto do papel da aplicação, com revogação no segundo (ADR-006). Risco residual aceito para o dono do esquema |
-| Segurança | Não há limite de tentativas de login nem exigência de transporte cifrado | Catálogo: **Lock Computer** e **Encrypt Data**; nenhum requisito na especificação | **Aberta**: sem requisito, nada é implementado ou inventado; vai ao professor |
+| Segurança | Não há limite de tentativas de login nem exigência de transporte cifrado | Catálogo: **Lock Computer** e **Encrypt Data**; nenhum requisito na especificação | **Aberta**: sem requisito, nada é implementado ou inventado; não validada com o professor. O limite de tentativas de login foi decidido depois pela equipe (D18) |
 | Operações | Pool, limites de tempo e frequência do job não têm valor | PS-01, PS-02, PS-03; TR-01 | **Aberta**: precisam de valor antes da Fase 5 |
 | Operações | Não há requisito de monitoramento, só de log (RNF-12) | Catálogo: **Monitor** | **Aberta**: registrada como decisão sem requisito |
 | Qualidade | Metas de CEN-01, CEN-04, CEN-05 e CEN-08 são hipóteses | TR-01; RNF-08 | **Aberta**: validação com o professor |
@@ -705,9 +707,9 @@ S1 a S7 de [prd.md](prd.md), seção 9, mais as hipóteses de medida: 20 solicit
 
 | Quem responde | Pergunta |
 | --- | --- |
-| Professor | Confirmar A1, A3 e A5, e se o endpoint de teste basta como API externa (S5) |
-| Professor | Validar as hipóteses de desempenho e de repetição e o critério de aceite de CEN-04 |
-| Professor | Há exigência de limite de tentativas de login e de transporte cifrado? |
+| Equipe | A1, A3 e A5, e se o endpoint de teste basta como API externa (S5): decididos em 24/10/2026, sem validação do professor (F7-16) |
+| Sem validação externa | As hipóteses de desempenho e de repetição e o critério de aceite de CEN-04 seguem sem validação do professor |
+| Equipe | Limite de tentativas de login: decidido (D18, 5 em 10 minutos). Transporte cifrado: sem requisito, lacuna no modelo de ameaças |
 | Equipe | Quantas pessoas formam a equipe e quem administra o repositório e o SonarCloud |
 | Equipe | Valores de D1, D3, D4, D9 e D17, e do pool, dos limites de tempo e da frequência do job |
 | Equipe | Quantas instâncias da aplicação rodam na demonstração |
@@ -741,12 +743,12 @@ Nenhum outro risco foi aceito: os demais aguardam teste ou decisão.
 | Ao menos um trade-off nomeado e matriz com linha para todo requisito crítico | **Atendido** (TO-01 a TO-05; seção 21) |
 | Outra equipe entende, rastreia e contesta sem explicação oral | **Parcial**: falta leitura por pessoa da equipe fora da autoria |
 | `analyze-docs` sem pendências | **Verificado por script** em colunas, links, fences, IDs e Mermaid; skill completa pendente de execução pela equipe |
-| Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1, A3 e A5 e as hipóteses dependem do professor |
+| Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1 a A8 decididas pela equipe em 24/10/2026, sem validação do professor; as hipóteses de desempenho seguem sem validação |
 
 ## 24. Próximos passos
 
 | Passo | Entrega | Depende de |
 | --- | --- | --- |
 | Aceite dos ADR propostos | **Feito** em 15/10/2026: ADR-001 a ADR-012 com status Aceito | — |
-| Respostas do professor | A1, A3, A5, hipóteses e perguntas da seção 22.4 | Professor |
+| Decisões da equipe sobre A1 a A8 | **Feito** em 24/10/2026 (F7-16), sem validação do professor; as hipóteses de desempenho seguem sem validação | — |
 | Fase 3 | Casca Maven, pipeline em pull requests, JaCoCo, SonarCloud e processo de defeitos | Aceite do ADR-009 e do ADR-011 |

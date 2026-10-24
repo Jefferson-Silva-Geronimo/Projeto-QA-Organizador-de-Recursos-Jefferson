@@ -2,16 +2,16 @@
 
 A equipe é uma pessoa (Jefferson). Este arquivo registra o que foi decidido ou suposto, com origem, quem aceitou e
 quando, para a banca ver o que é fato da especificação e o que é escolha. Texto completo das decisões A a D e das
-lacunas: [perguntas-abertas.md](prd/perguntas-abertas.md). Perguntas ao professor:
-[perguntas-professor.md](perguntas-professor.md).
+lacunas: [perguntas-abertas.md](prd/perguntas-abertas.md). As 18 perguntas que seriam enviadas ao professor viraram
+decisões da equipe (F7-16 e F7-17); o registro está em [perguntas-professor.md](perguntas-professor.md).
 
 ## Como ler
 
 | Termo | Significado |
 | --- | --- |
 | Decisão da equipe | Escolha aceita por Jefferson na conversa, com a data |
-| Pré-aprovada | Aceita de antemão por Jefferson para um escopo definido; a validar com o professor |
-| Suposição | Premissa adotada sem resposta do professor, com o impacto se estiver errada e o teste que a isola |
+| Pré-aprovada | Aceita de antemão por Jefferson para um escopo definido; não validada com o professor |
+| Suposição | Premissa adotada pela equipe, não validada com o professor, com o impacto se estiver errada e o teste que a isola |
 
 ## 1. Decisões anteriores (Fases 1 e 2)
 
@@ -19,7 +19,7 @@ Registradas em [perguntas-abertas.md](prd/perguntas-abertas.md), com status "Dec
 
 | Grupo | IDs | Data | Aceita por | Observação |
 | --- | --- | --- | --- | --- |
-| Lacunas da seção 10 | A1 a A8 | 12/10/2026 | Equipe (Jefferson) | A1, A3 e A5 aguardam confirmação do professor |
+| Lacunas da seção 10 | A1 a A8 | 12/10/2026 | Equipe (Jefferson) | Decisão da equipe (Jefferson), 24/10/2026, não validada com o professor (F7-16 e F7-17) |
 | Dúvidas do PRD | B1 a B4 | 12/10/2026 | Equipe (Jefferson) | — |
 | Decisões ao aplicar A e B | C1 a C8 | 12/10/2026 | Equipe (Jefferson) | C2 com a suposição S6 |
 | Decisões ao aplicar C | D5 a D8 | 12/10/2026 | Equipe (Jefferson) | — |
@@ -67,9 +67,11 @@ O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%
 
 | ID | Escopo | Aceita por | Data | Situação |
 | --- | --- | --- | --- | --- |
-| PA-01 | Janela de não compareceu: transição APROVADA para NAO_COMPARECEU só após a tolerância configurada, pelo Responsável, com o `Clock`, auditoria na mesma transação e sem job | Jefferson (pré-aprovada) | Antes de 17/10/2026 | **Já implementada** (`UsoService#marcarNaoCompareceu`, CT-093). Pré-aprovada, a validar com o professor |
+| PA-01 | Janela de não compareceu: transição APROVADA para NAO_COMPARECEU só após a tolerância configurada, pelo Responsável, com o `Clock`, auditoria na mesma transação e sem job | Jefferson (pré-aprovada) | Antes de 17/10/2026 | **Já implementada** (`UsoService#marcarNaoCompareceu`, CT-093). Pré-aprovada; decisão da equipe (Jefferson), 24/10/2026, não validada com o professor (F7-16, item 8) |
 
-## 4. Suposições abertas (sem resposta do professor)
+## 4. Suposições da equipe, não validadas com o professor
+
+Em 24/10/2026 Jefferson decidiu manter cada uma como **decisão da equipe, não validada com o professor** (F7-16, com o impacto e o teste de cada item; F7-17, com a interpretação da seção 10 da especificação). O rótulo "Suposição" fica porque a premissa segue sem validação externa.
 
 | ID | Suposição | Impacto se estiver errada | Teste que a isola |
 | --- | --- | --- | --- |
@@ -79,7 +81,7 @@ O gate reprovou só em `new_security_rating` (E, limite A); cobertura nova 93,9%
 | S-D9 | Sem retenção nem expurgo da auditoria e das notificações | Dado pessoal guardado além do necessário | Nenhum; é ausência de funcionalidade |
 | S-D17 | Duração da sessão obrigatória por variável de ambiente, sem padrão | Sessão que nunca expira ou expira cedo | CT-004 (`AutenticacaoApiIT`), com 1 hora só em teste |
 | S-SEG | O período aceita precisão de segundos | A API passaria a recusar segundos | BDD-06, linhas de um segundo (`aprovacao-bloqueio.feature`) |
-| S-PAR | Sem revisor humano, vale a revisão crítica assistida, registrada em cada pull request | Pode ser exigido revisor externo | Não há teste; ver [perguntas-professor.md](perguntas-professor.md) |
+| S-PAR | Sem revisor humano, vale a revisão crítica assistida, registrada em cada pull request | Pode ser exigido revisor externo | Não há teste; é processo. Ver F7-16, item 14, e [perguntas-professor.md](perguntas-professor.md) |
 | S-A1 a S-A8 | Lacunas 1 a 8 da especificação resolvidas como em A1 a A8 | Ver a tabela em [perguntas-professor.md](perguntas-professor.md) | CT por regra, em [casos-de-teste.md](testes/casos-de-teste.md) |
 
 ## 5. Decisões da Fase 5 (17/10/2026)
@@ -293,7 +295,7 @@ Os campos são calculados por `PermissoesDaReserva` (regra pura, em `model.regra
 | # | Suposição | Origem | Impacto se estiver errada |
 | --- | --- | --- | --- |
 | 1 | O motivo da rejeição conta como informado: `podeRejeitar` é verdadeiro sem olhar o motivo; o servidor segue exigindo-o e responde `MOTIVO_OBRIGATORIO` se faltar (RN-24) | `AprovacaoService.rejeitar`; mesmo tratamento da F6-14 | Só muda se a tela deveria avisar antes; hoje o diálogo exige o motivo |
-| 2 | **A rejeição não tem limite de horário**: uma reserva SOLICITADA pode ser rejeitada mesmo depois do instante de início. Só a aprovação para no início (D2 e D10) | `AprovacaoService.rejeitar` não compara com o início; D2 trata só da aprovação | Se a regra for rejeitar só antes do início, `podeRejeitar` passa a ser falso no início e depois, e o servidor também precisa mudar. **Suposição aceita por Jefferson em 22/10/2026**; o servidor não muda. A dúvida segue em [perguntas-professor.md](perguntas-professor.md) e em [fase-7-pendencias.md](fase-7-pendencias.md) |
+| 2 | **A rejeição não tem limite de horário**: uma reserva SOLICITADA pode ser rejeitada mesmo depois do instante de início. Só a aprovação para no início (D2 e D10) | `AprovacaoService.rejeitar` não compara com o início; D2 trata só da aprovação | Se a regra for rejeitar só antes do início, `podeRejeitar` passa a ser falso no início e depois, e o servidor também precisa mudar. **Suposição aceita por Jefferson em 22/10/2026**; o servidor não muda. A decisão da equipe de 24/10/2026 (F7-16, item 16) consta em [perguntas-professor.md](perguntas-professor.md) e em [fase-7-pendencias.md](fase-7-pendencias.md) |
 | 3 | Só o perfil Responsável tem os campos verdadeiros; para Solicitante e Administrador são falsos (a fila já lhes responde 403) | `@PreAuthorize` de `GET /api/reservas/fila`; RN-06 | Nenhum efeito visível hoje, porque eles não recebem a fila |
 
 O cálculo está em `PermissoesDeDecisao` e `PoliticaDeDecisao` (regra pura, em `model.regra`) e a montagem em `RespostasDeReserva.daFila`. As respostas de aprovar e rejeitar não mudaram.
@@ -426,6 +428,39 @@ Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da prot
 | ID | Decisão | Fatos da consulta de 24/10/2026 | Condição e declaração |
 | --- | --- | --- | --- |
 | F7-15 | **Deixar os PRs 81, 82 e 83 do Dependabot abertos até depois da tag, sem mesclar e sem fechar.** Razão: não alterar o `package-lock.json` do front entre a leitura final da cobertura (item 2.4) e a prova de clone limpo (item 2.7) | PR 81: `vite` 8.3.4 para 8.3.5 (patch). PR 82: `@tanstack/react-query` 5.104.4 para 5.104.5 (patch). PR 83: `typescript-eslint` 8.71.2 para 8.72.0 (minor). Os três em `frontend/`, com `test`, `frontend`, `e2e` e `segredos` verdes (o `segredos` rodou nos três, o que confirma o F7-10 para PRs do Dependabot). **Sem alerta de segurança:** 27 alertas abertos, todos em `.aiox-core/`, 0 em `frontend/` e 0 no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md)) | **Se qualquer um virar alerta de segurança antes da tag, parar e avisar Jefferson.** Declarado no relatório final como atualização deliberadamente adiada |
+
+### F7-16. As 18 perguntas ao professor viram decisões da equipe (24/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026**, ao responder a lista de decisões pendentes: para os itens 1 a 18, a escolha foi **assumir como decisão da equipe, não validada com o professor**, com o impacto já declarado. **A mensagem ao professor deixa de existir; nada é enviado a ninguém.** Nenhum valor novo foi inventado: onde não havia valor, a decisão é continuar sem valor padrão. Os IDs F7-16-01 a F7-16-18 seguem a ordem de [perguntas-professor.md](perguntas-professor.md), que agora é o registro dessas decisões. Os testes citados são os que isolam cada decisão; onde não há teste, está escrito.
+
+| ID | Item | Decisão da equipe | Impacto se estiver errada | Teste que a isola ou lacuna |
+| --- | --- | --- | --- | --- |
+| F7-16-01 | A1 | Atributo `restrito` do recurso, definido pelo Administrador; reserva sem recurso restrito é aprovada automaticamente, com ator SISTEMA | O fluxo de aprovação (RF-07) e a aprovação automática mudam; o ator SISTEMA pode deixar de existir | CT-040 e CT-041 (`ReservasApiIT`); CT-098 (`AuditoriaApiIT.ct098_transicoesAutomaticasTemAtorSistema`) |
+| F7-16-02 | A2 | Períodos semiabertos [início, fim): terminar às 10h não conflita com começar às 10h | Troca a fórmula de sobreposição na constraint, em `Periodo.sobrepoe` e nos testes de fronteira | CT-034 (`PeriodoTest.ct034_conflitoEmTrincaNasFronteiras`); CT-008 (`EsquemaIT.ct008_fronteiraSemiabertaNaoConflita`) |
+| F7-16-03 | A3 | Material é unidade identificada, com código de patrimônio; cada unidade é um recurso | **Maior retrabalho de todas**: o controle por quantidade muda o modelo de dados e a proteção contra dupla reserva dos materiais | CT-019 (`CatalogoApiIT.ct019_materialExigePatrimonioUnico`) |
+| F7-16-04 | A4 | Professor é recurso; o vínculo com usuário é opcional e não concede perfil | O cadastro de professores e a regra de agenda própria mudam | CT-020 e CT-021 (`CatalogoApiIT`); CT-058 (`ReservasApiIT`) |
+| F7-16-05 | A5 | Interface com adaptador HTTP de webhook; na demonstração, um endpoint de teste; nos testes, WireMock | Pode ser exigido provedor real, com credenciais e contrato | INT-01 a INT-06 (`NotificacaoApiIT`, `NotificacaoTempoLimiteApiIT`); CT-106 (`TrocaDeProvedorApiIT`) |
+| F7-16-06 | A6 | Fuso America/Sao_Paulo, armazenamento em UTC, janela de funcionamento por sala, sem reserva que cruze a meia-noite local | Eventos noturnos ficam impossíveis de reservar e a regra de janela precisa ser revista | CT-036 (`JanelaDeFuncionamentoTest`); CT-037 e CT-038 (`ReservasApiIT.ct038_armazenaEmUtcEDevolveOMesmoInstante`) |
+| F7-16-07 | A7 | Bloqueio sobre reservas existentes: 409 com a lista; o Administrador confirma; o sistema cancela SOLICITADA e APROVADA; EM_USO impede o bloqueio | O fluxo de bloqueio (RF-08) e as notificações de cancelamento mudam | CT-077, CT-078 e CT-079 (`AprovacaoBloqueioApiIT`) |
+| F7-16-08 | A8 | Matriz de cancelamento por estado e perfil, sem antecedência mínima; o Responsável marca não comparecimento depois do início mais uma tolerância configurável | Mudam as regras de cancelamento (RN-18) e de não comparecimento (RN-21) | CT-052, CT-053 e CT-054 (`PoliticasDeReservaTest`, `ReservasApiIT`); CT-093 e CT-094 (`UsoMaterialApiIT`) |
+| F7-16-09 | D1 | Tolerância de não comparecimento sem valor padrão; sem configuração a marcação é recusada com `TOLERANCIA_NAO_CONFIGURADA`; 30 minutos só em teste | Reservas não usadas ocupam o recurso por mais tempo, ou são marcadas cedo demais | `UsoMaterialApiIT.ct093_semToleranciaConfiguradaNaoCompareceuEhRecusado` e `ct093_naoCompareceuSoDepoisDaTolerancia` |
+| F7-16-10 | D3 | Tentativas e intervalo de reenvio de notificação sem valor padrão; 3 tentativas e 1 minuto só em teste | Notificações perdidas ou carga sobre o provedor | CT-105 (`NotificacaoApiIT.ct105_reenvioUsaAMesmaChaveDeIdempotencia`). **Lacuna:** não há teste dedicado ao reenvio sem configuração |
+| F7-16-11 | D4 | No servidor, o tamanho da página do relatório é parâmetro obrigatório. No front, o tamanho é 20, **por decisão da equipe** (`relatorios/parametros.ts`, configurável por `VITE_TAMANHO_DA_PAGINA_DO_RELATORIO`) | Relatório lento ou incômodo de navegar | CT-112 (`RelatorioApiIT.ct112_semTamanhoDePaginaOuComPeriodoInvalidoEhRecusado`); CT-157 no front. Com esta decisão, o 20 deixa de ser "suposição sem origem" |
+| F7-16-12 | D9 | Nada é apagado nem anonimizado; não há expurgo da auditoria nem das notificações | **Risco de privacidade declarado:** dado pessoal guardado além do necessário; exigiria rotina de expurgo e revisão da auditoria somente inserção | CT-011 (`EsquemaIT.ct011_auditoriaEhSomenteInsercao`) e CT-056 (`ReservasApiIT.ct056_naoExisteOperacaoDeExclusao`) isolam só a ausência de apagamento. **Lacuna:** não há teste de expurgo porque não há expurgo |
+| F7-16-13 | D17 | Duração da sessão sem valor padrão: `SESSAO_DURACAO` é definida na implantação; o `PT30M` do README é só exemplo; 1 hora só em teste | Sessão que nunca expira, ou que expira cedo demais para o uso | CT-004 (`AutenticacaoApiIT.ct004_expiracaoDaSessaoEmTrinca`) |
+| F7-16-14 | Revisão por pares | Equipe de uma pessoa: vale a revisão assistida registrada em cada pull request. **Decisão não validada e limitação do entregável** | Pode ser exigido revisor externo nos pull requests | Não há teste: é processo. Evidência: proteção da `main` (PR obrigatório e checks) lida pela API em 24/10/2026 e os PRs com checks |
+| F7-16-15 | Precisão de segundos | Reservas e bloqueios aceitam segundos: o período usa `Instant` sem arredondamento | Se a granularidade mínima for o minuto, as linhas de um segundo mudam e a API passa a recusar segundos | CT-034 (`PeriodoTest`, milissegundos); BDD-06, linhas de um segundo (`aprovacao-bloqueio.feature`); CT-080 (`ct080_bordasDoBloqueioNaoEntramNaLista`) |
+| F7-16-16 | Rejeição depois do início | O Responsável pode rejeitar uma reserva SOLICITADA mesmo depois do início; só a aprovação para (D2 e D10) | O servidor passaria a recusar a rejeição, `podeRejeitar` seria falso no início e depois, e CT-146 e CT-147 mudam | CT-147 (`PermissoesDaFilaApiIT.ct147_aprovarPerdeSentidoNoInstanteDeInicioERejeitarContinua`); CT-146 (`PermissoesDeDecisaoTest`) |
+| F7-16-17 | Início do uso antes do horário | Sem limite: `podeIniciar` é verdadeiro em reserva APROVADA antes do início | Se o início só valer a partir do horário, o servidor precisa recusá-lo, `podeIniciar` passa a ser falso antes dele, e CT-150 e CT-152 mudam | CT-152 (`PermissoesDeUsoApiIT.ct152_responsavelPodeIniciarReservaAprovadaAntesDoInicio`); CT-150 (`PermissoesDeUsoTest`) |
+| F7-16-18 | Troca de perfil e mínimo de Responsáveis (D14) | A troca de perfil **não** é recusada por causa do mínimo de dois Responsáveis ativos; o mínimo só vale na desativação | **Brecha funcional conhecida:** o Administrador pode deixar o sistema com um só Responsável, e então reserva de Responsável em recurso restrito nunca é aprovada (B1) | CT-015 (`UsuariosApiIT.ct015_desativacaoQueDeixariaMenosDeDoisResponsaveisEhRecusada`) isola só a desativação. **Lacuna:** nenhum teste afirma que a troca de perfil não é recusada; só a rodada manual E-19 viu |
+
+### F7-17. Para a seção 10 da especificação, a validação é da equipe (24/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026**, no molde da F6-20: é uma **interpretação declarada**, e não uma validação externa.
+
+| ID | Interpretação | Alternativa descartada |
+| --- | --- | --- |
+| F7-17 | A seção 10 da [especificação](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) diz que as lacunas "**não podem ser decididas sem validação**; cada um vira lacuna, suposição ou pergunta aberta nos documentos". **Interpretação da equipe:** como o projeto é de uma pessoa e não há resposta do professor, a validação é a da própria equipe (Jefferson), registrada com data, impacto e teste em F7-16. **Isto não é validação externa**: o relatório final declara as lacunas A1 a A8, D1, D3, D4, D9, D17 e as demais como decididas pela equipe, sem validação do professor, e destaca A3 (maior retrabalho se estiver errada), D14 (brecha funcional conhecida) e a revisão por pares (limitação do entregável) | Esperar uma resposta que não virá antes da entrega; retirar as decisões do projeto |
 
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 

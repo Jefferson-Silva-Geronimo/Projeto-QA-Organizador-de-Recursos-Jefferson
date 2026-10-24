@@ -7,7 +7,9 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 | Item | Valor |
 | --- | --- |
 | **Recomendação do autor deste relatório** | **LIBERAR COM RESSALVAS** (como release candidate `v1.0.0-rc1`) |
-| **Decisão de qualidade** | **Pendente: é de Jefferson.** Esta é uma recomendação com os fatos abaixo, não a decisão |
+| **Decisão de qualidade** | **LIBERAR COM RESSALVAS**, decisão de **Jefferson Silva em 24/10/2026**, coincidindo com a recomendação acima. A decisão vale para o release candidate; a criação da tag segue dependendo de nova confirmação dele |
+
+**Observação de Jefferson junto com a decisão (24/10/2026):** "RNF-08b não atendido (p95 de 568 a 886 ms contra 300 ms), R-25 aberto com causa desconhecida, front sem cobertura medida, lacunas da especificação resolvidas por decisão da equipe sem validação externa, revisão por pares feita como revisão assistida".
 
 **Por que "liberar com ressalvas" e não "liberar" nem "não liberar".**
 
@@ -23,11 +25,11 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 1. **RNF-08b não atendido:** a criação de reserva tem p95 de 568 a 886 ms contra a hipótese de 300 ms (causa atribuída ao `fsync` do PostgreSQL em Docker; hipótese de 300 ms **não validada** pelo professor) ([resultado-02.md](performance/resultado-02.md)).
 2. **R-25 aberto, causa desconhecida:** `NotificacaoApiIT.int01ECt103` falhou 3 vezes de forma intermitente; BUG-017 está **mitigado, não corrigido** ([decisoes-equipe.md](decisoes-equipe.md), R-25 e R-26).
 3. **O front não tem cobertura medida** e o SonarCloud não analisa o TypeScript ([leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 6).
-4. **Perguntas ao professor sem resposta** (A1 a A8, D1, D3, D4, D9, D17 e outras): o projeto segue por suposições registradas, com impacto declarado ([perguntas-professor.md](perguntas-professor.md)).
-5. **"Revisão por pares" é revisão assistida:** a equipe é uma pessoa; a pergunta ao professor segue sem resposta.
+4. **Lacunas da especificação resolvidas por decisão da equipe, sem validação externa** (A1 a A8, D1, D3, D4, D9, D17 e outras): decididas por Jefferson em 24/10/2026, com impacto e teste declarados; a maior em retrabalho é a A3 ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17; seção 9 deste relatório).
+5. **"Revisão por pares" é revisão assistida:** a equipe é uma pessoa; é uma decisão não validada e uma limitação do entregável (F7-16, item 14).
 6. **Entregáveis ainda não feitos por mim:** a apresentação e a demonstração (de Jefferson), e a tag `v1.0.0-rc1`, que exige autorização expressa dele (seção 11).
 
-**O que mudaria a recomendação:** para **"não liberar"**: qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou a resposta do professor invalidar uma suposição de alto impacto (A3, maior retrabalho). Para **"liberar"** sem ressalvas: seria preciso o professor validar a hipótese de 300 ms ou o RNF-08b ser medido em outro ambiente com resultado dentro da meta.
+**O que mudaria a recomendação:** para **"não liberar"**: qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou uma decisão de alto impacto da equipe (A3, maior retrabalho) se mostrar errada. Para **"liberar"** sem ressalvas: seria preciso o professor validar a hipótese de 300 ms ou o RNF-08b ser medido em outro ambiente com resultado dentro da meta.
 
 ## 2. Escopo e itens não testados
 
@@ -195,9 +197,18 @@ Fonte: [defeitos/README.md](defeitos/README.md), com o processo, as severidades 
 | RF-11 (notificação simulada) | `INT-01` a `INT-06` em `NotificacaoApiIT` (9 testes) e `NotificacaoTempoLimiteApiIT` (1 teste, `INT-04`) | 0 falhas |
 | RF-14 (documentação da API) | `DocumentacaoApiIT` (5), `ContratoObrigatoriosApiIT` (2) e `ContratoDeRequisicoesApiIT` (2): contrato OpenAPI publicado, campos obrigatórios e motivo obrigatório (CT-114 a CT-116, CT-134, CT-135, CT-166, CT-167) | 0 falhas |
 
-### Perguntas ao professor: conferência
+### Lacunas da especificação resolvidas por decisão da equipe, sem validação externa
 
-[perguntas-professor.md](perguntas-professor.md) tem a **mensagem consolidada pronta**, com assunto, corpo e tabelas. **Cada pergunta traz a suposição adotada e o impacto se estiver errada** (conferido em 24/10/2026): A1 a A8, D1, D3, D4, D9, D17, "revisão por pares" para equipe de uma pessoa, precisão de segundos, rejeição depois do início da reserva, início do uso antes do horário e troca de perfil deixando menos de dois Responsáveis (D14). **Nada foi enviado em nome de Jefferson.**
+A seção 10 da especificação diz que as lacunas "não podem ser decididas sem validação". Em **24/10/2026** Jefferson decidiu as 18 perguntas que seriam enviadas ao professor como **decisões da equipe, não validadas com o professor** ([decisoes-equipe.md](decisoes-equipe.md), F7-16 com o impacto e o teste de cada item; F7-17 com a interpretação de que a validação é a da equipe). **Isto não é validação externa. Nada foi enviado a ninguém.** O registro está em [perguntas-professor.md](perguntas-professor.md).
+
+| Destaque | Por que importa | Declaração |
+| --- | --- | --- |
+| **A3: material por unidade identificada** | **A decisão de maior retrabalho se estiver errada:** o controle por quantidade muda o modelo de dados e a proteção contra dupla reserva dos materiais | CT-019 isola a regra; não há como migrar para estoque sem remodelar |
+| **D14: troca de perfil não é recusada pelo mínimo de Responsáveis** | **Brecha funcional conhecida:** o Administrador pode deixar um só Responsável, e a reserva de Responsável em recurso restrito nunca é aprovada | Nenhum teste afirma que a troca não é recusada; só a rodada manual E-19 viu. CT-015 isola só a desativação |
+| **Revisão por pares** | Equipe de uma pessoa: vale a revisão assistida registrada em cada pull request | **Limitação do entregável** e decisão não validada (F7-16, item 14) |
+| **D9: nada é apagado nem anonimizado** | **Risco de privacidade:** dado pessoal da auditoria e das notificações fica guardado além do necessário, sem expurgo | Não há teste de expurgo porque não há expurgo (F7-16, item 12) |
+
+As demais decisões (A1, A2, A4 a A8, D1, D3, D4, D17, precisão de segundos, rejeição depois do início e início do uso antes do horário) estão em F7-16 com o teste que isola cada uma. Onde não havia valor, nenhum foi inventado: segue sem valor padrão no código.
 
 ## 10. Dívida técnica e plano de evolução
 
@@ -214,7 +225,7 @@ O plano abaixo é **proposta do autor, sem prazo e sem decisão**; ordena do que
 | 7 | Paginação e filtros (reservas, fila, catálogo, auditoria) e medir o custo por reserva em uso | L-03 | Medir antes de paginar |
 | 8 | Atualizações adiadas: `jsdom` 30, PRs 81 a 83, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade, alertas do `.aiox-core/` | F7-11, F7-15, F7-08 | Fazer depois da tag, com a suíte completa do front |
 | 9 | Diálogo nativo `<dialog>` quando o jsdom permitir; E2E em outros navegadores e repetível no mesmo banco | [Dialogo.tsx](../frontend/src/ui/Dialogo.tsx); [e2e/README.md](testes/e2e/README.md) | Reavaliar a cada versão do `jsdom` |
-| 10 | Reativar usuário e recurso, trocar senha (o contrato não tem as operações) | [fase-7-pendencias.md](fase-7-pendencias.md) | Decidir com o professor se é requisito |
+| 10 | Reativar usuário e recurso, trocar senha (o contrato não tem as operações) | [fase-7-pendencias.md](fase-7-pendencias.md) | Decidir se é requisito |
 | 11 | `CT-nnn` dentro do teste do front (hoje só a tabela CT-arquivo) | BUG-024 | Decidir se vale renomear os testes |
 
 ## 11. Entregáveis da especificação (seção 7)
@@ -223,7 +234,7 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 
 | # | Entregável | Onde está | Estado |
 | --- | --- | --- | --- |
-| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (478 commits, 53 PRs mesclados); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é pergunta sem resposta |
+| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (478 commits, 53 PRs mesclados); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
 | 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova será **refeita no commit da tag** |
 | 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README recebe os links finais no item 2.7 |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | [RTM.md](../RTM.md); [auditoria-rtm.md](testes/auditoria-rtm.md) | **Atendido** (55 linhas; defeitos da auditoria corrigidos) |

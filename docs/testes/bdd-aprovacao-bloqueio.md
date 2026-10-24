@@ -62,4 +62,4 @@ fronteira "cruza por um segundo" do plano mestre (Prompt 4.E).
 Nenhuma fronteira ficou sem regra neste conjunto: RN-11 define o período semiaberto e CT-080 fixa os valores.
 A granularidade em segundos é uma **suposição**: o período usa `Instant` sem arredondamento, portanto um segundo
 conta. Se o professor definir granularidade mínima de minuto, as duas linhas de um segundo mudam para o
-valor definido. A pergunta consta em [perguntas-professor.md](../perguntas-professor.md).
+valor definido. A decisão da equipe (24/10/2026) consta em [perguntas-professor.md](../perguntas-professor.md).
