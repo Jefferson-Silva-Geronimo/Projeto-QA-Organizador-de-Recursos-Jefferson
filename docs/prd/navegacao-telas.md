@@ -2,7 +2,7 @@
 
 Fonte dos requisitos: [requisitos-funcionais.md](requisitos-funcionais.md) (RF-13 em especial) e a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 3. Jornadas: [Solicitante](personas/solicitante.md), [Responsável](personas/responsavel.md) e [Administrador](personas/administrador.md). Stack e regras do front end: [ADR-015](../adr/ADR-015-stack-do-front-end.md). Contrato: [openapi.json](../api/openapi.json). Códigos de erro: `CodigoErro.java` e [ADR-008](../adr/ADR-008-erros-padronizados-e-consultas-parametrizadas.md).
 
-Este documento é a entrada do Prompt 6.A do plano mestre. Ele não contém código. Cada tela vira uma fatia em TDD no Prompt 6.C.
+Este documento é a entrada do Prompt 6.A do [plano de projeto](../plano-de-projeto.md). Ele não contém código. Cada tela vira uma fatia em TDD no Prompt 6.C.
 
 Legenda: **fato** (vem do repositório, com arquivo), **decisão** (da equipe, com ID), **suposição** (com impacto) e **lacuna** (sem decisão, listada na seção 7).
 
@@ -10,13 +10,13 @@ Legenda: **fato** (vem do repositório, com arquivo), **decisão** (da equipe, c
 
 | Princípio | Origem |
 | --- | --- |
-| O front nunca decide sobreposição, aprovação, posse nem transição de estado. Ele envia o pedido e mostra a resposta do servidor | ADR-004; plano mestre, seção 10.3 (3) |
+| O front nunca decide sobreposição, aprovação, posse nem transição de estado. Ele envia o pedido e mostra a resposta do servidor | ADR-004; [plano de projeto](../plano-de-projeto.md), seção 10.3 (3) |
 | Esconder um botão por perfil é conveniência. A segurança é o 403 do servidor, e o front também sabe exibir esse 403 | ADR-004; RF-01 |
-| Toda mensagem de recusa do servidor vem da tabela da seção 5; dicas de preenchimento e as mensagens de ação ausente aprovadas ficam na seção 9. O texto cru do back end nunca aparece na tela | ADR-008; plano mestre, seção 10.3 (2) |
+| Toda mensagem de recusa do servidor vem da tabela da seção 5; dicas de preenchimento e as mensagens de ação ausente aprovadas ficam na seção 9. O texto cru do back end nunca aparece na tela | ADR-008; [plano de projeto](../plano-de-projeto.md), seção 10.3 (2) |
 | Nenhuma mensagem identifica terceiros | RF-13, critério 2; B3 |
-| Layout *mobile-first*, validado em 360 px e 1280 px. Todo campo tem rótulo, todo elemento interativo tem foco visível e o contraste é conferido | F6-04; plano mestre, seção 10.3 (5) |
+| Layout *mobile-first*, validado em 360 px e 1280 px. Todo campo tem rótulo, todo elemento interativo tem foco visível e o contraste é conferido | F6-04; [plano de projeto](../plano-de-projeto.md), seção 10.3 (5) |
 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset. O fuso é configuração do front (padrão `America/Sao_Paulo`, decisão A6) | ADR-005; ADR-015 |
-| Cada tela trata os estados carregando, vazio, erro e sucesso | Plano mestre, seção 10.2 |
+| Cada tela trata os estados carregando, vazio, erro e sucesso | [Plano de projeto](../plano-de-projeto.md), seção 10.2 |
 | Sessão expirada (401) apaga o token e leva ao login sem gravar dados | RF-13, critério 4; ADR-015 |
 
 ## 2. Mapa de navegação por perfil

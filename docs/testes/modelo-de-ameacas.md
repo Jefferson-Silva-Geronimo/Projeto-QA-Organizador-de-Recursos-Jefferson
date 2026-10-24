@@ -63,5 +63,5 @@ Situação: **Coberta** (há teste que exercita a ameaça), **Parcial** (parte c
 
 - Escrito em 24/10/2026 a partir dos documentos e testes do repositório. **Não houve exploração** nem teste de intrusão; a cobertura vem de testes do próprio projeto.
 - A frase "não encontrei" vale para as buscas feitas (CSP em `frontend/nginx.conf`, `compose.e2e.yaml` e `src/main`; limitação de taxa em `src/main/java`; teste de XSS e de tempo em `src/test`); ausência de achado não prova ausência.
-- STRIDE aplicado por superfície, sem diagramas de fluxo de dados e sem pontuação de risco (a especificação e o plano mestre não pedem). A priorização usa a severidade dos defeitos e a decisão de aceitar riscos, ambas de Jefferson.
+- STRIDE aplicado por superfície, sem diagramas de fluxo de dados e sem pontuação de risco (a especificação e o [plano de projeto](../plano-de-projeto.md) não pedem). A priorização usa a severidade dos defeitos e a decisão de aceitar riscos, ambas de Jefferson.
 - Esta é uma **revisão assistida**, não revisão por par humano.

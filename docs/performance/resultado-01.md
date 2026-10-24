@@ -123,3 +123,4 @@ Nenhuma mudança de código foi feita nem proposta como correção antes de medi
 - Cenários: CEN-01 (cumprido sob carga) e CEN-04 (medido, não atende à hipótese), em
   [ciclo-01.md](../avaliacao-arquitetural/ciclo-01.md).
 - Decisões: P5-01 a P5-03 em [decisoes-equipe.md](../decisoes-equipe.md).
+- Ordem dos commits: o requisito foi commitado às 16:24 (`a20f489`), aprovado por Jefferson, e a rodada 01 foi feita às 17:39 (`3d032d5`).

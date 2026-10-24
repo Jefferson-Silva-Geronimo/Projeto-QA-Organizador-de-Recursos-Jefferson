@@ -100,7 +100,7 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 
 ### 4.4 Decisões da equipe que moldam o escopo
 
-Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Validado pelo professor" é "Não" em todas as linhas: nenhuma decisão foi validada com ele. As lacunas A1 a A8 (seção 10 da especificação) foram decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
+Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Validado pelo professor" é "Não" em todas as linhas: nenhuma decisão foi validada com ele. As lacunas A1 a A8 (plano de projeto, seção 5.3) foram decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
 
 | ID | Tema | RF e RN afetados | Validado pelo professor |
 | --- | --- | --- | --- |
@@ -197,7 +197,7 @@ Fato (especificação, seção 7): repositório com histórico e revisão por pa
 
 ## 8. Lacunas e decisões pendentes de confirmação
 
-- As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
+- As oito lacunas apontadas pela equipe no plano de projeto (seção 5.3) e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
 - As lacunas A1 a A8 foram decididas pela equipe em 24/10/2026 e **não foram validadas com o professor** (F7-16 e F7-17 em [decisoes-equipe.md](decisoes-equipe.md)). A3 é a de maior retrabalho se estiver errada.
 - As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
 - Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 foram decididas pela equipe em 24/10/2026, sem valor padrão e sem validação do professor (F7-16).

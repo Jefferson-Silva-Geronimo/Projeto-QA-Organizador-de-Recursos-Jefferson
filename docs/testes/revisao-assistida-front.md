@@ -103,7 +103,7 @@ Nada abaixo foi preenchido por suposição.
 | Testes de componente | Só `erros/` e `test/documentacao.ts` foram lidos. Os demais foram varridos por busca; **não se verificou se os testes cobrem cada comportamento citado**. A busca mostrou testes que mencionam `detail:` e `title:` (`PaginaDeBusca.estados`, `PaginaDeNovaReserva.erros`, `PaginaDeEntrada.envio`, 7 ocorrências), sem leitura do conteúdo |
 | Esquema gerado | `api/schema.d.ts` só por busca; não se confirmou quais campos `pode...` existem nem se algum é opcional |
 | Biblioteca do cliente | Não se leu `openapi-fetch`; o código descarta o corpo de erro por `interpretarProblema` (`api/cliente.ts:75`), mas não se verificou se um corpo de erro em texto puro poderia vazar |
-| Documentos | Não se leram ADR-004, ADR-008, plano mestre (seção 10.3), RTM nem `decisoes-equipe.md` |
+| Documentos | Não se leram ADR-004, ADR-008, [plano de projeto](../plano-de-projeto.md) (seção 10.3), RTM nem `decisoes-equipe.md` |
 | Varredura por expressão regular | Código gerado dinamicamente ou com sintaxe incomum poderia escapar |
 | CSS e estilo | `.css`, `estilo/tokens` e `layout/Icone.tsx` não foram lidos (sem relação com regra) |
 | Conferência do autor | O autor refez só os pontos listados na seção 1; o restante depende da palavra do revisor |
@@ -112,5 +112,5 @@ Nada abaixo foi preenchido por suposição.
 
 - **Fato (revisor, com conferência parcial do autor):** não se achou regra de negócio duplicada no front que habilite, esconda ou recuse ação além da matriz de telas e dos campos `pode...`. Há uma conferência de preenchimento que coincide com a RN-24 (R1, aceita), três observações (S1 a S3) e um conjunto de textos fixos fora do mapa (F7-03).
 - **Suposição sem origem:** a janela de 14 dias da Busca (S2), com impacto limitado à janela inicial.
-- **Limite:** a revisão foi de leitura, por um agente de linguagem. Não substitui revisão por pessoa nem prova, em execução, que o servidor devolve o que a tela espera. A prova em execução vem dos testes de componente (910 na última execução da CI na `main`, [relatório consolidado da Fase 6](../relatorio-fase-6-consolidado.md), seção 5), dos roteiros em navegador real e do E2E; esta revisão não os refez.
+- **Limite:** a revisão foi de leitura, por um agente de linguagem. Não substitui revisão por pessoa nem prova, em execução, que o servidor devolve o que a tela espera. A prova em execução vem dos testes de componente (910 na última execução da CI na `main`, [execucao-e24.md](execucao-e24.md)), dos roteiros em navegador real e do E2E; esta revisão não os refez.
 - **Defeitos abertos por esta revisão:** nenhum (decisões F7-01 a F7-03). Se qualquer condição de reabertura da seção 4 ou 5 ocorrer, o achado volta como BUG-019 em diante, com issue, teste de regressão e commit.

@@ -20,7 +20,7 @@ Classificação de cada afirmação:
 | RNF-08a | A consulta de disponibilidade responde com p95 de até 300 ms com 50 usuários simultâneos | Hipótese | RNF-08, CEN-04, Aula 10 |
 | RNF-08b | A criação de reserva responde com p95 de até 300 ms com 50 usuários simultâneos | Hipótese | RNF-08, CEN-04, Aula 10 |
 | RNF-08c | A taxa de erro real fica abaixo de 1%. **Erro real** é: consulta diferente de 200; criação diferente de 201 e de 409. O 409 esperado não conta como erro | Hipótese | RNF-08 |
-| RNF-08d | A criação de reserva **nunca** responde 500 | Proposta | Plano mestre, 9.1; RF-06 |
+| RNF-08d | A criação de reserva **nunca** responde 500 | Proposta | [Plano de projeto](../plano-de-projeto.md), 9.1; RF-06 |
 | RNF-05 (carga) | Depois da rodada, o banco tem no máximo **uma** reserva aceita por recurso e intervalo disputado | Fato | RN-03, RF-06 (a verificação por SQL é nova) |
 
 Decisão da rodada: **atende** se RNF-08a a RNF-08d e RNF-05 valerem; **não atende** se qualquer um falhar;
@@ -38,7 +38,7 @@ Decisão da rodada: **atende** se RNF-08a a RNF-08d e RNF-05 valerem; **não ate
 | Mistura por iteração | 70% consulta de disponibilidade, 30% criação de reserva | Proposta | Mais leitura que escrita; a criação é a operação crítica |
 | Alvos disputados | 5 salas × 20 janelas de 1 hora = 100 pares (recurso, intervalo); cada criação sorteia um par | Proposta | Garante disputa real: no máximo 100 reservas aceitas; o resto deve dar 409 |
 | Usuários | 50 Solicitantes fictícios (`perf/usuarios.csv`), um login por thread | Proposta | Nunca dados reais |
-| Modo | CLI (`jmeter -n`), contra a aplicação local | Fato | Plano mestre, 9.1: nunca contra ambiente compartilhado |
+| Modo | CLI (`jmeter -n`), contra a aplicação local | Fato | [Plano de projeto](../plano-de-projeto.md), 9.1: nunca contra ambiente compartilhado |
 | Aquecimento | 1 rodada curta descartada antes da rodada 01 | Proposta | Elimina o efeito da JVM fria |
 
 ### Operações

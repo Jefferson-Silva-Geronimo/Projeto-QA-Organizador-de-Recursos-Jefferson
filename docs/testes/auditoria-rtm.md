@@ -20,7 +20,7 @@ Auditoria de qualidade da [RTM.md](../../RTM.md), feita em 24/10/2026 na `main` 
 | Defeitos abertos | **8** (BUG-020 a BUG-027) |
 | "Apague a regra" | **3 de 3 regras** ficaram vermelhas por asserção (RN-01, RN-03 e RN-06); no RN-06 só o caso do Administrador, ver BUG-026 |
 
-**Leitura:** a RTM não tem linha vazia, link quebrado, teste ausente ou teste vermelho. Os problemas são de **precisão do vínculo** (a RN aponta para blocos de CT, não para os CT da regra), de **rastreabilidade do front** (27 CT sem identificador no código), de **execução citada** (38 linhas só com a execução local E-1) e **uma lacuna de teste em regra crítica** (RN-06, Solicitante). Nenhuma meta do plano mestre foi dada como atingida sem ressalva por esta auditoria; a decisão de qualidade é de Jefferson.
+**Leitura:** a RTM não tem linha vazia, link quebrado, teste ausente ou teste vermelho. Os problemas são de **precisão do vínculo** (a RN aponta para blocos de CT, não para os CT da regra), de **rastreabilidade do front** (27 CT sem identificador no código), de **execução citada** (38 linhas só com a execução local E-1) e **uma lacuna de teste em regra crítica** (RN-06, Solicitante). Nenhuma meta do [plano de projeto](../plano-de-projeto.md) foi dada como atingida sem ressalva por esta auditoria; a decisão de qualidade é de Jefferson.
 
 ## 2. Escopo e método
 
