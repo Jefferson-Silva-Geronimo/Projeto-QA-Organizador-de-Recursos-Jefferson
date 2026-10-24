@@ -375,6 +375,16 @@ Também valem, a partir de 22/10/2026: textos de interface que seguem o padrão 
 
 Os checks `segredos` e SonarCloud **não** estão entre os obrigatórios da proteção (nunca estiveram); a prática combinada de só mesclar com eles verdes continua valendo por regra de trabalho, não por proteção.
 
+### F7-01 a F7-03. Revisão assistida independente do front end (24/10/2026)
+
+**Decisões da equipe (Jefferson), 24/10/2026**, sobre os achados de [revisao-assistida-front.md](testes/revisao-assistida-front.md), conforme a especificação e o plano mestre. Nenhuma abre BUG; cada uma traz a condição que a reabre como defeito.
+
+| ID | Decisão | Origem | Reabre como defeito se |
+| --- | --- | --- | --- |
+| F7-01 | **R1: exceção aceita, sem BUG.** `DialogoDeDecisao.tsx:65` não envia a rejeição sem motivo; é conferência de preenchimento (campo vazio ou em branco). O servidor segue como autoridade (`MOTIVO_OBRIGATORIO`) | RN-24; [navegacao-telas.md](prd/navegacao-telas.md), seção 9 (T05) | Qualquer conferência local passar a avaliar outra regra |
+| F7-02 | **S1, S2 e S3: observações, sem BUG; nada muda em código nesta fase.** S1 (recursos da própria reserva na alteração) e S3 (texto de ajuda do cancelamento) só apresentam e o servidor decide no envio. **S2** (`DIAS_DA_JANELA_PADRAO = 14` em `PaginaDeBusca.tsx:24`) entra como **suposição sem origem**, com o impacto: só a janela inicial da Busca, que a pessoa pode alterar. Registrada em `revisao-assistida-front.md`, `fase-7-pendencias.md` e no relatório final | Revisão assistida; RN-18 (S3) | Algum dos três passar a decidir regra |
+| F7-03 | **Textos fixos fora do mapa de 34 códigos: desvio da letra da seção 5, não da intenção; observação, sem BUG.** São dicas de preenchimento e as três mensagens de ação ausente (T04, T05 e T06); não são recusas do servidor, não explicam regra e não usam texto do servidor. A frase da seção 5 de `navegacao-telas.md` fica como está; o ajuste proposto ("Toda mensagem de recusa do servidor vem da tabela...") **não foi aplicado** | [navegacao-telas.md](prd/navegacao-telas.md), seções 5 e 9 | Algum texto passar a explicar regra ou a exibir texto do servidor |
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
