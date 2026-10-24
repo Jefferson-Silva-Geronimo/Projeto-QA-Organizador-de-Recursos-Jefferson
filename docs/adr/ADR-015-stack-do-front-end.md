@@ -4,24 +4,24 @@
 | --- | --- |
 | Status | Aceito em 18/10/2026 (escolha explícita de Jefferson). Detalha o [ADR-010](ADR-010-contrato-openapi-e-front-end-react-vite.md) e respeita o [ADR-004](ADR-004-autenticacao-e-autorizacao.md) e o [ADR-005](ADR-005-relogio-injetavel-e-tempo-em-utc.md) |
 | Data | 18/10/2026 |
-| Origem | [plano_mestre.md](../plano_mestre.md), seção 10.3 (decisões 1 a 6); RF-13; RNF-10 |
+| Origem | [decisoes-equipe.md](../decisoes-equipe.md), seção 8 (F6-01 a F6-05); [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios; RF-13; RNF-10; [ADR-004](ADR-004-autenticacao-e-autorizacao.md), [ADR-005](ADR-005-relogio-injetavel-e-tempo-em-utc.md) e [ADR-008](ADR-008-erros-padronizados-e-consultas-parametrizadas.md) |
 | Decisores | Jefferson Silva (dono do projeto e única pessoa da equipe). |
 
 ## Contexto
 
-O ADR-010 fixou React + Vite como SPA que consome a API. O plano mestre (seção 10.3) manda registrar seis decisões de front end e deixa abertas as técnicas: gerador de cliente, roteador, gerenciamento de estado, CSS e a forma concreta de guardar o token. Nenhuma aula cobre front end; a especificação exige só interface responsiva (RF-13) e teste E2E.
+O ADR-010 fixou React + Vite como SPA que consome a API. Seis decisões de front end precisam ficar registradas ([decisoes-equipe.md](../decisoes-equipe.md), seção 8, e a tabela de princípios de [navegacao-telas.md](../prd/navegacao-telas.md)) e ficam abertas as técnicas: gerador de cliente, roteador, gerenciamento de estado, CSS e a forma concreta de guardar o token. Nenhuma aula cobre front end; a especificação exige só interface responsiva (RF-13) e teste E2E.
 
 ## Decisão
 
 | # | Decisão | Origem |
 | --- | --- | --- |
-| 1 | Tipos e cliente gerados do `docs/api/openapi.json` com **openapi-typescript** e **openapi-fetch**; nada do contrato é digitado à mão | Plano 10.3 (1); escolha de Jefferson |
-| 2 | Tabela **código de erro estável → mensagem com ação sugerida** (ADR-008); o texto cru do back end nunca aparece | Plano 10.3 (2) |
-| 3 | Rotas por perfil são conveniência; o front nunca decide sobreposição, aprovação nem posse | Plano 10.3 (3); ADR-004 |
-| 4 | Token opaco no **`sessionStorage`**, enviado no cabeçalho `Authorization`, com as mitigações abaixo | ADR-004; plano 10.3 (4); escolha de Jefferson, condicionada a não contrariar a especificação nem o plano |
+| 1 | Tipos e cliente gerados do `docs/api/openapi.json` com **openapi-typescript** e **openapi-fetch**; nada do contrato é digitado à mão | F6-01 ([decisoes-equipe.md](../decisoes-equipe.md), seção 8); escolha de Jefferson |
+| 2 | Tabela **código de erro estável → mensagem com ação sugerida** (ADR-008); o texto cru do back end nunca aparece | ADR-008; RF-13; [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios; F6-05 |
+| 3 | Rotas por perfil são conveniência; o front nunca decide sobreposição, aprovação nem posse | ADR-004; [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios |
+| 4 | Token opaco no **`sessionStorage`**, enviado no cabeçalho `Authorization`, com as mitigações abaixo | ADR-004; F6-02; escolha de Jefferson, condicionada a não contrariar a especificação nem o plano |
 | 5 | **React Router** nas rotas e **TanStack Query** no estado do servidor | Escolha de Jefferson |
-| 6 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes; *mobile-first*, validado em 360 px e 1280 px, com rótulo, foco e contraste acessíveis | Plano 10.3 (5); escolha de Jefferson |
-| 7 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset | Plano 10.3 (6); ADR-005 |
+| 6 | **CSS Modules + variáveis CSS**, sem biblioteca de componentes; *mobile-first*, validado em 360 px e 1280 px, com rótulo, foco e contraste acessíveis | [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios (*mobile-first*, 360 px e 1280 px, rótulo, foco e contraste); RF-13; RNF-10; F6-04; escolha de Jefferson |
+| 7 | Datas exibidas no fuso do campus e enviadas em ISO-8601 com offset | [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios; ADR-005 |
 | 11 | Padrão visual e de interação aprovado a partir do protótipo da Busca e da Nova reserva; uma tela por PR, cada uma com TDD, navegador real, axe, teclado e sem rolagem horizontal | F6-11 |
 | 12 | Campo de data e hora nativo do navegador, com as limitações declaradas (6 paradas de Tab; anel do ícone do calendário é o do navegador) | F6-12 |
 | 10 | Direção visual moderna com a paleta A (violeta e rosa), valores e contraste na seção "Paleta escolhida" | F6-07; escolha de Jefferson |
