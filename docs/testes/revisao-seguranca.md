@@ -69,8 +69,9 @@ falha aberta; as lacunas estão em "parcial", com ação.
 ### A06 Insecure Design: parcial
 - **Evidência:** a garantia contra dupla reserva está no banco (constraint de exclusão, ADR-003) e foi vista falhar sem
   ela (`ConcorrenciaApiIT#ct063`); máquina de estados explícita; auditoria somente inserção; ADR e ATAM (ciclos 00 e 01).
-- **Lacuna:** não há modelagem de ameaças formal (por exemplo, STRIDE); os cenários CEN-02 e CEN-09 cobrem só parte.
-- **Ação:** escrever um modelo de ameaças curto na Fase 7, se o grupo achar necessário.
+- **Atualização da Fase 7 (F7-07, 24/10/2026):** existe um modelo de ameaças curto (STRIDE) em [modelo-de-ameacas.md](modelo-de-ameacas.md), com 18 ameaças e a evidência de cada uma: 8 cobertas por teste, 6 parciais, 2 de risco aceito e 2 lacunas (TLS e CSP; limitação de taxa e paginação). Ameaça sem evidência está declarada como lacuna, não como mitigada.
+- **Lacuna que permanece:** as lacunas do modelo (tempo constante do login sem teste, tentativas negadas sem auditoria, TLS e CSP, limitação de taxa, isolamento da RN-06 no BUG-026, SBOM) seguem abertas.
+- **Ação:** nenhuma nova nesta categoria. A06 segue "parcial": o modelo existe, mas as lacunas dele estão abertas.
 
 ### A07 Authentication Failures: atendida
 - **Evidência:** a resposta de login é a mesma para usuário inexistente e senha errada, com tempo constante (senha-isca
