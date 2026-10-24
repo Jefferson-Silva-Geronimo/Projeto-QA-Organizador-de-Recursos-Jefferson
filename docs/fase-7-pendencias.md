@@ -20,7 +20,7 @@ e segue vivo: cada item resolvido ganha o pull request.
 
 | Item | Origem | Onde está | Situação |
 | --- | --- | --- | --- |
-| SEC-03: SBOM e soma de verificação do Maven no wrapper (A03) | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md), tabela de achados; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 4 | **Decidido (F7-06, 24/10/2026):** implementar só a soma do Maven, em PR próprio, com prova de que a CI barra soma errada. O SBOM fica como dívida técnica no relatório final. Aberto até o PR da soma ser mesclado |
+| SEC-03: SBOM e soma de verificação do Maven no wrapper (A03) | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md), tabela de achados; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 4 | **Soma implementada (F7-06, 24/10/2026):** `MavenWrapperTest` e prova na CI (PR descartável 74, run `40109437336`). Quem subir a versão do Maven deve atualizar a soma. O SBOM segue como dívida técnica no relatório final |
 | SEC-04: alerta de segurança além do log (A09) | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md), tabela de achados; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 4 | **Decidido (F7-06):** dívida técnica, sem código; A09 segue "parcial". Entra no relatório final com plano de evolução |
 | Modelo de ameaças formal (OWASP A06, Insecure Design) | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md), seção A06 ("escrever um modelo de ameaças curto na Fase 7, se o grupo achar necessário") | **Decidido (F7-07):** fazer o modelo curto, só documentação, em PR próprio; ameaça sem evidência vira lacuna. Aberto até o PR ser mesclado |
 | R-23: a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria; separar papéis de migração e de aplicação vai à dívida técnica | Decisão (risco aceito por Jefferson) | [decisoes-equipe.md](decisoes-equipe.md), seção "Resultado da execução de P5-08 e risco aceito R-23"; [relatório da Fase 5](relatorio-sessao-fase-5-fechamento.md), seção 5 | Aberto: declarar no relatório final como dívida técnica |
@@ -105,6 +105,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | SEC-03: soma do Maven no wrapper (F7-06) | `distributionSha256Sum` fixada; `MavenWrapperTest`; a CI barra soma errada (PR descartável 74, fechado sem mesclar); SBOM e SEC-04 seguem como dívida técnica |
 | 24/10/2026 | Frase da seção 5 de `navegacao-telas.md` (F7-12) | Ajuste aplicado: a regra passa a dizer "mensagem de recusa do servidor"; o desvio da letra declarado na F7-03 deixa de existir |
 | 24/10/2026 | Escolhas do item 2.5 (F7-05 a F7-13) | Decisões de Jefferson registradas; justificativa dos 27 alertas do Dependabot; SEC-03, modelo de ameaças, ADR-015 e `segredos` obrigatório decididos; jsdom 30 adiado; 14 dias da Busca declarados como suposição |
 | 24/10/2026 | Auditoria da RTM (Fase 7, 2.3, prompt 7.A) | Relatório `testes/auditoria-rtm.md`; BUG-020 a BUG-027 abertos e triados (nenhum corrigido); "apague a regra" em RN-01, RN-03 e RN-06; README restante vira BUG-027 |

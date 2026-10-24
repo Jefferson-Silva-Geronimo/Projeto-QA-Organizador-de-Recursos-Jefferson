@@ -50,9 +50,9 @@ falha aberta; as lacunas estão em "parcial", com ação.
 - **Evidência:** Dependabot para Maven (`.github/dependabot.yml`), com o Cucumber fixado por decisão DS-06; alertas de
   dependência do GitHub ativos (0 alertas em 17/10/2026); ações do GitHub fixadas por SHA no `ci.yml`; imagem do
   PostgreSQL fixada por digest; gitleaks instalado por checksum conferido.
-- **Lacunas:** não há SBOM nem verificação de licenças; o Maven Wrapper não tem a soma de verificação do binário do Maven
-  fixada.
-- **Ação:** avaliar geração de SBOM (CycloneDX) e `distributionSha256Sum` no wrapper, na Fase 7 ou antes.
+- **Atualização da Fase 7 (F7-06, 24/10/2026):** a soma SHA-256 do Maven 3.10.0 está fixada em `.mvn/wrapper/maven-wrapper.properties` e `MavenWrapperTest` exige a soma e a URL do Maven Central. A CI barra soma errada: PR descartável 74, run [`40109437336`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40109437336), jobs `test` e `e2e` vermelhos com "Failed to validate Maven distribution SHA-256" e merge `BLOCKED`. **Limite:** o wrapper só valida ao baixar o Maven; com a distribuição já em `~/.m2/wrapper`, não revalida.
+- **Lacunas:** não há SBOM nem verificação de licenças (dívida técnica declarada na F7-06).
+- **Ação:** a soma foi implementada; o SBOM (CycloneDX) fica como dívida técnica, com plano de evolução no relatório final. A03 segue "parcial".
 
 ### A04 Cryptographic Failures: parcial
 - **Evidência:** senhas com BCrypt (`SegurancaConfig.java:105`, `AutenticacaoService`); token opaco de `SecureRandom`
@@ -100,7 +100,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
   banco (`LogSeguroApiIT`); o token do cabeçalho `Authorization` não aparece no log; auditoria de transições e cadastros.
 - **Lacuna:** não há alerta (por exemplo, para picos de 401, 403 ou 500). A auditoria registra o que mudou, não as
   tentativas negadas.
-- **Ação:** definir, na Fase 7, o que seria alertado e como; hoje é só log.
+- **Ação:** definir o que seria alertado e como. Decisão F7-06 (24/10/2026): dívida técnica, sem código; hoje é só log. A09 segue "parcial".
 
 ### A10 Mishandling of Exceptional Conditions: atendida
 - **Evidência:** `TratadorDeErros` devolve erro genérico com código estável e nunca pilha (`DocumentacaoApiIT`,
@@ -114,8 +114,8 @@ falha aberta; as lacunas estão em "parcial", com ação.
 | --- | --- | --- | --- |
 | SEC-01 | Média | Sem limite de tentativas de login (A07) | **Corrigido** (P5-10): limite por conta com janela deslizante; 5 tentativas em 10 minutos (D18) |
 | SEC-02 | Baixa | Aplicação roda com o papel dono das tabelas (A02, A08) | Risco aceito R-23; opção B na dívida técnica |
-| SEC-03 | Baixa | Sem SBOM nem soma de verificação do Maven no wrapper (A03) | Ação para a Fase 7 |
-| SEC-04 | Informativo | Sem alerta de segurança (A09) | Ação para a Fase 7 |
+| SEC-03 | Baixa | Sem SBOM nem soma de verificação do Maven no wrapper (A03) | **Soma implementada** (F7-06, `MavenWrapperTest`, prova na CI no PR descartável 74); **SBOM fica como dívida técnica** |
+| SEC-04 | Informativo | Sem alerta de segurança (A09) | **Dívida técnica** (F7-06), sem código |
 
 Nenhum achado é falha confirmada nem exige defeito novo em `docs/defeitos/`. Se SEC-01 for implementada, ela entra como
 funcionalidade nova, com teste vermelho antes.
