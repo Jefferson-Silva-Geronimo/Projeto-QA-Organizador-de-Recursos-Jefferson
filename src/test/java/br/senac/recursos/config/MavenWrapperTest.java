@@ -38,4 +38,37 @@ class MavenWrapperTest {
         assertThat(ler().getProperty("distributionUrl"))
                 .startsWith("https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/");
     }
+
+    // ---- F7-14: o mvnw só baixa o .zip (a soma é a dele) se houver `unzip`; sem ele troca por .tar.gz e a soma não confere.
+
+    private static final Path DOCKERFILE = Path.of("Dockerfile");
+
+    private static String dockerfile() throws IOException {
+        return Files.readString(DOCKERFILE, StandardCharsets.UTF_8);
+    }
+
+    @Test
+    void dockerfileDaApiInstalaUnzipAntesDeRodarOMvnw() throws IOException {
+        String texto = dockerfile();
+        int unzip = texto.indexOf("apt-get install");
+        int mvnw = texto.indexOf("./mvnw");
+        assertThat(unzip).as("Dockerfile instala unzip com apt-get no estágio de compilação").isGreaterThanOrEqualTo(0);
+        assertThat(texto.substring(Math.max(unzip, 0))).contains("unzip");
+        assertThat(unzip).as("o unzip é instalado antes da primeira chamada ao ./mvnw").isLessThan(mvnw);
+    }
+
+    @Test
+    void unzipNaoVaiParaAImagemFinalDeExecucao() throws IOException {
+        String texto = dockerfile();
+        String execucao = texto.substring(texto.lastIndexOf("FROM "));
+        assertThat(execucao).startsWith("FROM eclipse-temurin:21-jre");
+        assertThat(execucao).doesNotContain("unzip").doesNotContain("apt-get");
+    }
+
+    @Test
+    void todaImagemBaseDoDockerfileContinuaFixadaPorDigest() throws IOException {
+        assertThat(dockerfile().lines().filter(l -> l.startsWith("FROM ")).toList())
+                .isNotEmpty()
+                .allSatisfy(l -> assertThat(l).contains("@sha256:"));
+    }
 }
