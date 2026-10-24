@@ -187,6 +187,7 @@ Fonte: especificação, seção 6.
   está em [docs/perguntas-professor.md](docs/perguntas-professor.md).
 - **Valores sem decisão (D1, D3, D4, D9, D17):** sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI e Quality Gate aprovado no PR 2.
+- **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções
 
