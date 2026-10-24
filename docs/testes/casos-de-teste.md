@@ -112,9 +112,9 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 | ID | Título | Nível | Dados e passos | Esperado | Rastreio |
 | --- | --- | --- | --- | --- | --- |
 | CT-060 | Solicitações simultâneas para a mesma sala | C | **Hipótese**: 20 solicitações com `CountDownLatch` para Sala A, 14:00–16:00 | Exatamente 1 aceita e 19 com 409; 1 ocupação ativa; 19 tentativas CONCORRENCIA | RF-06, RN-03, CEN-01 |
-| CT-061 | Simultâneas para o mesmo professor | C | Mesma estrutura de CT-060 com o Professor 1 em salas diferentes | 1 aceita e 19 com 409; 1 ocupação ativa do professor | RF-06, RN-02, CEN-01 |
-| CT-062 | Estabilidade em repetição | C | **Hipótese**: CT-060 cinco vezes seguidas | 5 de 5 verdes; 0 casos de duas reservas ativas sobrepostas | RF-06, CEN-01 |
-| CT-063 | Prova de que o teste protege | C | Executar CT-060 com a constraint removida em ambiente descartável | Vermelho (mais de 1 aceita); verde ao restaurar | RF-06, ADR-003 |
+| CT-061 | Simultâneas para o mesmo professor | C | Mesma estrutura de CT-060 com o Professor 1 em salas diferentes | 1 aceita e 19 com 409; 1 ocupação ativa do professor | RF-06, RN-02, CEN-01, RN-03 |
+| CT-062 | Estabilidade em repetição | C | **Hipótese**: CT-060 cinco vezes seguidas | 5 de 5 verdes; 0 casos de duas reservas ativas sobrepostas | RF-06, CEN-01, RN-03 |
+| CT-063 | Prova de que o teste protege | C | Executar CT-060 com a constraint removida em ambiente descartável | Vermelho (mais de 1 aceita); verde ao restaurar | RF-06, ADR-003, RN-03 |
 | CT-064 | Reserva com vários recursos em ordens opostas | C | Transação A: Sala A e P-001. Transação B: P-001 e Sala A, simultâneas | 1 aceita, 1 com 409; 0 impasse não tratado | R-17, ADR-003 |
 | CT-065 | Tentativa gravada fora da transação desfeita | I | Recusa por conflito | Tentativa persistida mesmo com a reserva desfeita | RN-30, ADR-003 |
 
@@ -122,7 +122,7 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 
 | ID | Título | Nível | Dados e passos | Esperado | Rastreio |
 | --- | --- | --- | --- | --- | --- |
-| CT-066 | Responsável aprova reserva de outro | A | Reserva do Solicitante 1 com P-001; Responsável 1 aprova | APROVADA; 1 evento com o ator | RN-06, RF-07 |
+| CT-066 | Responsável aprova reserva de outro | A | Reserva do Solicitante 1 com P-001; Responsável 1 aprova | APROVADA; 1 evento com o ator | RN-06, RF-07, RN-16 |
 | CT-067 | Quem não pode aprovar | A | Parametrizado: Solicitante 1, Administrador 1, Responsável dono | 403 em todos; estado inalterado | RN-06, RN-16, RN-17 |
 | CT-068 | Rejeição exige motivo | A | Responsável 2 rejeita sem e com motivo | Erro de validação e SOLICITADA; depois rejeitada | RN-24, RF-07 |
 | CT-069 | Quem pode rejeitar | A | Parametrizado: dono Responsável, Solicitante, Administrador | 403; o dono cancela a própria | RN-33, RN-18 |
@@ -162,7 +162,7 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 
 | ID | Título | Nível | Dados e passos | Esperado | Rastreio |
 | --- | --- | --- | --- | --- | --- |
-| CT-096 | Um evento por transição | I | Percorrer SOLICITADA, APROVADA, EM_USO e CONCLUÍDA | Exatamente 1 evento por transição, com anterior, novo, ator e instante | RN-08, RF-10, CEN-06 |
+| CT-096 | Um evento por transição | I | Percorrer SOLICITADA, APROVADA, EM_USO e CONCLUÍDA | Exatamente 1 evento por transição, com anterior, novo, ator e instante | RN-08, RF-10, CEN-06, RN-05 |
 | CT-097 | Falha ao auditar desfaz a transição | I | Injetar falha na gravação do evento | Estado da reserva inalterado; 0 eventos | RN-08, CEN-06 |
 | CT-098 | Ator SISTEMA | I | Aprovação automática e SEM_DECISAO | Evento com tipo de ator SISTEMA e `ator_id` nulo | RN-09, RN-25 |
 | CT-099 | Auditoria de cadastros, usuários e bloqueios | I | Uma operação por tipo de entidade | 1 evento com ator, entidade, antes e depois | RN-29, RF-10 |
@@ -209,7 +209,7 @@ Instante atual nos testes: sempre um `Clock` fixo, nunca `Instant.now()` nem `Th
 
 | ID | Título | Nível | Dados e passos | Esperado | Rastreio |
 | --- | --- | --- | --- | --- | --- |
-| CT-117 | Matriz perfil × operação | A | Toda operação da API contra os três perfis, parametrizada | Resultado conforme `docs/testes/matriz-autorizacao.md`, criada na fatia 4.11: 0 falhas | RF-01, RNF-06, CEN-02 |
+| CT-117 | Matriz perfil × operação | A | Toda operação da API contra os três perfis, parametrizada | Resultado conforme `docs/testes/matriz-autorizacao.md`, criada na fatia 4.11: 0 falhas | RF-01, RNF-06, CEN-02, RN-06, RN-16, RN-17, RN-26 |
 | CT-118 | Reserva de outro usuário | A | Solicitante 2 lê, altera e cancela reserva do Solicitante 1 | 403 ou 404 sem dados; 0 mudanças | RF-01, RN-26 |
 | CT-119 | Token inválido, ausente, revogado, expirado | A | Quatro situações em toda rota protegida | 401 em todas | RF-01 |
 | CT-120 | Entrada inválida | A | Campo ausente, tamanho, tipo e injeção em filtros | Erro de validação; 0 pilhas; 0 efeitos | RNF-07, RF-13 |
@@ -249,7 +249,7 @@ Testes de `frontend/src`. O nome do arquivo está na coluna de passos; o resulta
 | CT-142 | Reservas (T04) | F | Lista com título, período no fuso do campus, estado em texto e nomes dos recursos; contagem; vazio, recusa, rede e tentar de novo; reserva cancelada continua listada com o motivo (motivos do sistema em texto); Alterar e Cancelar aparecem conforme `podeAlterar` e `podeCancelar` devolvidos pelo servidor (F6-14), sem olhar estado nem perfil, e o Administrador sem Alterar vem do campo; reserva Solicitada, Aprovada ou Em uso sem nenhuma ação mostra "Você não pode alterar nem cancelar esta reserva agora.", lida junto com o cartão, e reserva encerrada fica sem mensagem; diálogo de confirmação (foco entra e volta, Tab preso, Escape); cancelamento com motivo e sem clique duplo; recusas por código (MOTIVO_OBRIGATORIO, RESERVA_JA_INICIADA, TRANSICAO_PROIBIDA, ACESSO_NEGADO, NAO_ENCONTRADO, ERRO_INTERNO, rede) e lista refeita quando o estado mudou (`paginas/reservas/*.test.tsx`, `Rotas.test.tsx`) | O front mostra o estado devolvido e nunca decide por relógio, dono ou regra de negócio; a recusa vem do servidor, como mensagem da tabela de erros, com o diálogo aberto e o foco na mensagem; reserva cancelada não some da lista | RF-04, RF-13, RN-07, RN-18, RN-26, RN-27, ADR-004, ADR-008, F6-11 |
 | CT-143 | Alteração de reserva (T03) | F | Abre com os dados atuais da reserva na hora do campus; recursos da própria reserva marcados mesmo quando o servidor não os lista como livres; consulta de livres no período; envio completo; confirmação pelo estado devolvido (SOLICITADA diz que voltou para aprovação); clique duplo; recusas por código; conflito reaproveita o tratamento da Nova reserva (lista refeita e recurso que deixou de estar livre desmarcado); rota, título da página e acesso negado ao Administrador (`paginas/reserva/PaginaDeAlteracao.test.tsx`, `Rotas.test.tsx`) | A alteração usa o mesmo formulário e o mesmo tratamento de recusa da Nova reserva; o front envia os dados e o servidor decide se algo mudou, se a reserva volta para aprovação e se há conflito (RN-19) | RF-04, RF-05, RF-13, RN-17, RN-19, ADR-004, F6-11 |
 | CT-144 | Permissões da reserva (regra pura) | F | Estado × perfil × posse × instante, com o início em trinca (1 ms antes, no instante e 1 ms depois), para alterar e cancelar: dono Solicitante, dono Responsável, outro Solicitante, Responsável que não é o dono, Administrador, EM_USO e os quatro estados terminais; o motivo conta como informado (`model/regra/PermissoesDaReservaTest.java`) | A tabela vem de RN-18, RN-19 e D10, não da implementação: o dono perde as duas ações no instante de início de uma reserva APROVADA; o Responsável e o Administrador seguem cancelando com motivo; o Administrador nunca altera; EM_USO e estados terminais não têm ação | RF-04, RN-07, RN-17, RN-18, RN-19, RN-20, D10, F6-14 |
-| CT-145 | Permissões da reserva na API | F | `podeAlterar` e `podeCancelar` na consulta, na lista, na criação, no cancelamento e na aprovação, por dono, outro Solicitante (nem vê a reserva), Responsável e Administrador; início em trinca com o relógio fixo; EM_USO e estados terminais; coerência com a defesa: quando o campo diz não, o servidor recusa com o código estável, e quando diz sim, aceita (`controller/PermissoesDaReservaApiIT.java`; contrato em `DocumentacaoApiIT` e `ContratoObrigatoriosApiIT`, CT-115 e CT-134) | O campo e a recusa do servidor dizem a mesma coisa; os dois campos nunca são nulos e constam do `required` do contrato | RF-04, RF-13, RN-18, RN-19, RN-26, ADR-004, D10, F6-14 |
+| CT-145 | Permissões da reserva na API | F | `podeAlterar` e `podeCancelar` na consulta, na lista, na criação, no cancelamento e na aprovação, por dono, outro Solicitante (nem vê a reserva), Responsável e Administrador; início em trinca com o relógio fixo; EM_USO e estados terminais; coerência com a defesa: quando o campo diz não, o servidor recusa com o código estável, e quando diz sim, aceita (`controller/PermissoesDaReservaApiIT.java`; contrato em `DocumentacaoApiIT` e `ContratoObrigatoriosApiIT`, CT-115 e CT-134) | O campo e a recusa do servidor dizem a mesma coisa; os dois campos nunca são nulos e constam do `required` do contrato | RF-04, RF-13, RN-18, RN-19, RN-26, ADR-004, D10, F6-14, RN-07 |
 | CT-146 | Permissões de decisão da fila (regra pura) | F | Estado × perfil × posse × instante, com o início em trinca (antes, no instante e depois): o Responsável que não é o dono aprova só antes do início e rejeita sem limite de horário; o dono não decide a própria reserva; Solicitante e Administrador não decidem; fora de SOLICITADA ninguém decide (`PermissoesDeDecisaoTest`) | `podeAprovar` e `podeRejeitar` seguem as regras escritas (RN-06, RN-16, RN-33, D2, D10), não a implementação do serviço | RF-07, RN-06, RN-16, RN-33, D10, F6-15 |
 | CT-147 | Permissões de decisão da fila na API | F | `podeAprovar` e `podeRejeitar` em cada item de `GET /api/reservas/fila` para o dono, para outro Responsável e para a reserva do Solicitante; início em trinca com o relógio fixo; coerência com a defesa (quando o campo é falso, o servidor recusa com `ACESSO_NEGADO` ou `APROVACAO_APOS_INICIO`; quando é verdadeiro, aceita); Solicitante e Administrador continuam sem a fila (`PermissoesDaFilaApiIT`, `ContratoObrigatoriosApiIT`) | O campo e a recusa do servidor dizem a mesma coisa; os dois campos entram no `required` do contrato | RF-07, RF-14, RN-16, RN-33, D10, F6-15 |
 | CT-148 | Fila de aprovações (T05) | F | Lista com título, solicitante pelo nome (nunca e-mail nem número), período no fuso do campus, nomes dos recursos, contagem, vazio ("Sem pendências") e erros da tabela; Aprovar e Rejeitar conforme `podeAprovar` e `podeRejeitar`, sem olhar relógio, dono nem perfil; mensagem "Você não pode aprovar nem rejeitar esta solicitação agora." só quando os dois são falsos, visível e lida junto com o cartão; diálogos de aprovação (motivo opcional) e de rejeição (motivo obrigatório, sem envio sem ele) com foco preso, Escape e foco devolvido; sucesso anunciado com foco; clique duplo; recusas pelo código estável (ACESSO_NEGADO ao aprovar a própria reserva, APROVACAO_APOS_INICIO, TRANSICAO_PROIBIDA, NAO_ENCONTRADO, ERRO_INTERNO, rede) com a mensagem do mapa de erros no diálogo; a fila refeita sem perder a mensagem; a rota e o acesso negado de Solicitante e Administrador sem consultar a fila (`paginas/aprovacoes/*.test.tsx`, `Rotas.test.tsx`) | O front mostra o que o servidor devolve e nunca decide por dono, perfil ou relógio; a recusa vem do servidor, pela tabela de erros; a rejeição só é enviada com motivo | RF-07, RF-13, RN-06, RN-16, RN-24, RN-33, ADR-004, L-04, F6-11, F6-15 |
@@ -277,14 +277,51 @@ Testes de `frontend/src`. O nome do arquivo está na coluna de passos; o resulta
 
 | Regra | Casos |
 | --- | --- |
-| RN-01 | CT-033, CT-039, CT-010 |
+| RN-01 | CT-010, CT-033, CT-039 |
 | RN-02 | CT-034, CT-035, CT-057, CT-061 |
-| RN-03 | CT-007, CT-060, CT-062, CT-063 |
-| RN-04 | CT-029, CT-080, CT-081 |
+| RN-03 | CT-007, CT-009, CT-060, CT-061, CT-062, CT-063 |
+| RN-04 | CT-029, CT-076, CT-080, CT-081 |
 | RN-05 | CT-075, CT-096 |
-| RN-06 | CT-066, CT-067 |
-| RN-07 | CT-056, CT-079 |
-| RN-08 | CT-011, CT-096, CT-097 |
+| RN-06 | CT-066, CT-067, CT-117, CT-146, CT-148 |
+| RN-07 | CT-056, CT-079, CT-142, CT-144, CT-145 |
+| RN-08 | CT-011, CT-096, CT-097, CT-155 |
+
+### 4.1 Arquivo de teste de cada CT de front e E2E
+
+Os CT de front e E2E não trazem o identificador `CT-nnn` dentro do teste (BUG-024). Esta tabela liga cada um aos arquivos que o exercitam. Os caminhos vêm da descrição do próprio CT e foram conferidos contra o repositório (todos existem). A contagem é de **testes por arquivo** no run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) (E-24); um arquivo compartilhado por vários CT (marcado com `*`) conta o arquivo inteiro, não só a parte de cada CT. A tabela **não prova qual teste do arquivo cobre qual trecho do CT**: prova o arquivo, e a execução verde vem da CI.
+
+| CT | Caso | Arquivos de teste em `frontend/src` (testes no arquivo) |
+| --- | --- | --- |
+| CT-127 | Mapa de erros: código estável para mensagem | `erros/mensagens.test.ts` (74), `erros/problema.test.ts` (6) |
+| CT-128 | Sessão no sessionStorage | `sessao/armazenamento.test.ts` (10), `sessao/regra-do-token.test.ts` (2) |
+| CT-129 | Cliente da API e ciclo da sessão | `api/cliente.test.ts` (8), `autenticacao/ProvedorDeSessao.test.tsx`* (11) |
+| CT-130 | Contraste dos tokens nos dois temas | `estilo/contraste.test.ts` (5), `estilo/regras-dos-temas.test.ts` (4), `estilo/tokens.test.ts` (66) |
+| CT-131 | Tema claro, escuro ou do sistema | `estilo/tema.test.ts` (7), `layout/SeletorDeTema.test.tsx` (3) |
+| CT-132 | Telas e acesso por perfil iguais à matriz | `Rotas.test.tsx`* (55), `rotas/RotaProtegida.test.tsx`* (7), `rotas/destino.test.ts`* (24), `rotas/navegacao.test.ts` (16), `rotas/telas.test.ts` (6) |
+| CT-133 | Navegação lateral e barra do celular | `layout/Navegacao.test.tsx` (7) |
+| CT-136 | Datas no fuso do campus | `datas/fuso.test.ts`* (25), `recursos/formatacao.test.ts` (15) |
+| CT-137 | Componentes de interface acessíveis | `ui/Aviso.test.tsx` (11), `ui/Botao.test.tsx` (6), `ui/Campo.test.tsx` (9), `ui/Estados.test.tsx` (4) |
+| CT-138 | Busca de recursos (T02) | `paginas/busca/PaginaDeBusca.acoes.test.tsx` (8), `paginas/busca/PaginaDeBusca.estados.test.tsx` (7), `paginas/busca/PaginaDeBusca.filtros.test.tsx` (12), `paginas/busca/PaginaDeBusca.test.tsx` (7) |
+| CT-139 | Nova reserva (T03) | `paginas/reserva/PaginaDeAlteracao.test.tsx`* (33), `paginas/reserva/PaginaDeNovaReserva.envio.test.tsx` (9), `paginas/reserva/PaginaDeNovaReserva.erros.test.tsx` (20), `paginas/reserva/PaginaDeNovaReserva.estrutura.test.tsx` (12) |
+| CT-140 | Foco, título e telas reais nas rotas | `Rotas.test.tsx`* (55), `ui/foco-do-calendario.test.ts` (2) |
+| CT-141 | Login (T01) | `Rotas.test.tsx`* (55), `autenticacao/ProvedorDeSessao.test.tsx`* (11), `paginas/entrada/PaginaDeEntrada.envio.test.tsx` (17), `paginas/entrada/PaginaDeEntrada.estrutura.test.tsx` (6), `rotas/destino.test.ts`* (24) |
+| CT-142 | Reservas (T04) | `Rotas.test.tsx`* (55), `paginas/reservas/PaginaDeReservas.acaoAusente.test.tsx` (14), `paginas/reservas/PaginaDeReservas.cancelamento.test.tsx` (40), `paginas/reservas/PaginaDeReservas.lista.test.tsx` (22), `paginas/reservas/PaginaDeReservas.perfis.test.tsx` (5) |
+| CT-143 | Alteração de reserva (T03) | `Rotas.test.tsx`* (55), `paginas/reserva/PaginaDeAlteracao.test.tsx`* (33) |
+| CT-148 | Fila de aprovações (T05) | `Rotas.test.tsx`* (55), `paginas/aprovacoes/PaginaDeAprovacoes.acoes.test.tsx` (9), `paginas/aprovacoes/PaginaDeAprovacoes.decisao.test.tsx` (39), `paginas/aprovacoes/PaginaDeAprovacoes.lista.test.tsx` (11) |
+| CT-149 | Acesso negado com título de página (BUG-018) | `Rotas.test.tsx`* (55), `rotas/RotaProtegida.test.tsx`* (7) |
+| CT-154 | Retirada e devolução (T06) | `Rotas.test.tsx`* (55), `datas/fuso.test.ts`* (25), `paginas/retiradas/PaginaDeRetiradas.acoes.test.tsx` (14), `paginas/retiradas/PaginaDeRetiradas.lista.test.tsx` (17), `paginas/retiradas/PaginaDeRetiradas.registro.test.tsx` (34) |
+| CT-156 | Catálogo de recursos (T07) | `Rotas.test.tsx`* (55), `paginas/catalogo/PaginaDoCatalogo.admin.test.tsx` (25), `paginas/catalogo/PaginaDoCatalogo.cadastro.test.tsx` (22), `paginas/catalogo/PaginaDoCatalogo.lista.test.tsx` (14) |
+| CT-157 | Relatórios (T10) | `Rotas.test.tsx`* (55), `paginas/relatorios/PaginaDeRelatorios.filtros.test.tsx` (12), `paginas/relatorios/PaginaDeRelatorios.resultado.test.tsx` (16) |
+| CT-158 | Usuários e perfis (T11) | `Rotas.test.tsx`* (55), `paginas/usuarios/PaginaDeUsuarios.acoes.test.tsx` (14), `paginas/usuarios/PaginaDeUsuarios.cadastro.test.tsx` (11), `paginas/usuarios/PaginaDeUsuarios.lista.test.tsx` (10) |
+| CT-159 | Histórico de auditoria (T09) | `Rotas.test.tsx`* (55), `paginas/auditoria/PaginaDeAuditoria.administrador.test.tsx` (12), `paginas/auditoria/PaginaDeAuditoria.responsavel.test.tsx` (18) |
+| CT-160 | Bloqueios de manutenção (T08) | `Rotas.test.tsx`* (55), `paginas/bloqueios/PaginaDeBloqueios.criar.test.tsx` (15), `paginas/bloqueios/PaginaDeBloqueios.lista.test.tsx` (22) |
+| CT-161 | Solicitante busca e reserva uma sala (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "Solicitante busca e reserva uma sala" (arquivo com 5 testes) |
+| CT-162 | Segunda reserva no mesmo horário mostra o conflito (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "segunda reserva no mesmo horário mostra a mensagem de conflito, sem jargão" (arquivo com 5 testes) |
+| CT-163 | Responsável aprova recurso restrito (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "Responsável aprova a reserva de um recurso restrito" (arquivo com 5 testes) |
+| CT-164 | Solicitante não vê a ação de aprovar (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "Solicitante não vê a ação de aprovar" (arquivo com 5 testes) |
+| CT-165 | Fluxo principal em celular, 360 por 640 (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "em celular (360 por 640): fluxo principal: buscar e reservar uma sala, sem rolagem horizontal" (arquivo com 5 testes) |
+
+`*` arquivo compartilhado por mais de um CT.
 
 ## 5. Ambiguidades e perguntas
 
