@@ -104,6 +104,7 @@ Achados das etapas 6.C e 6.D que não forem corrigidos na hora entram aqui, com 
 
 | Data | Pull request | O que mudou |
 | --- | --- | --- |
+| 24/10/2026 | Auditoria da RTM (Fase 7, 2.3, prompt 7.A) | Relatório `testes/auditoria-rtm.md`; BUG-020 a BUG-027 abertos e triados (nenhum corrigido); "apague a regra" em RN-01, RN-03 e RN-06; README restante vira BUG-027 |
 | 24/10/2026 | Limitadores de nota (Fase 7, 2.2) | Evidência dos quatro limitadores em `testes/limitadores-de-nota.md`; F7-04 (vermelho intencional, PR descartável #59); BUG-019 fechado; limites declarados |
 | 24/10/2026 | README: como subir (BUG-019, Fase 7, 2.2a) | O README não subia a aplicação num clone limpo; "Como subir" corrigido; restante do README fica para o 2.7 |
 | 24/10/2026 | Revisão assistida independente do front end (Fase 7, 2.1) | Relatório da revisão; decisões F7-01 a F7-03; S2 (janela de 14 dias da Busca) como suposição sem origem; item da revisão assistida resolvido |
