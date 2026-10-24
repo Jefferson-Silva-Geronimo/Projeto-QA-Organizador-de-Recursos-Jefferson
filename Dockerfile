@@ -5,6 +5,9 @@
 # ---- compilação
 FROM eclipse-temurin:21-jdk@sha256:23cc5734ff46e776f51ce66eb9ee08444fd47caabec0a95b7eb6e94be2d3696d AS compilacao
 WORKDIR /app
+# F7-14: o mvnw so baixa o .zip (a soma de SEC-03 e dele) se houver unzip; sem unzip troca por .tar.gz e a soma nao confere.
+# O pacote do apt nao tem versao fixada; fica so neste estagio de compilacao e nao vai para a imagem de execucao.
+RUN apt-get update && apt-get install -y --no-install-recommends unzip && rm -rf /var/lib/apt/lists/*
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
 RUN chmod +x mvnw && ./mvnw -B -ntp -q dependency:go-offline
