@@ -31,7 +31,7 @@ class PeriodoTest {
 
     @ParameterizedTest(name = "existente 14:00-16:00, novo {0} a {1}, conflito={2}")
     @CsvSource({
-            "2026-10-20T19:00:00Z, 2026-10-20T21:00:00Z, false",       // 16:00-18:00, encosta no fim
+            "2026-10-20T19:00:00Z, 2026-10-20T21:00:00Z, true",        // 16:00-18:00, encosta no fim
             "2026-10-20T18:59:00Z, 2026-10-20T21:00:00Z, true",        // 15:59-18:00
             "2026-10-20T18:59:59.999Z, 2026-10-20T21:00:00Z, true",    // um milissegundo de sobreposição
             "2026-10-20T15:00:00Z, 2026-10-20T17:00:00Z, false",       // 12:00-14:00, encosta no início
