@@ -140,6 +140,25 @@ class AprovacaoBloqueioApiIT extends ApiIT {
         assertThat(contar("select count(*) from aprovacoes")).isZero();
     }
 
+    /**
+     * BUG-026 (RN-06): isola o portão de perfil. No ct067 o Solicitante aprova a PRÓPRIA reserva, e o 403 vem da
+     * regra do dono (RN-16), não do perfil. Aqui quem tenta é um Solicitante que NÃO é dono de uma reserva SOLICITADA
+     * de recurso restrito: sem o portão de perfil, nada mais o impediria.
+     */
+    @Test
+    void ct067_solicitanteQueNaoEDonoNaoAprovaReservaDeOutraPessoa() throws Exception {
+        long doS1 = reservar(s1, "2026-10-21T14:00", "2026-10-21T16:00", salaA, projetor);
+        assertThat(estado(doS1)).as("pré-condição: a reserva de recurso restrito espera decisão").isEqualTo("SOLICITADA");
+
+        acao(s2, doS1, "aprovacao", Map.of()).andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.code").value("ACESSO_NEGADO"));
+
+        assertThat(estado(doS1)).isEqualTo("SOLICITADA");
+        assertThat(contar("select count(*) from aprovacoes where reserva_id = ?", doS1)).isZero();
+        assertThat(contar("select count(*) from auditoria_eventos where entidade_id = ? and acao = 'RESERVA_APROVADA'",
+                doS1)).isZero();
+    }
+
     @Test
     void ct068_rejeicaoExigeMotivo() throws Exception {
         long id = reservar(s1, "2026-10-21T14:00", "2026-10-21T16:00", salaA, projetor);
