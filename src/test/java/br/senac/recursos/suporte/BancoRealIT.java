@@ -1,5 +1,6 @@
 package br.senac.recursos.suporte;
 
+import java.time.Duration;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,8 +21,16 @@ public abstract class BancoRealIT {
     private static final String IMAGEM_POSTGRES =
             "postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3";
 
+    /**
+     * Tempo máximo para o PostgreSQL ficar pronto depois de iniciado. O padrão do Testcontainers é 60 s e estourou em
+     * duas execuções em clone limpo (67 s e 72 s) numa máquina ocupada; com a máquina livre ele fica pronto em 10 a 30 s.
+     * O tempo de baixar a imagem não entra nesta espera: o Testcontainers baixa antes de iniciar o contêiner.
+     */
+    private static final Duration TEMPO_MAXIMO_DE_INICIO_DO_BANCO = Duration.ofSeconds(180);
+
     protected static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>(
-            DockerImageName.parse(IMAGEM_POSTGRES).asCompatibleSubstituteFor("postgres"));
+            DockerImageName.parse(IMAGEM_POSTGRES).asCompatibleSubstituteFor("postgres"))
+            .withStartupTimeout(TEMPO_MAXIMO_DE_INICIO_DO_BANCO);
 
     static {
         POSTGRES.start();
