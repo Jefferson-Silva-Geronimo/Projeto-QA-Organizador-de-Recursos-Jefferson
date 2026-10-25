@@ -61,6 +61,27 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 
 O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). Na última execução da CI na `main` (E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe e por arquivo está em [docs/testes/execucao-e24.md](docs/testes/execucao-e24.md).
 
+### Requisitos para rodar o `verify`
+
+O `verify` sobe um PostgreSQL real em contêiner (Testcontainers). Antes de rodar:
+
+1. **Docker Desktop aberto e pronto**: `docker info` precisa responder.
+2. **Imagem do PostgreSQL já baixada** (opcional, mas evita esperar o download dentro do teste): `docker pull postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3`. O digest é o mesmo de `BancoRealIT`.
+3. **Aplicação do "Como subir" parada** (`Ctrl+C` na API e no Vite, e `docker compose down`). Nas medições abaixo, o `verify` com a aplicação no ar passou do mesmo jeito; parar a aplicação é só para não dividir a máquina.
+4. **Outros programas pesados fechados.** Durante a compilação e o `npm ci`, o antivírus do Windows (`MsMpEng`) chegou a usar mais de 100% de CPU nesta máquina.
+
+**O que foi medido** (todas as medidas são de **um** computador: notebook Intel Core i5-7200U, 2 núcleos e 4 threads, 19,9 GB de RAM, Windows 11, Docker Desktop com 4 CPUs e 9,65 GiB; **não são mínimos**, são as configurações com que passou):
+
+| Situação | Execuções | Duração do `verify` |
+| --- | --- | --- |
+| Clone limpo, aplicação parada, imagem já baixada | 3 de 3 passaram | 475 s a 490 s |
+| Clone limpo, aplicação do README no ar, imagem já baixada | 3 de 3 passaram | 478 s a 519 s |
+| Logo depois do fluxo completo do README, com o front (`npm ci` e Vite) | 2 de 2 passaram | 772 s e 904 s |
+| Clone limpo, imagem ausente (o Testcontainers baixou 159 MB em 94 s) | 1 de 1 passou | 938 s |
+| Commit da correção (`523849f`), 5 execuções consecutivas, aplicação parada, imagem já baixada | 5 de 5 passaram | 519 s a 1522 s (933, 1522, 867, 717 e 519 s) |
+
+O tempo esperado, com a máquina livre, é de **cerca de 8 minutos** (475 s a 519 s); com a máquina ocupada chegou a 1522 s (25 minutos), então não pare o comando antes de 30 minutos. O PostgreSQL do teste ficou pronto em 10 a 15 s nessas execuções. O prazo de início do banco no `BancoRealIT` é de 180 s (o padrão do Testcontainers, 60 s, estourou duas vezes em clone limpo, em 24/10/2026, numa máquina ocupada; ver F7-19 em [docs/decisoes-equipe.md](docs/decisoes-equipe.md)).
+
 ### Front end
 
 Pré-requisito: Node 22.12 ou mais novo. Tudo roda em `frontend/`.

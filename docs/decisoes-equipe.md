@@ -487,6 +487,37 @@ Correspondência entre os IDs do projeto e o plano de projeto. A numeração A1 
 | F7-18-02 | **O plano de trabalho fica versionado, com nome profissional, em `docs/plano-de-projeto.md`** (antes `docs/plano_mestre.md`, ignorado pelo Git) | **É só renomeação**: o conteúdo técnico, os números e as fases não mudaram. Saíram apenas expressões de conversa ("Sua resposta", "@Jefferson", "fotos da lousa enviadas na conversa"), e as menções a `docs/especificacao.md` nos prompts passaram para a URL oficial. Toda menção a "plano mestre" nos documentos versionados virou "plano de projeto", com link. Entradas anteriores deste arquivo (por exemplo F7-09) falam de decisões tomadas quando o plano estava fora do Git; o nome foi atualizado e o contexto histórico foi dito na própria entrada |
 | F7-18-03 | **A especificação é sempre citada pela URL oficial**; o arquivo local `docs/especificacao.md` continua fora do Git | Regra nova no `AGENTS.md` (regra 7): nenhum documento versionado pode linkar ou citar como fonte um arquivo ignorado pelo Git. A checagem foi acrescentada ao script local do `analyze-docs` |
 
+### F7-19. O `verify` em clone limpo: diagnóstico, correção e cinco execuções consecutivas (24 e 25/10/2026)
+
+**Decisão da equipe (Jefferson), 24/10/2026.** O `./mvnw -B verify` tem de passar sempre em clone limpo. Critério de aceite: 5 execuções consecutivas verdes, cada uma de um clone novo, 0 falhas, sem retry automático, sem `@Disabled` e sem enfraquecer asserção; qualquer falha reinicia a contagem. Aviso no README e aumento de tempo, sozinhos, não bastavam: a causa foi investigada antes de mudar qualquer coisa. Todos os tempos abaixo são **de um computador** (notebook Intel Core i5-7200U, 2 núcleos e 4 threads, 19,9 GB de RAM, Windows 11, Docker Desktop 29.8.2 com 4 CPUs e 9,65 GiB), lidos dos logs de cada execução.
+
+**O problema.** No clone limpo da `main` em `f99902d`, seguindo só o README, o `verify` falhou em 2 de 3 tentativas: 231 testes de unidade passaram e 289 de integração deram erro em cascata, porque o contêiner do PostgreSQL do Testcontainers não ficou pronto dentro do prazo padrão de 60 s (`Timed out waiting for log output matching '.*database system is ready to accept connections.*'`). A terceira tentativa passou (231 + 434 testes, 507 s).
+
+| Item | Fato medido |
+| --- | --- |
+| a) Estado da máquina nas 3 tentativas | **Não foi registrado na hora (lacuna).** As tentativas vieram logo depois do fluxo completo do README (API, Vite, `npm ci` de cerca de 380 s e `docker compose down -v`). Antes da tentativa 1, a API e o Vite foram encerrados pelo PID da porta e o banco foi derrubado com `docker compose down -v`; **não há registro** de contêineres de pé, de CPU nem de memória, só de um `java` antigo do editor (PID 5724) visto depois. Nas execuções seguintes o estado passou a ser registrado em `resumo.txt` |
+| b) Onde estourou | Falha 1: PostgreSQL iniciado às 18:36:44, sem ficar pronto até 18:37:51 (**67 s**). Falha 2: iniciado às 18:40:28, estouro às 18:41:40 (**72 s**). Tentativa que passou: iniciado às 18:44:18 e pronto às 18:44:43 (**25 s**). Em nenhuma houve pull de imagem. O Ryuk levou de 10,9 a 18,8 s para iniciar nas três |
+| c) Aplicação do README no ar disputa recursos? | **Não se confirmou.** 3 execuções com a aplicação parada (475, 478 e 490 s) e 3 com a aplicação no ar (478, 498 e 519 s): 6 de 6 passaram, PostgreSQL do teste pronto em 10,9 a 15,1 s, 0 estouros |
+| Fluxo completo do README (com o front) e o `verify` logo em seguida, no mesmo clone | 2 de 2 passaram, mas lentas: 904 s e 772 s (`AutorizacaoApiIT` levou 226,7 s contra 114,9 s). Durante o `npm ci` e a compilação a CPU ficou em 100% e o antivírus do Windows (`MsMpEng`) chegou a 317% de uma CPU; `npm ci` levou 270 s e 1116 s em duas execuções |
+| d) Pull da imagem por digest | Com a imagem ausente, `docker pull` levou **103 s**. Rodando o `verify` com a imagem ausente, o Testcontainers baixou 159 MB em 94 s (1 MB/s) **antes** de iniciar o contêiner, e o banco ficou pronto 12,5 s depois de iniciado: **o pull não entra no prazo de espera**. O `verify` passou em 938 s |
+| Contêineres criados | Um só: `BancoRealIT.POSTGRES` é estático e compartilhado por todas as classes de integração. Não há mais de um sendo criado |
+
+**Causa.** O prazo padrão de 60 s do Testcontainers para o PostgreSQL ficar pronto é o único limite que falhou, e ele estourou duas vezes num computador ocupado. **A causa da lentidão naquelas duas tentativas não foi reproduzida em 9 execuções** (A1 a A3, B1 a B3, C1, C2 e D1) e continua sem prova; a medição aponta contenção do computador (CPU em 100% e antivírus ativo durante compilação e `npm ci`), não defeito do código.
+
+**Correção** (`BancoRealIT`): `withStartupTimeout(Duration.ofSeconds(180))` no contêiner do PostgreSQL. O valor de 180 s é cerca de 2,5 vezes o maior tempo que estourou (72 s) e é uma escolha, não uma medida. **Nenhuma asserção foi alterada**, não há retry, não há `@Disabled`, e nenhum teste que verifica tempo foi tocado (R-26 segue valendo). É mudança de infraestrutura de teste: não há teste novo, e a prova são as execuções abaixo. O README ganhou a seção "Requisitos para rodar o `verify`", com o que foi medido e o que não é mínimo.
+
+**Prova: 5 execuções consecutivas no commit `523849f`** (clone novo a cada uma, aplicação parada, imagem já baixada pelo `docker pull` do README):
+
+| Execução | Testes (unidade + integração) | Falhas | Duração | PostgreSQL do teste iniciou em |
+| --- | --- | --- | --- | --- |
+| P1 | 231 + 434 | 0 | 933 s | 10,4 s |
+| P2 | 231 + 434 | 0 | 1522 s | 10,7 s |
+| P3 | 231 + 434 | 0 | 867 s | 9,2 s |
+| P4 | 231 + 434 | 0 | 717 s | 9,2 s |
+| P5 | 231 + 434 | 0 | 519 s | 9,3 s |
+
+**O que não foi provado (lacunas declaradas).** (1) Outros computadores e outros sistemas operacionais: tudo foi medido num só notebook com Windows 11. (2) A causa da lentidão das duas falhas originais. (3) O estado da máquina nas 3 tentativas originais. (4) O monitor de CPU e memória das execuções A, B e C não gravou dados (nomes de contadores do Windows em português); a partir da D1 e nas cinco execuções o monitor funcionou (C2 teve um amostrador à parte). (5) A duração variou de 519 s a 1522 s nas cinco execuções, com a máquina em carga variável; o tempo "esperado" de cerca de 8 minutos vale para a máquina livre.
+
 ### Risco aceito R-25: teste intermitente `NotificacaoApiIT.int01ECt103` (19/10/2026)
 
 | Item | Registro |
