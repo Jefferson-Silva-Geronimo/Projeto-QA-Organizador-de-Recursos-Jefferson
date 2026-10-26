@@ -28,6 +28,8 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 
 Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, Node 22.12 ou mais novo. O Maven vem pelo wrapper (`./mvnw`), que em Linux exige `unzip` (veja "Limitações conhecidas"). Os comandos abaixo são de um shell Bash (Git Bash no Windows, Linux ou macOS).
 
+**Onde foi verificado:** o fluxo foi verificado em **Windows 11 com Git Bash**, num só computador. **Linux, macOS e PowerShell não foram testados** (fonte: [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5 e 2.6).
+
 1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias com valores **locais** (senhas inventadas por você, nunca reais). O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
 
    | Variável | O que colocar |
@@ -39,6 +41,7 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
    | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_SENHA` | O primeiro Administrador, criado só se não houver usuário. Sem ele não há como entrar |
    | `CORS_ORIGENS` | `http://localhost:5173` para usar o front em desenvolvimento |
    | `SONAR_ORGANIZATION`, `SONAR_PROJECT_KEY` | Só para a análise do SonarCloud; podem ficar vazias para subir e testar localmente |
+   | `NOTIFICACAO_URL`, `NOTIFICACAO_TOKEN`, `NOTIFICACAO_TIMEOUT_CONEXAO`, `NOTIFICACAO_TIMEOUT_LEITURA` | **Opcionais**; não vêm no `.env.example`, a aplicação lê de `application.yml`. `NOTIFICACAO_URL` é o endereço do provedor do webhook e `NOTIFICACAO_TOKEN` a credencial enviada como Bearer; vazios (o padrão), o envio fica desligado e as notificações ficam `PENDENTE`. Os dois prazos têm padrão `PT0.5S` (conexão) e `PT1.5S` (leitura), valores iniciais a validar (ADR-007) |
 
    `SESSAO_DURACAO`, `LOGIN_TENTATIVAS` e `LOGIN_JANELA` não têm valor padrão: sem eles a aplicação não sobe.
 2. Suba o banco: `docker compose up -d postgres`.
@@ -67,7 +70,9 @@ O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80%
 O `verify` sobe um PostgreSQL real em contêiner (Testcontainers). Antes de rodar:
 
 1. **Docker Desktop aberto e pronto**: `docker info` precisa responder.
-2. **Imagem do PostgreSQL já baixada** (opcional, mas evita esperar o download dentro do teste): `docker pull postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3`. O digest é o mesmo de `BancoRealIT`.
+2. **Imagem do PostgreSQL já baixada** (recomendado: evita esperar o download dentro do teste e, no Windows com Git Bash, evitou a falha descrita abaixo): `docker pull postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3`. O digest é o mesmo de `BancoRealIT`.
+
+   **Problema observado no Windows com Git Bash:** nas três primeiras tentativas de clone limpo da `v1.0.0-rc1` e na primeira da `v1.0.0-rc2`, o `docker compose up -d postgres` terminou com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`, ao tentar baixar a imagem `postgres:17` fixada por digest. Acrescentar o diretório `resources/bin` do Docker Desktop ao `PATH` não resolveu (tentativa 2 da `v1.0.0-rc1`). O fluxo passou depois de um `docker pull` da imagem fixada executado pelo PowerShell (resposta: "Image is up to date"), sem alterar nenhum arquivo do repositório. A causa não foi investigada (fonte: [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5 e 2.6).
 3. **Aplicação do "Como subir" parada** (`Ctrl+C` na API e no Vite, e `docker compose down`). Nas medições abaixo, o `verify` com a aplicação no ar passou do mesmo jeito; parar a aplicação é só para não dividir a máquina.
 4. **Outros programas pesados fechados.** Durante a compilação e o `npm ci`, o antivírus do Windows (`MsMpEng`) chegou a usar mais de 100% de CPU nesta máquina.
 
@@ -80,6 +85,9 @@ O `verify` sobe um PostgreSQL real em contêiner (Testcontainers). Antes de roda
 | Logo depois do fluxo completo do README, com o front (`npm ci` e Vite) | 2 de 2 passaram | 772 s e 904 s |
 | Clone limpo, imagem ausente (o Testcontainers baixou 159 MB em 94 s) | 1 de 1 passou | 938 s |
 | Commit da correção (`523849f`), 5 execuções consecutivas, aplicação parada, imagem já baixada | 5 de 5 passaram | 519 s a 1522 s (933, 1522, 867, 717 e 519 s) |
+| Clone limpo no commit da tag `v1.0.0-rc2` (`d2b6af1`), depois do fluxo do "Como subir" (aplicação no ar em 150 s e front em 366 s desde o clone), aplicação encerrada, imagem já baixada | Passou na 2ª tentativa (a 1ª falhou por ambiente, ver o problema acima) | 539 s (231 + 434 testes, 0 falhas) |
+
+No fluxo completo do clone limpo, o **`npm ci` do front é a parte mais demorada** e pode levar vários minutos: cerca de 207 s na `v1.0.0-rc2` e cerca de 380 s na `v1.0.0-rc1`, na mesma máquina (fonte: [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5 e 2.6).
 
 O tempo esperado, com a máquina livre, é de **cerca de 8 minutos** (475 s a 519 s); com a máquina ocupada chegou a 1522 s (25 minutos), então não pare o comando antes de 30 minutos. O PostgreSQL do teste ficou pronto em 10 a 15 s nessas execuções. O prazo de início do banco no `BancoRealIT` é de 180 s (o padrão do Testcontainers, 60 s, estourou duas vezes em clone limpo, em 24/10/2026, numa máquina ocupada; ver F7-19 em [docs/decisoes-equipe.md](docs/decisoes-equipe.md)).
 
@@ -101,6 +109,10 @@ npm run dev             # servidor de desenvolvimento; copie .env.example para .
 O contrato da API é a fonte dos tipos: o CI regenera `schema.d.ts` e falha se o arquivo versionado divergir do contrato.
 Os testes de contraste leem `src/estilo/tokens.css` de verdade e exigem WCAG AA nos dois temas.
 
+## Documentação da API
+
+O contrato da API é o arquivo versionado [docs/api/openapi.json](docs/api/openapi.json) (OpenAPI), conferido contra o contrato da aplicação em execução pelo teste `DocumentacaoApiIT` (`ct115`). Os fluxos públicos estão em [docs/prd/fluxos-sequencia.md](docs/prd/fluxos-sequencia.md) (14 diagramas de sequência). A documentação servida pela própria aplicação em execução exige autenticação (`DocumentacaoApiIT`, `ct114`; verificado em 26/10/2026 com a aplicação do "Como subir": sem token, as URLs de documentação responderam 401), por isso este README não cita uma URL para ela; use o arquivo versionado.
+
 ## Integração contínua
 
 O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda quatro jobs em todo pull request e em push na `main`: `test` (`./mvnw -B verify` com PostgreSQL real, JaCoCo e análise do SonarCloud), `frontend` (`npm ci`, tipos da API conferidos contra o contrato, lint, tipos, testes e build), `e2e` (PostgreSQL, API e front reais por `compose.e2e.yaml` e testes Playwright) e `segredos` (varredura com gitleaks). Permissões mínimas (`contents: read`), ações fixadas por SHA, cancelamento de execuções obsoletas, sem `continue-on-error` e sem `pull_request_target`; o único segredo é o `SONAR_TOKEN` do passo do SonarCloud. Publica os relatórios do Surefire, do Failsafe e do JaCoCo como artifact.
@@ -121,7 +133,7 @@ O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda quatro 
 
 ### SonarCloud (passos da equipe)
 
-O agente não vê nem grava o token. Quem administra a organização faz:
+O token não é versionado nem gravado em arquivo. Quem administra a organização faz:
 
 1. Importar o repositório em https://sonarcloud.io e anotar o identificador da organização e a chave do projeto.
 2. No GitHub, em *Settings → Secrets and variables → Actions*, cadastrar o secret `SONAR_TOKEN` e as variáveis `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY`.
@@ -162,6 +174,7 @@ docs/
     navegacao-telas.md     mapa de navegação, 11 telas e mapa dos códigos de erro do front end
   arquitetura.md       drivers, C4, painel, matriz e porta de saída da Fase 2
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
+  api/                 openapi.json: contrato OpenAPI da API, conferido por teste (`DocumentacaoApiIT`)
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
   testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execuções E-24 e E-25, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
@@ -201,7 +214,7 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório de qualidade](docs/relatorio-qualidade.md) e o [mapa de telas](docs/prd/navegacao-telas.md) |
-| 7 | Fechamento, relatório de qualidade e prova oral | **Concluída em 26/10/2026.** Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) e [decisão de qualidade](docs/decisao-qualidade.md) (**liberar com ressalvas**, Jefferson Silva Geronimo), decisões F7-01 a F7-21, `verify` robusto, os três PRs do Dependabot do front mesclados, 22 de 22 requisitos críticos com prova de mutação e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` (24/10/2026, `276224b`) **permanece como histórico**; a tag **`v1.0.0-rc2`** foi publicada em 26/10/2026 no commit `d2b6af1`, com CI verde e Quality Gate OK. Pacote de entrega: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md) |
+| 7 | Fechamento e relatório de qualidade | **Concluída em 26/10/2026.** Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) e [decisão de qualidade](docs/decisao-qualidade.md) (**liberar com ressalvas**, Jefferson Silva Geronimo), decisões F7-01 a F7-21, `verify` robusto, os três PRs do Dependabot do front mesclados, 22 de 22 requisitos críticos com prova de mutação e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` (24/10/2026, `276224b`) **permanece como histórico**; a tag **`v1.0.0-rc2`** foi publicada em 26/10/2026 no commit `d2b6af1`, com CI verde e Quality Gate OK. Pacote de entrega: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md) |
 
 ## Pacote de evidências (release candidate)
 
@@ -248,7 +261,7 @@ Fonte: especificação, seção "Metas mensuráveis".
 ## Convenções
 
 - **Documentação:** português do Brasil com acentuação completa; a especificação é citada sempre pelo endereço público, nunca por caminho local; classificação de cada afirmação como fato, lacuna, suposição ou decisão; identificadores RF, RN, RNF, CEN, ADR, CT, INT, BUG, R e S nunca são renumerados. Convenção de nomes em [docs/prd/regras-negocio.md](docs/prd/regras-negocio.md).
-  - **Limites conhecidos do `analyze-docs`:** (1) só analisa o que está **commitado** em relação a `origin/main`; com a documentação ainda sem commit ele analisa 0 arquivos, e um resultado vazio não vale como aprovação (aconteceu na etapa 6.B). Faça o commit antes e confira que a lista de arquivos analisados não veio vazia. (2) A checagem de ortografia é heurística, por lista de palavras sem acento, e ignora nomes de arquivo e identificadores; não substitui a leitura. (3) Não renderiza de novo os diagramas Mermaid de arquivos que não mudaram.
+  - **Limites conhecidos do `analyze-docs`:** (1) só analisa o que está **commitado** em relação a `origin/main`; com a documentação ainda sem commit ele analisa 0 arquivos, e um resultado vazio não vale como aprovação. Faça o commit antes e confira que a lista de arquivos analisados não veio vazia. (2) A checagem de ortografia é heurística, por lista de palavras sem acento, e ignora nomes de arquivo e identificadores; não substitui a leitura. (3) Não renderiza de novo os diagramas Mermaid de arquivos que não mudaram.
 - **Verificação:** a skill `analyze-docs` (em `.aiox-core/development/skills/`) roda ao fim de toda edição de documentação.
 - **Commits:** convencionais (`test(red)`, `feat(green)`, `refactor`, `docs`, `ci`, `chore`), com `git add` por caminho explícito, sem `git add .` nem `git add -A`. O arquivo `.env` e o material de apoio ignorado pelo Git nunca entram no índice.
 - **Regras completas para agentes:** [AGENTS.md](AGENTS.md).
