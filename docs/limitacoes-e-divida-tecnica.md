@@ -21,7 +21,7 @@ Cada item tem **origem** e **arquivo**.
 | R-23: a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria. Separar os papéis de migração e de aplicação é dívida técnica | Decisão (risco aceito por Jefferson) | [decisoes-equipe.md](decisoes-equipe.md), seção "Resultado da execução de P5-08 e risco aceito R-23" | Aberto |
 | Limite de login (SEC-01, D18): pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o e-mail da falha fica guardado durante a janela | Decisão (D18) | [decisoes-equipe.md](decisoes-equipe.md), seção 6 | Limitação conhecida |
 | TLS, HSTS, CSP e limitação de taxa dependem de um ambiente de implantação, que o projeto não tem | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md) | Declarado |
-| Alertas do Dependabot: todos em manifestos do framework (`.aiox-core/`); nenhum em `frontend/` nem no Maven. Contagem e justificativa em [alertas-dependabot.md](testes/alertas-dependabot.md) | Fato | GitHub, aba de segurança; [alertas-dependabot.md](testes/alertas-dependabot.md) | Declarado |
+| Alertas do Dependabot: todos em manifestos do framework (`.aiox-core/`); nenhum em `frontend/` nem no Maven. Contagem (30 em 26/10/2026) e justificativa em [alertas-dependabot.md](testes/alertas-dependabot.md) | Fato | GitHub, aba de segurança; [alertas-dependabot.md](testes/alertas-dependabot.md) | Declarado |
 
 ## 2. Desempenho
 
