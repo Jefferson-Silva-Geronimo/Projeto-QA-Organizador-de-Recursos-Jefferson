@@ -588,3 +588,14 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Condição 5 | `analyze-docs` com 69 arquivos analisados, 0 erros e 0 avisos |
 | Condição 6 | Nenhum alerta do Dependabot em `frontend/` nem no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md), seção 7) |
 | Depois da tag | Clone limpo no commit da tag e documentos de evidência atualizados; ver [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.6, e [execucao-e25.md](testes/execucao-e25.md) |
+
+### F7-22. Não reexecutar o run 40379344363 e não alterar o `Dockerfile` na rc2 (26/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 26/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | O job `e2e` do run `40379344363` (push na `main`, commit `e0ab982`) ficou vermelho por falha temporária de rede ao resolver uma dependência Maven no build da imagem da API, sem teste executado ([ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md), ocorrência I-1) |
+| Decisão | **Não reexecutar o run** e **não alterar** `Dockerfile`, `ci.yml`, compose, código nem testes |
+| Motivo | Reexecutar sobrescreveria o status do commit `e0ab982` e esconderia a ocorrência; mexer no `Dockerfile` mudaria a imagem do commit avaliado. A tag `v1.0.0-rc2` (`d2b6af1`) está verde e continua sendo o commit avaliado; a ocorrência é de causa de rede e única |
+| Alternativas descartadas | (1) Reexecutar o run: perde o registro. (2) Repetir o `dependency:go-offline` no `Dockerfile` ou remover o `-q`: é dívida técnica sem prazo ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 3) e só entraria numa `v1.0.0-rc3`, com novo clone limpo |

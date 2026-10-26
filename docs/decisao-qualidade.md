@@ -7,7 +7,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | Item | Valor |
 | --- | --- |
 | **Decisão** | **LIBERAR COM RESSALVAS** |
-| Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 |
+| Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 (release candidate rc1), reafirmada em 26/10/2026 para a rc2 (commit d2b6af1) |
 | A que se refere | Release candidate **`v1.0.0-rc2`**, tag publicada em 26/10/2026 no commit **`d2b6af1`** com autorização expressa do autor; a `v1.0.0-rc1` (`276224b`) permanece como histórico |
 | Execução da CI no commit da tag | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577): `test`, `frontend`, `e2e` e `segredos` verdes (E-25, [execucao-e25.md](testes/execucao-e25.md)) |
 | Quality Gate do SonarCloud no commit da tag | **OK**: 0 bugs, 0 vulnerabilidades, 0 code smells (análise com `revision` `d2b6af1`) |
@@ -15,7 +15,11 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 
 **Por que "liberar com ressalvas" e não "liberar" nem "não liberar".** Os quatro limitadores de nota e as quatro metas mensuráveis têm evidência, mas há metas não atingidas e riscos aceitos que um avaliador precisa ver (seção 4). "Liberar" sem ressalvas exigiria o professor validar a hipótese de 300 ms ou o RNF-08b medido em outro ambiente dentro da meta.
 
+**Reafirmação para a rc2.** "Em 26/10/2026, eu, Jefferson Silva Geronimo, reafirmo a decisão de qualidade LIBERAR COM RESSALVAS para o release candidate v1.0.0-rc2 (commit d2b6af1), com as ressalvas e os riscos aceitos desta decisão."
+
 **O que mudaria a decisão para "não liberar":** qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou uma decisão de alto impacto da equipe (a A3, de maior retrabalho) se mostrar errada.
+
+**Ocorrência de 26/10/2026.** O run `40379344363` (push na `main`, commit `e0ab982`) teve o job `e2e` vermelho por falha temporária de rede no build da imagem, com nenhum teste executado. O commit da tag e os runs seguintes estão verdes. A ocorrência foi avaliada e **não altera a decisão**, porque o critério acima trata de check vermelho persistente ou causado por código ou teste. Registro em [testes/ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md), ocorrência I-1.
 
 ## 2. Critérios e evidência
 
@@ -34,7 +38,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | --- | --- | --- | --- |
 | Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (commit da tag); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
 | Cobertura de branches, 70% | **86,88%** (523 de 602) | Atingida | Mesmo run |
-| Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 18 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
+| Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 22 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
 | Bugs ou vulnerabilidades críticos, 0 | 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud (Quality Gate aprovado); 0 alertas do Dependabot no Maven e 0 no front; nenhum defeito aberto de severidade crítica ou alta | Atingida | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [alertas-dependabot.md](testes/alertas-dependabot.md); [defeitos/README.md](defeitos/README.md) |
 
 A cobertura alta não prova qualidade dos testes (a própria especificação avisa); por isso a prova de mutação foi feita nas regras críticas.
@@ -45,7 +49,7 @@ Os 12 entregáveis da seção "Entregáveis" da especificação estão conferido
 
 ## 3. Estado dos testes
 
-Back end: 665 testes (231 de unidade e arquitetura, 434 de integração e BDD); front: 910 testes em 56 arquivos; E2E: 5 de 5; 0 falhas na CI ([execucao-e24.md](testes/execucao-e24.md)). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
+Back end: 665 testes (231 de unidade e arquitetura, 434 de integração e BDD); front: 910 testes em 56 arquivos; E2E: 5 de 5; 0 falhas na CI ([execucao-e25.md](testes/execucao-e25.md), commit da tag). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
 
 ## 4. Riscos aceitos
 
@@ -54,7 +58,8 @@ Todos têm como responsável **Jefferson Silva Geronimo**, autor e único integr
 | Risco aceito | Impacto | Justificativa |
 | --- | --- | --- |
 | **RNF-08b não atendido**: criação de reserva com p95 de 568 a 886 ms contra 300 ms com 50 usuários | Lentidão sob carga; meta de desempenho não cumprida | Causa atribuída ao `fsync` do PostgreSQL em Docker (sem `fsync`, p95 de 87 ms, rodada de diagnóstico que não vale como resultado); um só ambiente; a hipótese de 300 ms é da Aula 10 e não foi validada pelo professor ([resultado-02.md](performance/resultado-02.md)) |
-| **R-25 aberto**: `NotificacaoApiIT.int01ECt103` falhou 3 vezes de forma intermitente | A CI pode ficar vermelha sem defeito real; regra de repetir o job uma única vez | Causa não encontrada; BUG-017 mitigado pelo R-26, não corrigido; a notificação em si funciona (INT-01 a INT-06) |
+| **R-25 aberto**: `NotificacaoApiIT.int01ECt103` falhou 3 vezes de forma intermitente | A CI pode ficar vermelha sem defeito real; regra de repetir o job uma única vez | Causa não encontrada; BUG-017 mitigado pelo R-26, não corrigido; a notificação em si funciona (INT-01 a INT-06). A issue 39 foi fechada como "not planned" em 26/10/2026 (F7-20), com estas evidências: 114 runs do workflow `qualidade` desde 22/10/2026 sem falha de `NotificacaoApiIT` e 10 execuções consecutivas verdes das duas classes de notificação; a causa continua desconhecida e o BUG-017 segue "mitigado, não corrigido". A regra de repetir o job uma única vez continua para falha desse teste |
+| **Intermitência de rede no build do e2e** | CI vermelha sem defeito do produto (um run, 26/10/2026) | Ocorrência única, recuperada no push seguinte, de causa de rede; sem alteração de `Dockerfile` na rc2; dívida declarada em [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md). Responsável: Jefferson Silva Geronimo |
 | **Front sem cobertura medida** | Regressão no front não aparece em número | 910 testes de componente, 5 E2E e `lint` e `typecheck` na CI; medir é evolução |
 | **Lacunas decididas pela equipe, sem validação externa** (A1 a A8, D1, D3, D4, D9, D17, entre outras); a maior em retrabalho é a A3; a D14 é brecha funcional conhecida; a D9 é risco de privacidade | Retrabalho se a decisão estiver errada; troca de perfil pode deixar um só Responsável; nada é apagado nem anonimizado | Sem resposta do professor, a equipe decidiu com impacto e teste declarados ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17) |
 | **"Revisão por pares" é revisão assistida** | Nenhum segundo humano revisou o código | Equipe de uma pessoa; cada pull request teve checks obrigatórios e revisão assistida registrada |
