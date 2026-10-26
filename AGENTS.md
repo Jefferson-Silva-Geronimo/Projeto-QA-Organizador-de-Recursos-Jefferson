@@ -5,7 +5,7 @@ Stack: Java 21, Spring Boot 3.x, Maven, PostgreSQL, front end React + Vite.
 Fonte dos requisitos: <https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html>
 (cite a especificação por esse endereço nos documentos versionados, nunca por caminho local).
 
-Este arquivo vale para os agentes do projeto: Claude Code (que o lê pela importação em `.claude/CLAUDE.md`, porque o Claude Code lê `CLAUDE.md`, não `AGENTS.md`) e GitHub Copilot (agentes em `.github/agents/`). O framework AIOX fica em `.aiox-core/` e não é editado; onde um texto genérico do framework contrariar este arquivo, vale este arquivo para o código e a documentação do projeto.
+Este arquivo vale para os agentes do projeto: Claude Code (que o lê pela importação em `.claude/CLAUDE.md`, porque o Claude Code lê `CLAUDE.md`, não `AGENTS.md`) e, em tese, o GitHub Copilot (`.github/agents/` traz os agentes dele, **que não foram usados** no desenvolvimento). O framework AIOX fica em `.aiox-core/` e não é editado; onde um texto genérico do framework contrariar este arquivo, vale este arquivo para o código e a documentação do projeto.
 
 ## Regras
 
@@ -52,7 +52,7 @@ frontend/                React + Vite (ADR-015)
 src/, pom.xml            Maven, na raiz. Pacotes MVC em br.senac.recursos: controller, dto, service,
                          repository, model, exception, config e security (ADR-014)
 .github/                 ISSUE_TEMPLATE/defeito.md, pull_request_template.md, dependabot.yml,
-                         workflows/ci.yml e agents/ (GitHub Copilot)
+                         workflows/ci.yml e agents/ (Copilot, não usado)
 .claude/                 Claude Code: CLAUDE.md, regras, hooks e skills
 .aiox-core/              framework AIOX, instalado; não editar
 ```

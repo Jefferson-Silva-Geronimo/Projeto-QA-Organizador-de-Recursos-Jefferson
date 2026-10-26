@@ -10,7 +10,7 @@ Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`). A tag
 - Registro do clone limpo no commit da `v1.0.0-rc1` em `docs/testes/limitadores-de-nota.md`, seção 2.5 (#91).
 - Plano de projeto versionado, `docs/plano-de-projeto.md`, e atribuição das lacunas A1 a A8 à análise da equipe (#92, F7-17 e F7-18).
 - `docs/limitacoes-e-divida-tecnica.md`, com o que está aberto ou declarado (#94).
-- `docs/status-requisitos.md`, `docs/testes/plano-tdd.md` e `docs/testes/mutacao-manual.md`: situação dos requisitos, inventário das regras com casos e 14 experimentos de mutação, com 18 de 22 requisitos críticos com prova de que o teste falha (#95).
+- `docs/status-requisitos.md`, `docs/testes/plano-tdd.md` e `docs/testes/mutacao-manual.md`: situação dos requisitos, inventário das regras com casos e 14 experimentos de mutação em #95 e mais 8 antes da tag, com 22 de 22 requisitos críticos com prova de que o teste falha.
 - Pacote de entrega: `CHANGELOG.md`, `docs/evidencias/README.md` (índice de evidências), `docs/decisao-qualidade.md`, `docs/rtm.md`, `docs/seguranca/matriz-autorizacao.md` e `docs/entrega/checklist.md`.
 
 ### Corrigido
@@ -19,7 +19,7 @@ Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`). A tag
 
 ### Alterado
 - Citações da especificação passam do número da seção ao nome da seção, porque a página oficial não numera os títulos (#94).
-- Configurações de outras ferramentas de agente (`.antigravity`, `.codex`, `.cursor`, `.gemini`, `.grok`, `.kimi`) deixam de ser versionadas; o projeto usa Claude Code e GitHub Copilot (#94).
+- Configurações de outras ferramentas de agente (`.antigravity`, `.codex`, `.cursor`, `.gemini`, `.grok`, `.kimi`) deixam de ser versionadas; o projeto foi desenvolvido com o Claude Code (os agentes do GitHub Copilot em `.github/agents/` não foram usados) (#94).
 - `AGENTS.md` sem o modelo genérico do AIOX; `.claude/CLAUDE.md` importa `AGENTS.md` (#94).
 - Retenção dos artefatos da CI (`relatorios-de-teste`, `relatorio-jacoco`, `relatorio-e2e` e `logs-e2e`) de 7 para 30 dias, para o relatório do JaCoCo continuar disponível durante a avaliação.
 - `docs/plano-de-teste.md` sem os 4 `TODO`; `docs/relatorio-qualidade.md` aponta para `docs/decisao-qualidade.md`; `ciclo-01.md` com JaCoCo, SonarCloud e riscos revisados (#95 e pacote de entrega).

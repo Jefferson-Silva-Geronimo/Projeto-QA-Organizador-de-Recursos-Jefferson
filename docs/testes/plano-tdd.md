@@ -10,6 +10,7 @@ Este arquivo é **gerado da documentação existente** e não substitui a RTM ([
 - Contagem no histórico da `main` em `a027e91` (`git log`, 26/10/2026): **98** commits `test(red)`, **98** `feat(green)` ou `fix(green)` e **11** `refactor`.
 - **Linhas que nasceram verdes** (o comportamento já existia e o teste foi escrito depois do código, por isso não substituem o ciclo TDD): lacunas de risco da cobertura (`LacunasDeRiscoApiIT`), lacunas do PIT (`HorasDeFuncionamentoTest`, `EventoAuditoriaTest`, `ReservaTest`), os 15 cenários BDD de aprovação e bloqueio, o CT-106 (troca do provedor), os 10 casos de API do limite de login (`LimiteDeLoginApiIT`, tempo em trinca e demais), e na Fase 6 o CT-124, o CT-126 e o CT-135.
 - **Testes que passaram de primeira por faltar a classe:** CT-107 a CT-113 e parte de CT-084 a CT-095. O vermelho demonstra ausência, não regressão de regra.
+- **`PeriodoTest.ct034` é teste do modelo, não da produção:** a decisão de sobreposição do sistema é SQL (`tstzrange(...,'[)')` e a constraint de exclusão), e `Periodo.sobrepoe` só é chamado pelo teste. A prova de produção de RN-02, RN-11 e RF-05 é `ReservasApiIT`, `EsquemaIT` e `ConcorrenciaApiIT` ([mutacao-manual.md](mutacao-manual.md), seção 5).
 - Regra, caso e teste só ficam "verde" aqui quando passaram na execução de referência E-24 (run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445), `c9240cd`: back end 665 testes, front 910, E2E 5 de 5, 0 falhas; [execucao-e24.md](execucao-e24.md)). "Verde" **não** quer dizer que o teste pega a regra quebrada: isso é medido em [mutacao-manual.md](mutacao-manual.md) só para as regras críticas.
 
 ## 2. Inventário das regras e dos casos derivados
@@ -374,7 +375,7 @@ Os casos de cada regra são os CT cuja coluna *Rastreio* de [casos-de-teste.md](
 | RN-01 | CT-010 | CHECKs do esquema | integração | `EsquemaIT` | red `9d4d6d9` | verde (E-24) |
 | RN-01 | CT-033 | Término posterior ao início | unidade | `PeriodoTest`, `ReservasApiIT` | red `af25ff4` | verde (E-24) |
 | RN-01 | CT-039 | Início no passado em trinca | unidade | `PoliticasDeReservaTest`, `ReservasApiIT` | red `af25ff4`, `4a54c35` | verde (E-24) |
-| RN-02 | CT-034 | Conflito em trinca | unidade | `PeriodoTest` | red `af25ff4` | verde (E-24) |
+| RN-02 | CT-034 | Conflito em trinca | unidade | `PeriodoTest` (teste do modelo: `Periodo.sobrepoe` não é chamado pela produção; a produção é SQL e constraint, coberta por `ReservasApiIT`, `EsquemaIT` e `ConcorrenciaApiIT`) | red `af25ff4` | verde (E-24) |
 | RN-02 | CT-035 | Conflito por tipo de recurso | unidade | `ReservasApiIT` | red `af25ff4` | verde (E-24) |
 | RN-02 | CT-057 | Professor ocupado | integração | `ReservasApiIT` | red `4a54c35` | verde (E-24) |
 | RN-02 | CT-061 | Simultâneas para o mesmo professor | concorrência | `ConcorrenciaApiIT` | red `5d570f8` | verde (E-24) |
@@ -416,7 +417,7 @@ Os casos de cada regra são os CT cuja coluna *Rastreio* de [casos-de-teste.md](
 | RN-11 | CT-007 | Constraint de exclusão impede sobreposição | integração | `EsquemaIT` | red `9d4d6d9` | verde (E-24) |
 | RN-11 | CT-008 | Fronteira semiaberta no banco | integração | `EsquemaIT` | red `9d4d6d9` | verde (E-24) |
 | RN-11 | CT-028 | Disponibilidade na fronteira | API | `CatalogoApiIT` | red `24c7364` | verde (E-24) |
-| RN-11 | CT-034 | Conflito em trinca | unidade | `PeriodoTest` | red `af25ff4` | verde (E-24) |
+| RN-11 | CT-034 | Conflito em trinca | unidade | `PeriodoTest` (teste do modelo: `Periodo.sobrepoe` não é chamado pela produção; a produção é SQL e constraint, coberta por `ReservasApiIT`, `EsquemaIT` e `ConcorrenciaApiIT`) | red `af25ff4` | verde (E-24) |
 | RN-11 | CT-080 | Bordas do bloqueio | unidade | `AprovacaoBloqueioApiIT` | red `7b4219d` | verde (E-24) |
 | RN-12 | CT-019 | Material exige patrimônio único | API | `CatalogoApiIT` | red `24c7364` | verde (E-24) |
 | RN-13 | CT-020 | Professor sem usuário | API | `CatalogoApiIT` | red `24c7364` | verde (E-24) |

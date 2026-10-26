@@ -534,7 +534,7 @@ Aprovadas pelo usuário na Fase 2. Cada uma vira ADR no Prompt 2.4 e é analisad
 | Java 21 e Spring Boot 3.x | Especificação, seção "Objetivo" | Requisito |
 | PostgreSQL | Decisão da equipe; viabiliza a constraint de exclusão e `tstzrange` exigidos para RN-03 | Requisito indireto (RN-03) |
 | Maven | Decisão da equipe | **Sem requisito correspondente** |
-| Flyway (ou ferramenta equivalente de migração) | RF-06: a constraint existe no banco de teste e de produção por migração; exigência de banco real (seção 5) | Requisito indireto; ferramenta específica sem requisito |
+| Flyway (ou ferramenta equivalente de migração) | RF-06: a constraint existe no banco de teste e de produção por migração; exigência de banco real (especificação, seção "Estratégia obrigatória de qualidade") | Requisito indireto; ferramenta específica sem requisito |
 | Testcontainers e WireMock | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
 | JUnit 5, parametrizados | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
 | GitHub Actions, JaCoCo, SonarCloud | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |

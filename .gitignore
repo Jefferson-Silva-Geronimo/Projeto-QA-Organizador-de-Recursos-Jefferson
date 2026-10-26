@@ -47,7 +47,7 @@ frontend/test-results/
 docs/relatorio-sessao-*.md
 docs/relatorio-fase-*.md
 
-# Configurações de outras ferramentas de agente: o projeto usa só Claude Code e GitHub Copilot (Parte 2, decisão 5)
+# Configurações de outras ferramentas de agente: o projeto usa só o Claude Code (os agentes do GitHub Copilot em .github/agents/ ficam no repositório, mas não foram usados)
 .antigravity/
 .codex/
 .cursor/

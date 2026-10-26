@@ -32,8 +32,16 @@ Fonte das regras: [regras-negocio.md](../prd/regras-negocio.md) e a seção "Reg
 | 12 | Autorização (matriz), RN-17 | `POST /api/reservas` passa a aceitar `ADMINISTRADOR` | `AutorizacaoApiIT.ct117_matrizPerfilXOperacao` (1 de 141: Administrador em "Criar reserva"); `ReservasApiIT` 34 de 34 verdes | Morto por asserção pela matriz | 26/10/2026, `a027e91` | 7 |
 | 13 | RN-08 (auditoria) | A aprovação deixa de gravar o evento `RESERVA_APROVADA` | `AuditoriaApiIT.ct096` e `AprovacaoBloqueioApiIT.ct066` (2 de 60) | Morto por asserção | 26/10/2026, `a027e91` | 8 |
 | 14 | RN-08 (auditoria) | `JdbcAuditoriaRepository.registrar` não grava nada | 20 de 83: `AprovacaoBloqueioApiIT` 7, `AuditoriaApiIT` 6, `ReservasApiIT` 4, `UsoMaterialApiIT` 3 | Morto por asserção | 26/10/2026, `a027e91` | 8 |
+| 15 | RF-03 (pesquisa), capacidade | SQL de `pesquisar`: `s.capacidade >= :capacidade` vira `<=` | `CatalogoApiIT.ct027` (1 de 21) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 16 | RF-03 (pesquisa), disponibilidade | SQL de `pesquisar`: `not exists` vira `exists` | `CatalogoApiIT.ct028` e `ct029`, `ReservasApiIT.ct030` (3 de 55) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 17 | RF-09 e RN-23 (conclusão exige devolução) | `PoliticaDeUso.avaliarConclusao` deixa de recusar com material pendente | `PermissoesDeUsoTest.ct150` (2 de 20), `PermissoesDeUsoApiIT.ct152` e `UsoMaterialApiIT.ct089` (2 de 42) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 18 | RF-09 (devolução) | `PoliticaDeUso.avaliarDevolucao` aceita devolver unidade não retirada | `MovimentacoesAtuaisTest.ct151` (2 de 9) e `UsoMaterialApiIT.ct088` (1 de 23) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 19 | RF-12 e RN-31 (estados que contam) | O relatório passa a contar reserva `SOLICITADA` | `RelatorioApiIT.ct108` (1 de 9) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 20 | RF-12 e RN-31 (parte interna do período) | O relatório deixa de recortar a ocupação pelo período | `RelatorioApiIT.ct109` (1 de 9) | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 21 | RF-13 (mensagem de erro compreensível) | A mensagem de `CONFLITO_DE_ALOCACAO` no front vira `CONFLITO_DE_ALOCACAO 409` | `mensagens.test.ts` (CT-127): 1 de 80 em `src/erros` | Morto por asserção | 26/10/2026, `9624160` | 9 |
+| 22 | RF-13 (interface responsiva) | `.coluna` de `Estrutura.module.css` com `min-width: 700px` em vez de `0` | E2E CT-165 (`jornadas.spec.ts`, celular 360 por 640): `scrollWidth <= innerWidth` fica falso | Morto por asserção | 26/10/2026, `9624160` | 9 |
 
-**Resultado:** dos 14 experimentos, **nenhuma regra quebrada ficou com todos os testes verdes**. Nada de teste foi escrito, alterado ou desativado nesta rodada. Há dois achados, nas seções 5 e 7: o código `Periodo.sobrepoe` não é chamado pela produção, e duas camadas de autorização se escondem uma à outra em alguns casos.
+**Resultado:** dos 22 experimentos, **nenhuma regra quebrada ficou com todos os testes verdes**. Nenhum teste foi escrito, alterado ou desativado nas duas rodadas. Há dois achados, nas seções 5 e 7: o código `Periodo.sobrepoe` não é chamado pela produção, e duas camadas de autorização se escondem uma à outra em alguns casos.
 
 ## 2. RN-04: reserva de recurso em manutenção
 
@@ -114,15 +122,32 @@ A autorização tem duas camadas (ADR-004): a cadeia de segurança (`SegurancaCo
 | 13 | Em `AprovacaoService`, o registro do evento `RESERVA_APROVADA` fica sob `if (false)` | `AuditoriaApiIT`, `AprovacaoBloqueioApiIT`, `ReservasApiIT` (60 testes) | **2 falhas**: `AuditoriaApiIT.ct096_cadaTransicaoGeraExatamenteUmEventoComAnteriorNovoAtorEInstante` e `AprovacaoBloqueioApiIT.ct066_responsavelAprovaReservaDeOutroUsuario` |
 | 14 | `JdbcAuditoriaRepository.registrar` retorna sem gravar | `AuditoriaApiIT`, `AprovacaoBloqueioApiIT`, `ReservasApiIT`, `UsoMaterialApiIT` (83 testes) | **20 falhas**: `AprovacaoBloqueioApiIT` 7 de 19, `AuditoriaApiIT` 6 de 7, `ReservasApiIT` 4 de 34 e `UsoMaterialApiIT` 3 de 23 |
 
-## 9. Requisitos críticos com prova de que o teste falha
+## 9. RF-03, RF-09, RF-12 e RF-13: os quatro críticos que não tinham prova
+
+Experimentos de 26/10/2026 sobre a `main` em `9624160` (depois dos PRs 81 e 82 do Dependabot), no mesmo método da abertura deste documento, em `git worktree` descartável. Cada um estava sem prova de mutação na primeira rodada.
+
+| Experimento | Quebra | Classes rodadas | Resultado |
+| --- | --- | --- | --- |
+| 15 (RF-03) | Em `JdbcRecursoRepository.pesquisar`, o filtro de capacidade `>=` passa a `<=` | `CatalogoApiIT` (21) | **1 falha**: `ct027_filtroPorTipoCapacidadeLocalizacaoECompetencia` |
+| 16 (RF-03) | No mesmo método, a condição de disponibilidade `not exists` passa a `exists` | `CatalogoApiIT`, `ReservasApiIT` (55) | **3 falhas**: `CatalogoApiIT.ct028`, `CatalogoApiIT.ct029` e `ReservasApiIT.ct030` |
+| 17 (RF-09, RN-23) | `PoliticaDeUso.avaliarConclusao` devolve sempre vazio no fim (nunca recusa por material pendente) | `PermissoesDeUsoTest`, `UsoMaterialApiIT`, `PermissoesDeUsoApiIT` | **4 falhas**: `PermissoesDeUsoTest.ct150` (2 casos de 20), `PermissoesDeUsoApiIT.ct152_emUsoComMaterialRetiradoNaoPodeConcluirAteDevolver` e `UsoMaterialApiIT.ct089_conclusaoComMaterialRetiradoENaoDevolvidoListaAsPendencias` |
+| 18 (RF-09) | `PoliticaDeUso.avaliarDevolucao` devolve sempre vazio (aceita devolver o que não foi retirado) | `MovimentacoesAtuaisTest`, `UsoMaterialApiIT` | **3 falhas**: `MovimentacoesAtuaisTest.ct151` (2 casos de 9) e `UsoMaterialApiIT.ct088_devolverUnidadeNaoRetiradaEhRecusado` |
+| 19 (RF-12, RN-31) | `JdbcRelatorioRepository.linhas` passa a incluir `SOLICITADA` nos estados que contam | `RelatorioApiIT` (9) | **1 falha**: `ct108_soAprovadaEmUsoEConcluidaContam` |
+| 20 (RF-12, RN-31) | O mesmo método soma `upper - lower` da ocupação inteira, sem recortar pelo período | `RelatorioApiIT` (9) | **1 falha**: `ct109_contaSoAParteInternaDoPeriodo` |
+| 21 (RF-13) | Em `frontend/src/erros/mensagens.ts`, a mensagem de `CONFLITO_DE_ALOCACAO` vira o código técnico | `npx vitest run src/erros` (80) | **1 falha**: `mensagemPara > CONFLITO_DE_ALOCACAO devolve a mensagem e a ação documentadas` |
+| 22 (RF-13) | Em `frontend/src/layout/Estrutura.module.css`, `.coluna { min-width: 0 }` vira `min-width: 700px` | E2E `npx playwright test -g "celular"` contra PostgreSQL, API e front reais em `compose.e2e.yaml` | **1 falha** em `em celular (360 por 640) › fluxo principal: buscar e reservar uma sala, sem rolagem horizontal`: `expect(received).toBe(expected)`, esperado `true`, recebido `false`, na linha 146 (`scrollWidth <= innerWidth`) |
+
+**O que isto prova e o que não prova.** Cada um dos quatro requisitos críticos tem agora um teste que fica vermelho por asserção quando a regra quebra. O RF-13 continua **parcial** em outro sentido: a responsividade é provada por **uma** jornada E2E, só no Chromium; as outras telas em celular dependem de roteiro manual. Nenhum mutante sobreviveu, então nenhum teste novo foi escrito.
+
+## 10. Requisitos críticos com prova de que o teste falha
 
 "Crítico" segue a [RTM.md](../../RTM.md): 22 linhas, sendo 12 de RF, 8 de RN e 2 de RNF.
 
 | Grupo | Com experimento de mutação | Sem experimento |
 | --- | --- | --- |
-| RN críticas (RN-01 a RN-08) | **8 de 8**: RN-01 (4), RN-02 (5 a 8), RN-03 (3), RN-04 (2), RN-05 (9), RN-06 (4), RN-07 (10), RN-08 (13 e 14) | — |
+| RN críticas (RN-01 a RN-08) | **8 de 8**: RN-01 (4), RN-02 (5 e 6 no caminho de produção; 7 e 8 só do modelo), RN-03 (3), RN-04 (2), RN-05 (9), RN-06 (4), RN-07 (10), RN-08 (13 e 14) | — |
 | RNF críticos (RNF-05, RNF-06) | **2 de 2**: RNF-05 pela RN-03 (3) e RNF-06 pela matriz (11 e 12) | — |
-| RF críticos | **8 de 12**: RF-01 (11, 12), RF-04 (RN-01, RN-07), RF-05 (5 a 8), RF-06 (3), RF-07 (RN-06), RF-08 (2), RF-10 (13, 14), RF-16 (9, 10) | RF-03, RF-09, RF-12 e RF-13: têm teste com asserção que passou na CI, **sem experimento de mutação** |
-| **Total** | **18 de 22 (81,8%)** | 4 de 22 |
+| RF críticos | **12 de 12**: RF-01 (11, 12), RF-03 (15, 16), RF-04 (RN-01, RN-07), RF-05 (5 e 6), RF-06 (3), RF-07 (RN-06), RF-08 (2), RF-09 (17, 18), RF-10 (13, 14), RF-12 (19, 20), RF-13 (21, 22), RF-16 (9, 10) | — |
+| **Total** | **22 de 22 (100%)** | 0 de 22 |
 
-**Nenhuma linha é chamada de "coberta" sem execução:** as 18 têm o experimento registrado acima, com a classe, o resultado e o commit. As 4 sem experimento ficam como "testadas, sem prova de mutação" até que alguém quebre a regra delas. O RN-06 (4) tem a ressalva de que o resultado original deixou um mutante vivo para o Solicitante, corrigido pelo BUG-026 (PR 77) com teste novo visto vermelho; o experimento não foi repetido depois da correção.
+**Nenhuma linha é chamada de "coberta" sem execução:** as 22 têm o experimento registrado acima, com a classe, o resultado e o commit. O RN-06 (4) tem a ressalva de que o resultado original deixou um mutante vivo para o Solicitante, corrigido pelo BUG-026 (PR 77) com teste novo visto vermelho; o experimento não foi repetido depois da correção.
