@@ -120,7 +120,7 @@ Observações importantes:
 ### A5. Notificação simulada ou API externa?
 
 - **Pergunta:** qual opção a equipe adota e, se for API externa, qual provedor?
-- **Fato:** RF-11 aceita "notificação simulada ou integração com API externa" ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 8). A especificação exige WireMock para integrações externas (seção 5).
+- **Fato:** RF-11 aceita "notificação simulada ou integração com API externa" ([plano de projeto](../plano-de-projeto.md), seção 5.3, lacuna 8). A especificação exige WireMock para integrações externas (seção "Estratégia obrigatória de qualidade").
 - **Decisão:** porta com adapter HTTP de webhook, configurável por variável de ambiente. Em demonstração aponta para um endpoint de teste; nos testes é WireMock. Eventos: solicitação pendente, reserva aprovada, rejeitada e cancelada. Envio após o commit, com status e tentativas registrados para reenvio. A falha do provedor nunca desfaz a reserva.
 - **Justificativa:** satisfaz RF-11 sem depender de provedor real e permite teste com WireMock sem alterar o código de produção. Enviar após o commit mantém a reserva válida mesmo com provedor fora do ar.
 - **Alternativas consideradas:** simulação interna apenas com registro em tabela; e-mail; integração com serviço de terceiros específico; envio dentro da transação.

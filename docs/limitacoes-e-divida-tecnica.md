@@ -1,0 +1,85 @@
+# Limitações e dívida técnica
+
+Lista do que está **aberto ou declarado** no produto: risco aceito, limitação conhecida, suposição sem origem e dívida técnica. O que já foi resolvido não consta aqui; o registro das decisões está em [decisoes-equipe.md](decisoes-equipe.md) e o dos defeitos em [defeitos/README.md](defeitos/README.md).
+
+Cada item tem **origem** e **arquivo**.
+
+| Origem | Significado |
+| --- | --- |
+| Fato | Está no repositório, no arquivo indicado |
+| Decisão | Escolha da equipe, com o ID em [decisoes-equipe.md](decisoes-equipe.md) |
+| Lacuna | Ponto em aberto na especificação ou sem validação externa |
+| Suposição | Premissa adotada sem resposta, com o impacto registrado |
+
+## 1. Segurança
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| SEC-03: o SBOM não foi produzido. A soma de verificação do Maven está fixada no wrapper (`MavenWrapperTest`); quem subir a versão do Maven deve atualizar a soma. O `Dockerfile` da API instala `unzip` com `apt-get` no estágio de compilação, **sem versão do pacote fixada**; em Linux sem `unzip` o `mvnw` baixa o `.tar.gz`, cuja soma não confere com a do `.zip`, e falha fechado | Decisão (F7-06, F7-14) | [revisao-seguranca.md](testes/revisao-seguranca.md); [Dockerfile](../Dockerfile) | Dívida técnica |
+| SEC-04: alerta de segurança além do log (OWASP A09) não existe; A09 segue "parcial" | Decisão (F7-06) | [revisao-seguranca.md](testes/revisao-seguranca.md) | Dívida técnica |
+| Modelo de ameaças curto: 18 ameaças, das quais 8 cobertas, 6 parciais, 2 de risco aceito e 2 lacunas; A06 segue "parcial" | Decisão (F7-07) | [modelo-de-ameacas.md](testes/modelo-de-ameacas.md) | As lacunas do modelo seguem abertas |
+| R-23: a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria. Separar os papéis de migração e de aplicação é dívida técnica | Decisão (risco aceito por Jefferson) | [decisoes-equipe.md](decisoes-equipe.md), seção "Resultado da execução de P5-08 e risco aceito R-23" | Aberto |
+| Limite de login (SEC-01, D18): pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o e-mail da falha fica guardado durante a janela | Decisão (D18) | [decisoes-equipe.md](decisoes-equipe.md), seção 6 | Limitação conhecida |
+| TLS, HSTS, CSP e limitação de taxa dependem de um ambiente de implantação, que o projeto não tem | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md) | Declarado |
+| Alertas do Dependabot: todos em manifestos do framework (`.aiox-core/`); nenhum em `frontend/` nem no Maven. Contagem e justificativa em [alertas-dependabot.md](testes/alertas-dependabot.md) | Fato | GitHub, aba de segurança; [alertas-dependabot.md](testes/alertas-dependabot.md) | Declarado |
+
+## 2. Desempenho
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| **RNF-08b não atendido nesta máquina** (criação de reserva com p95 de até 300 ms com 50 usuários). Causa atribuída ao `fsync` do PostgreSQL em Docker (sem `fsync`, p95 de 87 ms, rodada de diagnóstico que não vale como resultado) | Fato | [resultado-02.md](performance/resultado-02.md); [rnf.md](performance/rnf.md), linha RNF-08b | Meta não atingida |
+| A hipótese de 300 ms vem da Aula 10 e **não foi validada** pelo professor | Lacuna | [resultado-02.md](performance/resultado-02.md) | Sem validação externa |
+| A carga rodou uma vez por rodada, em uma só máquina; a variação é desconhecida | Fato | [resultado-02.md](performance/resultado-02.md), parágrafo final | Limitação |
+| Listas sem paginação nem filtro: `GET /api/reservas`, `GET /api/reservas/fila` (`listarFila` não tem `limit`), catálogo e auditoria (L-03). Crescem sem limite | Fato | [JdbcReservaRepository.java](../src/main/java/br/senac/recursos/repository/JdbcReservaRepository.java); [navegacao-telas.md](prd/navegacao-telas.md), seção 7 | Aberto: avaliar paginação e filtros |
+| Custo por reserva em uso: `GET /api/reservas` consulta as movimentações de cada reserva em uso (uma consulta por reserva), e a T06 faz uma consulta por cartão. Não foi medido | Fato e lacuna (sem medição) | [UsoService.java](../src/main/java/br/senac/recursos/service/UsoService.java); [PaginaDeRetiradas.tsx](../frontend/src/paginas/retiradas/PaginaDeRetiradas.tsx) | Aberto: medir e, se pesar, filtrar por estado e consultar em lote |
+| O `verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga; "cerca de 8 minutos" vale para a máquina livre. Outros computadores e sistemas operacionais não foram provados | Fato (F7-19) | [decisoes-equipe.md](decisoes-equipe.md), F7-19; [README.md](../README.md) | Declarado |
+
+## 3. Testes e evidência
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| R-25: `NotificacaoApiIT.int01ECt103` falhou 3 vezes em suítes completas (18/10, 19/10 e 22/10) e passa sozinho; causa **não encontrada**. O BUG-017 está **mitigado** (limite de 10 s só no `int01`, `int04` em classe própria com o limite de produção), não corrigido. Issue 39 aberta de propósito | Fato e decisão (risco aceito) | [decisoes-equipe.md](decisoes-equipe.md), R-25 e R-26; [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) | Aberto |
+| O front end não tem cobertura medida; o JaCoCo e o SonarCloud medem só o Java. A análise estática do front é o `lint` e o `typecheck` da CI, sem número | Fato | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) | Declarado |
+| "Revisão por pares" é **revisão assistida**: a equipe é de uma pessoa | Decisão (P5-09, F7-16) | [decisoes-equipe.md](decisoes-equipe.md); [revisao-assistida-front.md](testes/revisao-assistida-front.md) | Limitação do entregável |
+| Interpretação F6-20: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela; a frase da porta de saída da Fase 6 vale para os RF com interação humana (Anexo A do [plano de projeto](plano-de-projeto.md)). Prova de RF-11 em INT-01 a INT-06 e de RF-14 no OpenAPI e nos testes de contrato | Decisão (F6-20) | [decisoes-equipe.md](decisoes-equipe.md), F6-20; [relatorio-qualidade.md](relatorio-qualidade.md) | Declarada |
+| Os cinco testes E2E rodam só no Chromium e não são repetíveis no mesmo banco (cada um ocupa uma sala num dia próprio; a CI sempre sobe um banco novo) | Fato | [docs/testes/e2e/README.md](testes/e2e/README.md) | Limitação |
+| A paginação do relatório (T10) só foi exercida por testes de componente, e `BLOQUEIO_COM_RESERVA_EM_USO` (T08) só por teste de componente e de integração; nenhum dos dois no navegador real | Fato | [navegacao-telas.md](prd/navegacao-telas.md), T08 e T10 | Aberto: exercer na E2E |
+| Os diagramas Mermaid não tiveram a renderização refeita na fase de fechamento | Fato | [arquitetura.md](arquitetura.md) | Declarado |
+
+## 4. Lacunas decididas pela equipe, sem validação externa
+
+Jefferson decidiu cada uma em 24/10/2026 como decisão da equipe, **não validada com o professor** ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| Lacunas A1 a A8, resolvidas por suposição (S-A1 a S-A8). A3 (material por unidade identificada) é a de maior retrabalho se estiver errada | Lacuna | [perguntas-professor.md](perguntas-professor.md); [decisoes-equipe.md](decisoes-equipe.md), F7-16 | Decidida, não validada |
+| D1 (tolerância de não comparecimento, sem valor), D3 (reenvio de notificação), D4 (tamanho da página do relatório, 20, configurável por `VITE_TAMANHO_DA_PAGINA_DO_RELATORIO`), D9 (nada é apagado nem anonimizado: risco de privacidade) e D17 (duração da sessão) | Lacuna | [perguntas-professor.md](perguntas-professor.md); [decisoes-equipe.md](decisoes-equipe.md), F7-16 | Decidida, não validada |
+| D14: o servidor só aplica o mínimo de dois Responsáveis ativos na desativação, não na troca de perfil. O Administrador pode rebaixar um dos dois e deixar o sistema com um só, e a reserva de Responsável em recurso restrito nunca é aprovada. Brecha funcional conhecida. Se a equipe mudar, o servidor passa a recusar com `MINIMO_DE_RESPONSAVEIS` e a T11 já mostra | Fato (`UsuarioService.alterarPerfil`) | [UsuarioService.java](../src/main/java/br/senac/recursos/service/UsuarioService.java); [decisoes-equipe.md](decisoes-equipe.md), F7-16, item 18 | Decidida, risco declarado |
+| A rejeição de uma reserva SOLICITADA não tem limite de horário (só a aprovação para no início); a fila devolve `podeRejeitar` verdadeiro mesmo depois do início | Lacuna | [decisoes-equipe.md](decisoes-equipe.md), F6-15; [AprovacaoService.java](../src/main/java/br/senac/recursos/service/AprovacaoService.java) | Decidida, não validada |
+| O Responsável pode registrar o início do uso antes do horário de início (`podeIniciar` verdadeiro); RN-20 não fala de horário | Lacuna | [decisoes-equipe.md](decisoes-equipe.md), F6-16; [UsoService.java](../src/main/java/br/senac/recursos/service/UsoService.java) | Decidida, não validada |
+| Janela inicial da Busca de 14 dias a partir do relógio (`DIAS_DA_JANELA_PADRAO = 14`). O número não tem origem na documentação; só muda a janela inicial, que a pessoa pode alterar | Suposição | [PaginaDeBusca.tsx](../frontend/src/paginas/busca/PaginaDeBusca.tsx); [decisoes-equipe.md](decisoes-equipe.md), F7-02 e F7-13 | Declarada |
+
+## 5. Telas e acessibilidade (Fase 6)
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| O anel de foco do ícone do calendário nos campos de data e hora é o do navegador (preto no claro, branco no escuro); o Chromium não aplica a cor do sistema nesse botão interno | Fato | [Campo.module.css](../frontend/src/ui/Campo.module.css); [foco-do-calendario.test.ts](../frontend/src/ui/foco-do-calendario.test.ts) | Aceito pela visibilidade |
+| O campo de data e hora nativo tem 6 paradas de Tab por campo no teclado | Decisão (F6-12) | [navegacao-telas.md](prd/navegacao-telas.md), seção 9 | Aceito |
+| O axe deixa verificações `color-contrast` incompletas (não são violações; os roteiros tiveram 0 violações) em diálogos (fundo sobreposto), no glifo decorativo do aviso (`aria-hidden`) e no item da barra inferior fixa. Contraste medido à mão: de 6,69 a 16,86 no tema claro e de 8,19 a 14,56 no escuro (mínimo 4,5). Contagens por tela: T08, 18 verificações; T09, 6; T10, 4; T11, 27. Em algumas telas a causa de poucos nós não foi investigada (item da barra, abas não selecionadas da T07) | Fato (navegador real) | [navegacao-telas.md](prd/navegacao-telas.md), seção 9; [RTM.md](../RTM.md), execuções E-8 a E-21 | Declarado |
+| O diálogo de confirmação é próprio (`role="dialog"`, foco preso, Escape e foco devolvido), porque o jsdom 29 não implementa `<dialog>.showModal()` | Fato | [Dialogo.tsx](../frontend/src/ui/Dialogo.tsx) | Dívida técnica: trocar pelo `<dialog>` nativo quando os testes puderem exercitá-lo |
+| O roteiro de navegador real (axe, teclado, capturas) é manual | Fato | [roteiro-navegador-real](testes/roteiro-navegador-real/README.md) | Limitação |
+| `GET /api/bloqueios` devolve `reservasCanceladas` vazio: as reservas que um bloqueio cancelou só aparecem no aviso logo depois de criar, não na lista | Fato | [navegacao-telas.md](prd/navegacao-telas.md), T08 | Aberto: avaliar devolver as canceladas na lista |
+| A consulta da auditoria não filtra por período nem é paginada (L-03): o período é filtrado na tela sobre a lista inteira. A tabela das 18 ações conhecidas vem do código do back end e precisa acompanhar ação nova (a desconhecida aparece pelo código) | Fato | [navegacao-telas.md](prd/navegacao-telas.md), T09 | Aberto: avaliar período e paginação no servidor |
+| Catálogo (T07): se a consulta de usuários falhar, a lista de vínculo do professor fica só com "Sem vínculo", sem aviso (nenhum dado errado é enviado); o vínculo aparece só como "Com vínculo a um usuário", porque o nome vem de `GET /api/usuarios`, do Administrador | Fato | [DialogoDeCadastro.tsx](../frontend/src/paginas/catalogo/DialogoDeCadastro.tsx) | Aberto: avaliar aviso na falha |
+| Retirada (T06): se a consulta de um recurso falhar, a unidade desse material não aparece na reserva (a recusa do servidor continua como defesa, e `podeConcluir` vem do servidor) | Fato | [PaginaDeRetiradas.tsx](../frontend/src/paginas/retiradas/PaginaDeRetiradas.tsx) | Declarado |
+| Usuários (T11): se a consulta falhar, a tela mostra o erro, sem lista | Fato | [navegacao-telas.md](prd/navegacao-telas.md), T11 | Declarado |
+| Não há operação para reativar usuário ou recurso nem para trocar a senha; o contrato não as tem | Lacuna | [navegacao-telas.md](prd/navegacao-telas.md), T07 e T11 | Aberto: decidir se é requisito |
+| Três comentários de código do front ainda dizem "plano mestre", nome antigo do [plano de projeto](plano-de-projeto.md): `frontend/src/datas/fuso.ts`, `frontend/src/paginas/PaginaDeTela.tsx` e `frontend/src/rotas/RotaProtegida.tsx`. A troca exigiria mudar código e rodar a CI do front, e a equipe decidiu não alterar | Decisão | os três arquivos citados | Ressalva aceita; sem efeito sobre o comportamento |
+
+## 6. Versões e atualizações adiadas
+
+| Item | Origem | Onde está | Situação |
+| --- | --- | --- | --- |
+| TypeScript 5.9 (a 7.x conflita com `openapi-typescript` e `typescript-eslint`) e ESLint 9 (`eslint-plugin-jsx-a11y` não aceita a 10) estão fixados por incompatibilidade | Fato (verificado na instalação) | [ADR-015](adr/ADR-015-stack-do-front-end.md); `.github/dependabot.yml` | Reavaliar quando os pacotes aceitarem as versões novas |
+| Salto do `jsdom` 29 para 30 adiado (projeto em 29.1.1; sem alerta no `jsdom`). O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele | Decisão (F6-13, F7-11) | [decisoes-equipe.md](decisoes-equipe.md) | Dívida técnica, sem prazo |
+| PRs 81 (`vite` 8.3.4 para 8.3.5), 82 (`@tanstack/react-query` 5.104.4 para 5.104.5) e 83 (`typescript-eslint` 8.71.2 para 8.72.0) ficam abertos, sem alerta de segurança, para não alterar o `package-lock.json` do front entre a leitura final de cobertura e a prova de clone limpo | Decisão (F7-15) | [decisoes-equipe.md](decisoes-equipe.md), F7-15; [alertas-dependabot.md](testes/alertas-dependabot.md) | Adiados de propósito |

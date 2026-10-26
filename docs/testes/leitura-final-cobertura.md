@@ -1,6 +1,6 @@
 # Leitura final de cobertura e análise estática (item 2.4, Fase 7)
 
-Leitura única, feita **no estado final da `main`** depois dos defeitos corrigidos e das decisões do item 2.5 mescladas (ordem decidida na F7-05). Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 6. Cada número cita o run ou a consulta; nenhum vem de execução antiga da RTM.
+Leitura única, feita **no estado final da `main`** depois dos defeitos corrigidos e das decisões do item 2.5 mescladas (ordem decidida na F7-05). Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Metas mensuráveis". Cada número cita o run ou a consulta; nenhum vem de execução antiga da RTM.
 
 ## 1. O que foi lido
 
@@ -14,7 +14,7 @@ Leitura única, feita **no estado final da `main`** depois dos defeitos corrigid
 
 ## 2. Metas contra resultado
 
-| Meta (especificação, seção 6) | Resultado | Situação | Origem |
+| Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
 | Cobertura de **linhas** de 80% | **97,01%** (1751 de 1805 linhas; 54 não cobertas) | **Atingida** | JaCoCo, run `40120487376` |
 | Cobertura de **branches** de 70% | **86,88%** (523 de 602 branches; 79 não cobertos) | **Atingida** | JaCoCo, run `40120487376` |

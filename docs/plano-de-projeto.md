@@ -44,8 +44,6 @@ Hoje é segunda-feira, 12/10/2026 (semana 42) e a entrega é na semana 46, entã
 
 As quatro colunas da lousa casam com o cronograma da especificação; a única lacuna é o front end, que a disciplina não ensina e que entra como Etapa 4. O tutorial do CineSenac cobre só a Etapa 1.
 
-&#91;embedded content: roteiro por fases · 8 fases, 8 portas de saída\]
-
 O roteiro percorre as quatro colunas da lousa em oito fases, cada uma terminando em uma porta de saída que libera a seguinte.
 
 | Etapa da lousa | Semana na spec | Material (aula) | Tutorial CineSenac | Fase deste plano |

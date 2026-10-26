@@ -1,6 +1,6 @@
 # Limitadores de nota: evidência da Fase 7
 
-As quatro condições que a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) usa como limitador de nota (seção 8) precisam estar demonstradas antes da tag ([plano de projeto](../plano-de-projeto.md), seção 11.4). Este documento reúne a evidência de cada uma, **colhida em 24/10/2026**, com o run, o comando ou o arquivo de origem. O que não tem origem está em "Lacunas e limites" (seção 6).
+As quatro condições que a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) usa como limitador de nota (seção "Avaliação") precisam estar demonstradas antes da tag ([plano de projeto](../plano-de-projeto.md), seção 11.4). Este documento reúne a evidência de cada uma, **colhida em 24/10/2026**, com o run, o comando ou o arquivo de origem. O que não tem origem está em "Lacunas e limites" (seção 6).
 
 ## 1. Resumo
 
@@ -189,6 +189,6 @@ O ciclo de TDD que criou o teste e a constraint está no histórico: `9d4d6d9` (
 | Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados só em Git Bash no Windows; Linux, macOS e PowerShell **não foram verificados** |
 | Login pela tela do front | Lacuna | O front foi verificado até o Vite no ar e o CORS; o login pela interface no navegador **não foi refeito** nesta prova (os roteiros em navegador real da Fase 6 e o E2E cobrem a tela) |
 | Valores do `.env` | Suposição | Gerados por script a partir das dicas do `.env.example`; uma pessoa poderia escolher outros valores válidos. Impacto: se um valor válido for recusado, o README fica incompleto |
-| README restante | Pendência | Roadmap, proteção da `main` e outros trechos seguem desatualizados; ficam para o item 2.7 ([fase-7-pendencias.md](../fase-7-pendencias.md)) |
+| README restante | Pendência | Roadmap, proteção da `main` e outros trechos seguem desatualizados; ficam para o item 2.7 |
 | Prova a repetir | Pendência | O clone limpo (seção 2) será refeito no commit da tag `v1.0.0-rc1` |
 | Quebra sem a constraint | Limite | Feita uma vez, em uma máquina; sem repetição para medir variação. A falha é determinística nos seis testes de reserva (asserção `expected: 1L`) |

@@ -9,7 +9,7 @@
 
 ## Contexto
 
-A especificação exige Java 21 e Spring Boot 3.x e a entrega na semana 46 ([especificação](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 1). A mesma especificação cobra testes unitários isolados, integração com banco real e cobertura de 80% de linhas e 70% de branches (seções 5 e 6). Uma reserva grava reserva, ocupações, auditoria e notificação de forma atômica (RN-03, RN-08, RN-28).
+A especificação exige Java 21 e Spring Boot 3.x e a entrega na semana 46 ([especificação](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Objetivo"). A mesma especificação cobra testes unitários isolados, integração com banco real e cobertura de 80% de linhas e 70% de branches (seções 5 e 6). Uma reserva grava reserva, ocupações, auditoria e notificação de forma atômica (RN-03, RN-08, RN-28).
 
 ## Emenda de 17/10/2026
 
@@ -28,7 +28,7 @@ RNF-01, RNF-02, RNF-11; RN-03, RN-08, RN-28; CEN-08 em [ciclo-00.md](../avaliaca
 
 ## Decisão
 
-**Versão:** Spring Boot 3.5.16, a última versão 3.x estável publicada no Maven Central em 15/10/2026. A especificação exige 3.x (seção 1) e o Spring Initializr passou a oferecer apenas 4.x, então o projeto é criado à mão a partir do `spring-boot-starter-parent` 3.5.16.
+**Versão:** Spring Boot 3.5.16, a última versão 3.x estável publicada no Maven Central em 15/10/2026. A especificação exige 3.x (seção "Objetivo") e o Spring Initializr passou a oferecer apenas 4.x, então o projeto é criado à mão a partir do `spring-boot-starter-parent` 3.5.16.
 
 Um único artefato implantável, dividido em módulos por área, com quatro camadas que espelham o C4: `api`, `aplicacao`, `dominio` e `infra`. O domínio não depende de Spring. Portas existem **só onde há substituição em teste ou troca prevista**: relógio, notificação e repositórios.
 
@@ -37,10 +37,10 @@ Um único artefato implantável, dividido em módulos por área, com quatro cama
 | Argumento | Base |
 | --- | --- |
 | Uma transação local cobre reserva, ocupações, auditoria e notificação | RN-03, RN-08, RN-28; tática **Transactions** do catálogo (seção 4.1.4) |
-| Domínio testável sem contexto do framework | Especificação, seção 5 (unitários isolados, mocks só em unitário) e RNF-01, RNF-02 |
+| Domínio testável sem contexto do framework | Especificação, seção "Estratégia obrigatória de qualidade" (unitários isolados, mocks só em unitário) e RNF-01, RNF-02 |
 | Trocar o provedor altera um componente | CEN-08; táticas **Use an Intermediary**, **Encapsulate**, **Restrict Dependencies** (catálogo, seção 4.3) |
-| Um único artefato cabe no prazo | Especificação, seção 1 (entrega na semana 46) |
-| Spring Boot 3.x, e não 4.x | Especificação, seção 1 ("Java 21 e Spring Boot 3.x") |
+| Um único artefato cabe no prazo | Especificação, seção "Objetivo" (entrega na semana 46) |
+| Spring Boot 3.x, e não 4.x | Especificação, seção "Objetivo" ("Java 21 e Spring Boot 3.x") |
 
 ## Consequências
 

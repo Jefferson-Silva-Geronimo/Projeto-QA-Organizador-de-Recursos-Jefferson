@@ -1,6 +1,6 @@
 # Revisão assistida independente do front end
 
-Item explícito da Fase 7 ([fase-7-pendencias.md](../fase-7-pendencias.md)): conferir de fora que **nenhuma regra de negócio está duplicada no front end** (porta de saída da Fase 6, [ADR-004](../adr/ADR-004-autenticacao-e-autorizacao.md)). Chamada sempre de **revisão assistida**, nunca de "revisão por pares". Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+Item explícito da Fase 7: conferir de fora que **nenhuma regra de negócio está duplicada no front end** (porta de saída da Fase 6, [ADR-004](../adr/ADR-004-autenticacao-e-autorizacao.md)). Chamada sempre de **revisão assistida**, nunca de "revisão por pares". Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
 
 Data: 24/10/2026. Decisões de Jefferson sobre os achados: F7-01, F7-02 e F7-03 em [decisoes-equipe.md](../decisoes-equipe.md).
 

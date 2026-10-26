@@ -40,7 +40,7 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Requisitos funcionais | RF-01 a RF-16 | RF-15 e RF-16 são acréscimos da equipe |
 | Regras críticas da especificação | RN-01 a RN-08 | Marcadas como críticas na RTM |
 | Regras decorrentes de decisões da equipe | RN-09 a RN-33 | Cada regra tem decisão de origem |
-| Segurança funcional | Autorização por perfil e posse, validação de entrada, tratamento seguro de erros | Exigência da especificação, seção 5 |
+| Segurança funcional | Autorização por perfil e posse, validação de entrada, tratamento seguro de erros | Exigência da especificação, seção "Estratégia obrigatória de qualidade" |
 | Concorrência | Dupla reserva em solicitações simultâneas | Teste automatizado exigido (RN-03, RF-06) |
 | Integração externa | Notificação por webhook | Com WireMock (A5, C6) |
 
@@ -61,12 +61,12 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 
 ## 4. Estratégia e níveis de teste
 
-Níveis exigidos pela especificação (seção 5). Ferramentas e versões são decisões da Fase 2 e da Fase 3.
+Níveis exigidos pela especificação (seção "Estratégia obrigatória de qualidade"). Ferramentas e versões são decisões da Fase 2 e da Fase 3.
 
 | Nível | Foco | Ferramenta prevista | Observação |
 | --- | --- | --- | --- |
 | Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
-| Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção 5): persistência verificada em ambiente real, não com mock |
+| Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção "Estratégia obrigatória de qualidade"): persistência verificada em ambiente real, não com mock |
 | API em caixa-preta | Contrato, autorização por perfil, códigos de erro | MockMvc sobre o contexto completo, com PostgreSQL real | Matriz perfil × operação. Escolha sem requisito da especificação: a exigência é "API em caixa-preta" |
 | Ponta a ponta | Jornadas das personas | TODO: ferramenta, decidida na Fase 6 | Depende do front end (Fase 6) |
 | Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
@@ -106,7 +106,7 @@ A técnica prevista de cada regra está em [regras-negocio.md](prd/regras-negoci
 
 ### 5.2 Critérios de saída
 
-Metas da especificação (seção 6):
+Metas da especificação (seção "Metas mensuráveis"):
 
 | Meta | Valor |
 | --- | --- |
@@ -131,7 +131,7 @@ Desempenho medido na Fase 5 (rodadas 01 a 04, 17/10/2026, em [resultado-01.md](p
 Proposta da equipe, a validar:
 
 - Todo requisito e regra crítica com ao menos um caso de teste executado, com evidência registrada na RTM.
-- Nenhuma falha de autorização e nenhuma possibilidade de dupla reserva, que são limitadores de nota na especificação (seção 8).
+- Nenhuma falha de autorização e nenhuma possibilidade de dupla reserva, que são limitadores de nota na especificação (seção "Avaliação").
 
 ### 5.3 Critérios de suspensão e retomada
 
@@ -148,15 +148,15 @@ Critério numérico de defeito bloqueante: não definido, porque nenhum requisit
 
 | Entregável | Origem | Estado |
 | --- | --- | --- |
-| Este plano de teste | Especificação, seção 7 | Esqueleto |
+| Este plano de teste | Especificação, seção "Entregáveis" | Esqueleto |
 | Casos de teste identificados por CT-xxx | [casos-de-teste.md](testes/casos-de-teste.md) | Feito na fatia 4.0; execução por fatia |
-| RTM com cenário, caso de teste e evidência | Especificação, seção 7 | Feito na Fase 4 (E-1) |
-| Suíte automatizada e relatório de testes | Especificação, seção 7 | Feito: 468 testes no `verify` e na CI |
-| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção 7 | JaCoCo feito; SonarCloud pendente (Bloco F) |
-| Plano e resultado do teste de carga | Especificação, seção 7 | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
-| Registro de defeitos | Especificação, seção 7 | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
-| Relatório final de qualidade | Especificação, seção 7 | TODO: Fase 7 |
-| Evidência de TDD ou BDD | Especificação, seção 5 | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
+| RTM com cenário, caso de teste e evidência | Especificação, seção "Entregáveis" | Feito na Fase 4 (E-1) |
+| Suíte automatizada e relatório de testes | Especificação, seção "Entregáveis" | Feito: 468 testes no `verify` e na CI |
+| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção "Entregáveis" | JaCoCo feito; SonarCloud pendente (Bloco F) |
+| Plano e resultado do teste de carga | Especificação, seção "Entregáveis" | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
+| Registro de defeitos | Especificação, seção "Entregáveis" | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
+| Relatório final de qualidade | Especificação, seção "Entregáveis" | TODO: Fase 7 |
+| Evidência de TDD ou BDD | Especificação, seção "Estratégia obrigatória de qualidade" | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
 ## 7. Ambiente
 
@@ -219,11 +219,11 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva (única pessoa do projeto) |
-| Revisão por pares | Revisar pull requests (exigência da especificação, seção 7) | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; decisão da equipe de 24/10/2026 (F7-16, item 14) em [perguntas-professor.md](perguntas-professor.md) |
+| Revisão por pares | Revisar pull requests (exigência da especificação, seção "Entregáveis") | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; decisão da equipe de 24/10/2026 (F7-16, item 14) em [perguntas-professor.md](perguntas-professor.md) |
 | Professor | Validar as decisões da equipe | Não validadas: decididas pela equipe em 24/10/2026, sem mensagem a enviar ([perguntas-professor.md](perguntas-professor.md)) |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
 
-### 9.2 Cronograma (especificação, seção 9)
+### 9.2 Cronograma (especificação, seção "Evolução durante o semestre")
 
 | Semana | Tema | O que avança |
 | --- | --- | --- |
