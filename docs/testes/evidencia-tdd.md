@@ -38,10 +38,10 @@ aumentar a evidência. A rastreabilidade por caso está na RTM (`RTM.md`) e em `
 | Matriz de autorização e entrada inválida | CT-117 a CT-121 | `d793879` | `73488e5` (BUG-008) | — |
 | Falha ao gravar a tentativa de conflito (BUG-009) | `FalhaNaTentativaApiIT` | `0a80fc7` | `61ce37d` | — |
 | Lacunas de risco da cobertura | LacunasDeRiscoApiIT | — | — | — |
-| Limite de tentativas de login (SEC-01): contagem de falhas | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: janela deslizante em trinca (599999, 600000, 600001 ms) | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: configuração inválida recusada | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: bloqueio por API com a senha correta | `LimiteDeLoginApiIT` | `test(red)` desta sessão (esperado 401, obtido 200) | `feat(green)` | — |
+| Limite de tentativas de login (SEC-01): contagem de falhas | `LimiteDeLoginTest` | `9369848` | `2fee736` | — |
+| Limite de login: janela deslizante em trinca (599999, 600000, 600001 ms) | `LimiteDeLoginTest` | `8068d35` | `c809f11` | — |
+| Limite de login: configuração inválida recusada | `LimiteDeLoginTest` | `0899457` | `2a51d65` | — |
+| Limite de login: bloqueio por API com a senha correta | `LimiteDeLoginApiIT` | `01b46c3` (esperado 401, obtido 200) | `08e26f0` | — |
 | Limite de login: 10 casos de API (tempo em trinca, zera no sucesso, resposta idêntica, não estende, conta inexistente, normalização, limpeza) | `LimiteDeLoginApiIT` | — (nasceram verdes) | — | — |
 | Lacunas de risco do PIT (horas de funcionamento, eventos de auditoria, período da reserva) | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest`, `ReservaTest` | — | — | `721180b` (código morto removido) |
 | Cenários BDD de aprovação e bloqueio (BDD-01 a BDD-08, 15 cenários) | `aprovacao-bloqueio.feature`, `CucumberIT` | — | — | — |
@@ -67,7 +67,7 @@ marcados à parte para não inflar a evidência.
 O gate do JaCoCo roda em `verify`: mínimo de 80% de linhas e 70% de branches no conjunto (ADR-011). A
 suíte completa é executada com `./mvnw clean verify`; o relatório fica em `target/site/jacoco/`.
 
-Medição desta sessão (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **468 testes**, sendo 136 de unidade e
+Medição (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **468 testes**, sendo 136 de unidade e
 arquitetura (surefire) e 332 de integração e BDD (failsafe), 0 falhas; **96,7% de linhas** (1551/1604) e **84,6% de
 branches** (438/518). O relatório anterior citava "313 testes": esse número era só a fase de integração.
 
@@ -94,7 +94,7 @@ fonte foi restaurada (nada disso foi commitado).
 | `TrocaDeProvedorTest` (3 casos) | `ENVIADA`, `RECUSADA` e `FALHA_TEMPORARIA` mapeados para o status errado em `DespachoDeNotificacoesService` | 3 vermelhos: `expected: PENDENTE but was: FALHA`, `expected: FALHA but was: PENDENTE`, `expected: ENVIADA but was: PENDENTE` |
 | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest` | PIT (mutantes gerados pela ferramenta) | 0 sobreviventes entre os mutantes cobertos ([mutacao.md](mutacao.md)) |
 
-### Limites desta sessão
+### Limites da avaliação
 
 - BDD e CT-106 não são TDD: o código existia. Valem como evidência de comportamento especificado e verificado.
 - `ProvedorIsoladoArquiteturaTest` é redundante com a visibilidade do pacote (`WebhookNotificador` não é público) e
