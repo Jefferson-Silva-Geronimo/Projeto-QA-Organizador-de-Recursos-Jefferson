@@ -44,7 +44,7 @@ jobs:
           path: |
             target/surefire-reports
             target/failsafe-reports
-          retention-days: 7
+          retention-days: 30
           if-no-files-found: warn
 
       - name: Relatório de cobertura do JaCoCo
@@ -53,7 +53,7 @@ jobs:
         with:
           name: relatorio-jacoco
           path: target/site/jacoco
-          retention-days: 7
+          retention-days: 30
           if-no-files-found: warn
 
       # Análise do SonarCloud. O token vem do secret SONAR_TOKEN e nunca é escrito em arquivo ou log.
@@ -179,7 +179,7 @@ jobs:
           path: |
             frontend/playwright-report
             frontend/test-results
-          retention-days: 7
+          retention-days: 30
           if-no-files-found: warn
 
       - name: Logs dos serviços
@@ -193,7 +193,7 @@ jobs:
         with:
           name: logs-e2e
           path: e2e-servicos.log
-          retention-days: 7
+          retention-days: 30
           if-no-files-found: warn
 
       - name: Derrubar o ambiente

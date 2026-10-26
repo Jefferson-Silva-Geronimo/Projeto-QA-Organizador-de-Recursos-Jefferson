@@ -68,8 +68,8 @@ Níveis exigidos pela especificação (seção "Estratégia obrigatória de qual
 | Unitário | Regras de domínio, fronteiras, transições | JUnit 5, inclusive testes parametrizados | Mocks só em teste unitário isolado |
 | Integração | Persistência, constraint de exclusão, auditoria, atomicidade | Banco containerizado com Testcontainers | Exigência da especificação (seção "Estratégia obrigatória de qualidade"): persistência verificada em ambiente real, não com mock |
 | API em caixa-preta | Contrato, autorização por perfil, códigos de erro | MockMvc sobre o contexto completo, com PostgreSQL real | Matriz perfil × operação. Escolha sem requisito da especificação: a exigência é "API em caixa-preta" |
-| Ponta a ponta | Jornadas das personas | TODO: ferramenta, decidida na Fase 6 | Depende do front end (Fase 6) |
-| Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (TODO: número de repetições) |
+| Ponta a ponta | Jornadas das personas | Playwright no Chromium, com PostgreSQL, API e front reais e sem mocks (decidido na Fase 6; [e2e/README.md](testes/e2e/README.md)) | Cinco jornadas (CT-161 a CT-165); só o Chromium |
+| Concorrência | RF-06 e RN-03 | Teste automatizado com banco real | Repetição do cenário para evidenciar estabilidade (5 repetições seguidas, CT-062 em [casos-de-teste.md](testes/casos-de-teste.md); hipótese da Aula 10, não validada pelo professor) |
 | Integração externa | RF-11 | WireMock | Matriz de respostas do provedor |
 | Carga | Reservas simultâneas do mesmo recurso | JMeter | Metas numéricas: hipótese em [rnf.md](performance/rnf.md); rodada 01 feita |
 | TDD ou BDD | Ao menos uma funcionalidade nova com evidência da técnica | TDD por fatia com commits `test(red)`, `feat(green)` e `refactor`; BDD com Cucumber para aprovação e bloqueio (15 cenários) | Evidência em [evidencia-tdd.md](testes/evidencia-tdd.md) e [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). A granularidade do TDD é por fatia, não por caso |
@@ -155,7 +155,7 @@ Critério numérico de defeito bloqueante: não definido, porque nenhum requisit
 | Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção "Entregáveis" | JaCoCo feito; SonarCloud pendente (Bloco F) |
 | Plano e resultado do teste de carga | Especificação, seção "Entregáveis" | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
 | Registro de defeitos | Especificação, seção "Entregáveis" | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
-| Relatório final de qualidade | Especificação, seção "Entregáveis" | TODO: Fase 7 |
+| Relatório final de qualidade | Especificação, seção "Entregáveis" | [relatorio-qualidade.md](relatorio-qualidade.md) e [decisao-qualidade.md](decisao-qualidade.md) |
 | Evidência de TDD ou BDD | Especificação, seção "Estratégia obrigatória de qualidade" | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
 ## 7. Ambiente
@@ -221,7 +221,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva (única pessoa do projeto) |
 | Revisão por pares | Revisar pull requests (exigência da especificação, seção "Entregáveis") | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; decisão da equipe de 24/10/2026 (F7-16, item 14) em [perguntas-professor.md](perguntas-professor.md) |
 | Professor | Validar as decisões da equipe | Não validadas: decididas pela equipe em 24/10/2026, sem mensagem a enviar ([perguntas-professor.md](perguntas-professor.md)) |
-| Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | TODO: quem e quando |
+| Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | **Lacuna:** sem origem para quem e quando; não há registro de treinamento na documentação |
 
 ### 9.2 Cronograma (especificação, seção "Evolução durante o semestre")
 

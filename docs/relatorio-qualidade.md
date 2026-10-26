@@ -4,14 +4,9 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 
 ## 1. Resumo e decisão de qualidade
 
-| Item | Valor |
-| --- | --- |
-| **Recomendação do autor deste relatório** | **LIBERAR COM RESSALVAS** (como release candidate `v1.0.0-rc1`) |
-| **Decisão de qualidade** | **LIBERAR COM RESSALVAS**, decisão de **Jefferson Silva em 24/10/2026**, coincidindo com a recomendação acima. A decisão vale para o release candidate `v1.0.0-rc1` (tag publicada em 24/10/2026); a `v1.0.0-rc2` só será criada com autorização expressa dele |
+A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência de cada critério e os riscos aceitos, com impacto, justificativa e responsável, estão em [decisao-qualidade.md](decisao-qualidade.md). Este relatório traz os dados e não repete a decisão.
 
-**Observação de Jefferson junto com a decisão (24/10/2026):** "RNF-08b não atendido (p95 de 568 a 886 ms contra 300 ms), R-25 aberto com causa desconhecida, front sem cobertura medida, lacunas da especificação resolvidas por decisão da equipe sem validação externa, revisão por pares feita como revisão assistida".
-
-**Por que "liberar com ressalvas" e não "liberar" nem "não liberar".**
+**Fatos que sustentam a decisão:**
 
 | Fato | Origem |
 | --- | --- |
@@ -20,7 +15,7 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 | CI verde na `main` no commit lido: back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `40120487376` |
 | **27 defeitos** registrados: 26 fechados e 1 mitigado (BUG-017), nenhum reaberto, nenhum aberto de severidade crítica ou alta | [defeitos/README.md](defeitos/README.md) |
 
-**As ressalvas que impedem "liberar" sem ressalva:**
+**As ressalvas (detalhe e riscos aceitos em [decisao-qualidade.md](decisao-qualidade.md)):**
 
 1. **RNF-08b não atendido:** a criação de reserva tem p95 de 568 a 886 ms contra a hipótese de 300 ms (causa atribuída ao `fsync` do PostgreSQL em Docker; hipótese de 300 ms **não validada** pelo professor) ([resultado-02.md](performance/resultado-02.md)).
 2. **R-25 aberto, causa desconhecida:** `NotificacaoApiIT.int01ECt103` falhou 3 vezes de forma intermitente; BUG-017 está **mitigado, não corrigido** ([decisoes-equipe.md](decisoes-equipe.md), R-25 e R-26).
@@ -28,8 +23,6 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 4. **Lacunas da especificação resolvidas por decisão da equipe, sem validação externa** (A1 a A8, D1, D3, D4, D9, D17 e outras): decididas por Jefferson em 24/10/2026, com impacto e teste declarados; a maior em retrabalho é a A3 ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17; seção 9 deste relatório).
 5. **"Revisão por pares" é revisão assistida:** a equipe é uma pessoa; é uma decisão não validada e uma limitação do entregável (F7-16, item 14).
 6. **Entregável fora do repositório:** a apresentação e a demonstração são feitas pelo autor, fora do repositório (seção 11).
-
-**O que mudaria a recomendação:** para **"não liberar"**: qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou uma decisão de alto impacto da equipe (A3, maior retrabalho) se mostrar errada. Para **"liberar"** sem ressalvas: seria preciso o professor validar a hipótese de 300 ms ou o RNF-08b ser medido em outro ambiente com resultado dentro da meta.
 
 ## 2. Escopo e itens não testados
 
@@ -178,7 +171,7 @@ Fonte: [defeitos/README.md](defeitos/README.md), com o processo, as severidades 
 | --- | --- | --- | --- | --- |
 | **R-23:** a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria | Risco aceito | Jefferson, 17/10/2026 | Separar o papel de migração do de aplicação é endurecimento de implantação, fora do que a especificação pede, e o projeto não tem produção; o gatilho já protege contra os caminhos do código. A opção B (papéis separados) vai à dívida técnica | [decisoes-equipe.md](decisoes-equipe.md), R-23 |
 | **Limites do login (D18, SEC-01):** pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o e-mail da falha fica guardado na janela | Limitações conhecidas | Equipe, 17/10/2026 (valores 5 em 10 minutos) | O controle é decisão da equipe (a especificação não o pede); os limites são do desenho | [revisao-seguranca.md](testes/revisao-seguranca.md), A07; [decisoes-equipe.md](decisoes-equipe.md), seção 6 |
-| **RNF-08b não atendido** (p95 de 568 a 886 ms contra 300 ms) | Meta não atingida, declarada | Sem aceite formal; a decisão de qualidade (bloco 1) é de Jefferson | Causa atribuída ao `fsync` do PostgreSQL em Docker; a hipótese de 300 ms não foi validada pelo professor; não há outro ambiente | [resultado-02.md](performance/resultado-02.md) |
+| **RNF-08b não atendido** (p95 de 568 a 886 ms contra 300 ms) | Meta não atingida, declarada | Risco aceito por Jefferson Silva na decisão de qualidade ([decisao-qualidade.md](decisao-qualidade.md), seção 4) | Causa atribuída ao `fsync` do PostgreSQL em Docker; a hipótese de 300 ms não foi validada pelo professor; não há outro ambiente | [resultado-02.md](performance/resultado-02.md) |
 | **R-25 e R-26:** `NotificacaoApiIT.int01ECt103` intermitente, causa desconhecida; BUG-017 **mitigado, não corrigido** (limite de leitura de 10 s só no `int01`; o `int04` testa o limite de produção em classe própria) | Risco aceito | Jefferson, 19/10/2026 (R-25) e 22/10/2026 (R-26) | Sem defeito de produto provado e com contorno (repetir o job uma vez); a mitigação não corrige a causa e pode mascará-la | [decisoes-equipe.md](decisoes-equipe.md); issue 39 aberta |
 | **XSS lê o token do `sessionStorage`** | Risco residual aceito | Jefferson, 18/10/2026 | Equilíbrio entre guardar só em memória (novo login a cada recarga) e as mitigações do ADR-015 | [ADR-015](adr/ADR-015-stack-do-front-end.md) |
 | **Interpretação F6-20:** RF-11 e RF-14 sem tela | Interpretação declarada | Jefferson, 22/10/2026 | O Anexo A do [plano de projeto](plano-de-projeto.md) diz "sem tela própria" para os dois; a frase da porta de saída vale para os RF com interação humana. **Não é cumprimento literal da frase.** Prova abaixo | [decisoes-equipe.md](decisoes-equipe.md), F6-20 |
@@ -244,12 +237,12 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 | 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); artefato `relatorio-jacoco` do run `40120487376` | **Atendido**; os links estão no pacote de evidências do README |
 | 9 | Plano e resultado do teste de carga | [rnf.md](performance/rnf.md); [resultado-01.md](performance/resultado-01.md); [resultado-02.md](performance/resultado-02.md); `perf/` | **Atendido**, com **RNF-08b não atendido** declarado |
 | 10 | Registro de defeitos encontrados, priorizados e corrigidos | [defeitos/README.md](defeitos/README.md); [analise-causa-raiz.md](defeitos/analise-causa-raiz.md) | **Atendido** (27 defeitos) |
-| 11 | Relatório final de qualidade | Este documento | **Escrito**; a decisão de qualidade está no bloco 1 |
+| 11 | Relatório final de qualidade | Este documento | **Escrito**; a decisão de qualidade está em [decisao-qualidade.md](decisao-qualidade.md) |
 | 12 | Apresentação e demonstração do sistema | — | Feita pelo autor, fora do repositório |
 
 ## 12. Lacunas e limites deste relatório
 
-- **Decisão de qualidade:** liberar com ressalvas (Jefferson Silva, 24/10/2026), no bloco 1.
+- **Decisão de qualidade:** liberar com ressalvas (Jefferson Silva, 24/10/2026), em [decisao-qualidade.md](decisao-qualidade.md).
 - **Números:** os de teste e cobertura são do run `40120487376`; os de carga são das rodadas de 17/10/2026 em uma máquina; os de mutação são de 17/10/2026 e só do pacote `model`. Nenhum vem de execução antiga da RTM.
 - **Etapa de origem dos BUG-020 a BUG-027:** só BUG-023 e BUG-026 foram datados; os outros seis ficam como lacuna.
 - **Relevância semântica:** a ligação de cada CT a cada regra foi julgada por título; a auditoria leu à mão só as regras RN-01 a RN-08 e os três experimentos.
