@@ -38,6 +38,7 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
    | `LOGIN_TENTATIVAS`, `LOGIN_JANELA` | Já vêm preenchidos (`5` e `PT10M`); mantenha |
    | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_SENHA` | O primeiro Administrador, criado só se não houver usuário. Sem ele não há como entrar |
    | `CORS_ORIGENS` | `http://localhost:5173` para usar o front em desenvolvimento |
+   | `SONAR_ORGANIZATION`, `SONAR_PROJECT_KEY` | Só para a análise do SonarCloud; podem ficar vazias para subir e testar localmente |
 
    `SESSAO_DURACAO`, `LOGIN_TENTATIVAS` e `LOGIN_JANELA` não têm valor padrão: sem eles a aplicação não sobe.
 2. Suba o banco: `docker compose up -d postgres`.
@@ -144,6 +145,7 @@ Todos os itens abaixo existem no repositório (conferido em 26/10/2026).
 
 ```text
 README.md              visão do projeto
+CHANGELOG.md           mudanças por versão
 RTM.md                 matriz de rastreabilidade: uma linha por RF, por RN e por RNF, com caso de teste, evidência e status
 AGENTS.md              regras do projeto para agentes
 docs/
@@ -166,6 +168,8 @@ docs/
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   limitacoes-e-divida-tecnica.md   o que está aberto ou declarado: risco aceito, limitação, suposição e dívida técnica
   evidencias/          índice das evidências do pacote de entrega
+  decisao-qualidade.md   decisão de qualidade, critérios, riscos aceitos e declaração de autoria
+  entrega/             checklist do avaliador externo sobre os entregáveis
   status-requisitos.md   situação dos 14 RF obrigatórios e das regras críticas, com evidência e prova de mutação
   rtm.md               aponta para a RTM.md da raiz
   seguranca/           aponta para a matriz de autorização em testes/
@@ -196,7 +200,7 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório de qualidade](docs/relatorio-qualidade.md) e o [mapa de telas](docs/prd/navegacao-telas.md) |
-| 7 | Fechamento, relatório de qualidade e prova oral | Desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-19, `verify` robusto e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` foi publicada em 24/10/2026. Em andamento: pacote de entrega (índice de evidências, `CHANGELOG.md` e decisão de qualidade). A tag `v1.0.0-rc2` só será criada com autorização expressa |
+| 7 | Fechamento, relatório de qualidade e prova oral | Desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-19, `verify` robusto e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` foi publicada em 24/10/2026. Pacote de entrega pronto: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [decisão de qualidade](docs/decisao-qualidade.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md). **Pendente:** a tag `v1.0.0-rc2`, que só será criada com autorização expressa |
 
 ## Pacote de evidências (release candidate)
 
@@ -212,6 +216,9 @@ Os números abaixo vêm do run [`40120487376`](https://github.com/Jefferson-Silv
 | Defeitos | 27 registrados: 26 fechados e 1 mitigado (BUG-017) | [docs/defeitos/README.md](docs/defeitos/README.md) |
 | Desempenho | RNF-08b **não atendido** (p95 de 568 a 886 ms contra 300 ms) | [docs/performance/resultado-02.md](docs/performance/resultado-02.md) |
 | Índice | Onde achar cada evidência | [docs/evidencias/README.md](docs/evidencias/README.md) |
+| Decisão de qualidade | Liberar com ressalvas, critérios, riscos aceitos e declaração de autoria (rascunho) | [docs/decisao-qualidade.md](docs/decisao-qualidade.md) |
+| Situação dos requisitos | 14 RF e regras críticas, com prova de mutação em 18 de 22 críticos | [docs/status-requisitos.md](docs/status-requisitos.md); [docs/testes/mutacao-manual.md](docs/testes/mutacao-manual.md) |
+| Mudanças por versão | O que entra em cada release candidate | [CHANGELOG.md](CHANGELOG.md) |
 
 ## Metas de qualidade
 

@@ -2,6 +2,27 @@
 
 Onde achar cada prova do produto **Organização de Recursos**. Fonte da exigência de evidências: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
 
+## 0. Pacote de entrega
+
+Cada linha diz o que provar e onde está. A prova de CI é a **execução da CI no commit da tag** (a tag é citada pelo nome porque este arquivo está dentro do commit dela e não pode conter o run dele): `v1.0.0-rc1` em `276224b` (run [`40128131459`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40128131459), verde) e `v1.0.0-rc2`, que só será criada com autorização expressa.
+
+| Evidência | Onde |
+| --- | --- |
+| Execução da CI no commit da tag (`test`, `frontend`, `e2e`, `segredos` e SonarCloud) | Aba *Checks* do commit da tag no GitHub; resumo por classe em [execucao-e24.md](../testes/execucao-e24.md) |
+| Relatório do JaCoCo | Artefato `relatorio-jacoco` do run da `main` (retenção de 30 dias); leitura versionada em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md): linhas 97,01% e branches 86,88% |
+| Quality Gate do SonarCloud | [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson); leitura em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) |
+| Rastreabilidade | [rtm.md](../rtm.md) (aponta para a [RTM.md](../../RTM.md)); auditoria em [auditoria-rtm.md](../testes/auditoria-rtm.md) |
+| Plano e resultado da carga | [rnf.md](../performance/rnf.md), [resultado-01.md](../performance/resultado-01.md) e [resultado-02.md](../performance/resultado-02.md) |
+| Defeitos | [defeitos/README.md](../defeitos/README.md) e [analise-causa-raiz.md](../defeitos/analise-causa-raiz.md) |
+| Relatório e decisão de qualidade | [relatorio-qualidade.md](../relatorio-qualidade.md) e [decisao-qualidade.md](../decisao-qualidade.md) |
+| Limitadores de nota | [limitadores-de-nota.md](../testes/limitadores-de-nota.md) |
+| Situação dos requisitos | [status-requisitos.md](../status-requisitos.md) |
+| Plano de TDD (regras, casos e matriz) | [plano-tdd.md](../testes/plano-tdd.md) |
+| Mutação manual (regra quebrada, teste que falha) | [mutacao-manual.md](../testes/mutacao-manual.md) |
+| Conferência dos entregáveis como avaliador externo | [checklist.md](../entrega/checklist.md) |
+| Limitações e dívida técnica | [limitacoes-e-divida-tecnica.md](../limitacoes-e-divida-tecnica.md) |
+| Histórico de mudanças por versão | [CHANGELOG.md](../../CHANGELOG.md) |
+
 ## 1. Do requisito ao teste e à execução
 
 O caminho é: [RTM.md](../../RTM.md), linha do requisito, caso de teste (CT), arquivo e método, execução com o run da CI.

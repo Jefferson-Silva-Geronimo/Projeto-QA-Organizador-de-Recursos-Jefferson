@@ -37,7 +37,7 @@ Documento antes de código, arquitetura antes de teste, teste antes de implement
 ## Estrutura de pastas
 
 ```text
-README.md, RTM.md, AGENTS.md
+README.md, RTM.md, AGENTS.md, CHANGELOG.md
 docs/prd.md, docs/prd/   personas/, perguntas-abertas.md, regras-negocio.md,
                          requisitos-funcionais.md, modelo-dados.dbml, fluxos-sequencia.md,
                          navegacao-telas.md
@@ -45,7 +45,8 @@ docs/plano-de-projeto.md, docs/plano-de-teste.md
 docs/arquitetura.md, docs/taticas-arquiteturais-len-bass.md
 docs/adr/, docs/avaliacao-arquitetural/, docs/testes/, docs/defeitos/, docs/performance/
 docs/decisoes-equipe.md, docs/perguntas-professor.md, docs/limitacoes-e-divida-tecnica.md
-docs/relatorio-qualidade.md, docs/status-requisitos.md, docs/rtm.md, docs/evidencias/, docs/api/
+docs/relatorio-qualidade.md, docs/decisao-qualidade.md, docs/status-requisitos.md, docs/rtm.md,
+docs/evidencias/, docs/entrega/, docs/api/
 perf/                    JMeter
 frontend/                React + Vite (ADR-015)
 src/, pom.xml            Maven, na raiz. Pacotes MVC em br.senac.recursos: controller, dto, service,
