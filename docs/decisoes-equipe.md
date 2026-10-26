@@ -560,3 +560,16 @@ Terceira ocorrência do R-25 (22/10/2026, suíte completa local). Opção B da p
 | Soma das duas classes | 23,68 s | 18,22 s |
 
 Nessa execução o contexto extra não apareceu como custo visível acima da variação da máquina.
+
+### F7-20. PRs 81 a 83 do Dependabot mesclados antes da tag e issue 39 tratada (26/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 26/10/2026.** Esta decisão **supera a F7-15** (que deixava os três PRs abertos até depois da tag) sem alterar o texto dela.
+
+| Item | Decisão e evidência |
+| --- | --- |
+| **PRs 81, 82 e 83 mesclados antes da tag** | Motivo: são patch (`vite` 8.3.4 para 8.3.5; `@tanstack/react-query` 5.104.4 para 5.104.5) e minor (`typescript-eslint` 8.71.2 para 8.72.0), só em `frontend/package.json` e `frontend/package-lock.json`, sem alerta de segurança no `frontend/` nem no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md), seção 7), com os quatro checks obrigatórios verdes. Assim a tag e o clone limpo refletem o estado final das dependências |
+| Como foram mesclados | Um por vez, na ordem 81, 82, 83, com merge commit: #81 em `6cff049`, #82 em `9624160` e #83 em `eeed2b3`. Antes do seguinte, o run da `main` (push) ficou verde (`test`, `frontend`, `e2e`, `segredos`) e o Quality Gate do SonarCloud na `main` ficou OK, com 0 bugs, 0 vulnerabilidades e 0 code smells. O PR 81 foi atualizado com `gh pr update-branch`; os PRs 82 e 83 já tinham sido rebaseados pelo Dependabot |
+| SonarCloud nos PRs do Dependabot | O Dependabot não recebe segredos. Observado: o check do SonarCloud apareceu no PR 81 (depois de uma atualização de branch feita por nós) e **não apareceu** nos PRs 82 e 83; por isso a regra foi 4 checks obrigatórios (`test`, `frontend`, `e2e`, `segredos`) mais o Quality Gate da `main` depois de cada merge |
+| **Issue 39 (R-25, BUG-017) fechada como "not planned"** | Evidência sem alterar código nem teste. (a) Desde 22/10/2026 o workflow `qualidade` teve 114 runs: 108 com sucesso, 4 com falha, 1 cancelado e 1 em andamento; nenhuma das 4 falhas foi de `NotificacaoApiIT` (Quality Gate do SonarCloud no PR 52, dois vermelhos intencionais da F7-04 e da F7-06, e `unzip` ausente no job `e2e` do PR 75). (b) 10 execuções consecutivas, sem retry, de `NotificacaoApiIT` e `NotificacaoTempoLimiteApiIT`: 10 de 10 verdes |
+| O que não mudou | A causa continua **desconhecida**. O BUG-017 permanece **mitigado, não corrigido**; o R-25 permanece **risco aceito** (Jefferson, 19/10/2026) e o R-26 a mitigação (22/10/2026). Nada foi desativado, nem a espera aumentada, nem teste alterado. Se `int01ECt103` falhar de novo, reabrir a issue com os logs |
+| Continuam adiados | `jsdom` 30, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 6) |

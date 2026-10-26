@@ -21,7 +21,7 @@ Cada item tem **origem** e **arquivo**.
 | R-23: a aplicação usa o papel dono das tabelas, que pode desligar o gatilho da auditoria. Separar os papéis de migração e de aplicação é dívida técnica | Decisão (risco aceito por Jefferson) | [decisoes-equipe.md](decisoes-equipe.md), seção "Resultado da execução de P5-08 e risco aceito R-23" | Aberto |
 | Limite de login (SEC-01, D18): pode bloquear a conta de outra pessoa de propósito; tentativas simultâneas podem passar de N por pouco; o e-mail da falha fica guardado durante a janela | Decisão (D18) | [decisoes-equipe.md](decisoes-equipe.md), seção 6 | Limitação conhecida |
 | TLS, HSTS, CSP e limitação de taxa dependem de um ambiente de implantação, que o projeto não tem | Fato | [revisao-seguranca.md](testes/revisao-seguranca.md) | Declarado |
-| Alertas do Dependabot: todos em manifestos do framework (`.aiox-core/`); nenhum em `frontend/` nem no Maven. Contagem (30 em 26/10/2026) e justificativa em [alertas-dependabot.md](testes/alertas-dependabot.md) | Fato | GitHub, aba de segurança; [alertas-dependabot.md](testes/alertas-dependabot.md) | Declarado |
+| Alertas do Dependabot: todos em manifestos do framework (`.aiox-core/`); nenhum em `frontend/` nem no Maven. Contagem e justificativa em [alertas-dependabot.md](testes/alertas-dependabot.md) | Fato | GitHub, aba de segurança; [alertas-dependabot.md](testes/alertas-dependabot.md) | Declarado |
 
 ## 2. Desempenho
 
@@ -38,7 +38,7 @@ Cada item tem **origem** e **arquivo**.
 
 | Item | Origem | Onde está | Situação |
 | --- | --- | --- | --- |
-| R-25: `NotificacaoApiIT.int01ECt103` falhou 3 vezes em suítes completas (18/10, 19/10 e 22/10) e passa sozinho; causa **não encontrada**. O BUG-017 está **mitigado** (limite de 10 s só no `int01`, `int04` em classe própria com o limite de produção), não corrigido. Issue 39 aberta de propósito | Fato e decisão (risco aceito) | [decisoes-equipe.md](decisoes-equipe.md), R-25 e R-26; [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) | Aberto |
+| R-25: `NotificacaoApiIT.int01ECt103` falhou 3 vezes em suítes completas (18/10, 19/10 e 22/10) e passa sozinho; causa **não encontrada**. O BUG-017 está **mitigado** (limite de 10 s só no `int01`, `int04` em classe própria com o limite de produção), não corrigido. A issue 39 foi **fechada como "not planned" em 26/10/2026** (F7-20): 114 runs da CI desde 22/10/2026 sem falha de `NotificacaoApiIT` e 10 execuções consecutivas verdes da classe. A causa continua desconhecida | Fato e decisão (risco aceito) | [decisoes-equipe.md](decisoes-equipe.md), R-25, R-26 e F7-20; [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) | Risco aceito; se falhar de novo, reabrir com os logs |
 | O front end não tem cobertura medida; o JaCoCo e o SonarCloud medem só o Java. A análise estática do front é o `lint` e o `typecheck` da CI, sem número | Fato | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) | Declarado |
 | "Revisão por pares" é **revisão assistida**: a equipe é de uma pessoa | Decisão (P5-09, F7-16) | [decisoes-equipe.md](decisoes-equipe.md); [revisao-assistida-front.md](testes/revisao-assistida-front.md) | Limitação do entregável |
 | Interpretação F6-20: RF-11 (notificação simulada) e RF-14 (documentação) não têm tela; a frase da porta de saída da Fase 6 vale para os RF com interação humana (Anexo A do [plano de projeto](plano-de-projeto.md)). Prova de RF-11 em INT-01 a INT-06 e de RF-14 no OpenAPI e nos testes de contrato | Decisão (F6-20) | [decisoes-equipe.md](decisoes-equipe.md), F6-20; [relatorio-qualidade.md](relatorio-qualidade.md) | Declarada |
@@ -76,11 +76,13 @@ Jefferson decidiu cada uma em 24/10/2026 como decisão da equipe, **não validad
 | Usuários (T11): se a consulta falhar, a tela mostra o erro, sem lista | Fato | [navegacao-telas.md](prd/navegacao-telas.md), T11 | Declarado |
 | Não há operação para reativar usuário ou recurso nem para trocar a senha; o contrato não as tem | Lacuna | [navegacao-telas.md](prd/navegacao-telas.md), T07 e T11 | Aberto: decidir se é requisito |
 | Três comentários de código do front ainda dizem "plano mestre", nome antigo do [plano de projeto](plano-de-projeto.md): `frontend/src/datas/fuso.ts`, `frontend/src/paginas/PaginaDeTela.tsx` e `frontend/src/rotas/RotaProtegida.tsx`. A troca exigiria mudar código e rodar a CI do front, e a equipe decidiu não alterar | Decisão | os três arquivos citados | Ressalva aceita; sem efeito sobre o comportamento |
+| Dois comentários em Java citam a especificação pelo **número** da seção, que a página oficial não tem: `src/main/java/br/senac/recursos/model/Perfil.java` ("especificação, seção 2") e `src/test/java/br/senac/recursos/ContextoIT.java` ("especificação seção 5"). Não foram alterados porque um é código de produção e o outro é teste | Decisão | os dois arquivos citados | Ressalva aceita; sem efeito sobre o comportamento |
 
 ## 6. Versões e atualizações adiadas
+
+Os PRs 81, 82 e 83 do Dependabot (`vite` 8.3.5, `@tanstack/react-query` 5.104.5 e `typescript-eslint` 8.72.0) foram **mesclados antes da tag** (F7-20) e deixaram de ser atualização adiada.
 
 | Item | Origem | Onde está | Situação |
 | --- | --- | --- | --- |
 | TypeScript 5.9 (a 7.x conflita com `openapi-typescript` e `typescript-eslint`) e ESLint 9 (`eslint-plugin-jsx-a11y` não aceita a 10) estão fixados por incompatibilidade | Fato (verificado na instalação) | [ADR-015](adr/ADR-015-stack-do-front-end.md); `.github/dependabot.yml` | Reavaliar quando os pacotes aceitarem as versões novas |
-| Salto do `jsdom` 29 para 30 adiado (projeto em 29.1.1; sem alerta no `jsdom`). O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele | Decisão (F6-13, F7-11) | [decisoes-equipe.md](decisoes-equipe.md) | Dívida técnica, sem prazo |
-| PRs 81 (`vite` 8.3.4 para 8.3.5), 82 (`@tanstack/react-query` 5.104.4 para 5.104.5) e 83 (`typescript-eslint` 8.71.2 para 8.72.0) ficam abertos, sem alerta de segurança, para não alterar o `package-lock.json` do front entre a leitura final de cobertura e a prova de clone limpo | Decisão (F7-15) | [decisoes-equipe.md](decisoes-equipe.md), F7-15; [alertas-dependabot.md](testes/alertas-dependabot.md) | Adiados de propósito |
+| Salto do `jsdom` 29 para 30 adiado (projeto em 29.1.1; sem alerta no `jsdom`). O Dependabot não recebe segredos, então o SonarCloud não roda nos PRs dele (observado em 26/10/2026: o check apareceu no PR 81, depois de uma atualização de branch feita por nós, e não apareceu nos PRs 82 e 83, rebaseados pelo Dependabot) | Decisão (F6-13, F7-11) | [decisoes-equipe.md](decisoes-equipe.md) | Dívida técnica, sem prazo |

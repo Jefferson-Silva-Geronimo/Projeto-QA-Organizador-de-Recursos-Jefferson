@@ -186,7 +186,7 @@ src/test/java/         testes de unidade, de arquitetura, de API (MockMvc + Post
 src/test/resources/features/   cenários BDD de aprovação e bloqueio
 .github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md, dependabot.yml e workflows/ci.yml (jobs test, frontend, e2e e segredos)
 .aiox-core/            framework de agentes, instalado, com as skills do projeto
-.claude/               configuração do Claude Code (CLAUDE.md, regras, hooks e skills); .github/agents/ tem os agentes do GitHub Copilot
+.claude/               configuração do Claude Code (CLAUDE.md, regras, hooks e skills); .github/agents/ tem agentes do GitHub Copilot, que não foi usado
 ```
 
 ## Roadmap por fases
@@ -216,8 +216,8 @@ Os números abaixo vêm do run [`40120487376`](https://github.com/Jefferson-Silv
 | Defeitos | 27 registrados: 26 fechados e 1 mitigado (BUG-017) | [docs/defeitos/README.md](docs/defeitos/README.md) |
 | Desempenho | RNF-08b **não atendido** (p95 de 568 a 886 ms contra 300 ms) | [docs/performance/resultado-02.md](docs/performance/resultado-02.md) |
 | Índice | Onde achar cada evidência | [docs/evidencias/README.md](docs/evidencias/README.md) |
-| Decisão de qualidade | Liberar com ressalvas, critérios, riscos aceitos e declaração de autoria (rascunho) | [docs/decisao-qualidade.md](docs/decisao-qualidade.md) |
-| Situação dos requisitos | 14 RF e regras críticas, com prova de mutação em 18 de 22 críticos | [docs/status-requisitos.md](docs/status-requisitos.md); [docs/testes/mutacao-manual.md](docs/testes/mutacao-manual.md) |
+| Decisão de qualidade | Liberar com ressalvas, critérios, riscos aceitos e declaração de autoria | [docs/decisao-qualidade.md](docs/decisao-qualidade.md) |
+| Situação dos requisitos | 14 RF e regras críticas, com prova de mutação em 22 de 22 críticos | [docs/status-requisitos.md](docs/status-requisitos.md); [docs/testes/mutacao-manual.md](docs/testes/mutacao-manual.md) |
 | Mudanças por versão | O que entra em cada release candidate | [CHANGELOG.md](CHANGELOG.md) |
 
 ## Metas de qualidade
@@ -241,7 +241,7 @@ Fonte: especificação, seção "Metas mensuráveis".
 - **Histórico de trabalho:** está no `git log` e nos pull requests do GitHub, cada um com os checks e a revisão assistida registrados.
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40120487376`); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
-- **Alertas do Dependabot:** 30 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 26/10/2026 à tarde, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
+- **Alertas do Dependabot:** todos no framework `.aiox-core/`, nenhum no Maven nem no front (F7-08). Número, manifestos, severidades e justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções

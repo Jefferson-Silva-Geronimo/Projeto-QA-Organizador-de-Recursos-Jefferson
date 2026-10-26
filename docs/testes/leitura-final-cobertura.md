@@ -60,7 +60,7 @@ A meta do projeto vale para o conjunto (`BUNDLE`, regra do `pom.xml`: linhas 0,8
 
 | Item | Resultado | Origem |
 | --- | --- | --- |
-| Alertas do Dependabot | 27 abertos, **27 em `.aiox-core/` e 0 fora** (0 em `frontend/` e 0 no Maven) | `gh api .../dependabot/alerts`; [alertas-dependabot.md](alertas-dependabot.md) |
+| Alertas do Dependabot | Todos em `.aiox-core/` e 0 fora (0 em `frontend/` e 0 no Maven); o número está em [alertas-dependabot.md](alertas-dependabot.md) | `gh api .../dependabot/alerts`; [alertas-dependabot.md](alertas-dependabot.md) |
 | Issues abertas no GitHub | 1: a #39, o R-25 (`NotificacaoApiIT.int01ECt103`) | `gh issue list` |
 | Pull requests abertos | 3, do Dependabot (#81, #82 e #83), adiados até depois da tag (F7-15) | `gh pr list` |
 

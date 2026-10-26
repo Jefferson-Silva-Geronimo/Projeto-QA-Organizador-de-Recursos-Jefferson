@@ -7,7 +7,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | Item | Valor |
 | --- | --- |
 | **Decisão** | **LIBERAR COM RESSALVAS** |
-| Quem decidiu | Jefferson Silva, em 24/10/2026 |
+| Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 |
 | A que se refere | Release candidate (`v1.0.0-rc1`, tag em `276224b`, e `v1.0.0-rc2`, que só será criada com autorização expressa) |
 | Alcance | **Avaliação da disciplina.** Não é "pronto para produção": os testes e as medições foram feitos em ambiente local e na CI, em um computador de desenvolvimento, sem ambiente de implantação, sem TLS, sem HSTS, sem CSP e sem limitação de taxa ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md)) |
 
@@ -32,7 +32,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | --- | --- | --- | --- |
 | Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
 | Cobertura de branches, 70% | **86,88%** (523 de 602) | Atingida | Mesmo run |
-| Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 18 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 18 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 9; [status-requisitos.md](status-requisitos.md) |
+| Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 18 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
 | Bugs ou vulnerabilidades críticos, 0 | 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud (Quality Gate aprovado); 0 alertas do Dependabot no Maven e 0 no front; nenhum defeito aberto de severidade crítica ou alta | Atingida | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [alertas-dependabot.md](testes/alertas-dependabot.md); [defeitos/README.md](defeitos/README.md) |
 
 A cobertura alta não prova qualidade dos testes (a própria especificação avisa); por isso a prova de mutação foi feita nas regras críticas.
@@ -47,7 +47,7 @@ Back end: 665 testes (231 de unidade e arquitetura, 434 de integração e BDD); 
 
 ## 4. Riscos aceitos
 
-Todos têm como responsável **Jefferson Silva**, autor e único integrante da equipe. A lista completa, com origem de cada item, está em [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md).
+Todos têm como responsável **Jefferson Silva Geronimo**, autor e único integrante da equipe. A lista completa, com origem de cada item, está em [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md).
 
 | Risco aceito | Impacto | Justificativa |
 | --- | --- | --- |
@@ -57,24 +57,13 @@ Todos têm como responsável **Jefferson Silva**, autor e único integrante da e
 | **Lacunas decididas pela equipe, sem validação externa** (A1 a A8, D1, D3, D4, D9, D17, entre outras); a maior em retrabalho é a A3; a D14 é brecha funcional conhecida; a D9 é risco de privacidade | Retrabalho se a decisão estiver errada; troca de perfil pode deixar um só Responsável; nada é apagado nem anonimizado | Sem resposta do professor, a equipe decidiu com impacto e teste declarados ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17) |
 | **"Revisão por pares" é revisão assistida** | Nenhum segundo humano revisou o código | Equipe de uma pessoa; cada pull request teve checks obrigatórios e revisão assistida registrada |
 | **RF-13 parcial** | Responsividade provada por uma jornada E2E no Chromium; o resto por roteiro manual | Limitação declarada ([status-requisitos.md](status-requisitos.md)) |
-| **Prova de mutação em 18 de 22 críticos** | RF-03, RF-09, RF-12 e RF-13 têm teste com asserção, mas ninguém quebrou a regra para ver o vermelho | Custo de tempo; os testes existem e passaram ([mutacao-manual.md](testes/mutacao-manual.md), seção 9) |
 | **R-23**: a aplicação usa o papel dono das tabelas, que poderia desligar o gatilho da auditoria | Auditoria alterável por quem tem privilégio de banco | Separar os papéis de migração e de aplicação é dívida técnica; o gatilho bloqueia `UPDATE` e `DELETE` (`EsquemaIT.ct011`) |
-| **30 alertas do Dependabot** (consulta de 26/10/2026), todos em `.aiox-core/` (framework), 0 no Maven e 0 no front | Dependências com alerta no painel de diagnóstico do framework, fora das imagens e da CI do produto | [alertas-dependabot.md](testes/alertas-dependabot.md) |
+| **Alertas do Dependabot** em `.aiox-core/` (framework), 0 no Maven e 0 no front; o número está em [alertas-dependabot.md](testes/alertas-dependabot.md) | Dependências com alerta no painel de diagnóstico do framework, fora das imagens e da CI do produto | [alertas-dependabot.md](testes/alertas-dependabot.md) |
 | **SBOM e alerta de segurança além do log (SEC-03, SEC-04)**; `unzip` sem versão fixada no `Dockerfile`; **TLS, HSTS, CSP e limitação de taxa** sem ambiente de implantação | Superfície de segurança menor do que a de um sistema em produção | Dívida técnica declarada; o produto é avaliado, não implantado |
 | **Desempenho do `verify`** e outros computadores | O `verify` passou em um computador; outros sistemas não foram provados | Medido em 5 execuções consecutivas verdes (F7-19); tempo varia de 519 s a 1522 s |
 
 ## 5. Declaração de autoria
 
-> **RASCUNHO para revisão de Jefferson Silva.** O texto abaixo foi preparado a partir do que está registrado no repositório. Antes de valer como declaração, o autor lê, corrige, completa os campos entre colchetes e retira esta nota.
+**Nome completo do autor:** Jefferson Silva Geronimo
 
-Eu, **[NOME COMPLETO]**, declaro que sou o autor e o único integrante da equipe deste projeto.
-
-**O que eu fiz** (com origem no repositório):
-
-- Defini o escopo e tomei as decisões da equipe registradas em [decisoes-equipe.md](decisoes-equipe.md), inclusive as lacunas A1 a A8, D1, D3, D4, D9 e D17, e a decisão de qualidade **liberar com ressalvas** em 24/10/2026.
-- Autorizei, um a um, os merges dos pull requests e a publicação da tag `v1.0.0-rc1`.
-- [COMPLETAR: o que eu escrevi, executei ou revisei pessoalmente, por exemplo quais telas, testes ou documentos li, rodei ou corrigi.]
-
-**Uso de agente de código.** O código, os testes e a documentação foram produzidos **com o agente de código Claude Code** (Anthropic), sob a minha direção, e o repositório também tem agentes do **GitHub Copilot** em `.github/agents/` [CONFIRMAR o uso do GitHub Copilot e em que partes]. O agente escreveu e propôs; as decisões, as autorizações de publicação e a responsabilidade pelo resultado são minhas. A "revisão por pares" do processo foi **revisão assistida**, porque a equipe é de uma pessoa.
-
-**[CIDADE], [DATA].** [ASSINATURA OU NOME COMPLETO]
+Jefferson Silva Geronimo é o único integrante da equipe e autor do projeto. Definiu o escopo, tomou as decisões da equipe (lacunas A1 a A8, decisões B, C e D, e as decisões de cada fase), aceitou os riscos residuais listados neste documento, autorizou cada merge e a tag do release candidate e tomou a decisão de qualidade. O desenvolvimento (código, testes, documentação e análises) foi feito com o Claude Code (Anthropic), agente de código que foi a base de todo o trabalho, sob a direção, a revisão e a aprovação do autor. O GitHub Copilot não foi usado. Por ser uma equipe de uma pessoa, não houve revisão por par humano: cada pull request recebeu revisão assistida, registrada como tal.

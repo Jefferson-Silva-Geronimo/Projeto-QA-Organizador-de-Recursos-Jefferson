@@ -34,7 +34,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, no c
 | 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | Sim | Sim | [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md); painel do SonarCloud; artefato `relatorio-jacoco` da CI | Artefatos da CI com retenção de 30 dias a partir deste pull request; antes expiravam em 7 dias |
 | 9 | Plano e resultado do teste de carga | Sim | Sim | [rnf.md](../performance/rnf.md); [resultado-01.md](../performance/resultado-01.md); [resultado-02.md](../performance/resultado-02.md); `perf/` (JMeter) | **RNF-08b não atendido**, declarado |
 | 10 | Registro de defeitos encontrados, priorizados e corrigidos | Sim | Sim | [defeitos/README.md](../defeitos/README.md); [analise-causa-raiz.md](../defeitos/analise-causa-raiz.md) | 27 defeitos: 26 fechados e 1 mitigado (BUG-017) |
-| 11 | Relatório final de qualidade | Sim | Sim | [relatorio-qualidade.md](../relatorio-qualidade.md); [decisao-qualidade.md](../decisao-qualidade.md) | Decisão **liberar com ressalvas** em arquivo próprio; a declaração de autoria ainda é rascunho, com o nome completo por preencher |
+| 11 | Relatório final de qualidade | Sim | Sim | [relatorio-qualidade.md](../relatorio-qualidade.md); [decisao-qualidade.md](../decisao-qualidade.md) | Decisão **liberar com ressalvas** em arquivo próprio; a declaração de autoria traz o nome completo do autor |
 | 12 | Apresentação e demonstração do sistema | Não (fora do repositório) | n/a | n/a | Feita pelo autor, fora do repositório; nada no repositório a substitui |
 
 ## 3. Arquivos e regras da Aula 14
@@ -45,7 +45,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, no c
 | `CHANGELOG.md` | Sim | Sim | [CHANGELOG.md](../../CHANGELOG.md) | O que entra na `v1.0.0-rc2`; criado neste pull request |
 | `docs/evidencias/README.md` (índice do pacote) | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Cita a tag pelo nome; links conferidos pelo `analyze-docs` |
 | `docs/rtm.md` | Sim | Sim | [rtm.md](../rtm.md) | Uma linha que aponta para a RTM da raiz, sem duplicar |
-| `docs/decisao-qualidade.md` | Sim | Sim | [decisao-qualidade.md](../decisao-qualidade.md) | Declaração de autoria como **rascunho** |
+| `docs/decisao-qualidade.md` | Sim | Sim | [decisao-qualidade.md](../decisao-qualidade.md) | Declaração de autoria com o nome completo do autor |
 | Tag anotada no commit avaliado | Sim (`v1.0.0-rc1`); `v1.0.0-rc2` **não existe** | n/a | `v1.0.0-rc1` em `276224b` | A tag usada não se move; correção depois dela é `v1.0.0-rc2`, só com autorização expressa |
 | CI verde no commit da tag | Sim | Sim | Run `40128131459` (commit `276224b`) | |
 | Repositório público | Sim | Sim | Visibilidade `PUBLIC` lida pela API do GitHub | |
@@ -65,4 +65,4 @@ Clone novo do repositório público numa pasta temporária fora do projeto, no c
 | 6 | README e `relatorio-qualidade.md` desatualizados | **Atualizados** neste pull request e no PR 94 |
 | 7 (novo) | O README manda preencher "todas as variáveis que vierem vazias", mas `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY` ficam vazias e são só do SonarCloud | **Corrigido neste pull request:** linha na tabela do README dizendo que podem ficar vazias |
 
-**O que continua aberto e não é deste pull request:** (a) a tag `v1.0.0-rc2`, **só com autorização expressa**; (b) depois dela, refazer o clone limpo no commit da tag, conferir o SonarCloud nesse commit e apontar o índice de evidências para ela; (c) o nome completo e o texto de autoria em [decisao-qualidade.md](../decisao-qualidade.md); (d) o envio do formulário do Hub e a apresentação, que são do autor.
+**O que continua aberto e não é deste pull request:** (a) a tag `v1.0.0-rc2`, **só com autorização expressa**; (b) depois dela, refazer o clone limpo no commit da tag, conferir o SonarCloud nesse commit e apontar o índice de evidências para ela; (d) o envio do formulário do Hub e a apresentação, que são do autor.
