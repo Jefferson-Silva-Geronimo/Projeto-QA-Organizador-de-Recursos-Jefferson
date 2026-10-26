@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 sobre a `main`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `608cdbc` (run da CI [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376)); os commits posteriores (`5e2ce88` e os que vierem antes da tag) só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da tag. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); o commit avaliado é o da tag `v1.0.0-rc2` (`d2b6af1`); os commits posteriores só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -10,9 +10,9 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 | Fato | Origem |
 | --- | --- |
-| Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
+| Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint; a prova de clone limpo foi repetida no commit da tag `v1.0.0-rc2` | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
 | **Metas da especificação atingidas:** linhas 97,01% (meta 80%), branches 86,88% (meta 70%), 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud com Quality Gate OK, 100% das linhas críticas da RTM com teste e execução verde | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
-| CI verde na `main` no commit lido: back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `40120487376` |
+| CI verde na `main` no commit lido: back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `40373624577` |
 | **27 defeitos** registrados: 26 fechados e 1 mitigado (BUG-017), nenhum reaberto, nenhum aberto de severidade crítica ou alta | [defeitos/README.md](defeitos/README.md) |
 
 **As ressalvas (detalhe e riscos aceitos em [decisao-qualidade.md](decisao-qualidade.md)):**
@@ -46,30 +46,30 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 | Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
-| **80%** de cobertura de linhas | **97,01%** (1751 de 1805) | **Atingida** | JaCoCo, run `40120487376` |
-| **70%** de cobertura de branches | **86,88%** (523 de 602) | **Atingida** | JaCoCo, run `40120487376` |
-| **0** bugs ou vulnerabilidades críticos | **0 bugs, 0 vulnerabilidades**, 0 issues abertas (CRITICAL e BLOCKER inclusive); Quality Gate **OK** | **Atingida** | SonarCloud, análise de `608cdbc` (consulta de 24/10/2026) |
+| **80%** de cobertura de linhas | **97,01%** (1751 de 1805) | **Atingida** | JaCoCo, run `40373624577` |
+| **70%** de cobertura de branches | **86,88%** (523 de 602) | **Atingida** | JaCoCo, run `40373624577` |
+| **0** bugs ou vulnerabilidades críticos | **0 bugs, 0 vulnerabilidades**, 0 issues abertas (CRITICAL e BLOCKER inclusive); Quality Gate **OK** | **Atingida** | SonarCloud, análise de `d2b6af1` (consulta de 24/10/2026) |
 | **100%** dos requisitos críticos na RTM | **22 de 22** linhas críticas (12 RF, 8 RN, 2 RNF) com CT existente, teste identificável (Java) ou arquivo em tabela (front), asserção e execução verde no E-24 | **Atingida**, com o limite abaixo | [auditoria-rtm.md](testes/auditoria-rtm.md), seções 8 e 10; [execucao-e24.md](testes/execucao-e24.md) |
 
 **Limites da quarta meta:** (a) "100% na RTM" foi interpretado como presença, status e execução verde; (b) a relevância de cada CT em cada linha de RN foi julgada à mão, por título ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 10.1); (c) os CT de front não trazem `CT-nnn` dentro do teste, e a tabela CT-arquivo prova o arquivo, não o trecho coberto (BUG-024, decisão F7-05). A especificação avisa que cobertura alta, sozinha, não garante qualidade; os experimentos "apague a regra" estão no bloco 4.
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) (`c9240cd`), com o detalhe por classe em [execucao-e24.md](testes/execucao-e24.md). **0 falhas em todos os níveis.**
+Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da tag), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.**
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
-| Unidade e arquitetura (Surefire) | **231** | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-24 |
-| Integração com banco real (Failsafe, Testcontainers) | **9** | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT` | E-24 |
-| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | **410** | 30 classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-24 |
-| BDD (Cucumber, Failsafe) | **15** | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-24 |
-| **Back end, total** | **665** | 231 + 434 | E-24 |
-| Front end (Vitest e Testing Library) | **910**, em 56 arquivos | `frontend/src` | E-24 |
-| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | **5** | `frontend/e2e/jornadas.spec.ts` | E-24 |
+| Unidade e arquitetura (Surefire) | **231** | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-25 |
+| Integração com banco real (Failsafe, Testcontainers) | **9** | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT` | E-25 |
+| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | **410** | 30 classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-25 |
+| BDD (Cucumber, Failsafe) | **15** | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-25 |
+| **Back end, total** | **665** | 231 + 434 | E-25 |
+| Front end (Vitest e Testing Library) | **910**, em 56 arquivos | `frontend/src` | E-25 |
+| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | **5** | `frontend/e2e/jornadas.spec.ts` | E-25 |
 
 **Ambiente realista (fato):** o banco é PostgreSQL 17 em Testcontainers; a notificação usa WireMock (`NotificacaoApiIT`: 9 testes; `NotificacaoTempoLimiteApiIT`: 1). Mocks ficam nos testes de unidade isolados.
 
-**TDD e BDD (fato):** o histórico da `main` em `a027e91` tem 493 commits, 60 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
+**TDD e BDD (fato):** o histórico da `main` no commit da tag (`d2b6af1`) tem 510 commits, 68 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list --state merged`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
 
 **Os testes protegem a regra? Experimentos "apague a regra" (24/10/2026, worktree descartável, nada na `main`):** RN-01 (`PeriodoTest`: 2 falhas por asserção; na API o `400` virou `500`), RN-03 (`ConcorrenciaApiIT`: 6 falhas por asserção) e RN-06 (só o caso do Administrador ficou vermelho; isso revelou o BUG-026, corrigido com um teste novo que falha por asserção sem o portão de perfil: `Status expected:<403> but was:<200>`) ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 6; [defeitos/README.md](defeitos/README.md), BUG-026). **Mutação (Fase 4, 17/10/2026, só `model`):** 78 mutantes, 60 mortos, 0 sobreviventes entre os cobertos, pontuação de 77% ([mutacao.md](testes/mutacao.md)).
 
@@ -78,7 +78,7 @@ Execução de referência: E-24, run [`40116523445`](https://github.com/Jefferso
 | Item | Resultado | Origem |
 | --- | --- | --- |
 | Garantia | Constraint de exclusão `EXCLUDE USING gist (recurso_id WITH =, periodo WITH &&) WHERE (ativa)` em `ocupacoes` (a garantia está no banco, para reserva e bloqueio) | [ADR-003](adr/ADR-003-dupla-reserva-constraint-de-exclusao.md); `V2__esquema.sql` |
-| Teste | `ConcorrenciaApiIT`: **7 testes, 0 falhas** no E-24 (20 solicitações simultâneas para a mesma sala, para o mesmo professor, 5 repetições, vários recursos em ordens opostas, tentativa de conflito persistida) | Run `40116523445` (E-24) |
+| Teste | `ConcorrenciaApiIT`: **7 testes, 0 falhas** no E-25 (20 solicitações simultâneas para a mesma sala, para o mesmo professor, 5 repetições, vários recursos em ordens opostas, tentativa de conflito persistida) | Run `40373624577` (E-25) |
 | **Prova de que a dupla reserva é impossível e de que o teste protege** | **Com a constraint:** 7 de 7 verdes. **Sem a constraint** (worktree descartável): 7 testes, **6 falhas por asserção** (`expected: 1L`, mais de uma reserva aceita) e 1 erro (o `ct063`, que tentava remover uma constraint que não existia; **corrigido no BUG-023**: agora falha por asserção) | [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 5; BUG-023 |
 | Sob carga | 100 reservas aceitas em 100 pares disputados, **0 sobreposição no banco, 0 par duplicado** e cada 409 gerou exatamente uma linha em `tentativas_conflito`; o caminho do impasse (`40P01`, BUG-007) foi exercido e respondeu 409 | [resultado-02.md](performance/resultado-02.md), seções 3 |
 | Suposição | As 20 solicitações e as 5 repetições são hipóteses da Aula 10, **sem validação do professor**; impacto: se o professor pedir outro número, repete-se o teste com outro valor, sem mudar a garantia | [casos-de-teste.md](testes/casos-de-teste.md), seção 5 |
@@ -180,7 +180,7 @@ Fonte: [defeitos/README.md](defeitos/README.md), com o processo, as severidades 
 | **Listas sem paginação** (reservas, fila, catálogo, auditoria; L-03) e custo por reserva em uso não medido | Declarado, sem decisão de aceitar | — | Pode pesar se as listas crescerem | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) |
 | **Alertas do Dependabot em `.aiox-core/`** | Risco declarado | Jefferson, 24/10/2026 (F7-08) | Não se aplicam ao produto: 0 no Maven e 0 no front; o framework fica fora da imagem | [alertas-dependabot.md](testes/alertas-dependabot.md) |
 | **Pacote `unzip` do `apt` sem versão fixada** no estágio de build do Dockerfile | Declarado | Jefferson, 24/10/2026 (F7-14) | Necessário para a soma do Maven valer; a imagem-base segue por digest e o `unzip` não vai à imagem de execução | [decisoes-equipe.md](decisoes-equipe.md), F7-14 |
-| **Atualizações adiadas:** `jsdom` 29 para 30 (F7-11) e os PRs 81 a 83 do Dependabot (F7-15) | Deliberadamente adiadas | Jefferson, 24/10/2026 | Não alterar a base de testes nem o `package-lock.json` do front entre a leitura final e o clone limpo; patch e minor, sem alerta de segurança | [decisoes-equipe.md](decisoes-equipe.md) |
+| **Atualizações adiadas:** `jsdom` 29 para 30 (F7-11), TypeScript 5.9 e ESLint 9 fixados por incompatibilidade. Os PRs 81 a 83 do Dependabot, que a F7-15 adiava, foram **mesclados antes da tag** (F7-20) | Deliberadamente adiadas (as três restantes) | Jefferson, 24/10/2026 e 26/10/2026 | `jsdom` 30 não tem alerta; os outros dois dependem de pacotes que ainda não aceitam as versões novas | [decisoes-equipe.md](decisoes-equipe.md) |
 | **TLS, HSTS, CSP, limitação de taxa** | Lacuna | — | O projeto não tem ambiente de implantação | [modelo-de-ameacas.md](testes/modelo-de-ameacas.md) |
 
 ### Prova da interpretação F6-20
@@ -216,7 +216,7 @@ O plano abaixo é **proposta do autor, sem prazo e sem decisão**; ordena do que
 | 5 | SEC-03 (SBOM, licenças) e SEC-04 (alerta) | F7-06 | SBOM CycloneDX na CI; decidir o destino de alertas |
 | 6 | Cobertura e análise estática do front no SonarCloud | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) | Ligar `coverage` no Vitest e o TypeScript no escopo do Sonar |
 | 7 | Paginação e filtros (reservas, fila, catálogo, auditoria) e medir o custo por reserva em uso | L-03 | Medir antes de paginar |
-| 8 | Atualizações adiadas: `jsdom` 30, PRs 81 a 83, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade, alertas do `.aiox-core/` | F7-11, F7-15, F7-08 | Fazer depois da tag, com a suíte completa do front |
+| 8 | Atualizações adiadas: `jsdom` 30, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade, alertas do `.aiox-core/` (PRs 81 a 83 já mesclados, F7-20) | F7-11, F7-20, F7-08 | Fazer depois da tag, com a suíte completa do front |
 | 9 | Diálogo nativo `<dialog>` quando o jsdom permitir; E2E em outros navegadores e repetível no mesmo banco | [Dialogo.tsx](../frontend/src/ui/Dialogo.tsx); [e2e/README.md](testes/e2e/README.md) | Reavaliar a cada versão do `jsdom` |
 | 10 | Reativar usuário e recurso, trocar senha (o contrato não tem as operações) | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) | Decidir se é requisito |
 | 11 | `CT-nnn` dentro do teste do front (hoje só a tabela CT-arquivo) | BUG-024 | Decidir se vale renomear os testes |
@@ -227,14 +227,14 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 
 | # | Entregável | Onde está | Estado |
 | --- | --- | --- | --- |
-| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (493 commits e 60 PRs mesclados na `main` em `a027e91`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
-| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova no commit da `v1.0.0-rc1` está em [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5 |
+| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (510 commits e 68 PRs mesclados na `main` no commit da tag `d2b6af1`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
+| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova no commit da `v1.0.0-rc1` está na seção 2.5 e a do commit da `v1.0.0-rc2` na seção 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md) (clone limpo até o front em 366 s; `verify` em 539 s) |
 | 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README traz o pacote de evidências com os links |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | [RTM.md](../RTM.md); [auditoria-rtm.md](testes/auditoria-rtm.md) | **Atendido** (55 linhas; defeitos da auditoria corrigidos) |
 | 5 | Diagramas de contexto, componentes e sequências críticas | [arquitetura.md](arquitetura.md) (C4) e [fluxos-sequencia.md](prd/fluxos-sequencia.md) (14 diagramas) | **Atendido** (renderização não refeita nesta fase) |
 | 6 | Plano, suíte automatizada e relatório de testes | [plano-de-teste.md](plano-de-teste.md); `src/test` e `frontend`; [casos-de-teste.md](testes/casos-de-teste.md); [execucao-e24.md](testes/execucao-e24.md); este relatório | **Atendido** |
 | 7 | Pipeline de integração contínua | [ci.yml](../.github/workflows/ci.yml); proteção da `main` com `test`, `frontend`, `e2e` e `segredos`; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 3 | **Atendido** |
-| 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); artefato `relatorio-jacoco` do run `40120487376` | **Atendido**; os links estão no pacote de evidências do README |
+| 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); artefato `relatorio-jacoco` do run `40373624577` | **Atendido**; os links estão no pacote de evidências do README |
 | 9 | Plano e resultado do teste de carga | [rnf.md](performance/rnf.md); [resultado-01.md](performance/resultado-01.md); [resultado-02.md](performance/resultado-02.md); `perf/` | **Atendido**, com **RNF-08b não atendido** declarado |
 | 10 | Registro de defeitos encontrados, priorizados e corrigidos | [defeitos/README.md](defeitos/README.md); [analise-causa-raiz.md](defeitos/analise-causa-raiz.md) | **Atendido** (27 defeitos) |
 | 11 | Relatório final de qualidade | Este documento | **Escrito**; a decisão de qualidade está em [decisao-qualidade.md](decisao-qualidade.md) |
@@ -243,7 +243,7 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 ## 12. Lacunas e limites deste relatório
 
 - **Decisão de qualidade:** liberar com ressalvas (Jefferson Silva, 24/10/2026), em [decisao-qualidade.md](decisao-qualidade.md).
-- **Números:** os de teste e cobertura são do run `40120487376`; os de carga são das rodadas de 17/10/2026 em uma máquina; os de mutação são de 17/10/2026 e só do pacote `model`. Nenhum vem de execução antiga da RTM.
+- **Números:** os de teste e cobertura são do run `40373624577`; os de carga são das rodadas de 17/10/2026 em uma máquina; os de mutação são de 17/10/2026 e só do pacote `model`. Nenhum vem de execução antiga da RTM.
 - **Etapa de origem dos BUG-020 a BUG-027:** só BUG-023 e BUG-026 foram datados; os outros seis ficam como lacuna.
 - **Relevância semântica:** a ligação de cada CT a cada regra foi julgada por título; a auditoria leu à mão só as regras RN-01 a RN-08 e os três experimentos.
 - **Esta é uma revisão assistida**, escrita por um agente a partir dos documentos e das execuções do repositório; não substitui a leitura de Jefferson nem a revisão por outra pessoa.

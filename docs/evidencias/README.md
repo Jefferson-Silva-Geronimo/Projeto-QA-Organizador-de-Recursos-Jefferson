@@ -4,13 +4,14 @@ Onde achar cada prova do produto **Organização de Recursos**. Fonte da exigên
 
 ## 0. Pacote de entrega
 
-Cada linha diz o que provar e onde está. A prova de CI é a **execução da CI no commit da tag** (a tag é citada pelo nome porque este arquivo está dentro do commit dela e não pode conter o run dele): `v1.0.0-rc1` em `276224b` (run [`40128131459`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40128131459), verde) e `v1.0.0-rc2`, que só será criada com autorização expressa.
+Cada linha diz o que provar e onde está. O commit avaliado é o da tag **`v1.0.0-rc2`** (`d2b6af1`, publicada em 26/10/2026); a `v1.0.0-rc1` (`276224b`, run [`40128131459`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40128131459), verde) permanece como histórico. Os documentos de evidência entram depois da tag e só mudam documentação.
 
 | Evidência | Onde |
 | --- | --- |
-| Execução da CI no commit da tag (`test`, `frontend`, `e2e`, `segredos` e SonarCloud) | Aba *Checks* do commit da tag no GitHub; resumo por classe em [execucao-e24.md](../testes/execucao-e24.md) |
-| Relatório do JaCoCo | Artefato `relatorio-jacoco` do run da `main` (retenção de 30 dias); leitura versionada em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md): linhas 97,01% e branches 86,88% |
-| Quality Gate do SonarCloud | [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson); leitura em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) |
+| Execução da CI no commit da tag (`test`, `frontend`, `e2e` e `segredos`) | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577), verde; resumo por classe em [execucao-e25.md](../testes/execucao-e25.md) (E-25) |
+| Relatório do JaCoCo | Artefato `relatorio-jacoco` do run `40373624577` (retenção de 30 dias, **expira em 25/11/2026**); resumo versionado em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md), seção 7: linhas 97,01% (1751 de 1805) e branches 86,88% (523 de 602) |
+| Quality Gate do SonarCloud | **OK** no commit da tag (0 bugs, 0 vulnerabilidades, 0 code smells); [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson); leitura em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) |
+| Clone limpo no commit da tag | Aplicação no ar em 150 s, front em 366 s e `./mvnw -B verify` verde em 539 s (231 + 434 testes); a primeira tentativa falhou por ambiente (Docker), sem alterar o repositório: [limitadores-de-nota.md](../testes/limitadores-de-nota.md), seção 2.6 |
 | Rastreabilidade | [rtm.md](../rtm.md) (aponta para a [RTM.md](../../RTM.md)); auditoria em [auditoria-rtm.md](../testes/auditoria-rtm.md) |
 | Plano e resultado da carga | [rnf.md](../performance/rnf.md), [resultado-01.md](../performance/resultado-01.md) e [resultado-02.md](../performance/resultado-02.md) |
 | Defeitos | [defeitos/README.md](../defeitos/README.md) e [analise-causa-raiz.md](../defeitos/analise-causa-raiz.md) |

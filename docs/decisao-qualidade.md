@@ -8,7 +8,9 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | --- | --- |
 | **Decisão** | **LIBERAR COM RESSALVAS** |
 | Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 |
-| A que se refere | Release candidate (`v1.0.0-rc1`, tag em `276224b`, e `v1.0.0-rc2`, que só será criada com autorização expressa) |
+| A que se refere | Release candidate **`v1.0.0-rc2`**, tag publicada em 26/10/2026 no commit **`d2b6af1`** com autorização expressa do autor; a `v1.0.0-rc1` (`276224b`) permanece como histórico |
+| Execução da CI no commit da tag | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577): `test`, `frontend`, `e2e` e `segredos` verdes (E-25, [execucao-e25.md](testes/execucao-e25.md)) |
+| Quality Gate do SonarCloud no commit da tag | **OK**: 0 bugs, 0 vulnerabilidades, 0 code smells (análise com `revision` `d2b6af1`) |
 | Alcance | **Avaliação da disciplina.** Não é "pronto para produção": os testes e as medições foram feitos em ambiente local e na CI, em um computador de desenvolvimento, sem ambiente de implantação, sem TLS, sem HSTS, sem CSP e sem limitação de taxa ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md)) |
 
 **Por que "liberar com ressalvas" e não "liberar" nem "não liberar".** Os quatro limitadores de nota e as quatro metas mensuráveis têm evidência, mas há metas não atingidas e riscos aceitos que um avaliador precisa ver (seção 4). "Liberar" sem ressalvas exigiria o professor validar a hipótese de 300 ms ou o RNF-08b medido em outro ambiente dentro da meta.
@@ -21,7 +23,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 
 | Critério | Resultado | Evidência |
 | --- | --- | --- |
-| Aplicação que não executa | **Atendido** | Clone limpo da `v1.0.0-rc1` sobe seguindo só o README ([limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5); `./mvnw -B verify` com 5 execuções consecutivas verdes em clone novo (F7-19); defeito real BUG-019 achado e corrigido |
+| Aplicação que não executa | **Atendido** | Clone limpo da `v1.0.0-rc2` (commit `d2b6af1`) sobe seguindo só o README, com o `verify` passando em 539 s ([limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.6; a primeira tentativa falhou por ambiente, sem alterar o repositório); o da `v1.0.0-rc1` está na seção 2.5; `./mvnw -B verify` com 5 execuções consecutivas verdes em clone novo (F7-19); defeito real BUG-019 achado e corrigido |
 | Pipeline ausente | **Atendido** | [ci.yml](../.github/workflows/ci.yml); `main` protegida com `test`, `frontend`, `e2e` e `segredos` obrigatórios e SonarCloud verde como regra de trabalho; vermelho intencional que barrou o merge ([limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 3) |
 | Falha de autorização | **Atendido** | `AutorizacaoApiIT.ct117` (141 casos) contra [matriz-autorizacao.md](testes/matriz-autorizacao.md); matriz fica vermelha quando a autorização é quebrada ([mutacao-manual.md](testes/mutacao-manual.md), experimentos 11 e 12) |
 | Possibilidade de dupla reserva | **Atendido** | `ConcorrenciaApiIT` verde (7 de 7) e vermelho sem a constraint (7 de 7 falhas por asserção) |
@@ -30,7 +32,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 
 | Meta | Valor | Resultado | Evidência |
 | --- | --- | --- | --- |
-| Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
+| Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (commit da tag); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
 | Cobertura de branches, 70% | **86,88%** (523 de 602) | Atingida | Mesmo run |
 | Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 18 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
 | Bugs ou vulnerabilidades críticos, 0 | 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud (Quality Gate aprovado); 0 alertas do Dependabot no Maven e 0 no front; nenhum defeito aberto de severidade crítica ou alta | Atingida | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [alertas-dependabot.md](testes/alertas-dependabot.md); [defeitos/README.md](defeitos/README.md) |

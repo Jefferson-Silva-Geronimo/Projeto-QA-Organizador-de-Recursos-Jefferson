@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5.
+Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5 e no da tag `v1.0.0-rc2` (`d2b6af1`) na seção 2.6.
 
 ### 2.1 Método
 
@@ -80,6 +80,28 @@ Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o b
 | 4 | Depois de um `docker pull` da imagem fixada por digest feito no PowerShell (resposta: "Image is up to date") | **Passou** (tabela acima) |
 
 **O que isto é e o que não é.** O README não foi alterado entre as tentativas e o passo 2 é o do README; não é defeito do projeto, e sim do ambiente desta máquina. **Lacuna:** não foi investigado por que o auxiliar de credenciais não foi achado no shell da sessão, mesmo com o diretório no `PATH`, nem se uma máquina sem a imagem em cache e sem o auxiliar de credenciais encontraria o mesmo erro. Nas três tentativas que falharam, os passos 3 a 6 **não foram executados**; só a quarta os exercitou. O tempo de 528 s é o da quarta tentativa e não inclui as anteriores.
+
+### 2.6 Rodada 4: commit da tag `v1.0.0-rc2` (`d2b6af1`), 26/10/2026: PASSOU na segunda tentativa
+
+**Método:** o da seção 2.5: clone do repositório público numa pasta temporária fora do projeto, `git checkout --detach v1.0.0-rc2`, só a seção "Como subir" e "Como testar" do README, `.env` gerado na hora com valores fictícios (nunca impresso), num script que mede o tempo acumulado de cada passo. O `CLASSPATH` da máquina foi limpo para o percurso. O `verify` rodou depois de encerrar a aplicação e o banco do "Como subir", como pede "Requisitos para rodar o `verify`".
+
+**Resultado da tentativa que passou** (tempos acumulados desde o início do script):
+
+| Passo do README | Resultado | Tempo acumulado |
+| --- | --- | --- |
+| Clone no commit `d2b6af1` (tag `v1.0.0-rc2`) | feito | 12 s |
+| 1. `.env` | preenchido; sobraram `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY`, que o README declara opcionais | 13 s |
+| 2. `docker compose up -d postgres` | feito; banco `healthy` | 23 s e 40 s |
+| 3 e 4. `./mvnw spring-boot:run` e `GET /actuator/health` | HTTP 200, `{"status":"UP"}`; `Started OrganizacaoRecursosApplication in 21.199 seconds` | **150 s** (clone até a aplicação no ar) |
+| 5. `POST /api/auth/login` (Administrador do bootstrap) e `GET /api/auth/eu` | login com token; HTTP 200 com perfil `ADMINISTRADOR` | 152 s |
+| 6. `npm ci` | saiu com 0 | 359 s (cerca de **207 s** só do `npm ci`) |
+| 6. `npm run dev` e `GET http://localhost:5173/` | HTTP 200; preflight de CORS devolve `Access-Control-Allow-Origin: http://localhost:5173` | **366 s** (do clone até o front no ar) |
+| Aplicação e banco encerrados | feito | 379 s |
+| `./mvnw -B verify` ("Como testar") | **Passou:** 231 testes de unidade e arquitetura e 434 de integração e BDD, 0 falhas, "All coverage checks have been met", `BUILD SUCCESS` | **539 s** (de 379 s a 918 s) |
+
+**A primeira tentativa falhou por ambiente, antes de chegar à aplicação.** Parou no passo 2 (`docker compose up -d postgres`, saída 1 em 15 s) com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`, a mesma mensagem das tentativas 1 a 3 da seção 2.5: o Git Bash não encontra o auxiliar de credenciais do Docker Desktop quando o compose consulta o registro para a imagem fixada por digest. Depois de um `docker pull` da imagem fixada feito no PowerShell (resposta: "Image is up to date"), a segunda tentativa passou, **sem alterar nenhum arquivo do repositório**.
+
+**O que isto é e o que não é.** O README não foi alterado entre as tentativas e o passo 2 é o do README; a falha é do ambiente desta máquina, não do projeto. **Lacuna:** não foi investigado por que o auxiliar não está no `PATH` do Git Bash. Uma só máquina e uma só conferência; outros computadores e sistemas operacionais não foram provados.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
