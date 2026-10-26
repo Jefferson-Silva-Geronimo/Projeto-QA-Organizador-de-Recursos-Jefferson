@@ -573,3 +573,18 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | **Issue 39 (R-25, BUG-017) fechada como "not planned"** | Evidência sem alterar código nem teste. (a) Desde 22/10/2026 o workflow `qualidade` teve 114 runs: 108 com sucesso, 4 com falha, 1 cancelado e 1 em andamento; nenhuma das 4 falhas foi de `NotificacaoApiIT` (Quality Gate do SonarCloud no PR 52, dois vermelhos intencionais da F7-04 e da F7-06, e `unzip` ausente no job `e2e` do PR 75). (b) 10 execuções consecutivas, sem retry, de `NotificacaoApiIT` e `NotificacaoTempoLimiteApiIT`: 10 de 10 verdes |
 | O que não mudou | A causa continua **desconhecida**. O BUG-017 permanece **mitigado, não corrigido**; o R-25 permanece **risco aceito** (Jefferson, 19/10/2026) e o R-26 a mitigação (22/10/2026). Nada foi desativado, nem a espera aumentada, nem teste alterado. Se `int01ECt103` falhar de novo, reabrir a issue com os logs |
 | Continuam adiados | `jsdom` 30, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 6) |
+
+### F7-21. Tag `v1.0.0-rc2` publicada (26/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 26/10/2026.** O autor autorizou criar e publicar a tag anotada `v1.0.0-rc2` **somente se** o portão de seis condições passasse por inteiro. Passou, e a tag foi criada e publicada.
+
+| Item | Registro |
+| --- | --- |
+| Tag e commit | `v1.0.0-rc2`, tag anotada no commit `d2b6af1` (merge do PR 98), publicada em 26/10/2026; `git ls-remote --tags origin` mostra `refs/tags/v1.0.0-rc2^{}` apontando para `d2b6af10aebe5d3fa8607b3c72cbde5eb538fbd7`. A `v1.0.0-rc1` (`276224b`) permanece como histórico e não foi movida |
+| Portão, condição 1 | Nenhum PR aberto e nenhuma issue aberta (os três PRs do Dependabot mesclados e a issue 39 fechada, F7-20) |
+| Condição 2 | Run da `main` no commit (`40373624577`) com `test`, `frontend`, `e2e` e `segredos` verdes; Quality Gate do SonarCloud OK com `revision` `d2b6af1`, 0 bugs e 0 vulnerabilidades |
+| Condição 3 | Árvore limpa (só `mvnw.cmd`, que nunca se commita) e HEAD local igual a `origin/main` |
+| Condição 4 | Nenhum `[NOME COMPLETO]`, `[COMPLETAR` ou `[CONFIRMAR` nos documentos; declaração de autoria em [decisao-qualidade.md](decisao-qualidade.md) |
+| Condição 5 | `analyze-docs` com 69 arquivos analisados, 0 erros e 0 avisos |
+| Condição 6 | Nenhum alerta do Dependabot em `frontend/` nem no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md), seção 7) |
+| Depois da tag | Clone limpo no commit da tag e documentos de evidência atualizados; ver [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.6, e [execucao-e25.md](testes/execucao-e25.md) |

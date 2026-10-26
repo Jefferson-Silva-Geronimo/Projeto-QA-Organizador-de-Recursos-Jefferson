@@ -2,11 +2,13 @@
 
 Todas as mudanças relevantes do projeto **Organização de Recursos** por versão. Formato: Adicionado, Corrigido, Alterado e Limitações conhecidas. Fonte: `git log` e pull requests do repositório (números `#nn`). Versões seguem o nome da tag.
 
-## [1.0.0-rc2], sem data: só será criada com autorização expressa
+## [1.0.0-rc2], 26/10/2026, tag em `d2b6af1`
 
-Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`). A tag `v1.0.0-rc2` **ainda não existe**.
+Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`), até o PR 98. A tag `v1.0.0-rc2` foi publicada em 26/10/2026 com autorização expressa do autor, depois de CI verde e Quality Gate OK no commit; a `v1.0.0-rc1` permanece como histórico.
 
 ### Adicionado
+- `docs/testes/execucao-e25.md`: CI no commit da tag (665 testes no back end, 910 no front, 5 E2E, JaCoCo 97,01% e 86,88%).
+- Mutação dos quatro requisitos críticos que faltavam (RF-03, RF-09, RF-12 e RF-13): 22 de 22 críticos com prova de que o teste falha (PR 98).
 - Registro do clone limpo no commit da `v1.0.0-rc1` em `docs/testes/limitadores-de-nota.md`, seção 2.5 (#91).
 - Plano de projeto versionado, `docs/plano-de-projeto.md`, e atribuição das lacunas A1 a A8 à análise da equipe (#92, F7-17 e F7-18).
 - `docs/limitacoes-e-divida-tecnica.md`, com o que está aberto ou declarado (#94).
@@ -18,6 +20,9 @@ Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`). A tag
 - Linguagem de sessão e de primeira pessoa removida da RTM e de documentos; run da execução E-24 conciliado em `40116523445`; DS-11 atualizada (#94).
 
 ### Alterado
+- Atualizações do front mescladas antes da tag: `vite` 8.3.5 (#81), `@tanstack/react-query` 5.104.5 (#82) e `typescript-eslint` 8.72.0 (#83), sem alerta de segurança (F7-20).
+- Issue 39 (R-25, BUG-017) fechada como "not planned": causa desconhecida, BUG-017 mitigado e risco aceito (F7-20).
+- Declaração de autoria preenchida em `docs/decisao-qualidade.md`; o GitHub Copilot não foi usado.
 - Citações da especificação passam do número da seção ao nome da seção, porque a página oficial não numera os títulos (#94).
 - Configurações de outras ferramentas de agente (`.antigravity`, `.codex`, `.cursor`, `.gemini`, `.grok`, `.kimi`) deixam de ser versionadas; o projeto foi desenvolvido com o Claude Code (os agentes do GitHub Copilot em `.github/agents/` não foram usados) (#94).
 - `AGENTS.md` sem o modelo genérico do AIOX; `.claude/CLAUDE.md` importa `AGENTS.md` (#94).

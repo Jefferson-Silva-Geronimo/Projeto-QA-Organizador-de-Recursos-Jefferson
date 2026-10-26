@@ -60,7 +60,7 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 | `ArquiteturaTest` | Seis regras de camada MVC: o model não depende de Spring, persistência nem das outras camadas, o controller não acessa repository, o service não depende de controller nem de DTO (ADR-014) |
 | `ContextoIT` | A aplicação sobe com PostgreSQL real, o Flyway aplica a baseline e o relógio é UTC (ADR-005, ADR-009) |
 
-O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). Na última execução da CI na `main` (E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe e por arquivo está em [docs/testes/execucao-e24.md](docs/testes/execucao-e24.md).
+O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). No commit da tag `v1.0.0-rc2` (E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe está em [docs/testes/execucao-e25.md](docs/testes/execucao-e25.md).
 
 ### Requisitos para rodar o `verify`
 
@@ -117,6 +117,7 @@ O workflow [ci.yml](.github/workflows/ci.yml), chamado `qualidade`, roda quatro 
 | `40099734514` | Vermelho, intencional | Asserção de `PeriodoTest` invertida num PR descartável, com o check obrigatório `test` barrando o merge (F7-04); PR fechado sem mesclar |
 | `40109437336` | Vermelho, intencional | Soma SHA-256 do Maven errada num PR descartável, com `test` e `e2e` barrando (F7-06); PR fechado sem mesclar |
 | [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) | Verde | `main` em `c9240cd`: back end 665 testes, front 910 e E2E 5 (E-24) |
+| [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) | Verde | `main` em `d2b6af1`, commit da tag `v1.0.0-rc2`: back end 665 testes, front 910 e E2E 5; JaCoCo 97,01% e 86,88%; Quality Gate OK (E-25) |
 
 ### SonarCloud (passos da equipe)
 
@@ -163,7 +164,7 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execução E-24, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
+  testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execuções E-24 e E-25, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   limitacoes-e-divida-tecnica.md   o que está aberto ou declarado: risco aceito, limitação, suposição e dívida técnica
@@ -200,19 +201,19 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório de qualidade](docs/relatorio-qualidade.md) e o [mapa de telas](docs/prd/navegacao-telas.md) |
-| 7 | Fechamento, relatório de qualidade e prova oral | Desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-19, `verify` robusto e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` foi publicada em 24/10/2026. Pacote de entrega pronto: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [decisão de qualidade](docs/decisao-qualidade.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md). **Pendente:** a tag `v1.0.0-rc2`, que só será criada com autorização expressa |
+| 7 | Fechamento, relatório de qualidade e prova oral | **Concluída em 26/10/2026.** Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) e [decisão de qualidade](docs/decisao-qualidade.md) (**liberar com ressalvas**, Jefferson Silva Geronimo), decisões F7-01 a F7-21, `verify` robusto, os três PRs do Dependabot do front mesclados, 22 de 22 requisitos críticos com prova de mutação e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` (24/10/2026, `276224b`) **permanece como histórico**; a tag **`v1.0.0-rc2`** foi publicada em 26/10/2026 no commit `d2b6af1`, com CI verde e Quality Gate OK. Pacote de entrega: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md) |
 
 ## Pacote de evidências (release candidate)
 
-Os números abaixo vêm do run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376) da `main`; os commits posteriores mudaram só documentação. A decisão de qualidade é **liberar com ressalvas** (Jefferson Silva, 24/10/2026), e as ressalvas estão no [relatório final](docs/relatorio-qualidade.md).
+Os números abaixo vêm do run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) da `main`, no commit `d2b6af1`, o da tag `v1.0.0-rc2`; os commits posteriores mudaram só documentação e o commit avaliado continua sendo o da tag. A decisão de qualidade é **liberar com ressalvas** (Jefferson Silva Geronimo, 24/10/2026), e as ressalvas estão no [relatório final](docs/relatorio-qualidade.md).
 
 | Evidência | Resultado | Onde |
 | --- | --- | --- |
-| Testes na CI | Back end 665 (231 de unidade e arquitetura, 434 de integração e BDD), front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | [docs/testes/execucao-e24.md](docs/testes/execucao-e24.md) |
-| JaCoCo | Linhas 97,01% (meta 80%) e branches 86,88% (meta 70%) | Artefato `relatorio-jacoco` do run; [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) |
-| SonarCloud | Quality Gate aprovado, 0 bugs, 0 vulnerabilidades, 0 issues abertas | [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson) |
+| Testes na CI | Back end 665 (231 de unidade e arquitetura, 434 de integração e BDD), front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | [docs/testes/execucao-e25.md](docs/testes/execucao-e25.md) |
+| JaCoCo | Linhas 97,01% (meta 80%) e branches 86,88% (meta 70%) | Artefato `relatorio-jacoco` do run (expira em 25/11/2026); [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) |
+| SonarCloud | Quality Gate aprovado no commit da tag, 0 bugs, 0 vulnerabilidades, 0 issues abertas | [Painel do projeto](https://sonarcloud.io/dashboard?id=Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson) |
 | Rastreabilidade | 55 linhas na RTM, 100% das linhas críticas com teste e execução verde | [RTM.md](RTM.md); [docs/testes/auditoria-rtm.md](docs/testes/auditoria-rtm.md) |
-| Limitadores de nota | Clone limpo sobe, pipeline com vermelho intencional barrado, matriz de autorização (141 testes), dupla reserva barrada | [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md) |
+| Limitadores de nota | Clone limpo sobe no commit da tag (front em 366 s, `verify` em 539 s), pipeline com vermelho intencional barrado, matriz de autorização (141 testes), dupla reserva barrada | [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md) |
 | Defeitos | 27 registrados: 26 fechados e 1 mitigado (BUG-017) | [docs/defeitos/README.md](docs/defeitos/README.md) |
 | Desempenho | RNF-08b **não atendido** (p95 de 568 a 886 ms contra 300 ms) | [docs/performance/resultado-02.md](docs/performance/resultado-02.md) |
 | Índice | Onde achar cada evidência | [docs/evidencias/README.md](docs/evidencias/README.md) |
@@ -240,7 +241,7 @@ Fonte: especificação, seção "Metas mensuráveis".
   essa exigência está em [docs/perguntas-professor.md](docs/perguntas-professor.md) (F7-16, item 14).
 - **Histórico de trabalho:** está no `git log` e nos pull requests do GitHub, cada um com os checks e a revisão assistida registrados.
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
-- **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40120487376`); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
+- **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40373624577`, commit da tag); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
 - **Alertas do Dependabot:** todos no framework `.aiox-core/`, nenhum no Maven nem no front (F7-08). Número, manifestos, severidades e justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 

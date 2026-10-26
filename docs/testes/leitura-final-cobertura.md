@@ -62,7 +62,7 @@ A meta do projeto vale para o conjunto (`BUNDLE`, regra do `pom.xml`: linhas 0,8
 | --- | --- | --- |
 | Alertas do Dependabot | Todos em `.aiox-core/` e 0 fora (0 em `frontend/` e 0 no Maven); o número está em [alertas-dependabot.md](alertas-dependabot.md) | `gh api .../dependabot/alerts`; [alertas-dependabot.md](alertas-dependabot.md) |
 | Issues abertas no GitHub | 1: a #39, o R-25 (`NotificacaoApiIT.int01ECt103`) | `gh issue list` |
-| Pull requests abertos | 3, do Dependabot (#81, #82 e #83), adiados até depois da tag (F7-15) | `gh pr list` |
+| Pull requests abertos (em 24/10/2026) | 3, do Dependabot (#81, #82 e #83), então adiados (F7-15); mesclados antes da tag, F7-20 | `gh pr list` |
 
 ## 6. Lacunas e limites
 
@@ -75,3 +75,20 @@ A meta do projeto vale para o conjunto (`BUNDLE`, regra do `pom.xml`: linhas 0,8
 | Quality Gate | Limite | O Quality Gate do SonarCloud avalia o **código novo** (as condições `new_*`); a cobertura do projeto inteiro é a do JaCoCo e a medida `coverage` do SonarCloud acima |
 | Critério de "crítico" | Suposição | "Bugs ou vulnerabilidades críticos" foi lido como **severidade CRITICAL ou BLOCKER**, e todos os totais são 0; como não há issue aberta de nenhuma severidade, a leitura da palavra "crítico" não altera o resultado |
 | Mutação | Lacuna | O relatório de mutação da Fase 4 ([mutacao.md](mutacao.md)) não foi repetido nesta leitura |
+
+## 7. Leitura no commit da tag `v1.0.0-rc2` (26/10/2026)
+
+Leitura repetida **no commit da tag**, sem assumir os números das seções 1 a 6 (que são de 24/10/2026, commit `608cdbc`).
+
+| Item | Valor |
+| --- | --- |
+| Commit lido | `d2b6af1` (tag `v1.0.0-rc2`) |
+| Run da CI | [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (push na `main`), jobs `test`, `frontend`, `e2e` e `segredos` com sucesso |
+| Testes | Back end **665** (231 de unidade e arquitetura e 434 de integração e BDD), front **910** em 56 arquivos, E2E **5 de 5**, 0 falhas ([execucao-e25.md](execucao-e25.md)) |
+| JaCoCo, linhas | **97,01%** (1751 de 1805), meta de 80% atingida |
+| JaCoCo, branches | **86,88%** (523 de 602), meta de 70% atingida |
+| Origem | Artefato `relatorio-jacoco` do run, `jacoco.csv` (soma de `LINE_*` e `BRANCH_*` das classes); o log do job `test` diz "All coverage checks have been met"; o artefato expira em 25/11/2026 |
+| SonarCloud | API pública, branch `main`, análise de 2026-10-26 às 18:04 UTC com `revision` `d2b6af1`: Quality Gate **OK**, 0 bugs, 0 vulnerabilidades, 0 code smells, 0 security hotspots, 0,0% de duplicação, 0 issues abertas; a cobertura que o SonarCloud calcula (94,5%) é a do Java e difere da do JaCoCo por critério |
+| Dependabot | Todos os alertas abertos em `.aiox-core/` e 0 fora; o número está em [alertas-dependabot.md](alertas-dependabot.md) |
+
+A lacuna da seção 6 continua: o front não tem cobertura medida e o SonarCloud não analisa o TypeScript.
