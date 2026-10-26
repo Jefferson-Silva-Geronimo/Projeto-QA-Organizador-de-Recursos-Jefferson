@@ -20,3 +20,25 @@ Se uma voltar a falhar, a conduta é avisar Jefferson antes de qualquer ação, 
 
 Regra de registro: cada nova ocorrência entra com data, contexto e o resultado de repetir o teste sozinho e a suíte inteira.
 
+## Ocorrências de infraestrutura da CI
+
+Falhas da própria CI, sem teste nem código envolvido. Não alteram nenhum teste.
+
+### I-1. Job `e2e` vermelho no push da `main` por falha de rede no build da imagem (26/10/2026)
+
+| Item | Registro |
+| --- | --- |
+| Quando e onde | 26/10/2026, às 18:37 UTC, run [`40379344363`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40379344363) (push na `main`), commit `e0ab982` (merge do PR 99) |
+| Job e passo | Job `e2e`, passo "Subir PostgreSQL, API e front (compose.e2e.yaml)", durante o build da imagem da API |
+| Comando | `RUN chmod +x mvnw && ./mvnw -B -ntp -q dependency:go-offline` (`Dockerfile`, linha 13) |
+| Linha exata do erro | `[ERROR] Failed to execute goal org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline (default-cli) on project organizacao-recursos: Execution default-cli of goal org.apache.maven.plugins:maven-dependency-plugin:3.8.1:go-offline failed: Plugin org.apache.maven.plugins:maven-dependency-plugin:3.8.1 or one of its dependencies could not be resolved:` e, na linha seguinte, `[ERROR] 	Failed to read artifact descriptor for org.apache.maven.shared:maven-artifact-transfer:jar:0.13.1` |
+| Duração | Job `e2e` de 18:37:23 a 18:38:04 UTC: **41 s**; o Maven falhou 7 s depois de começar. **Nenhum teste Playwright foi executado** |
+| Outros jobs do mesmo run | `test` verde (18:37:23 a 18:43:55), `frontend` verde e `segredos` verde |
+| Causa apurada | **Falha temporária de rede ao resolver dependência Maven no build da imagem.** A causa de rede exata **não foi determinada**, porque o flag `-q` do `Dockerfile` esconde a mensagem de transferência |
+| Evidência 1: o que mudou | `git diff --stat d2b6af1 e0ab982`: 11 arquivos, todos de documentação (`CHANGELOG.md`, `README.md`, `RTM.md` e 8 arquivos em `docs/`); nenhuma linha em `src`, `frontend`, `pom.xml`, `Dockerfile`, compose nem `ci.yml` |
+| Evidência 2: o artefato existe | Em 26/10/2026, o `.pom` e o `.jar` de `maven-artifact-transfer` 0.13.1 respondem HTTP 200 no Maven Central |
+| Evidência 3: o mesmo build passou | Job `e2e` verde no commit da tag `v1.0.0-rc2` (run `40373624577`, 17:58:46 a 18:08:03), no PR 99 antes do merge (run `40378262405`, 18:30:03 a 18:32:20) e no push seguinte (commit `a04f263`, merge do PR 100, run `40383508408`, 19:05:09 a 19:13:12; concluído com sucesso às 19:13:13 UTC). Esse último é o run mais recente da `main` |
+| Evidência 4: histórico desde 22/10/2026 | Dos 127 runs do workflow `qualidade`, 37 são anteriores à existência do job `e2e`; nos outros 90 o job `e2e` teve **86 sucessos, 3 falhas e 1 cancelamento**. As 3 falhas: este run (rede); `40109690777` (PR 75, 24/10/2026), `Failed to validate Maven distribution SHA-256` porque a imagem não tinha `unzip` (corrigido pela F7-14); `40109437336` (PR descartável, 24/10/2026), mesma mensagem, de propósito (soma errada, F7-06). O cancelamento é o run `40362531870` do PR 83 do Dependabot, cancelado pela regra `cancel-in-progress` da CI quando o branch foi atualizado 23 s depois. Nenhuma outra falha do `e2e` por rede |
+| O run **não foi reexecutado** | De propósito: reexecutar sobrescreveria o status do commit `e0ab982` e apagaria o registro da ocorrência. A decisão está na F7-22 de [decisoes-equipe.md](../decisoes-equipe.md) |
+| Efeito na decisão | O commit avaliado **continua sendo o da tag `v1.0.0-rc2` (`d2b6af1`)**, cujo run (`40373624577`) está verde. A ocorrência não altera a decisão de qualidade ([decisao-qualidade.md](../decisao-qualidade.md), seção 1) |
+| Limitação e dívida | [limitacoes-e-divida-tecnica.md](../limitacoes-e-divida-tecnica.md), seção 3: o `e2e` baixa as dependências Maven do zero; repetir o `go-offline` ou tirar o `-q` é dívida técnica não aplicada |
