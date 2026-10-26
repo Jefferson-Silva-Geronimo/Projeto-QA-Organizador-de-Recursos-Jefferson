@@ -36,7 +36,7 @@ Sala A (sem restrição, 07:00 às 22:00, segunda a sexta) e Projetor P-001 (res
 
 As duas primeiras linhas e a última são os valores de CT-080 (a coluna "12:00 às 14:00" de CT-080 foi trocada por
 "12:00 às 13:00", que prova a mesma fronteira). As linhas de um segundo não estavam em CT-080; vêm do pedido de
-fronteira "cruza por um segundo" do plano mestre (Prompt 4.E).
+fronteira "cruza por um segundo" do [plano de projeto](../plano-de-projeto.md) (Prompt 4.E).
 
 ### Tabela de exemplos de BDD-02 e BDD-07
 
@@ -62,4 +62,4 @@ fronteira "cruza por um segundo" do plano mestre (Prompt 4.E).
 Nenhuma fronteira ficou sem regra neste conjunto: RN-11 define o período semiaberto e CT-080 fixa os valores.
 A granularidade em segundos é uma **suposição**: o período usa `Instant` sem arredondamento, portanto um segundo
 conta. Se o professor definir granularidade mínima de minuto, as duas linhas de um segundo mudam para o
-valor definido. A pergunta consta em [perguntas-professor.md](../perguntas-professor.md).
+valor definido. A decisão da equipe (24/10/2026) consta em [perguntas-professor.md](../perguntas-professor.md).

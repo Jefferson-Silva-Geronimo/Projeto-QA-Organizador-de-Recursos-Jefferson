@@ -38,10 +38,10 @@ aumentar a evidência. A rastreabilidade por caso está na RTM (`RTM.md`) e em `
 | Matriz de autorização e entrada inválida | CT-117 a CT-121 | `d793879` | `73488e5` (BUG-008) | — |
 | Falha ao gravar a tentativa de conflito (BUG-009) | `FalhaNaTentativaApiIT` | `0a80fc7` | `61ce37d` | — |
 | Lacunas de risco da cobertura | LacunasDeRiscoApiIT | — | — | — |
-| Limite de tentativas de login (SEC-01): contagem de falhas | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: janela deslizante em trinca (599999, 600000, 600001 ms) | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: configuração inválida recusada | `LimiteDeLoginTest` | `test(red)` desta sessão | `feat(green)` | — |
-| Limite de login: bloqueio por API com a senha correta | `LimiteDeLoginApiIT` | `test(red)` desta sessão (esperado 401, obtido 200) | `feat(green)` | — |
+| Limite de tentativas de login (SEC-01): contagem de falhas | `LimiteDeLoginTest` | `9369848` | `2fee736` | — |
+| Limite de login: janela deslizante em trinca (599999, 600000, 600001 ms) | `LimiteDeLoginTest` | `8068d35` | `c809f11` | — |
+| Limite de login: configuração inválida recusada | `LimiteDeLoginTest` | `0899457` | `2a51d65` | — |
+| Limite de login: bloqueio por API com a senha correta | `LimiteDeLoginApiIT` | `01b46c3` (esperado 401, obtido 200) | `08e26f0` | — |
 | Limite de login: 10 casos de API (tempo em trinca, zera no sucesso, resposta idêntica, não estende, conta inexistente, normalização, limpeza) | `LimiteDeLoginApiIT` | — (nasceram verdes) | — | — |
 | Lacunas de risco do PIT (horas de funcionamento, eventos de auditoria, período da reserva) | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest`, `ReservaTest` | — | — | `721180b` (código morto removido) |
 | Cenários BDD de aprovação e bloqueio (BDD-01 a BDD-08, 15 cenários) | `aprovacao-bloqueio.feature`, `CucumberIT` | — | — | — |
@@ -67,7 +67,7 @@ marcados à parte para não inflar a evidência.
 O gate do JaCoCo roda em `verify`: mínimo de 80% de linhas e 70% de branches no conjunto (ADR-011). A
 suíte completa é executada com `./mvnw clean verify`; o relatório fica em `target/site/jacoco/`.
 
-Medição desta sessão (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **468 testes**, sendo 136 de unidade e
+Medição (17/10/2026, `./mvnw -B clean verify`, após BUG-009): **468 testes**, sendo 136 de unidade e
 arquitetura (surefire) e 332 de integração e BDD (failsafe), 0 falhas; **96,7% de linhas** (1551/1604) e **84,6% de
 branches** (438/518). O relatório anterior citava "313 testes": esse número era só a fase de integração.
 
@@ -94,7 +94,7 @@ fonte foi restaurada (nada disso foi commitado).
 | `TrocaDeProvedorTest` (3 casos) | `ENVIADA`, `RECUSADA` e `FALHA_TEMPORARIA` mapeados para o status errado em `DespachoDeNotificacoesService` | 3 vermelhos: `expected: PENDENTE but was: FALHA`, `expected: FALHA but was: PENDENTE`, `expected: ENVIADA but was: PENDENTE` |
 | `HorasDeFuncionamentoTest`, `EventoAuditoriaTest` | PIT (mutantes gerados pela ferramenta) | 0 sobreviventes entre os mutantes cobertos ([mutacao.md](mutacao.md)) |
 
-### Limites desta sessão
+### Limites da avaliação
 
 - BDD e CT-106 não são TDD: o código existia. Valem como evidência de comportamento especificado e verificado.
 - `ProvedorIsoladoArquiteturaTest` é redundante com a visibilidade do pacote (`WebhookNotificador` não é público) e
@@ -191,3 +191,18 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Bloqueios de manutenção (T08): lista, levantar e novo bloqueio em duas etapas com as recusas do servidor (31 testes da tela, 1 de rota) | `a5aaf96` | `15739a6` |
 | Bloqueios (T08), levantar com motivo: achado do navegador real, o servidor exige o motivo e o contrato o marca como opcional (12 testes de levantar substituem os 6 anteriores, declarado no commit) | `5e6c7d3` | `bfefdfb` |
 | Histórico de auditoria traz `atorNome`, só o nome e nunca o e-mail, e o usuário desativado mantém o nome (F6-17) | `cb31a0c` | `1c7fc09` (contrato `5b861e3`) |
+
+## Pull requests mesclados por fase
+
+Registro de quais pull requests entraram em cada fase e com que merge commit. Todos em merge commit, sem rebase. Origem: `gh pr list --state merged` em 22/10/2026 (Fase 6) e os registros das fases 4 e 5.
+
+| Fase | Pull requests |
+| --- | --- |
+| 3 e 4 | PR 1 (`12310c3`) e PR 2 (`cd04ee6`), mesclados em 17/10/2026 com confirmação de Jefferson |
+| 5 | Mesclados: #10, #11, #12, #15 e #17. Fechados sem mesclar: #13, #14 e #16 (dependências) |
+| 6, documentação e decisões | #19 (`68a1686`), #20 (`e7baa22`), #22 (`d366671`), #26 (`540a483`), #53 (`30541b2`), #55 (`f4267b0`), #56 (`79667d2`) |
+| 6, back end de apoio ao front | #21 (`c61ef3f`, F6-06), #25 (`8ceff68`, F6-10), #37 (`4617492`, F6-14), #40 (`8ce9edf`, F6-15), #41 (`95cddda`, R-26), #44 (`7a3ca9c`, F6-16), #46 (`333de64`, F6-17), #54 (`dd462dc`, F6-19) |
+| 6, front end | #23 (`32b88a0`), #32, #34, #36, #38, #43, #45, #47, #48, #49, #50, #51 |
+| 6, E2E e CI | #52 (`8814873`) |
+
+Na Fase 6, os números que faltam na sequência (por exemplo #24, #27 a #31, #33, #35, #39 e #42) são issues ou PRs fechados sem mesclar (#24 é o Dependabot, F6-13).

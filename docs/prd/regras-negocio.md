@@ -1,6 +1,6 @@
 # Regras de negócio
 
-Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 4. As regras RN-09 em diante são **decisões da equipe** de 12/10/2026, registradas em [perguntas-abertas.md](perguntas-abertas.md), e nunca devem ser confundidas com as da especificação.
+Fonte das regras RN-01 a RN-08: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Regras críticas". As regras RN-09 em diante são **decisões da equipe** de 12/10/2026, registradas em [perguntas-abertas.md](perguntas-abertas.md), e nunca devem ser confundidas com as da especificação.
 
 ## Como ler
 
@@ -47,7 +47,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-01. O término deve ser posterior ao início
 
 - **Texto fiel:** o término deve ser posterior ao início.
-- **Origem:** especificação, seção 4 (Tempo e concorrência). Detalhe da fronteira em RN-11.
+- **Origem:** especificação, seção "Regras críticas" (Tempo e concorrência). Detalhe da fronteira em RN-11.
 - **Aceita:** Sala A, 20/10/2026, das 14:00 às 16:00.
 - **Rejeita:** das 14:00 às 14:00 (duração zero); das 16:00 às 14:00 (término antes do início).
 - **Técnica:** valor limite, com término antes, igual e depois do início.
@@ -56,7 +56,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-02. Reservas do mesmo recurso não podem se sobrepor
 
 - **Texto fiel:** reservas do mesmo recurso não podem se sobrepor (sala, material ou professor).
-- **Origem:** especificação, seção 4 (Tempo e concorrência).
+- **Origem:** especificação, seção "Regras críticas" (Tempo e concorrência).
 - **Aceita:** Sala A com reserva das 14:00 às 16:00; nova reserva da mesma sala das 16:00 às 18:00 (fronteira, ver RN-11).
 - **Rejeita:** nova reserva da Sala A das 15:00 às 17:00. Também rejeita a Sala B das 15:00 às 17:00 com o Professor 1 já alocado das 14:00 às 16:00 em outra sala.
 - **Técnica:** valor limite nas fronteiras e partição por tipo de recurso (sala, professor, material).
@@ -64,7 +64,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-03. Duas solicitações simultâneas produzem uma única reserva aceita
 
 - **Texto fiel:** duas solicitações simultâneas devem produzir uma única reserva aceita.
-- **Origem:** especificação, seção 4 (Tempo e concorrência).
+- **Origem:** especificação, seção "Regras críticas" (Tempo e concorrência).
 - **Aceita:** Solicitante 1 e Solicitante 2 pedem a Sala A em 20/10/2026, das 14:00 às 16:00, no mesmo instante: um pedido é aceito.
 - **Rejeita:** o outro pedido recebe recusa por conflito (409), e não existem duas reservas ativas para a mesma sala e horário.
 - **Técnica:** teste de concorrência com banco real, com repetição.
@@ -72,7 +72,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-04. Recursos em manutenção não podem ser reservados
 
 - **Texto fiel:** recursos em manutenção não podem ser reservados.
-- **Origem:** especificação, seção 4 (Tempo e concorrência).
+- **Origem:** especificação, seção "Regras críticas" (Tempo e concorrência).
 - **Aceita:** Sala A bloqueada em 21/10/2026 das 08:00 às 12:00; reserva das 12:00 às 14:00 (fronteira, ver RN-11); reserva das 07:00 às 08:00 também aceita pela fronteira, pois cabe na janela (RN-14).
 - **Rejeita:** reserva da Sala A em 21/10/2026 das 11:00 às 13:00.
 - **Técnica:** valor limite das bordas do período de bloqueio.
@@ -80,7 +80,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-05. Estados da reserva
 
 - **Texto fiel:** fluxo principal `SOLICITADA → APROVADA → EM_USO → CONCLUÍDA`. Estados alternativos: rejeitada, cancelada e não compareceu.
-- **Origem:** especificação, seção 4 (Estados e auditoria). Quem faz cada transição e sob que condição está na seção 3 deste documento.
+- **Origem:** especificação, seção "Regras críticas" (Estados e auditoria). Quem faz cada transição e sob que condição está na seção 3 deste documento.
 - **Aceita:** reserva APROVADA vai a EM_USO quando o Responsável registra o início do uso.
 - **Rejeita:** reserva CONCLUÍDA volta a EM_USO; reserva SOLICITADA vai direto a CONCLUÍDA.
 - **Técnica:** tabela de transição de estados, cobrindo as transições proibidas.
@@ -88,7 +88,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-06. Somente responsáveis aprovam recursos restritos
 
 - **Texto fiel:** somente responsáveis aprovam recursos restritos.
-- **Origem:** especificação, seção 4 (Estados e auditoria). Segregação em RN-16.
+- **Origem:** especificação, seção "Regras críticas" (Estados e auditoria). Segregação em RN-16.
 - **Aceita:** Responsável 1 aprova a reserva do Solicitante 1 que inclui o Projetor P-001.
 - **Rejeita:** Solicitante 1 ou Administrador 1 tenta aprovar a mesma reserva (403, sem mudança de estado).
 - **Técnica:** tabela de decisão perfil × tipo de recurso × restrito (seção 4).
@@ -96,7 +96,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-07. Reservas iniciadas não podem ser apagadas
 
 - **Texto fiel:** reservas iniciadas não podem ser apagadas.
-- **Origem:** especificação, seção 4 (Estados e auditoria). Reforçada por RN-27.
+- **Origem:** especificação, seção "Regras críticas" (Estados e auditoria). Reforçada por RN-27.
 - **Aceita:** reserva SOLICITADA do Solicitante 1 é cancelada (mudança de estado, sem apagar).
 - **Rejeita:** qualquer tentativa de apagar uma reserva EM_USO ou CONCLUÍDA, ou de cancelar uma reserva EM_USO.
 - **Técnica:** partição por estado (não iniciada e iniciada).
@@ -104,7 +104,7 @@ Esta convenção vale para todos os documentos do projeto, para o modelo de dado
 ### RN-08. Toda mudança de estado gera auditoria
 
 - **Texto fiel:** toda mudança de estado deve gerar auditoria.
-- **Origem:** especificação, seção 4 (Estados e auditoria). Ampliada por RN-29.
+- **Origem:** especificação, seção "Regras críticas" (Estados e auditoria). Ampliada por RN-29.
 - **Aceita:** a transição de APROVADA para EM_USO grava um evento com estado anterior, novo estado, ator e instante.
 - **Rejeita:** transição gravada sem o evento correspondente é defeito.
 - **Técnica:** teste de integração com banco real, conferindo o evento de cada transição.

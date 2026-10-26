@@ -1,15 +1,15 @@
 # Avaliação arquitetural, ciclo 01: com o código de pé
 
 Compara, cenário a cenário (CEN-01 a CEN-09), o que a arquitetura promete em [ciclo-00.md](ciclo-00.md) e
-[arquitetura.md](../arquitetura.md) com o que o código faz. Prompt 4.I do plano mestre. Este passo **não alterou
+[arquitetura.md](../arquitetura.md) com o que o código faz. Passo 4.I do [plano de projeto](../plano-de-projeto.md). Este passo **não alterou
 código**: as divergências viram ações priorizadas. A correção de DV-01 veio depois, em passo próprio com TDD (seção 5). Data da medição: 17/10/2026, branch `fase-4/backend`.
 
 ## 1. Como ler
 
-- **Fato**: confirmado em arquivo e linha, ou em execução desta sessão.
+- **Fato**: confirmado em arquivo e linha, ou em execução registrada neste documento.
 - **Não verificado**: nenhuma evidência foi produzida; consta como tal, nunca como aprovado.
 - Linhas citadas são do commit da avaliação; podem mudar com edições posteriores.
-- Medições desta sessão: `./mvnw -B clean verify` verde, 468 testes (136 de unidade e arquitetura, 332 de
+- Medições de 17/10/2026: `./mvnw -B clean verify` verde, 468 testes (136 de unidade e arquitetura, 332 de
   integração e BDD), 0 falhas; cobertura de linhas 96,7% (1551/1604) e de branches 84,6% (438/518); mutação do
   pacote `model` 77% (60/78), 0 sobreviventes ([mutacao.md](../testes/mutacao.md)).
 - **Desempenho:** medido na rodada 01 da Fase 5 (ver CEN-04). SonarCloud: Quality Gate aprovado no PR 2.
@@ -33,7 +33,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 | ID | Divergência | Evidência | Gravidade |
 | --- | --- | --- | --- |
 | DV-01 (**corrigida em `61ce37d`, BUG-009**) | A decisão de 15/10/2026 (ADR-003; [arquitetura.md](../arquitetura.md), seção 13.2) diz que, se a gravação da tentativa de conflito falhar, "o 409 é mantido e a perda vai para o log". O código **não captura** a falha: `registrarEConverter` chama `tentativas.registrar(...)` sem `try/catch` e `ReservaService` não tem `Logger`. Uma falha na gravação vira erro 500 em vez de 409 | `ReservaService.java:97-98`, `:105-106` e `:329-335`; `JdbcTentativaConflitoRepository.java:20-37` | Alta: a resposta de RF-06 e de RN-03 muda; R-19 foi "aceito por decisão" **com** o 409 mantido |
-| DV-02 | `arquitetura.md` descrevia camadas hexagonais; o código é MVC | Corrigido nesta sessão (`1a5b5bd`) | Resolvida |
+| DV-02 | `arquitetura.md` descrevia camadas hexagonais; o código é MVC | Corrigido (`1a5b5bd`) | Resolvida |
 | DV-03 | O relatório anterior citava 313 testes; o total é a soma de duas fases do `verify` (unidade e integração) | Este documento, seção 1 | Baixa, só documentação |
 
 ## 4. Riscos, não riscos, pontos de sensibilidade e trade-offs, com as medidas
@@ -74,8 +74,30 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 
 | Prioridade | Ação | Origem | Esforço |
 | --- | --- | --- | --- |
-| 1 | ~~Corrigir DV-01~~ **Feito** nesta sessão: BUG-009, vermelho `0a80fc7`, verde `61ce37d` | DV-01, R-19 | Concluído |
+| 1 | ~~Corrigir DV-01~~ **Feito**: BUG-009, vermelho `0a80fc7`, verde `61ce37d` | DV-01, R-19 | Concluído |
 | 2 | ~~Medir CEN-04 e CEN-01 sob carga~~ **Feito nas rodadas 01 a 04** (CEN-01 cumprido, inclusive pelo caminho do impasse; CEN-04 não atende para a criação, com causa no `fsync` do ambiente). Falta validar as hipóteses com o professor e, se possível, repetir em outra máquina | R-24, R-21 | Concluído, com a validação pendente |
 | 3 | ~~Testar R-23 com papel distinto do dono da tabela~~ **Feito** (`AuditoriaPapelIT`); o papel dono da aplicação segue como risco aceito | CEN-06 | Concluído |
 | 4 | Obter o valor de D3 e de D17 e trocar o valor de teste | PS-04, PS-06 | Depende do professor |
 | 5 | Rodar o Quality Gate do SonarCloud e tratar os apontamentos | Porta de saída da Fase 4 | Depende do Bloco F |
+
+## 6. Revisão no fechamento (26/10/2026): JaCoCo, SonarCloud e riscos
+
+As medições da seção 1 são de 17/10/2026 (Fase 4). Esta seção atualiza a evidência com a leitura final de [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) e revisa os riscos.
+
+| Evidência | Fase 4 (17/10/2026) | Fechamento | Origem |
+| --- | --- | --- | --- |
+| JaCoCo, linhas | 96,7% (1551 de 1604) | **97,01%** (1751 de 1805), meta de 80% atingida | Run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376), artefato `relatorio-jacoco` |
+| JaCoCo, branches | 84,6% (438 de 518) | **86,88%** (523 de 602), meta de 70% atingida | Mesmo run |
+| SonarCloud | Quality Gate aprovado no PR 2 | Quality Gate **aprovado**, 0 bugs, 0 vulnerabilidades, 0 code smells, 0 issues abertas (branch `main`) | [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) |
+| Testes | 468 | 665 no back end (231 de unidade e arquitetura, 434 de integração e BDD), 910 no front, 5 E2E, 0 falhas | [execucao-e24.md](../testes/execucao-e24.md) |
+| Limite | O JaCoCo e o SonarCloud medem só o Java | Idem: **o front não tem cobertura medida** | [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md), seção 6 |
+
+| Risco | Situação no fechamento | Origem |
+| --- | --- | --- |
+| R-17 (impasse com vários recursos) | Corrigido (BUG-007); `ct064` verde | Seção 4 |
+| R-19 (tentativa de conflito perdida) | Fechado (BUG-009); `FalhaNaTentativaApiIT` verde | Seção 4 |
+| R-21 (consulta de sessão a cada requisição) | Medido na rodada 01 (consulta com p95 de 76 ms); sem cache de sessão | [resultado-01.md](../performance/resultado-01.md) |
+| R-22 (job SEM_DECISAO em mais de uma instância) | Coberto por `ct073` | Seção 4 |
+| R-23 (papel dono do esquema pode desligar o gatilho) | **Risco aceito**; separar os papéis de migração e de aplicação é dívida técnica | [limitacoes-e-divida-tecnica.md](../limitacoes-e-divida-tecnica.md) |
+| R-24 (medidas hipotéticas) | **RNF-08b não atendido** (p95 de 568 a 886 ms contra 300 ms); as hipóteses não foram validadas pelo professor | [resultado-02.md](../performance/resultado-02.md) |
+| R-25 e R-26 (teste de notificação intermitente) | R-25 **aberto**, causa desconhecida; BUG-017 mitigado pelo R-26, não corrigido | [limitacoes-e-divida-tecnica.md](../limitacoes-e-divida-tecnica.md) |

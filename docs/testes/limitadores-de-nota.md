@@ -1,6 +1,6 @@
 # Limitadores de nota: evidência da Fase 7
 
-As quatro condições que a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) usa como limitador de nota (seção 8) precisam estar demonstradas antes da tag (plano mestre, seção 11.4). Este documento reúne a evidência de cada uma, **colhida em 24/10/2026**, com o run, o comando ou o arquivo de origem. O que não tem origem está em "Lacunas e limites" (seção 6).
+As quatro condições que a [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html) usa como limitador de nota (seção "Avaliação") precisam estar demonstradas antes da tag ([plano de projeto](../plano-de-projeto.md), seção 11.4). Este documento reúne a evidência de cada uma, **colhida em 24/10/2026**, com o run, o comando ou o arquivo de origem. O que não tem origem está em "Lacunas e limites" (seção 6).
 
 ## 1. Resumo
 
@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida no commit da tag (item 2.7), pois o commit mudará até lá.
+Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5.
 
 ### 2.1 Método
 
@@ -51,6 +51,35 @@ Front end (verificado no clone da rodada 1, passo 6 do README): `npm ci` 302 s, 
 ### 2.4 Fechamento do defeito
 
 PR #61 mesclado (`84c58eb`), run verde da `main` `40102847090` (`test`, `frontend`, `e2e` e `segredos` com sucesso). Issue 60 fechada.
+
+### 2.5 Rodada 3: commit da tag `v1.0.0-rc1` (`276224b`), 24/10/2026 — PASSOU na quarta tentativa
+
+**Método:** o mesmo da seção 2.1 (clone do repositório público numa pasta fora do projeto, só a seção "Como subir" do README, `.env` gerado na hora com valores fictícios, nunca impresso), num script que repete os comandos do README. Ambiente: Windows 11, Git Bash, Java 21.0.6, Node 22.13.1, Docker 29.8.2; portas 5432, 8080 e 5173 livres; **cache do Maven presente** (um computador sem cache leva mais tempo; não medido).
+
+**Resultado da tentativa que passou** (tempos acumulados desde o início do script, medidos pelo script):
+
+| Passo do README | Resultado | Tempo acumulado |
+| --- | --- | --- |
+| Clone no commit `276224b` | feito | 24 s |
+| 1. `.env` | preenchido; 0 variáveis obrigatórias vazias | 24 s |
+| 2. `docker compose up -d postgres` | feito; banco `healthy` | 40 s e 65 s |
+| 3 e 4. `./mvnw spring-boot:run` e `GET /actuator/health` | HTTP 200, `{"status":"UP"}`; `Started OrganizacaoRecursosApplication in 11.433 seconds` | **143 s** (clone até a aplicação no ar) |
+| 5. `POST /api/auth/login` (Administrador do bootstrap) e `GET /api/auth/eu` | HTTP 200 com perfil `ADMINISTRADOR`; HTTP 200 | 145 s |
+| 6. `npm ci` | saiu com 0 | 524 s (**cerca de 380 s** só do `npm ci`) |
+| 6. `npm run dev` e `GET http://localhost:5173/` | HTTP 200; preflight de CORS da origem `http://localhost:5173` devolve `Access-Control-Allow-Origin` igual a ela | **528 s** (do clone até o front no ar) |
+
+Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o banco foi derrubado com `docker compose down -v`; as portas 8080, 5173 e 5432 ficaram livres.
+
+**As três tentativas anteriores falharam por ambiente, antes de chegar à aplicação.** As três pararam no passo 2 do README (`docker compose up -d postgres`) com a mesma mensagem: `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`. O Docker tentou baixar a imagem `postgres:17` fixada por digest e não achou o auxiliar de credenciais:
+
+| Tentativa | Como foi executada | Resultado |
+| --- | --- | --- |
+| 1 | Pelo shell Git Bash da sessão | Falhou no passo 2 |
+| 2 | Pelo mesmo shell, com o diretório `resources/bin` do Docker Desktop acrescentado ao `PATH` | Falhou no passo 2, mesma mensagem |
+| 3 | Pelo PowerShell, chamando o Git Bash com o `PATH` acrescentado | Falhou no passo 2, mesma mensagem |
+| 4 | Depois de um `docker pull` da imagem fixada por digest feito no PowerShell (resposta: "Image is up to date") | **Passou** (tabela acima) |
+
+**O que isto é e o que não é.** O README não foi alterado entre as tentativas e o passo 2 é o do README; não é defeito do projeto, e sim do ambiente desta máquina. **Lacuna:** não foi investigado por que o auxiliar de credenciais não foi achado no shell da sessão, mesmo com o diretório no `PATH`, nem se uma máquina sem a imagem em cache e sem o auxiliar de credenciais encontraria o mesmo erro. Nas três tentativas que falharam, os passos 3 a 6 **não foram executados**; só a quarta os exercitou. O tempo de 528 s é o da quarta tentativa e não inclui as anteriores.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
@@ -114,7 +143,7 @@ O README ([Execuções registradas](../../README.md)) já listava um run vermelh
 | Outros casos da classe | `ct118` (posse: o Solicitante não lê nem altera reserva de outro), `ct119` (token ausente, inválido, revogado e expirado, 401), e os demais da classe, somando 141 |
 | Operações cobertas | As 34 de [matriz-autorizacao.md](matriz-autorizacao.md), de `POST /api/auth/logout` a `GET /api/relatorios/utilizacao`, mais a pública `POST /api/auth/login` |
 
-Defeito já achado e corrigido por essa matriz: BUG-008. Limite: o texto de [revisao-seguranca.md](revisao-seguranca.md) fala em "137 casos" (valor da época); o número atual da classe, na CI e no local, é 141.
+Defeito já achado e corrigido por essa matriz: BUG-008. Nota: [revisao-seguranca.md](revisao-seguranca.md) e a RTM diziam "137 casos" (valor da época) e foram corrigidos pelo BUG-022; o número atual da classe, na CI e no local, é 141.
 
 ## 5. d) Dupla reserva: verde com a constraint, vermelho sem ela
 
@@ -160,6 +189,6 @@ O ciclo de TDD que criou o teste e a constraint está no histórico: `9d4d6d9` (
 | Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados só em Git Bash no Windows; Linux, macOS e PowerShell **não foram verificados** |
 | Login pela tela do front | Lacuna | O front foi verificado até o Vite no ar e o CORS; o login pela interface no navegador **não foi refeito** nesta prova (os roteiros em navegador real da Fase 6 e o E2E cobrem a tela) |
 | Valores do `.env` | Suposição | Gerados por script a partir das dicas do `.env.example`; uma pessoa poderia escolher outros valores válidos. Impacto: se um valor válido for recusado, o README fica incompleto |
-| README restante | Pendência | Roadmap, proteção da `main` e outros trechos seguem desatualizados; ficam para o item 2.7 ([fase-7-pendencias.md](../fase-7-pendencias.md)) |
+| README restante | Pendência | Roadmap, proteção da `main` e outros trechos seguem desatualizados; ficam para o item 2.7 |
 | Prova a repetir | Pendência | O clone limpo (seção 2) será refeito no commit da tag `v1.0.0-rc1` |
 | Quebra sem a constraint | Limite | Feita uma vez, em uma máquina; sem repetição para medir variação. A falha é determinística nos seis testes de reserva (asserção `expected: 1L`) |

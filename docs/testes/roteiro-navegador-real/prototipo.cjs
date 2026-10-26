@@ -1582,7 +1582,7 @@ async function fluxoUsuarios(navegador, c, semente, atores, indice) {
   conferir(P('cadastro-escape-devolve-o-foco'), aposEscape.nome.includes('Novo usuário'), aposEscape.nome);
 
   // ---- mínimo de Responsáveis (D14): desativar um dos dois Responsáveis é recusado. Trocar o perfil NÃO é recusado
-  // pelo servidor (lacuna registrada em fase-7-pendencias.md), então este modo não testa essa recusa.
+  // pelo servidor (lacuna registrada em limitacoes-e-divida-tecnica.md), então este modo não testa essa recusa.
   await cartaoDe('Carlos Lima').getByRole('button', { name: 'Desativar Carlos Lima' }).click();
   await page.getByRole('dialog').waitFor();
   await page.getByRole('dialog').getByRole('button', { name: 'Confirmar desativação' }).click();

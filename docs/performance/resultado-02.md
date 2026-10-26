@@ -64,7 +64,7 @@ Coletadas a cada 5 s por `perf/coletar_metricas.py`:
 | 04 (25, sem `fsync`) | 38% / 84% | 5% / 59% | 0,7 / 9 | 0 / 0 |
 
 Na rodada 02, 26 das 84 linhas do arquivo de métricas foram **descartadas**: duas tentativas anteriores da rodada (falhas do
-meu roteiro, sem dado de carga) deixaram coletores vivos que escreveram linhas vazias no mesmo arquivo. As 58 linhas válidas
+roteiro, sem dado de carga) deixaram coletores vivos que escreveram linhas vazias no mesmo arquivo. As 58 linhas válidas
 são consistentes. O roteiro passou a encerrar coletores antigos antes de cada rodada.
 
 ## 5. Leitura

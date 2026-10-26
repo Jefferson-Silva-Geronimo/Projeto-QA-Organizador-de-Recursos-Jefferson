@@ -33,8 +33,8 @@ Classificação usada em todo o documento, igual à de [perguntas-abertas.md](pr
 
 | Assunto | Fonte | Observação |
 | --- | --- | --- |
-| RF-01 a RF-14 e RN-01 a RN-08 | Especificação do projeto, seções 3 e 4 | Texto fiel em [requisitos-funcionais.md](prd/requisitos-funcionais.md) e [regras-negocio.md](prd/regras-negocio.md) |
-| Metas mensuráveis e limitadores de nota | Especificação, seções 6 e 8 | Ver seção 5 deste documento |
+| RF-01 a RF-14 e RN-01 a RN-08 | Especificação do projeto, seções "Requisitos funcionais obrigatórios" e "Regras críticas" | Texto fiel em [requisitos-funcionais.md](prd/requisitos-funcionais.md) e [regras-negocio.md](prd/regras-negocio.md) |
+| Metas mensuráveis e limitadores de nota | Especificação, seções "Metas mensuráveis" e "Avaliação" | Ver seção 5 deste documento |
 | RF-15, RF-16 e RN-09 a RN-33 | Decisões da equipe de 12/10/2026 | Marcadas como decisão da equipe nos documentos de origem |
 | Decisões A1 a D16 e lacunas D1, D3, D4, D9 e D17 | [perguntas-abertas.md](prd/perguntas-abertas.md) | Texto das decisões não é alterado |
 | Modelo de dados | [modelo-dados.dbml](prd/modelo-dados.dbml) | Revisado na revisão das Fases 0 e 1 |
@@ -44,7 +44,7 @@ Em caso de dúvida, a página da especificação prevalece.
 
 ## 3. Personas
 
-**Fato** (especificação, seção 2; detalhe em [docs/prd/personas](prd/personas/)). Nenhuma persona é criada ou alterada neste documento.
+**Fato** (especificação, seção "Escopo e perfis"; detalhe em [docs/prd/personas](prd/personas/)). Nenhuma persona é criada ou alterada neste documento.
 
 | Perfil | Papel | Persona |
 | --- | --- | --- |
@@ -60,19 +60,19 @@ Critério de seleção: requisito ou regra cujo cumprimento restringe a estrutur
 
 | # | Tema | Exigência | Origem | Risco | Lacuna ou suposição ligada |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Dupla reserva sob concorrência | Duas solicitações simultâneas para o mesmo recurso e horário produzem uma única reserva aceita; teste automatizado obrigatório | RF-06, RN-03; especificação, seção 5 | R-01 | — |
-| 2 | Sobreposição por tipo de recurso | Sala, professor e material obedecem à mesma regra de não sobreposição, com fronteira semiaberta [início, fim) | RF-05, RN-02, RN-11; A2, A4, A3 | R-02 | A3 a confirmar com o professor |
+| 1 | Dupla reserva sob concorrência | Duas solicitações simultâneas para o mesmo recurso e horário produzem uma única reserva aceita; teste automatizado obrigatório | RF-06, RN-03; especificação, seção "Estratégia obrigatória de qualidade" | R-01 | — |
+| 2 | Sobreposição por tipo de recurso | Sala, professor e material obedecem à mesma regra de não sobreposição, com fronteira semiaberta [início, fim) | RF-05, RN-02, RN-11; A2, A4, A3 | R-02 | A3: decisão da equipe, 24/10/2026, não validada com o professor |
 | 3 | Reserva com vários recursos | A reserva é a unidade de aprovação, uso e auditoria; ocupa vários recursos de uma vez e é aceita ou recusada por inteiro | RF-04, RN-02, RN-22; D7 | R-01, R-05 | — |
 | 4 | Bloqueio disputa a mesma garantia | Reservas e bloqueios de manutenção concorrem pelo mesmo período do mesmo recurso | RF-08, RN-04, RN-22; A7 | R-08 | D15 (decidida) |
 | 5 | Alteração atômica | Trocar período ou recurso reavalia RN-01, RN-02 e RN-04 na mesma transação; em conflito, nada muda | RF-04, RN-19; C1 | R-05 | D10, D12 |
 | 6 | Auditoria na mesma transação | Toda mudança de estado gera registro; cadastros, usuários, perfis e bloqueios também; ator pode ser SISTEMA | RF-10, RN-08, RN-29; C7 | R-07 | D9 (retenção) |
 | 7 | Autorização por perfil e posse | Operação permitida depende do perfil, do estado da reserva e de quem é o dono; segregação de funções | RF-01, RF-07, RN-06, RN-16, RN-17, RN-18, RN-26, RN-33; B1 a B3, D8 | R-03, R-12 | D13 |
-| 8 | Notificação sem acoplar a reserva | Envio após o commit; falha do provedor nunca desfaz a reserva; reenvio com chave de idempotência | RF-11, RN-28; A5, C6 | R-10 | A5 a confirmar com o professor; S5; D3, D9 |
+| 8 | Notificação sem acoplar a reserva | Envio após o commit; falha do provedor nunca desfaz a reserva; reenvio com chave de idempotência | RF-11, RN-28; A5, C6 | R-10 | A5: decisão da equipe, 24/10/2026, não validada com o professor; S5; D3, D9 |
 | 9 | Tempo e fuso | Armazenamento em UTC, fuso configurável, janela e dias de funcionamento por sala, reserva sem cruzar a meia-noite | RN-01, RN-14, RN-15; A6, C5 | R-09 | S3 |
 | 10 | Transições dirigidas pelo tempo | Reserva SOLICITADA sem decisão é cancelada ao chegar o início; reserva APROVADA sem uso pode ser marcada como não compareceu | RN-21, RN-25; A8, C2 | R-06, R-16 | D1, S4, S6 |
 | 11 | Registro de recusa por conflito | Toda recusa por RN-02, RN-03 ou RN-04 é gravada como tentativa de conflito | RN-30; B4 | R-11 | Ver observação abaixo |
 | 12 | Relatório agregado | Carga horária, utilização (só salas) e conflitos evitados, por período, tipo e recurso, paginado | RF-12, RN-31; B4, C5, D5 | R-11 | D4 |
-| 13 | Erros previsíveis e sem vazamento | Mensagens compreensíveis, códigos estáveis para o front end, nenhum detalhe interno ou segredo exposto | RF-13; especificação, seção 5 | R-12 | — |
+| 13 | Erros previsíveis e sem vazamento | Mensagens compreensíveis, códigos estáveis para o front end, nenhum detalhe interno ou segredo exposto | RF-13; especificação, seção "Estratégia obrigatória de qualidade" | R-12 | — |
 | 14 | Desativação e integridade do catálogo | Recurso com reservas futuras não é desativado; reservas nunca são apagadas fisicamente | RN-07, RN-27, RN-32; D6 | R-05, R-08 | D11 |
 
 **Observação do analista (inferência; decidida em 15/10/2026, ver [ADR-003](adr/ADR-003-dupla-reserva-constraint-de-exclusao.md)):** a tentativa de conflito (item 11) precisa ser gravada exatamente quando a reserva é recusada. Se o registro estiver na mesma transação que a tentativa de reserva e a transação for desfeita, a tentativa se perde e RN-30 não se cumpre. Isso interage com o item 6. Não é fato da especificação: é uma consequência a verificar no desenho.
@@ -83,24 +83,24 @@ Os RNF abaixo são **propostas da equipe** para a Fase 2, a validar nos Prompts 
 
 | ID | Requisito não funcional | Atributo (ISO 25010) | Origem | Como medir |
 | --- | --- | --- | --- | --- |
-| RNF-01 | Cobertura de linhas de pelo menos 80% | Manutenibilidade | Fato: metas da especificação, seção 6 | JaCoCo |
-| RNF-02 | Cobertura de branches de pelo menos 70% | Manutenibilidade | Fato: metas da especificação, seção 6 | JaCoCo |
-| RNF-03 | Nenhum bug ou vulnerabilidade crítica | Segurança | Fato: metas da especificação, seção 6 | SonarCloud |
-| RNF-04 | 100% dos requisitos críticos na RTM | Rastreabilidade | Fato: metas da especificação, seção 6 | [RTM.md](../RTM.md) |
-| RNF-05 | Duas solicitações simultâneas para o mesmo recurso e horário geram exatamente uma reserva aceita | Confiabilidade | RN-03 e RF-06; teste exigido na seção 5 da especificação | Teste de concorrência com banco real |
-| RNF-06 | Nenhuma operação acessível a perfil sem permissão | Segurança | RF-01; falha de autorização é limitador de nota (especificação, seção 8) | Matriz perfil × operação testada |
-| RNF-07 | Validação de entrada e erros sem vazamento de detalhe interno | Segurança | Estratégia obrigatória da especificação, seção 5 | Testes negativos |
+| RNF-01 | Cobertura de linhas de pelo menos 80% | Manutenibilidade | Fato: metas da especificação, seção "Metas mensuráveis" | JaCoCo |
+| RNF-02 | Cobertura de branches de pelo menos 70% | Manutenibilidade | Fato: metas da especificação, seção "Metas mensuráveis" | JaCoCo |
+| RNF-03 | Nenhum bug ou vulnerabilidade crítica | Segurança | Fato: metas da especificação, seção "Metas mensuráveis" | SonarCloud |
+| RNF-04 | 100% dos requisitos críticos na RTM | Rastreabilidade | Fato: metas da especificação, seção "Metas mensuráveis" | [RTM.md](../RTM.md) |
+| RNF-05 | Duas solicitações simultâneas para o mesmo recurso e horário geram exatamente uma reserva aceita | Confiabilidade | RN-03 e RF-06; teste exigido na seção "Estratégia obrigatória de qualidade" da especificação | Teste de concorrência com banco real |
+| RNF-06 | Nenhuma operação acessível a perfil sem permissão | Segurança | RF-01; falha de autorização é limitador de nota (especificação, seção "Avaliação") | Matriz perfil × operação testada |
+| RNF-07 | Validação de entrada e erros sem vazamento de detalhe interno | Segurança | Estratégia obrigatória da especificação, seção "Estratégia obrigatória de qualidade" | Testes negativos |
 | RNF-08 | Consulta de disponibilidade e criação de reserva com p95 de até 300 ms para 50 usuários simultâneos e erros abaixo de 1% (409 esperado não conta) | Desempenho | **Suposição**: valor de exemplo da [Aula 10](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/material/material_testes-carga-jmeter.html). **Hipótese com validação pendente**; a especificação não define critério de desempenho | JMeter |
 | RNF-09 | Toda mudança de estado gera registro de auditoria | Auditabilidade | RN-08 e RN-29; RF-10 | Teste de integração |
 | RNF-10 | Interface responsiva com mensagens de erro compreensíveis | Usabilidade | RF-13 | Teste ponta a ponta em viewport de celular |
-| RNF-11 | Regras de tempo e integrações substituíveis em teste | Testabilidade | Proposta da equipe, decorrente de RN-01, RN-04, RN-05 e RF-11; WireMock exigido na seção 5 da especificação | Revisão do ADR |
+| RNF-11 | Regras de tempo e integrações substituíveis em teste | Testabilidade | Proposta da equipe, decorrente de RN-01, RN-04, RN-05 e RF-11; WireMock exigido na seção "Estratégia obrigatória de qualidade" da especificação | Revisão do ADR |
 | RNF-12 | Logs com correlação e sem segredo | Operabilidade | Proposta da equipe, sem requisito correspondente; regra 4 de [AGENTS.md](../AGENTS.md) veda segredo em log | Teste de log |
 
 Observações:
 
 - RNF-08: o número **não tem origem no projeto**. Se a validação não vier, os cenários e os testes de carga o carregam como hipótese e o relatório final declara isso.
 - RNF-11 e RNF-12 não nascem de requisito da especificação. Se o painel do Prompt 2.4 não encontrar requisito que os sustente, entram na lista "decisões sem requisito".
-- RNF-01 e RNF-02: a especificação avisa que cobertura alta, sozinha, não garante qualidade (seção 6). O RNF mede o piso, não a qualidade dos testes.
+- RNF-01 e RNF-02: a especificação avisa que cobertura alta, sozinha, não garante qualidade (seção "Metas mensuráveis"). O RNF mede o piso, não a qualidade dos testes.
 
 ## 6. Atributos de qualidade
 
@@ -122,13 +122,13 @@ Observações:
 
 | Prioridade | Driver | Origem | Itens da seção 4 | RNF |
 | --- | --- | --- | --- | --- |
-| 1 | Impedir dupla reserva | Limitador de nota (especificação, seção 8) | 1, 2, 3, 4, 5 | RNF-05 |
-| 1 | Impedir falha de autorização | Limitador de nota (especificação, seção 8) | 7 | RNF-06 |
-| 1 | Aplicação executável e pipeline em pull requests | Limitadores de nota (especificação, seção 8) | — (Fase 3) | RNF-01 a RNF-04 |
-| 2 | Rastreabilidade e auditoria | Meta 100% na RTM (especificação, seção 6); RN-08 | 6, 11 | RNF-04, RNF-09 |
-| 2 | Cobertura e análise estática | Metas da especificação, seção 6 | todos | RNF-01 a RNF-03 |
-| 3 | Desempenho sob concorrência | Estratégia obrigatória, JMeter (especificação, seção 5) | 1, 12 | RNF-08 (hipótese) |
-| 3 | Integração externa isolada e resiliente | Estratégia obrigatória, WireMock (especificação, seção 5) | 8 | RNF-11 |
+| 1 | Impedir dupla reserva | Limitador de nota (especificação, seção "Avaliação") | 1, 2, 3, 4, 5 | RNF-05 |
+| 1 | Impedir falha de autorização | Limitador de nota (especificação, seção "Avaliação") | 7 | RNF-06 |
+| 1 | Aplicação executável e pipeline em pull requests | Limitadores de nota (especificação, seção "Avaliação") | — (Fase 3) | RNF-01 a RNF-04 |
+| 2 | Rastreabilidade e auditoria | Meta 100% na RTM (especificação, seção "Metas mensuráveis"); RN-08 | 6, 11 | RNF-04, RNF-09 |
+| 2 | Cobertura e análise estática | Metas da especificação, seção "Metas mensuráveis" | todos | RNF-01 a RNF-03 |
+| 3 | Desempenho sob concorrência | Estratégia obrigatória, JMeter (especificação, seção "Estratégia obrigatória de qualidade") | 1, 12 | RNF-08 (hipótese) |
+| 3 | Integração externa isolada e resiliente | Estratégia obrigatória, WireMock (especificação, seção "Estratégia obrigatória de qualidade") | 8 | RNF-11 |
 | 3 | Erros seguros e compreensíveis | Estratégia obrigatória e RF-13 | 13 | RNF-07, RNF-10 |
 
 **Trade-offs já visíveis nos requisitos** (a analisar no Prompt 2.3, sem conclusão antecipada):
@@ -143,11 +143,11 @@ Observações:
 
 | Fato | Origem |
 | --- | --- |
-| Java 21 e Spring Boot 3.x | Especificação, seção 1 |
-| Banco containerizado com Testcontainers e WireMock para integrações externas; mocks só em teste unitário isolado | Especificação, seção 5 |
-| GitHub Actions em pull requests, JaCoCo, SonarCloud, JMeter | Especificação, seção 5 |
-| Limitadores de nota: aplicação que não executa, pipeline ausente, falha de autorização, possibilidade de dupla reserva | Especificação, seção 8 |
-| Entregáveis incluem diagramas de contexto, componentes e sequências críticas | Especificação, seção 7 |
+| Java 21 e Spring Boot 3.x | Especificação, seção "Objetivo" |
+| Banco containerizado com Testcontainers e WireMock para integrações externas; mocks só em teste unitário isolado | Especificação, seção "Estratégia obrigatória de qualidade" |
+| GitHub Actions em pull requests, JaCoCo, SonarCloud, JMeter | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Limitadores de nota: aplicação que não executa, pipeline ausente, falha de autorização, possibilidade de dupla reserva | Especificação, seção "Avaliação" |
+| Entregáveis incluem diagramas de contexto, componentes e sequências críticas | Especificação, seção "Entregáveis" |
 | O modelo de dados registra reservas e bloqueios na tabela `ocupacoes`, cada uma com `reserva_id` ou `bloqueio_id` | [modelo-dados.dbml](prd/modelo-dados.dbml) |
 
 ### 8.2 Lacunas abertas que afetam a arquitetura
@@ -188,9 +188,11 @@ D2 e D10 a D16 foram decididas pela equipe em 15/10/2026 (ver 8.2.1). As demais 
 | S7 | Valor de reenvio definido depois | Só configuração | [prd.md](prd.md), seção 9 |
 | — | p95 de 300 ms para 50 usuários (RNF-08) | Cenários de desempenho e teste de carga sem critério de aceite | Seção 5 deste documento |
 
-### 8.4 Decisões a confirmar com o professor
+### 8.4 Decisões não validadas com o professor
 
-| ID | Decisão | Retrabalho se o professor discordar |
+Decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
+
+| ID | Decisão | Retrabalho se a decisão estiver errada |
 | --- | --- | --- |
 | A1 | Atributo "restrito" no recurso e aprovação automática | Fluxo de aprovação e ator SISTEMA mudam |
 | A3 | Material por unidade identificada | **Maior retrabalho**: a constraint de exclusão não basta para controle por quantidade, e o modelo muda |
@@ -431,13 +433,13 @@ As doze decisões vieram da equipe como ponto de partida e nenhuma foi ignorada.
 | # | Decisão inicial | Veredito | Justificativa e origem | Alternativas |
 | --- | --- | --- | --- | --- |
 | 1 | Recurso como supertipo, com tabelas de especialização e ocupação por recurso | **Confirmada, com refinamento** | RN-02 vale para os três tipos e RN-04 também; um só lugar para a garantia (RF-05, A3, A4). Refinamento: o DBML já registra que o banco não impede uma `salas` apontar para recurso do tipo PROFESSOR. Propõe-se chave composta (`id`, `tipo`) nas especializações | Tabelas separadas por tipo: três garantias iguais e consulta de agenda unificada por união |
-| 2 | Dupla reserva barrada por constraint de exclusão | **Confirmada, com refinamentos** | RN-03 e RF-06; teste de concorrência com banco real (especificação, seção 5). Refinamentos na seção 13.1: ordem de inserção por `recurso_id`, tradução da violação em 409 e tratamento de impasse | Lock pessimista; versão otimista; fila (seção 15) |
+| 2 | Dupla reserva barrada por constraint de exclusão | **Confirmada, com refinamentos** | RN-03 e RF-06; teste de concorrência com banco real (especificação, seção "Estratégia obrigatória de qualidade"). Refinamentos na seção 13.1: ordem de inserção por `recurso_id`, tradução da violação em 409 e tratamento de impasse | Lock pessimista; versão otimista; fila (seção 15) |
 | 3 | Relógio injetável | **Confirmada** | RN-01, RN-04, RN-05, D10 e D12; sem relógio injetável, a fronteira do instante de início não é testável sem espera real (RNF-11) | `Instant.now()` direto; relógio do banco (`now()`) |
 | 4 | Máquina de estados explícita e auditoria na mesma transação | **Refinada: são duas decisões** | RN-05, RN-08, RN-29. A transição precisa de guarda condicional (atualiza só se o estado ainda é o esperado). A auditoria na mesma transação vale para mudanças de estado e cadastros, mas a tentativa de conflito de RN-30 não pode seguir a mesma transação, porque ela é desfeita (seção 13.2) | Regras em `if` espalhados; evento de auditoria assíncrono |
 | 5 | Autorização em duas camadas, perfil por endpoint e posse no caso de uso | **Confirmada, com refinamento** | RF-01, RN-06, RN-16, RN-17, RN-18, RN-26, RN-33 e D13; falha de autorização é limitador de nota. Refinamento: a regra de posse fica numa política única no domínio, testada pela matriz perfil × operação (seção 13.3) | Apenas anotações por endpoint, com a posse repetida em cada serviço |
-| 6 | Integrações por porta e adapter, URL e token por configuração, timeouts explícitos | **Confirmada, com refinamento** | RF-11, RN-28 e WireMock exigido (especificação, seção 5). Refinamento: a notificação é gravada em `notificacoes` na mesma transação (PENDENTE) e enviada depois; o envio nunca fica só em memória (seção 13.4) | Chamada direta no caso de uso; evento em memória após o commit |
+| 6 | Integrações por porta e adapter, URL e token por configuração, timeouts explícitos | **Confirmada, com refinamento** | RF-11, RN-28 e WireMock exigido (especificação, seção "Estratégia obrigatória de qualidade"). Refinamento: a notificação é gravada em `notificacoes` na mesma transação (PENDENTE) e enviada depois; o envio nunca fica só em memória (seção 13.4) | Chamada direta no caso de uso; evento em memória após o commit |
 | 7 | Erros com códigos estáveis (ProblemDetail) | **Confirmada** | RF-13 e RNF-07; o front end e os testes não dependem do texto da mensagem | Mensagens livres |
-| 8 | Migrações versionadas e PostgreSQL real nos testes | **Confirmada** | A constraint de exclusão e `btree_gist` só existem no PostgreSQL; a especificação (seção 5) exige banco containerizado. A ferramenta de migração não tem requisito que a distinga (seção 14) | Banco em memória (não suporta a constraint e não prova RN-03); geração automática do esquema |
+| 8 | Migrações versionadas e PostgreSQL real nos testes | **Confirmada** | A constraint de exclusão e `btree_gist` só existem no PostgreSQL; a especificação (seção "Estratégia obrigatória de qualidade") exige banco containerizado. A ferramenta de migração não tem requisito que a distinga (seção 14) | Banco em memória (não suporta a constraint e não prova RN-03); geração automática do esquema |
 | 9 | Contrato OpenAPI desde o primeiro endpoint | **Confirmada como prática, sem requisito de ferramenta** | RF-14 aceita "documentação de API ou dos fluxos públicos"; a escolha de OpenAPI é da equipe e é marcada como sem requisito de ferramenta | Documentar só os fluxos em [fluxos-sequencia.md](prd/fluxos-sequencia.md) |
 | 10 | Camadas que espelham o C4 e domínio sem dependência de Spring | **Confirmada, com ressalva** | RNF-11 e RNF-01 a RNF-02: domínio testável sem contexto do framework. Ressalva: custo de mapeamento entre camadas não foi medido; revisar após a Fase 4 | Camadas simples em pacotes por tipo |
 | 11 | Tempo em UTC com conversão apenas na borda | **Confirmada, com refinamento** | RN-15, A6. Refinamento: a regra de janela e de dias de funcionamento converte o período para o fuso configurado antes de comparar com `hora_abertura` e `hora_fechamento` (seção 13.5) | Hora local gravada sem conversão |
@@ -529,14 +531,14 @@ Aprovadas pelo usuário na Fase 2. Cada uma vira ADR no Prompt 2.4 e é analisad
 
 | Escolha | Origem | Marca |
 | --- | --- | --- |
-| Java 21 e Spring Boot 3.x | Especificação, seção 1 | Requisito |
+| Java 21 e Spring Boot 3.x | Especificação, seção "Objetivo" | Requisito |
 | PostgreSQL | Decisão da equipe; viabiliza a constraint de exclusão e `tstzrange` exigidos para RN-03 | Requisito indireto (RN-03) |
 | Maven | Decisão da equipe | **Sem requisito correspondente** |
 | Flyway (ou ferramenta equivalente de migração) | RF-06: a constraint existe no banco de teste e de produção por migração; exigência de banco real (seção 5) | Requisito indireto; ferramenta específica sem requisito |
-| Testcontainers e WireMock | Especificação, seção 5 | Requisito |
-| JUnit 5, parametrizados | Especificação, seção 5 | Requisito |
-| GitHub Actions, JaCoCo, SonarCloud | Especificação, seção 5 | Requisito |
-| JMeter | Especificação, seção 5 | Requisito |
+| Testcontainers e WireMock | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
+| JUnit 5, parametrizados | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
+| GitHub Actions, JaCoCo, SonarCloud | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
+| JMeter | Especificação, seção "Estratégia obrigatória de qualidade" | Requisito |
 | React + Vite | Decisão da equipe; RF-13 exige interface responsiva, não a tecnologia | **Sem requisito de tecnologia** |
 | OpenAPI | RF-14 aceita documentação de API ou dos fluxos | **Sem requisito de ferramenta** |
 | Mecanismo de autenticação | RF-01 exige autenticação, não o mecanismo | Token opaco com revogação, decisão aprovada em 15/10/2026 (seção 13.3); sem requisito de ferramenta |
@@ -553,7 +555,7 @@ Nenhuma alternativa é escolhida aqui. Cada linha diz o que falta para decidir.
 | Acesso a dados | Mapeamento objeto-relacional; SQL direto parametrizado | Suporte a `tstzrange`, a SQL nativo e a teste com banco real | Prova de conceito na Fase 4 |
 | Somente inserção da auditoria | Gatilho; permissões do papel; ambos | Vale para o dono do esquema; simplicidade de migração | Decidido: gatilho com revogação de permissões (seção 13.2) |
 | Transições automáticas | Job agendado; avaliação sob demanda; marcação manual | Seção 13.7 | Decidido (D2): job para SEM_DECISAO e marcação manual de não compareceu |
-| Notificação | Envio dentro da transação; evento em memória após o commit; linha PENDENTE gravada na transação e envio posterior | RN-28; sem perda; reserva nunca desfeita pelo provedor | Decidido: linha PENDENTE na transação e envio posterior; resta confirmar A5 com o professor |
+| Notificação | Envio dentro da transação; evento em memória após o commit; linha PENDENTE gravada na transação e envio posterior | RN-28; sem perda; reserva nunca desfeita pelo provedor | Decidido: linha PENDENTE na transação e envio posterior; A5 foi decidida pela equipe em 24/10/2026, sem validação do professor |
 
 ## 16. Escolhas sem requisito correspondente
 
@@ -621,7 +623,7 @@ As doze decisões iniciais da equipe e os doze ADR do plano não são um para um
 | — | Estratégia de testes e metas | [ADR-011](adr/ADR-011-estrategia-de-testes-e-metas-de-cobertura.md) |
 | — | Job de SEM_DECISAO (D2) | [ADR-012](adr/ADR-012-job-agendado-de-sem-decisao.md) |
 
-Status: os doze ADR estão **Aceitos** por aprovação do usuário em 15/10/2026. A3 (ADR-002) e A5 (ADR-007) seguem aguardando o professor.
+Status: os doze ADR estão **Aceitos** por aprovação do usuário em 15/10/2026. A3 (ADR-002) e A5 (ADR-007) foram decididas pela equipe em 24/10/2026, sem validação do professor.
 
 ## 20. Revisão cruzada: painel de seis papéis
 
@@ -629,14 +631,14 @@ O painel foi conduzido pelo mesmo analista que escreveu a arquitetura, assumindo
 
 | Papel | Objeção | Base | Resolução |
 | --- | --- | --- | --- |
-| Arquiteto | Quatro camadas e mapeamento custam tempo com entrega na semana 46 | Especificação, seção 1; TO-05 | **Resolvida**: portas só onde há substituição em teste (ADR-001). Revisão após a Fase 4 |
+| Arquiteto | Quatro camadas e mapeamento custam tempo com entrega na semana 46 | Especificação, seção "Objetivo"; TO-05 | **Resolvida**: portas só onde há substituição em teste (ADR-001). Revisão após a Fase 4 |
 | Arquiteto | O agendador roda no mesmo processo e a topologia de implantação não tem fonte | R-22; ADR-012 | **Aberta**: a trava continua obrigatória por precaução |
 | Dados | `ativa` é redundante e pode divergir do estado | R-18; RN-02 | **Resolvida com risco**: a constraint exige a coluna na mesma tabela; grava-se `ativa` na mesma transação e testa-se por transição |
 | Dados | Nada impede sala apontar para recurso PROFESSOR | Nota de `recursos` no DBML | **Resolvida**: chave composta (`id`, `tipo`) proposta no ADR-002, por migração |
 | Dados | `auditoria_eventos` e `tentativas_conflito` crescem sem retenção definida | D9 | **Aberta** |
 | Segurança | Consulta de sessão a cada requisição pode degradar o p95 | R-21; TO-04; CEN-04 | **Resolvida provisoriamente**: sem cache na primeira versão e medição em CEN-04 (ADR-004) |
 | Segurança | O gatilho não protege contra o papel que migra o esquema | R-23 | **Parcial**: papel de migração distinto do papel da aplicação, com revogação no segundo (ADR-006). Risco residual aceito para o dono do esquema |
-| Segurança | Não há limite de tentativas de login nem exigência de transporte cifrado | Catálogo: **Lock Computer** e **Encrypt Data**; nenhum requisito na especificação | **Aberta**: sem requisito, nada é implementado ou inventado; vai ao professor |
+| Segurança | Não há limite de tentativas de login nem exigência de transporte cifrado | Catálogo: **Lock Computer** e **Encrypt Data**; nenhum requisito na especificação | **Aberta**: sem requisito, nada é implementado ou inventado; não validada com o professor. O limite de tentativas de login foi decidido depois pela equipe (D18) |
 | Operações | Pool, limites de tempo e frequência do job não têm valor | PS-01, PS-02, PS-03; TR-01 | **Aberta**: precisam de valor antes da Fase 5 |
 | Operações | Não há requisito de monitoramento, só de log (RNF-12) | Catálogo: **Monitor** | **Aberta**: registrada como decisão sem requisito |
 | Qualidade | Metas de CEN-01, CEN-04, CEN-05 e CEN-08 são hipóteses | TR-01; RNF-08 | **Aberta**: validação com o professor |
@@ -705,9 +707,9 @@ S1 a S7 de [prd.md](prd.md), seção 9, mais as hipóteses de medida: 20 solicit
 
 | Quem responde | Pergunta |
 | --- | --- |
-| Professor | Confirmar A1, A3 e A5, e se o endpoint de teste basta como API externa (S5) |
-| Professor | Validar as hipóteses de desempenho e de repetição e o critério de aceite de CEN-04 |
-| Professor | Há exigência de limite de tentativas de login e de transporte cifrado? |
+| Equipe | A1, A3 e A5, e se o endpoint de teste basta como API externa (S5): decididos em 24/10/2026, sem validação do professor (F7-16) |
+| Sem validação externa | As hipóteses de desempenho e de repetição e o critério de aceite de CEN-04 seguem sem validação do professor |
+| Equipe | Limite de tentativas de login: decidido (D18, 5 em 10 minutos). Transporte cifrado: sem requisito, lacuna no modelo de ameaças |
 | Equipe | Quantas pessoas formam a equipe e quem administra o repositório e o SonarCloud |
 | Equipe | Valores de D1, D3, D4, D9 e D17, e do pool, dos limites de tempo e da frequência do job |
 | Equipe | Quantas instâncias da aplicação rodam na demonstração |
@@ -741,12 +743,12 @@ Nenhum outro risco foi aceito: os demais aguardam teste ou decisão.
 | Ao menos um trade-off nomeado e matriz com linha para todo requisito crítico | **Atendido** (TO-01 a TO-05; seção 21) |
 | Outra equipe entende, rastreia e contesta sem explicação oral | **Parcial**: falta leitura por pessoa da equipe fora da autoria |
 | `analyze-docs` sem pendências | **Verificado por script** em colunas, links, fences, IDs e Mermaid; skill completa pendente de execução pela equipe |
-| Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1, A3 e A5 e as hipóteses dependem do professor |
+| Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1 a A8 decididas pela equipe em 24/10/2026, sem validação do professor; as hipóteses de desempenho seguem sem validação |
 
 ## 24. Próximos passos
 
 | Passo | Entrega | Depende de |
 | --- | --- | --- |
 | Aceite dos ADR propostos | **Feito** em 15/10/2026: ADR-001 a ADR-012 com status Aceito | — |
-| Respostas do professor | A1, A3, A5, hipóteses e perguntas da seção 22.4 | Professor |
+| Decisões da equipe sobre A1 a A8 | **Feito** em 24/10/2026 (F7-16), sem validação do professor; as hipóteses de desempenho seguem sem validação | — |
 | Fase 3 | Casca Maven, pipeline em pull requests, JaCoCo, SonarCloud e processo de defeitos | Aceite do ADR-009 e do ADR-011 |

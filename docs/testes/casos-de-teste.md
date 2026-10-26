@@ -329,4 +329,4 @@ Os CT de front e E2E não trazem o identificador `CT-nnn` dentro do teste (BUG-0
 | --- | --- |
 | Os valores de tolerância (D1), reenvio (D3), página (D4) e duração da sessão (D17) não existem | CT-093, CT-105, CT-112 e CT-004 usam **valor de teste** e verificam que o valor é configurável, não o valor |
 | Os valores 20 solicitações e 5 repetições são hipóteses da [Aula 10](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/material/material_testes-carga-jmeter.html) | CT-060 e CT-062 ficam marcados como hipótese até a validação do professor |
-| Limite de tentativas de login e transporte cifrado não têm requisito | Sem caso de teste; registrado como pergunta ao professor em [arquitetura.md](../arquitetura.md), seção 22.4 |
+| Limite de tentativas de login e transporte cifrado não têm requisito | Sem caso de teste; registrado como lacuna, sem validação do professor, em [arquitetura.md](../arquitetura.md), seção 22.4 |

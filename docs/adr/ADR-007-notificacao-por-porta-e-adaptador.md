@@ -2,7 +2,7 @@
 
 | Campo | Valor |
 | --- | --- |
-| Status | Aceito em 15/10/2026 (aprovação do usuário). A5 aguarda confirmação do professor |
+| Status | Aceito em 15/10/2026 (aprovação do usuário). A5 decidida pela equipe em 24/10/2026, não validada com o professor (F7-16) |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 6 da equipe; A5, C6; [arquitetura.md](../arquitetura.md), seções 12, 12.1 e 13.4 |
 | Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
@@ -21,7 +21,7 @@ RF-11; RN-28; RNF-07, RNF-11, RNF-12; CEN-05, CEN-08, CEN-09; R-10, R-12, R-20.
 | --- | --- |
 | Chamada ao provedor dentro da transação | Segura conexão e transação durante a chamada e reverte a reserva se o provedor falhar, o que RN-28 proíbe |
 | Evento em memória disparado após o commit | Uma queda entre o commit e o envio perde a notificação sem rastro (R-20) |
-| Só registro em tabela, sem chamada externa | Atende "simulada" de RF-11, mas A5 decidiu o webhook para exercitar WireMock e a integração isolada exigida na seção 5 |
+| Só registro em tabela, sem chamada externa | Atende "simulada" de RF-11, mas A5 decidiu o webhook para exercitar WireMock e a integração isolada exigida na seção "Estratégia obrigatória de qualidade" |
 
 ## Decisão
 
@@ -37,7 +37,7 @@ RF-11; RN-28; RNF-07, RNF-11, RNF-12; CEN-05, CEN-08, CEN-09; R-10, R-12, R-20.
 | A reserva não depende do provedor | RN-28, A5 |
 | Nenhuma notificação se perde entre commit e envio | RN-28 (status PENDENTE e reenvio); tática **Retry** idempotente (catálogo, seção 4.1.2) |
 | Isolar o provedor facilita troca e teste | CEN-08; **Tailor Interface**, **Use an Intermediary** (catálogo, seções 4.2 e 4.3) |
-| WireMock para a integração | Especificação, seção 5 |
+| WireMock para a integração | Especificação, seção "Estratégia obrigatória de qualidade" |
 | Segredo do provedor não atravessa a API | CEN-09, RNF-07 |
 
 ## Consequências

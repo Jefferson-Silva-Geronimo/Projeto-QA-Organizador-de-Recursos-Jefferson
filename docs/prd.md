@@ -13,7 +13,7 @@ Este documento separa o que a especificação **afirma** (fato), o que a equipe 
 
 Uma aplicação que organiza a alocação de **salas, professores e materiais** sem conflitos de horário.
 
-Fato (especificação, seção 1): o foco da avaliação é apresentar **evidências objetivas de qualidade, segurança, rastreabilidade e desempenho**, e não apenas que o sistema funcione. O Foot Fanatics, visto nas aulas, é só o case de demonstração; o projeto avaliado é este.
+Fato (especificação, seção "Objetivo"): o foco da avaliação é apresentar **evidências objetivas de qualidade, segurança, rastreabilidade e desempenho**, e não apenas que o sistema funcione. O Foot Fanatics, visto nas aulas, é só o case de demonstração; o projeto avaliado é este.
 
 ## 2. Problema
 
@@ -28,7 +28,7 @@ A especificação não descreve o problema em narrativa; ela declara o objetivo:
 
 ## 3. Perfis de usuário
 
-Fato (especificação, seção 2). Detalhe em [docs/prd/personas](prd/personas/).
+Fato (especificação, seção "Escopo e perfis"). Detalhe em [docs/prd/personas](prd/personas/).
 
 | Perfil | Papel | Persona |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Decisões sobre os perfis:
 
 ### 4.1 Requisitos funcionais obrigatórios
 
-Fato (especificação, seção 3). Numeração preservada.
+Fato (especificação, seção "Requisitos funcionais obrigatórios"). Numeração preservada.
 
 | ID | Requisito |
 | --- | --- |
@@ -71,7 +71,7 @@ O detalhamento (persona, jornada, regras ligadas, decisões e critério de aceit
 
 ### 4.2 Regras críticas
 
-Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos e técnica de teste em [regras-negocio.md](prd/regras-negocio.md), que também traz RN-09 em diante, decorrentes das decisões da equipe.
+Fato (especificação, seção "Regras críticas"). Numeração preservada. Texto fiel, exemplos e técnica de teste em [regras-negocio.md](prd/regras-negocio.md), que também traz RN-09 em diante, decorrentes das decisões da equipe.
 
 | ID | Regra |
 | --- | --- |
@@ -88,30 +88,30 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 
 | Restrição | Origem |
 | --- | --- |
-| Java 21 e Spring Boot 3.x | Especificação, seção 1 |
-| Entrega na semana 46 | Especificação, seção 1 |
-| Unitários com JUnit 5 (inclusive parametrizados), integração, API em caixa-preta e end-to-end | Especificação, seção 5 |
-| Banco containerizado com Testcontainers e WireMock para integrações externas | Especificação, seção 5 |
-| Teste automatizado de proteção contra dupla reserva | Especificação, seção 5 |
-| Ao menos uma funcionalidade nova com evidências de TDD ou BDD | Especificação, seção 5 |
-| GitHub Actions em pull requests, JaCoCo e SonarCloud | Especificação, seção 5 |
-| JMeter, autorização, validação de entrada e tratamento seguro de erros | Especificação, seção 5 |
-| Mocks apenas em testes unitários isolados; persistência e integrações críticas em ambiente real | Especificação, seção 5 |
+| Java 21 e Spring Boot 3.x | Especificação, seção "Objetivo" |
+| Entrega na semana 46 | Especificação, seção "Objetivo" |
+| Unitários com JUnit 5 (inclusive parametrizados), integração, API em caixa-preta e end-to-end | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Banco containerizado com Testcontainers e WireMock para integrações externas | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Teste automatizado de proteção contra dupla reserva | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Ao menos uma funcionalidade nova com evidências de TDD ou BDD | Especificação, seção "Estratégia obrigatória de qualidade" |
+| GitHub Actions em pull requests, JaCoCo e SonarCloud | Especificação, seção "Estratégia obrigatória de qualidade" |
+| JMeter, autorização, validação de entrada e tratamento seguro de erros | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Mocks apenas em testes unitários isolados; persistência e integrações críticas em ambiente real | Especificação, seção "Estratégia obrigatória de qualidade" |
 
 ### 4.4 Decisões da equipe que moldam o escopo
 
-Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Confirmar" indica o que ainda depende do professor.
+Decisões de 12/10/2026. O texto de cada uma, com justificativa, alternativas e impacto, está em [perguntas-abertas.md](prd/perguntas-abertas.md), que é a fonte. A coluna "Validado pelo professor" é "Não" em todas as linhas: nenhuma decisão foi validada com ele. As lacunas A1 a A8 (plano de projeto, seção 5.3) foram decididas pela equipe em 24/10/2026, sem validação externa ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17).
 
-| ID | Tema | RF e RN afetados | Confirmar com o professor |
+| ID | Tema | RF e RN afetados | Validado pelo professor |
 | --- | --- | --- | --- |
-| A1 | Recurso restrito e aprovação automática | RF-02, RF-07, RN-09, RN-10 | Sim |
-| A2 | Fronteira de horário [início, fim) | RN-11 | Não |
-| A3 | Material por unidade identificada | RF-02, RF-09, RN-12 | Sim |
-| A4 | Professor como recurso, vínculo opcional | RF-02, RF-05, RN-13 | Não |
-| A5 | Notificação por webhook, após o commit | RF-11, RN-28 | Sim |
-| A6 | Fuso, UTC e janela da sala | RF-03, RF-04, RN-14, RN-15 | Não |
-| A7 | Bloqueio sobre reservas existentes | RF-08, RN-22 | Não |
-| A8 | Cancelamento, início de uso e não comparecimento | RF-04, RF-09, RF-16, RN-18, RN-20, RN-21 | Não |
+| A1 | Recurso restrito e aprovação automática | RF-02, RF-07, RN-09, RN-10 | Não (decisão da equipe, 24/10/2026) |
+| A2 | Fronteira de horário [início, fim) | RN-11 | Não (decisão da equipe, 24/10/2026) |
+| A3 | Material por unidade identificada | RF-02, RF-09, RN-12 | Não (decisão da equipe, 24/10/2026) |
+| A4 | Professor como recurso, vínculo opcional | RF-02, RF-05, RN-13 | Não (decisão da equipe, 24/10/2026) |
+| A5 | Notificação por webhook, após o commit | RF-11, RN-28 | Não (decisão da equipe, 24/10/2026) |
+| A6 | Fuso, UTC e janela da sala | RF-03, RF-04, RN-14, RN-15 | Não (decisão da equipe, 24/10/2026) |
+| A7 | Bloqueio sobre reservas existentes | RF-08, RN-22 | Não (decisão da equipe, 24/10/2026) |
+| A8 | Cancelamento, início de uso e não comparecimento | RF-04, RF-09, RF-16, RN-18, RN-20, RN-21 | Não (decisão da equipe, 24/10/2026) |
 | B1 | Responsável também reserva, sem aprovar a própria | RF-04, RF-07, RN-16 | Não |
 | B2 | Administrador não reserva nem aprova | RF-01, RF-15, RN-17 | Não |
 | B3 | Visibilidade por perfil | RF-03, RF-10, RN-26 | Não |
@@ -166,7 +166,7 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 | Item | Natureza | Observação |
 | --- | --- | --- |
 | Funcionalidades do Foot Fanatics | Fato | A especificação diz que ele é só o case de demonstração das aulas |
-| Controle de material por quantidade em estoque e consumíveis | Decisão A3 | Cada material é uma unidade identificada. Se o professor discordar, o modelo de dados muda |
+| Controle de material por quantidade em estoque e consumíveis | Decisão A3 | Cada material é uma unidade identificada. Se a decisão estiver errada, o modelo de dados muda |
 | Reserva que cruza a meia-noite local | Decisão A6 (suposição S3) | Impacto se estiver errada: eventos noturnos ficam impossíveis de reservar |
 | Reservas próprias do Administrador | Decisão B2 | O Administrador administra; quem precisa reservar usa outro perfil |
 | Cobrança de atraso na devolução de material | Decisão C3 | Só se exige devolução para concluir; a cobrança não existe nesta versão |
@@ -176,7 +176,7 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 
 ## 6. Métricas de sucesso
 
-Fato (especificação, seção 6). São as metas mensuráveis; todas medem evidência, não entrega de funcionalidade.
+Fato (especificação, seção "Metas mensuráveis"). São as metas mensuráveis; todas medem evidência, não entrega de funcionalidade.
 
 | Métrica | Meta | Como será medida |
 | --- | --- | --- |
@@ -187,20 +187,20 @@ Fato (especificação, seção 6). São as metas mensuráveis; todas medem evid�
 
 Observações:
 
-- Fato (especificação, seção 6): cobertura alta, sozinha, não garante qualidade; testes triviais escritos só para subir o percentual não asseguram pontuação máxima.
+- Fato (especificação, seção "Metas mensuráveis"): cobertura alta, sozinha, não garante qualidade; testes triviais escritos só para subir o percentual não asseguram pontuação máxima.
 - **Lacuna:** a especificação não define critérios de desempenho (tempos de resposta, número de usuários simultâneos). Qualquer número usado nos testes de carga será suposição, com validação pendente. As decisões da equipe não introduziram número algum.
-- Fato (especificação, seção 8): são limitadores de nota aplicação que não executa, pipeline ausente, falha de autorização ou possibilidade de dupla reserva. As decisões A1, A8, B1, B2 e B3 aumentam a superfície de autorização e entram na matriz perfil × operação.
+- Fato (especificação, seção "Avaliação"): são limitadores de nota aplicação que não executa, pipeline ausente, falha de autorização ou possibilidade de dupla reserva. As decisões A1, A8, B1, B2 e B3 aumentam a superfície de autorização e entram na matriz perfil × operação.
 
 ## 7. Entregáveis
 
-Fato (especificação, seção 7): repositório com histórico e revisão por pares; aplicação executável com instruções; `README.md` e documentação dos fluxos ou da API; `RTM.md` ligando requisito, risco, teste e evidência; diagramas de contexto, componentes e sequências críticas; plano, suíte automatizada e relatório de testes; pipeline de integração contínua; relatórios de SonarCloud e cobertura; plano e resultado do teste de carga; registro de defeitos; relatório final de qualidade; apresentação e demonstração.
+Fato (especificação, seção "Entregáveis"): repositório com histórico e revisão por pares; aplicação executável com instruções; `README.md` e documentação dos fluxos ou da API; `RTM.md` ligando requisito, risco, teste e evidência; diagramas de contexto, componentes e sequências críticas; plano, suíte automatizada e relatório de testes; pipeline de integração contínua; relatórios de SonarCloud e cobertura; plano e resultado do teste de carga; registro de defeitos; relatório final de qualidade; apresentação e demonstração.
 
 ## 8. Lacunas e decisões pendentes de confirmação
 
-- As oito lacunas da seção 10 da especificação e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
-- Três decisões aguardam confirmação do professor: A1, A3 e A5.
+- As oito lacunas apontadas pela equipe no plano de projeto (seção 5.3) e as quatro dúvidas da redação estão **decididas pela equipe** em [perguntas-abertas.md](prd/perguntas-abertas.md).
+- As lacunas A1 a A8 foram decididas pela equipe em 24/10/2026 e **não foram validadas com o professor** (F7-16 e F7-17 em [decisoes-equipe.md](decisoes-equipe.md)). A3 é a de maior retrabalho se estiver errada.
 - As oito lacunas C1 a C8, surgidas ao aplicar as decisões, foram **decididas pela equipe** em 12/10/2026.
-- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 seguem abertas, sem valor assumido.
+- Nove lacunas (D1 a D9) surgiram ao aplicar as decisões C. D5 a D8 foram **decididas** em 12/10/2026 e D2 em 15/10/2026; D1, D3, D4 e D9 foram decididas pela equipe em 24/10/2026, sem valor padrão e sem validação do professor (F7-16).
 - Sete ambiguidades (D10 a D16) foram registradas na revisão das Fases 0 e 1. D10, D11, D12 e D13 (instante de "até o início", "reserva futura", recálculo de "exige aprovação" e operação da própria reserva pelo Responsável dono) foram **decididas** em 15/10/2026. D14, D15 e D16 (desativação de usuário, levantamento de bloqueio e reserva com início no passado) também foram **decididas** em 15/10/2026, junto com D2 (mecanismo de SEM_DECISAO). D17 (duração da sessão) foi aberta em 15/10/2026 e segue sem valor.
 - Duas decisões carregam suposição a validar: C2 (S6) e C6 (S7).
 

@@ -1,6 +1,6 @@
 # Persona — Responsável
 
-Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 2. Decisões e lacunas citadas (identificadores A, B, C e D) estão em [perguntas-abertas.md](../perguntas-abertas.md).
+Fonte do perfil: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Escopo e perfis". Decisões e lacunas citadas (identificadores A, B, C e D) estão em [perguntas-abertas.md](../perguntas-abertas.md).
 
 Legenda: **fato** (vem da especificação), **decisão** (da equipe, com ID), **suposição** (inferência, com impacto), **lacuna** (ainda sem decisão).
 

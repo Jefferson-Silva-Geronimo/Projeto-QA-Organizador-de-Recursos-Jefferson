@@ -1,4 +1,4 @@
-# Auditoria da RTM (prompt 7.A)
+# Auditoria da RTM
 
 Auditoria de qualidade da [RTM.md](../../RTM.md), feita em 24/10/2026 na `main` em `6d49292`. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Nada foi corrigido nesta auditoria:** cada achado virou defeito (BUG-020 a BUG-027, seção 7), com issue, e foi corrigido depois, em PR próprio. As seções 1 a 9 descrevem o **estado inicial** de 24/10/2026 (`main` em `6d49292`); o resultado das correções está na seção 10. Nenhuma linha foi marcada "testada" sem execução.
 
@@ -20,7 +20,7 @@ Auditoria de qualidade da [RTM.md](../../RTM.md), feita em 24/10/2026 na `main` 
 | Defeitos abertos | **8** (BUG-020 a BUG-027) |
 | "Apague a regra" | **3 de 3 regras** ficaram vermelhas por asserção (RN-01, RN-03 e RN-06); no RN-06 só o caso do Administrador, ver BUG-026 |
 
-**Leitura:** a RTM não tem linha vazia, link quebrado, teste ausente ou teste vermelho. Os problemas são de **precisão do vínculo** (a RN aponta para blocos de CT, não para os CT da regra), de **rastreabilidade do front** (27 CT sem identificador no código), de **execução citada** (38 linhas só com a execução local E-1) e **uma lacuna de teste em regra crítica** (RN-06, Solicitante). Nenhuma meta do plano mestre foi dada como atingida sem ressalva por esta auditoria; a decisão de qualidade é de Jefferson.
+**Leitura:** a RTM não tem linha vazia, link quebrado, teste ausente ou teste vermelho. Os problemas são de **precisão do vínculo** (a RN aponta para blocos de CT, não para os CT da regra), de **rastreabilidade do front** (27 CT sem identificador no código), de **execução citada** (38 linhas só com a execução local E-1) e **uma lacuna de teste em regra crítica** (RN-06, Solicitante). Nenhuma meta do [plano de projeto](../plano-de-projeto.md) foi dada como atingida sem ressalva por esta auditoria; a decisão de qualidade é de Jefferson.
 
 ## 2. Escopo e método
 
@@ -156,7 +156,7 @@ Observação: "ausente" não quer dizer "regra sem teste". Os CT existem, têm m
 
 ## 6. Verificação "apague a regra" por amostragem
 
-Em worktree descartável da `main` (`6d49292`), fora do projeto, sem commit; os worktrees foram removidos e a `main` ficou sem diferença (`git status` só com `mvnw.cmd`). Regras escolhidas por Jefferson (RN-03, RN-06 e uma de tempo) e por mim (RN-01).
+Em worktree descartável da `main` (`6d49292`), fora do projeto, sem commit; os worktrees foram removidos e a `main` ficou sem diferença (`git status` só com `mvnw.cmd`). Regras escolhidas por Jefferson (RN-03, RN-06 e uma de tempo) e pelo agente de código (RN-01).
 
 | Regra | O que foi apagado | Teste que ficou vermelho | Resultado |
 | --- | --- | --- | --- |
@@ -193,7 +193,7 @@ Outras observações, que **não** viraram defeito:
 | RN-01 a RN-08 têm linha na RTM, status `testado`, CT existentes, métodos com asserção e execução verde na CI atual? | **Sim, 8 de 8.** Todas com ressalva V (vínculo) e a RN-06 também com M |
 | Os RF dependentes (RF-01, 03 a 10, 12, 13 e 16) estão na mesma condição? | **Sim, 12 de 12** críticos, com as ressalvas I (front/E2E sem identificador) e E (execução local) onde indicadas |
 | Os 2 RNF críticos (RNF-05 e RNF-06) idem? | **Sim.** Ressalva E |
-| A meta de "100% na RTM" da especificação (seção 6) está atingida? | **Atingida quanto à presença, ao status e à execução verde.** **Não** atingida quanto à precisão do vínculo regra-teste (BUG-020) nem quanto ao isolamento da RN-06 por teste (BUG-026). A interpretação da meta como "presença" é uma **suposição** (a especificação não define "100% na RTM" além de "requisitos críticos na RTM"); se for "cada regra provada por seus próprios testes", a meta fica **parcial** até corrigir os BUG-020 e BUG-026 |
+| A meta de "100% na RTM" da especificação (seção "Metas mensuráveis") está atingida? | **Atingida quanto à presença, ao status e à execução verde.** **Não** atingida quanto à precisão do vínculo regra-teste (BUG-020) nem quanto ao isolamento da RN-06 por teste (BUG-026). A interpretação da meta como "presença" é uma **suposição** (a especificação não define "100% na RTM" além de "requisitos críticos na RTM"); se for "cada regra provada por seus próprios testes", a meta fica **parcial** até corrigir os BUG-020 e BUG-026 |
 
 ## 9. Lacunas e limites
 
