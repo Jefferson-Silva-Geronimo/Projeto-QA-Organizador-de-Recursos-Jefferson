@@ -63,3 +63,13 @@ A pendência de 18/10/2026 registrava **22** alertas, todos em `.aiox-core/`. A 
 O projeto usa só Claude Code e GitHub Copilot, e as configurações das outras ferramentas (`.antigravity`, `.codex`, `.cursor`, `.gemini`, `.grok`, `.kimi`) deixaram de ser versionadas. Elas não continham manifesto de dependências com alerta, e a contagem de alertas não mudou por isso.
 
 **Por que o `health-dashboard` continua versionado:** nenhum arquivo do produto o referencia, mas `.aiox-core/install-manifest.yaml`, `.aiox-core/.installed-manifest.yaml` e `.aiox-core/version.json` listam os 39 arquivos dele com soma de verificação, e a verificação de integridade do framework (`manifest validate`) compara o diretório com essas listas. Retirá-lo do índice faria essa verificação acusar arquivos ausentes. A justificativa da seção 4 vale para ele: o painel de diagnóstico não entra nas imagens nem na CI do produto. Os 26 alertas dele seguem declarados como risco, sem dispensa no GitHub.
+
+**Segunda consulta de 26/10/2026, depois do último pull request:** **30** alertas abertos, todos em `.aiox-core/` e **0 fora dele** (0 em `frontend/` e 0 no Maven).
+
+| Manifesto | Altos | Médios | Baixos | Total |
+| --- | --- | --- | --- | --- |
+| `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json` | 10 | 13 | 3 | 26 |
+| `.aiox-core/package-lock.json` | 0 | 2 | 2 | 4 |
+| **Total** | **10** | **15** | **5** | **30** |
+
+O alerta alto de `.aiox-core/package-lock.json` da primeira consulta não aparece mais entre os abertos, e há quatro alertas novos de `fast-uri` (2 médios e 2 baixos) criados em 26/10/2026. **Lacuna:** não foi investigado por que o alto saiu da lista nem se os `fast-uri` têm correção disponível. A conclusão da seção 4 vale: nenhum alerta é do produto.

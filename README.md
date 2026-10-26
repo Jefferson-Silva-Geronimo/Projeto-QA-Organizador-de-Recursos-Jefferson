@@ -241,7 +241,7 @@ Fonte: especificação, seção "Metas mensuráveis".
 - **Histórico de trabalho:** está no `git log` e nos pull requests do GitHub, cada um com os checks e a revisão assistida registrados.
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40120487376`); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
-- **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 26/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
+- **Alertas do Dependabot:** 30 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 26/10/2026 à tarde, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções
