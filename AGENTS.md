@@ -45,7 +45,7 @@ docs/plano-de-projeto.md, docs/plano-de-teste.md
 docs/arquitetura.md, docs/taticas-arquiteturais-len-bass.md
 docs/adr/, docs/avaliacao-arquitetural/, docs/testes/, docs/defeitos/, docs/performance/
 docs/decisoes-equipe.md, docs/perguntas-professor.md, docs/limitacoes-e-divida-tecnica.md
-docs/relatorio-qualidade.md, docs/evidencias/, docs/api/
+docs/relatorio-qualidade.md, docs/status-requisitos.md, docs/rtm.md, docs/evidencias/, docs/api/
 perf/                    JMeter
 frontend/                React + Vite (ADR-015)
 src/, pom.xml            Maven, na raiz. Pacotes MVC em br.senac.recursos: controller, dto, service,

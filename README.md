@@ -161,11 +161,14 @@ docs/
   taticas-arquiteturais-len-bass.md   catálogo de táticas usado no ATAM
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execução E-24, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
+  testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execução E-24, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   limitacoes-e-divida-tecnica.md   o que está aberto ou declarado: risco aceito, limitação, suposição e dívida técnica
   evidencias/          índice das evidências do pacote de entrega
+  status-requisitos.md   situação dos 14 RF obrigatórios e das regras críticas, com evidência e prova de mutação
+  rtm.md               aponta para a RTM.md da raiz
+  seguranca/           aponta para a matriz de autorização em testes/
   perguntas-professor.md   registro das decisões sobre as lacunas
   performance/         rnf.md (requisito e modelo de carga), resultado-01.md e resultado-02.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
