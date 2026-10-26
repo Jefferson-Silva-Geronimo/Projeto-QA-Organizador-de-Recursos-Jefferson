@@ -32,7 +32,7 @@ Contrato OpenAPI desde o primeiro endpoint e front end React + Vite como SPA que
 | Argumento | Base |
 | --- | --- |
 | Contrato executável alimenta o teste de documentação | RF-14; R-15; teste de contrato em [plano-de-teste.md](../plano-de-teste.md), seção 4.1 |
-| Front end separado consome a mesma API que os testes de API | Especificação, seção 5 (API em caixa-preta) |
+| Front end separado consome a mesma API que os testes de API | Especificação, seção "Estratégia obrigatória de qualidade" (API em caixa-preta) |
 | Escolha da tecnologia | Decisão da equipe, [prd.md](../prd.md), seção 4.5; **sem requisito correspondente** |
 
 ## Consequências

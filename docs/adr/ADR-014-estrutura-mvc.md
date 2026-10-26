@@ -57,7 +57,7 @@ Correspondência com a estrutura anterior:
 | --- | --- |
 | A estrutura segue a determinação do dono do projeto | Instrução do usuário em 15/10/2026 |
 | A view já é a SPA do ADR-010 | ADR-010; RF-13 |
-| O model continua sem dependência de Spring e de persistência | ADR-001 (domínio testável sem contexto), especificação seção 5 (unitários isolados) |
+| O model continua sem dependência de Spring e de persistência | ADR-001 (domínio testável sem contexto), especificação seção "Estratégia obrigatória de qualidade" (unitários isolados) |
 | O comportamento não muda | A suíte de 220 testes (112 de unidade e arquitetura, 108 de integração) passou antes e depois da mudança, sem alteração de asserção |
 | A estrutura é verificável | Seis regras de camada em `ArquiteturaTest` |
 

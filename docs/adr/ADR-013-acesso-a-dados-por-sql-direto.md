@@ -36,8 +36,8 @@ O starter de JPA é **removido** da casca e o `spring-boot-starter-jdbc` é adic
 | --- | --- |
 | `tstzrange`, `EXCLUDE` e gatilho são recursos do banco, usados diretamente | [modelo-dados.dbml](../prd/modelo-dados.dbml); ADR-003, ADR-006 |
 | A ordem das escritas precisa ser explícita | ADR-003 (inserção ordenada por `recurso_id`) |
-| Consultas parametrizadas | Especificação, seção 5 (validação de entrada); ADR-008; RNF-07 |
-| Persistência verificada com banco real | Especificação, seção 5; ADR-009 |
+| Consultas parametrizadas | Especificação, seção "Estratégia obrigatória de qualidade" (validação de entrada); ADR-008; RNF-07 |
+| Persistência verificada com banco real | Especificação, seção "Estratégia obrigatória de qualidade"; ADR-009 |
 | Sem entidade gerenciada no domínio | ADR-001 |
 
 ## Consequências

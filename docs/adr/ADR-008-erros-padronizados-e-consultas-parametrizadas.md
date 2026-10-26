@@ -9,7 +9,7 @@
 
 ## Contexto
 
-RF-13 exige mensagens de erro compreensíveis. A especificação cobra validação de entrada e tratamento seguro de erros (seção 5). O front end e os testes não podem depender do texto da mensagem. As buscas (RF-03) e o relatório (RF-12) são paginados e filtrados.
+RF-13 exige mensagens de erro compreensíveis. A especificação cobra validação de entrada e tratamento seguro de erros (seção "Estratégia obrigatória de qualidade"). O front end e os testes não podem depender do texto da mensagem. As buscas (RF-03) e o relatório (RF-12) são paginados e filtrados.
 
 ## Requisitos e cenários
 
@@ -34,8 +34,8 @@ RF-03, RF-12, RF-13; RN-01 a RN-04, RN-18, RN-19, RN-22 a RN-24, RN-33; RNF-07, 
 | Argumento | Base |
 | --- | --- |
 | Código estável desacopla testes e front end do texto | RF-13; regras com recusa ligadas a RF-13 em [requisitos-funcionais.md](../prd/requisitos-funcionais.md) |
-| Erro sem vazamento | Especificação, seção 5; RNF-07; CEN-09; **Exception Handling** (catálogo, seção 4.1.2) |
-| Validação e consulta segura | Especificação, seção 5 (validação de entrada); RNF-07 |
+| Erro sem vazamento | Especificação, seção "Estratégia obrigatória de qualidade"; RNF-07; CEN-09; **Exception Handling** (catálogo, seção 4.1.2) |
+| Validação e consulta segura | Especificação, seção "Estratégia obrigatória de qualidade" (validação de entrada); RNF-07 |
 | Paginação do relatório | C5, RN-31 |
 
 ## Consequências

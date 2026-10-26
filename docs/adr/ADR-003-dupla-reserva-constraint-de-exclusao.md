@@ -9,7 +9,7 @@
 
 ## Contexto
 
-"Possibilidade de dupla reserva" é limitador de nota (especificação, seção 8) e a seção 5 exige teste automatizado de concorrência com banco real. RN-03 exige uma única reserva aceita entre solicitações simultâneas. A fronteira é semiaberta [início, fim) (A2, RN-11). Reserva e bloqueio disputam o mesmo período (RN-04, RN-22).
+"Possibilidade de dupla reserva" é limitador de nota (especificação, seção "Avaliação") e a seção "Estratégia obrigatória de qualidade" exige teste automatizado de concorrência com banco real. RN-03 exige uma única reserva aceita entre solicitações simultâneas. A fronteira é semiaberta [início, fim) (A2, RN-11). Reserva e bloqueio disputam o mesmo período (RN-04, RN-22).
 
 ## Requisitos e cenários
 
@@ -38,7 +38,7 @@ Constraint de exclusão no PostgreSQL: `EXCLUDE USING gist (recurso_id WITH =, p
 | Argumento | Base |
 | --- | --- |
 | A garantia vale para qualquer caminho de escrita, inclusive job e bloqueio | RN-03, RN-04; tática **Transactions** (catálogo, seção 4.1.4) |
-| Teste de concorrência com banco real é exigido | Especificação, seção 5; RNF-05 |
+| Teste de concorrência com banco real é exigido | Especificação, seção "Estratégia obrigatória de qualidade"; RNF-05 |
 | A mesma garantia cobre a fronteira [início, fim) | A2, RN-11; operador `&&` sobre `tstzrange` com limites `[)` (nota de `ocupacoes` em [modelo-dados.dbml](../prd/modelo-dados.dbml)) |
 | Tentativa de conflito não pode ser gravada na transação que é desfeita | RN-30 e RN-03: a transação da reserva recusada termina em desfazer |
 | O índice da constraint serve à consulta de disponibilidade | Nota de `ocupacoes` em [modelo-dados.dbml](../prd/modelo-dados.dbml); RF-03 |

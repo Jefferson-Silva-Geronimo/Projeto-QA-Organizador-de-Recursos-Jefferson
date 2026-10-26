@@ -27,7 +27,7 @@ Outros fatos da consulta: 14 pacotes afetados (`vite` 7 alertas, `js-yaml` 4, `r
 
 ## 3. A diferença entre 22 e 27
 
-A pendência de 18/10/2026 registrava **22** alertas, todos em `.aiox-core/` ([fase-7-pendencias.md](../fase-7-pendencias.md)). A consulta de hoje mostra **22 alertas criados em 17/10/2026 e 5 criados em 22/10/2026**: os 22 antigos continuam abertos e os 5 são novos. Fato da API; a causa de os 5 terem aparecido naquele dia (novo aviso de segurança publicado, por exemplo) **não foi investigada**.
+A pendência de 18/10/2026 registrava **22** alertas, todos em `.aiox-core/`. A consulta de hoje mostra **22 alertas criados em 17/10/2026 e 5 criados em 22/10/2026**: os 22 antigos continuam abertos e os 5 são novos. Fato da API; a causa de os 5 terem aparecido naquele dia (novo aviso de segurança publicado, por exemplo) **não foi investigada**.
 
 ## 4. Por que não se aplica ao produto
 
@@ -48,5 +48,18 @@ A pendência de 18/10/2026 registrava **22** alertas, todos em `.aiox-core/` ([f
 | Alertas abertos no framework | Risco declarado | Continuam abertos e visíveis. Quem executar localmente as ferramentas do `.aiox-core` (por exemplo, o painel de diagnóstico) usa dependências com alerta conhecido. Impacto limitado à máquina de quem desenvolve; **não medido** |
 | Atualização do framework | Decisão | Não feita nesta fase: o canal de atualização do AIOX não é conhecido (lacuna) e o framework é de terceiros e protegido. Alternativas apresentadas a Jefferson em 24/10/2026: atualizar pelo canal do framework, ou dispensar os alertas no GitHub; ele escolheu só declarar |
 | Causa dos 5 alertas de 22/10 | Lacuna | Não investigada |
-| Revalidação | Pendência | A consulta será repetida na leitura final (item 2.4) e antes da tag (item 2.7). Qualquer alerta fora de `.aiox-core/` interrompe o fluxo |
+| Revalidação | Regra | A consulta é repetida antes de cada tag (última em 26/10/2026, seção 6). Qualquer alerta fora de `.aiox-core/` interrompe o fluxo |
 | Entrada no relatório final | Pendência | Risco declarado, com esta justificativa, no bloco 9 (riscos residuais) |
+
+## 6. Consulta de 26/10/2026 e o que continua versionado
+
+| Item | Valor |
+| --- | --- |
+| Data | 26/10/2026 |
+| Consulta | a mesma da seção 1, pela API do GitHub (leitura) |
+| Alertas abertos | **27**: 1 em `.aiox-core/package-lock.json` (alto) e 26 em `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json` (10 altos, 13 médios, 3 baixos) |
+| Fora de `.aiox-core/` | 0 (nenhum em `frontend/` nem no Maven) |
+
+O projeto usa só Claude Code e GitHub Copilot, e as configurações das outras ferramentas (`.antigravity`, `.codex`, `.cursor`, `.gemini`, `.grok`, `.kimi`) deixaram de ser versionadas. Elas não continham manifesto de dependências com alerta, e a contagem de alertas não mudou por isso.
+
+**Por que o `health-dashboard` continua versionado:** nenhum arquivo do produto o referencia, mas `.aiox-core/install-manifest.yaml`, `.aiox-core/.installed-manifest.yaml` e `.aiox-core/version.json` listam os 39 arquivos dele com soma de verificação, e a verificação de integridade do framework (`manifest validate`) compara o diretório com essas listas. Retirá-lo do índice faria essa verificação acusar arquivos ausentes. A justificativa da seção 4 vale para ele: o painel de diagnóstico não entra nas imagens nem na CI do produto. Os 26 alertas dele seguem declarados como risco, sem dispensa no GitHub.

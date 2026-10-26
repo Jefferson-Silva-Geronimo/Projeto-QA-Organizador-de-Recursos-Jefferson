@@ -4,7 +4,7 @@
 | --- | --- |
 | Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
-| Origem | Especificação, seções 5 e 6; [plano-de-teste.md](../plano-de-teste.md), seção 4; [arquitetura.md](../arquitetura.md), seção 5 |
+| Origem | Especificação, seções "Estratégia obrigatória de qualidade" e "Metas mensuráveis"; [plano-de-teste.md](../plano-de-teste.md), seção 4; [arquitetura.md](../arquitetura.md), seção 5 |
 | Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
@@ -30,11 +30,11 @@ Níveis: unitário com JUnit 5 e testes parametrizados no domínio; integração
 
 | Argumento | Base |
 | --- | --- |
-| Níveis e uso de mocks | Especificação, seção 5 |
-| Metas | Especificação, seção 6; RNF-01 a RNF-04 |
-| A cobertura não substitui o teste de regra | Especificação, seção 6 |
+| Níveis e uso de mocks | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Metas | Especificação, seção "Metas mensuráveis"; RNF-01 a RNF-04 |
+| A cobertura não substitui o teste de regra | Especificação, seção "Metas mensuráveis" |
 | Suíte determinística, repetida | Tática **Limit Nondeterminism** (catálogo, seção 4.6.2) |
-| Gate depois de existir regra de domínio | Especificação, seção 9 (semana 38: cobertura de ramo nas regras de sobreposição) |
+| Gate depois de existir regra de domínio | Especificação, seção "Evolução durante o semestre" (semana 38: cobertura de ramo nas regras de sobreposição) |
 
 ## Consequências
 

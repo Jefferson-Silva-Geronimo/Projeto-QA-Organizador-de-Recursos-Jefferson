@@ -30,7 +30,7 @@ RF-02, RF-03, RF-05, RF-06, RF-08; RN-02, RN-04, RN-11; CEN-01, CEN-03, CEN-07.
 
 | Argumento | Base |
 | --- | --- |
-| Uma única garantia vale para os três tipos | RN-02 e RN-04 (especificação, seção 4 e decisões da equipe) |
+| Uma única garantia vale para os três tipos | RN-02 e RN-04 (especificação, seção "Regras críticas" e decisões da equipe) |
 | Material por unidade se comporta como sala e professor | A3, RN-12 |
 | Reserva e bloqueio disputam o mesmo período | A7, RN-22, RF-08 |
 | Cancelar a reserva libera todas as ocupações | D7 |

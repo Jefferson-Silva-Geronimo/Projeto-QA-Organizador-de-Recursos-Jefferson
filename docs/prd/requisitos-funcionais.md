@@ -1,6 +1,6 @@
 # Requisitos funcionais
 
-Fonte dos requisitos RF-01 a RF-14: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 3. Este documento contém **somente requisitos funcionais**. Requisitos não funcionais (desempenho, segurança de transporte, cobertura e similares) ficam para a Fase 2.
+Fonte dos requisitos RF-01 a RF-14: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Requisitos funcionais obrigatórios". Este documento contém **somente requisitos funcionais**. Requisitos não funcionais (desempenho, segurança de transporte, cobertura e similares) ficam para a Fase 2.
 
 As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da especificação; RN-09 em diante, decisões da equipe). As decisões A a D e as lacunas estão em [perguntas-abertas.md](perguntas-abertas.md). As jornadas estão nas personas em [personas/](personas/).
 
@@ -16,20 +16,20 @@ As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da esp
 
 | ID | Requisito | Persona principal | Origem |
 | --- | --- | --- | --- |
-| RF-01 | Autenticação e autorização por perfil | Todas as personas | Especificação, seção 3 |
-| RF-02 | Cadastro e consulta de salas, professores e materiais | Administrador | Especificação, seção 3 |
-| RF-03 | Pesquisa por tipo, capacidade, localização, competência e disponibilidade | Solicitante | Especificação, seção 3 |
-| RF-04 | Criação, alteração e cancelamento de reservas | Solicitante | Especificação, seção 3 |
-| RF-05 | Detecção de sobreposição de horários, inclusive na agenda do professor | Solicitante | Especificação, seção 3 |
-| RF-06 | Proteção contra dupla reserva em solicitações simultâneas | Solicitante | Especificação, seção 3 |
-| RF-07 | Aprovação obrigatória para recursos restritos | Responsável | Especificação, seção 3 |
-| RF-08 | Bloqueio de recursos em manutenção | Administrador | Especificação, seção 3 |
-| RF-09 | Registro de retirada e devolução de materiais e equipamentos | Responsável | Especificação, seção 3 |
-| RF-10 | Histórico auditável de mudanças | Responsável e Administrador | Especificação, seção 3 |
-| RF-11 | Notificação simulada ou integração com API externa | Sistema | Especificação, seção 3 |
-| RF-12 | Relatório de utilização por recurso, carga horária alocada e conflitos evitados | Responsável e Administrador (somente leitura) | Especificação, seção 3 |
-| RF-13 | Interface responsiva e mensagens de erro compreensíveis | Todas as personas | Especificação, seção 3 |
-| RF-14 | Documentação de API ou dos fluxos públicos do sistema | Equipe | Especificação, seção 3 |
+| RF-01 | Autenticação e autorização por perfil | Todas as personas | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-02 | Cadastro e consulta de salas, professores e materiais | Administrador | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-03 | Pesquisa por tipo, capacidade, localização, competência e disponibilidade | Solicitante | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-04 | Criação, alteração e cancelamento de reservas | Solicitante | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-05 | Detecção de sobreposição de horários, inclusive na agenda do professor | Solicitante | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-06 | Proteção contra dupla reserva em solicitações simultâneas | Solicitante | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-07 | Aprovação obrigatória para recursos restritos | Responsável | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-08 | Bloqueio de recursos em manutenção | Administrador | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-09 | Registro de retirada e devolução de materiais e equipamentos | Responsável | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-10 | Histórico auditável de mudanças | Responsável e Administrador | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-11 | Notificação simulada ou integração com API externa | Sistema | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-12 | Relatório de utilização por recurso, carga horária alocada e conflitos evitados | Responsável e Administrador (somente leitura) | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-13 | Interface responsiva e mensagens de erro compreensíveis | Todas as personas | Especificação, seção "Requisitos funcionais obrigatórios" |
+| RF-14 | Documentação de API ou dos fluxos públicos do sistema | Equipe | Especificação, seção "Requisitos funcionais obrigatórios" |
 | RF-15 | Gestão de usuários e perfis | Administrador | Acréscimo da equipe |
 | RF-16 | Ciclo de vida de uso da reserva | Responsável | Acréscimo da equipe |
 
@@ -251,7 +251,7 @@ As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da esp
 
 ### RF-15. Gestão de usuários e perfis
 
-**Acréscimo da equipe.** O passo 6 da jornada do Administrador não tinha requisito: RF-01 trata de autenticação e autorização e RF-02 de salas, professores e materiais. A especificação atribui ao Administrador o gerenciamento de usuários (seção 2) sem um RF correspondente.
+**Acréscimo da equipe.** O passo 6 da jornada do Administrador não tinha requisito: RF-01 trata de autenticação e autorização e RF-02 de salas, professores e materiais. A especificação atribui ao Administrador o gerenciamento de usuários (seção "Escopo e perfis") sem um RF correspondente.
 
 - **Enunciado:** O Administrador cria, altera e desativa usuários e atribui um único perfil a cada um.
 - **Persona principal:** Administrador

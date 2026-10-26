@@ -31,7 +31,7 @@ Flyway aplica as migrações em produção e em teste. Os testes de persistênci
 
 | Argumento | Base |
 | --- | --- |
-| Persistência e integrações críticas em ambiente real | Especificação, seção 5 |
+| Persistência e integrações críticas em ambiente real | Especificação, seção "Estratégia obrigatória de qualidade" |
 | A garantia de RN-03 só existe no PostgreSQL | Nota de `ocupacoes` em [modelo-dados.dbml](../prd/modelo-dados.dbml); RN-03 |
 | Esquema versionado e reproduzível | Tática **Sandbox** (catálogo, seção 4.6.1) |
 

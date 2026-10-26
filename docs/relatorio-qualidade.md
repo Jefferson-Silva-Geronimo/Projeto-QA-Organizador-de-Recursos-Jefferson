@@ -1,4 +1,4 @@
-# Relatório final de qualidade (prompt 7.B)
+# Relatório final de qualidade
 
 Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 sobre a `main`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `608cdbc` (run da CI [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376)); os commits posteriores (`5e2ce88` e os que vierem antes da tag) só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
@@ -7,7 +7,7 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 | Item | Valor |
 | --- | --- |
 | **Recomendação do autor deste relatório** | **LIBERAR COM RESSALVAS** (como release candidate `v1.0.0-rc1`) |
-| **Decisão de qualidade** | **LIBERAR COM RESSALVAS**, decisão de **Jefferson Silva em 24/10/2026**, coincidindo com a recomendação acima. A decisão vale para o release candidate; a criação da tag segue dependendo de nova confirmação dele |
+| **Decisão de qualidade** | **LIBERAR COM RESSALVAS**, decisão de **Jefferson Silva em 24/10/2026**, coincidindo com a recomendação acima. A decisão vale para o release candidate `v1.0.0-rc1` (tag publicada em 24/10/2026); a `v1.0.0-rc2` só será criada com autorização expressa dele |
 
 **Observação de Jefferson junto com a decisão (24/10/2026):** "RNF-08b não atendido (p95 de 568 a 886 ms contra 300 ms), R-25 aberto com causa desconhecida, front sem cobertura medida, lacunas da especificação resolvidas por decisão da equipe sem validação externa, revisão por pares feita como revisão assistida".
 
@@ -27,7 +27,7 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 3. **O front não tem cobertura medida** e o SonarCloud não analisa o TypeScript ([leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 6).
 4. **Lacunas da especificação resolvidas por decisão da equipe, sem validação externa** (A1 a A8, D1, D3, D4, D9, D17 e outras): decididas por Jefferson em 24/10/2026, com impacto e teste declarados; a maior em retrabalho é a A3 ([decisoes-equipe.md](decisoes-equipe.md), F7-16 e F7-17; seção 9 deste relatório).
 5. **"Revisão por pares" é revisão assistida:** a equipe é uma pessoa; é uma decisão não validada e uma limitação do entregável (F7-16, item 14).
-6. **Entregáveis ainda não feitos por mim:** a apresentação e a demonstração (de Jefferson), e a tag `v1.0.0-rc1`, que exige autorização expressa dele (seção 11).
+6. **Entregável fora do repositório:** a apresentação e a demonstração são feitas pelo autor, fora do repositório (seção 11).
 
 **O que mudaria a recomendação:** para **"não liberar"**: qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou uma decisão de alto impacto da equipe (A3, maior retrabalho) se mostrar errada. Para **"liberar"** sem ressalvas: seria preciso o professor validar a hipótese de 300 ms ou o RNF-08b ser medido em outro ambiente com resultado dentro da meta.
 
@@ -41,9 +41,9 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 | E2E em outros navegadores além do Chromium; E2E não é repetível no mesmo banco | Limite | [e2e/README.md](testes/e2e/README.md) |
 | `BLOQUEIO_COM_RESERVA_EM_USO` e a paginação do relatório, no navegador real (só em teste de componente e de integração) | Limite | RTM, execuções E-18 e E-21 |
 | RF-11 (notificação simulada) e RF-14 (documentação) **sem tela**, por interpretação declarada (F6-20) | Interpretação | Seção 9 |
-| Acessibilidade: o axe deixa `color-contrast` incompleto em diálogos, aviso e barra inferior; o anel do ícone do calendário é o do navegador | Limite | [fase-7-pendencias.md](fase-7-pendencias.md), seção 6 |
+| Acessibilidade: o axe deixa `color-contrast` incompleto em diálogos, aviso e barra inferior; o anel do ícone do calendário é o do navegador | Limite | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 5 |
 | Carga repetida em outra máquina ou em disco rápido; cada rodada foi executada uma vez | Limite | [resultado-02.md](performance/resultado-02.md), seção 6 |
-| Custo por reserva em uso (consulta de movimentações por reserva); listas sem paginação | Lacuna | [fase-7-pendencias.md](fase-7-pendencias.md) |
+| Custo por reserva em uso (consulta de movimentações por reserva); listas sem paginação | Lacuna | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) |
 | TLS, `Strict-Transport-Security`, `Content-Security-Policy`, limitação de taxa, teste de XSS e teste do tempo constante do login | Lacuna | [modelo-de-ameacas.md](testes/modelo-de-ameacas.md) |
 | SBOM, verificação de licenças e assinatura do artefato | Dívida técnica | F7-06 |
 | Mutação: só o pacote `model`, em 17/10/2026, **não repetida** | Limite | [mutacao.md](testes/mutacao.md) |
@@ -51,7 +51,7 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 
 ## 3. Metas contra resultado
 
-| Meta (especificação, seção 6) | Resultado | Situação | Origem |
+| Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
 | **80%** de cobertura de linhas | **97,01%** (1751 de 1805) | **Atingida** | JaCoCo, run `40120487376` |
 | **70%** de cobertura de branches | **86,88%** (523 de 602) | **Atingida** | JaCoCo, run `40120487376` |
@@ -62,7 +62,7 @@ Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-24, run [`40120487376`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40120487376) (`608cdbc`), com o detalhe por classe em [execucao-e24.md](testes/execucao-e24.md). **0 falhas em todos os níveis.**
+Execução de referência: E-24, run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445) (`c9240cd`), com o detalhe por classe em [execucao-e24.md](testes/execucao-e24.md). **0 falhas em todos os níveis.**
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
@@ -76,7 +76,7 @@ Execução de referência: E-24, run [`40120487376`](https://github.com/Jefferso
 
 **Ambiente realista (fato):** o banco é PostgreSQL 17 em Testcontainers; a notificação usa WireMock (`NotificacaoApiIT`: 9 testes; `NotificacaoTempoLimiteApiIT`: 1). Mocks ficam nos testes de unidade isolados.
 
-**TDD e BDD (fato):** o histórico da `main` tem 478 commits, 53 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log`, 24/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
+**TDD e BDD (fato):** o histórico da `main` em `a027e91` tem 493 commits, 60 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
 
 **Os testes protegem a regra? Experimentos "apague a regra" (24/10/2026, worktree descartável, nada na `main`):** RN-01 (`PeriodoTest`: 2 falhas por asserção; na API o `400` virou `500`), RN-03 (`ConcorrenciaApiIT`: 6 falhas por asserção) e RN-06 (só o caso do Administrador ficou vermelho; isso revelou o BUG-026, corrigido com um teste novo que falha por asserção sem o portão de perfil: `Status expected:<403> but was:<200>`) ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 6; [defeitos/README.md](defeitos/README.md), BUG-026). **Mutação (Fase 4, 17/10/2026, só `model`):** 78 mutantes, 60 mortos, 0 sobreviventes entre os cobertos, pontuação de 77% ([mutacao.md](testes/mutacao.md)).
 
@@ -85,7 +85,7 @@ Execução de referência: E-24, run [`40120487376`](https://github.com/Jefferso
 | Item | Resultado | Origem |
 | --- | --- | --- |
 | Garantia | Constraint de exclusão `EXCLUDE USING gist (recurso_id WITH =, periodo WITH &&) WHERE (ativa)` em `ocupacoes` (a garantia está no banco, para reserva e bloqueio) | [ADR-003](adr/ADR-003-dupla-reserva-constraint-de-exclusao.md); `V2__esquema.sql` |
-| Teste | `ConcorrenciaApiIT`: **7 testes, 0 falhas** no E-24 (20 solicitações simultâneas para a mesma sala, para o mesmo professor, 5 repetições, vários recursos em ordens opostas, tentativa de conflito persistida) | Run `40120487376` |
+| Teste | `ConcorrenciaApiIT`: **7 testes, 0 falhas** no E-24 (20 solicitações simultâneas para a mesma sala, para o mesmo professor, 5 repetições, vários recursos em ordens opostas, tentativa de conflito persistida) | Run `40116523445` (E-24) |
 | **Prova de que a dupla reserva é impossível e de que o teste protege** | **Com a constraint:** 7 de 7 verdes. **Sem a constraint** (worktree descartável): 7 testes, **6 falhas por asserção** (`expected: 1L`, mais de uma reserva aceita) e 1 erro (o `ct063`, que tentava remover uma constraint que não existia; **corrigido no BUG-023**: agora falha por asserção) | [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 5; BUG-023 |
 | Sob carga | 100 reservas aceitas em 100 pares disputados, **0 sobreposição no banco, 0 par duplicado** e cada 409 gerou exatamente uma linha em `tentativas_conflito`; o caminho do impasse (`40P01`, BUG-007) foi exercido e respondeu 409 | [resultado-02.md](performance/resultado-02.md), seções 3 |
 | Suposição | As 20 solicitações e as 5 repetições são hipóteses da Aula 10, **sem validação do professor**; impacto: se o professor pedir outro número, repete-se o teste com outro valor, sem mudar a garantia | [casos-de-teste.md](testes/casos-de-teste.md), seção 5 |
@@ -183,8 +183,8 @@ Fonte: [defeitos/README.md](defeitos/README.md), com o processo, as severidades 
 | **XSS lê o token do `sessionStorage`** | Risco residual aceito | Jefferson, 18/10/2026 | Equilíbrio entre guardar só em memória (novo login a cada recarga) e as mitigações do ADR-015 | [ADR-015](adr/ADR-015-stack-do-front-end.md) |
 | **Interpretação F6-20:** RF-11 e RF-14 sem tela | Interpretação declarada | Jefferson, 22/10/2026 | O Anexo A do [plano de projeto](plano-de-projeto.md) diz "sem tela própria" para os dois; a frase da porta de saída vale para os RF com interação humana. **Não é cumprimento literal da frase.** Prova abaixo | [decisoes-equipe.md](decisoes-equipe.md), F6-20 |
 | **Janela de 14 dias da Busca** (`PaginaDeBusca.tsx:24`) | Suposição sem origem | Jefferson, 24/10/2026 (F7-02 e F7-13) | Só a janela inicial; a pessoa pode alterá-la | [revisao-assistida-front.md](testes/revisao-assistida-front.md) |
-| **Limitações de acessibilidade:** axe com `color-contrast` incompleto em diálogos, aviso e barra inferior (0 violações); anel do ícone do calendário é o do navegador; diálogo próprio no lugar do `<dialog>` nativo; campo de data nativo com 6 paradas de Tab | Limitações declaradas | Jefferson (F6-12, campo de data) | Contraste medido à mão (de 6,69 a 16,86 no claro e de 8,19 a 14,56 no escuro, mínimo 4,5); o jsdom 29 não implementa `showModal()` | [fase-7-pendencias.md](fase-7-pendencias.md), seção 6 |
-| **Listas sem paginação** (reservas, fila, catálogo, auditoria; L-03) e custo por reserva em uso não medido | Declarado, sem decisão de aceitar | — | Pode pesar se as listas crescerem | [fase-7-pendencias.md](fase-7-pendencias.md) |
+| **Limitações de acessibilidade:** axe com `color-contrast` incompleto em diálogos, aviso e barra inferior (0 violações); anel do ícone do calendário é o do navegador; diálogo próprio no lugar do `<dialog>` nativo; campo de data nativo com 6 paradas de Tab | Limitações declaradas | Jefferson (F6-12, campo de data) | Contraste medido à mão (de 6,69 a 16,86 no claro e de 8,19 a 14,56 no escuro, mínimo 4,5); o jsdom 29 não implementa `showModal()` | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 5 |
+| **Listas sem paginação** (reservas, fila, catálogo, auditoria; L-03) e custo por reserva em uso não medido | Declarado, sem decisão de aceitar | — | Pode pesar se as listas crescerem | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) |
 | **27 alertas do Dependabot em `.aiox-core/`** | Risco declarado | Jefferson, 24/10/2026 (F7-08) | Não se aplicam ao produto: 0 no Maven e 0 no front; o framework fica fora da imagem | [alertas-dependabot.md](testes/alertas-dependabot.md) |
 | **Pacote `unzip` do `apt` sem versão fixada** no estágio de build do Dockerfile | Declarado | Jefferson, 24/10/2026 (F7-14) | Necessário para a soma do Maven valer; a imagem-base segue por digest e o `unzip` não vai à imagem de execução | [decisoes-equipe.md](decisoes-equipe.md), F7-14 |
 | **Atualizações adiadas:** `jsdom` 29 para 30 (F7-11) e os PRs 81 a 83 do Dependabot (F7-15) | Deliberadamente adiadas | Jefferson, 24/10/2026 | Não alterar a base de testes nem o `package-lock.json` do front entre a leitura final e o clone limpo; patch e minor, sem alerta de segurança | [decisoes-equipe.md](decisoes-equipe.md) |
@@ -225,31 +225,31 @@ O plano abaixo é **proposta do autor, sem prazo e sem decisão**; ordena do que
 | 7 | Paginação e filtros (reservas, fila, catálogo, auditoria) e medir o custo por reserva em uso | L-03 | Medir antes de paginar |
 | 8 | Atualizações adiadas: `jsdom` 30, PRs 81 a 83, TypeScript 5.9 e ESLint 9 fixados por incompatibilidade, alertas do `.aiox-core/` | F7-11, F7-15, F7-08 | Fazer depois da tag, com a suíte completa do front |
 | 9 | Diálogo nativo `<dialog>` quando o jsdom permitir; E2E em outros navegadores e repetível no mesmo banco | [Dialogo.tsx](../frontend/src/ui/Dialogo.tsx); [e2e/README.md](testes/e2e/README.md) | Reavaliar a cada versão do `jsdom` |
-| 10 | Reativar usuário e recurso, trocar senha (o contrato não tem as operações) | [fase-7-pendencias.md](fase-7-pendencias.md) | Decidir se é requisito |
+| 10 | Reativar usuário e recurso, trocar senha (o contrato não tem as operações) | [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) | Decidir se é requisito |
 | 11 | `CT-nnn` dentro do teste do front (hoje só a tabela CT-arquivo) | BUG-024 | Decidir se vale renomear os testes |
 
-## 11. Entregáveis da especificação (seção 7)
+## 11. Entregáveis da especificação (seção "Entregáveis")
 
-Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção 7.
+Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
 
 | # | Entregável | Onde está | Estado |
 | --- | --- | --- | --- |
-| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (478 commits, 53 PRs mesclados); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
-| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova será **refeita no commit da tag** |
-| 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README recebe os links finais no item 2.7 |
+| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (493 commits e 60 PRs mesclados na `main` em `a027e91`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
+| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova no commit da `v1.0.0-rc1` está em [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5 |
+| 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README traz o pacote de evidências com os links |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | [RTM.md](../RTM.md); [auditoria-rtm.md](testes/auditoria-rtm.md) | **Atendido** (55 linhas; defeitos da auditoria corrigidos) |
 | 5 | Diagramas de contexto, componentes e sequências críticas | [arquitetura.md](arquitetura.md) (C4) e [fluxos-sequencia.md](prd/fluxos-sequencia.md) (14 diagramas) | **Atendido** (renderização não refeita nesta fase) |
 | 6 | Plano, suíte automatizada e relatório de testes | [plano-de-teste.md](plano-de-teste.md); `src/test` e `frontend`; [casos-de-teste.md](testes/casos-de-teste.md); [execucao-e24.md](testes/execucao-e24.md); este relatório | **Atendido** |
 | 7 | Pipeline de integração contínua | [ci.yml](../.github/workflows/ci.yml); proteção da `main` com `test`, `frontend`, `e2e` e `segredos`; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 3 | **Atendido** |
-| 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); artefato `relatorio-jacoco` do run `40120487376` | **Atendido**; os links diretos entram no README no item 2.7 |
+| 8 | Relatórios de SonarCloud e cobertura (JaCoCo) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); artefato `relatorio-jacoco` do run `40120487376` | **Atendido**; os links estão no pacote de evidências do README |
 | 9 | Plano e resultado do teste de carga | [rnf.md](performance/rnf.md); [resultado-01.md](performance/resultado-01.md); [resultado-02.md](performance/resultado-02.md); `perf/` | **Atendido**, com **RNF-08b não atendido** declarado |
 | 10 | Registro de defeitos encontrados, priorizados e corrigidos | [defeitos/README.md](defeitos/README.md); [analise-causa-raiz.md](defeitos/analise-causa-raiz.md) | **Atendido** (27 defeitos) |
-| 11 | Relatório final de qualidade | Este documento | **Escrito**; a **decisão de qualidade é de Jefferson** (bloco 1) |
-| 12 | Apresentação e demonstração do sistema | — | **Pendente: é de Jefferson** (slides e treino da prova oral); apoio opcional no item 2.8 |
+| 11 | Relatório final de qualidade | Este documento | **Escrito**; a decisão de qualidade está no bloco 1 |
+| 12 | Apresentação e demonstração do sistema | — | Feita pelo autor, fora do repositório |
 
 ## 12. Lacunas e limites deste relatório
 
-- **Decisão de qualidade:** não tomada; é de Jefferson.
+- **Decisão de qualidade:** liberar com ressalvas (Jefferson Silva, 24/10/2026), no bloco 1.
 - **Números:** os de teste e cobertura são do run `40120487376`; os de carga são das rodadas de 17/10/2026 em uma máquina; os de mutação são de 17/10/2026 e só do pacote `model`. Nenhum vem de execução antiga da RTM.
 - **Etapa de origem dos BUG-020 a BUG-027:** só BUG-023 e BUG-026 foram datados; os outros seis ficam como lacuna.
 - **Relevância semântica:** a ligação de cada CT a cada regra foi julgada por título; a auditoria leu à mão só as regras RN-01 a RN-08 e os três experimentos.

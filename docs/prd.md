@@ -13,7 +13,7 @@ Este documento separa o que a especificação **afirma** (fato), o que a equipe 
 
 Uma aplicação que organiza a alocação de **salas, professores e materiais** sem conflitos de horário.
 
-Fato (especificação, seção 1): o foco da avaliação é apresentar **evidências objetivas de qualidade, segurança, rastreabilidade e desempenho**, e não apenas que o sistema funcione. O Foot Fanatics, visto nas aulas, é só o case de demonstração; o projeto avaliado é este.
+Fato (especificação, seção "Objetivo"): o foco da avaliação é apresentar **evidências objetivas de qualidade, segurança, rastreabilidade e desempenho**, e não apenas que o sistema funcione. O Foot Fanatics, visto nas aulas, é só o case de demonstração; o projeto avaliado é este.
 
 ## 2. Problema
 
@@ -28,7 +28,7 @@ A especificação não descreve o problema em narrativa; ela declara o objetivo:
 
 ## 3. Perfis de usuário
 
-Fato (especificação, seção 2). Detalhe em [docs/prd/personas](prd/personas/).
+Fato (especificação, seção "Escopo e perfis"). Detalhe em [docs/prd/personas](prd/personas/).
 
 | Perfil | Papel | Persona |
 | --- | --- | --- |
@@ -48,7 +48,7 @@ Decisões sobre os perfis:
 
 ### 4.1 Requisitos funcionais obrigatórios
 
-Fato (especificação, seção 3). Numeração preservada.
+Fato (especificação, seção "Requisitos funcionais obrigatórios"). Numeração preservada.
 
 | ID | Requisito |
 | --- | --- |
@@ -71,7 +71,7 @@ O detalhamento (persona, jornada, regras ligadas, decisões e critério de aceit
 
 ### 4.2 Regras críticas
 
-Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos e técnica de teste em [regras-negocio.md](prd/regras-negocio.md), que também traz RN-09 em diante, decorrentes das decisões da equipe.
+Fato (especificação, seção "Regras críticas"). Numeração preservada. Texto fiel, exemplos e técnica de teste em [regras-negocio.md](prd/regras-negocio.md), que também traz RN-09 em diante, decorrentes das decisões da equipe.
 
 | ID | Regra |
 | --- | --- |
@@ -88,15 +88,15 @@ Fato (especificação, seção 4). Numeração preservada. Texto fiel, exemplos 
 
 | Restrição | Origem |
 | --- | --- |
-| Java 21 e Spring Boot 3.x | Especificação, seção 1 |
-| Entrega na semana 46 | Especificação, seção 1 |
-| Unitários com JUnit 5 (inclusive parametrizados), integração, API em caixa-preta e end-to-end | Especificação, seção 5 |
-| Banco containerizado com Testcontainers e WireMock para integrações externas | Especificação, seção 5 |
-| Teste automatizado de proteção contra dupla reserva | Especificação, seção 5 |
-| Ao menos uma funcionalidade nova com evidências de TDD ou BDD | Especificação, seção 5 |
-| GitHub Actions em pull requests, JaCoCo e SonarCloud | Especificação, seção 5 |
-| JMeter, autorização, validação de entrada e tratamento seguro de erros | Especificação, seção 5 |
-| Mocks apenas em testes unitários isolados; persistência e integrações críticas em ambiente real | Especificação, seção 5 |
+| Java 21 e Spring Boot 3.x | Especificação, seção "Objetivo" |
+| Entrega na semana 46 | Especificação, seção "Objetivo" |
+| Unitários com JUnit 5 (inclusive parametrizados), integração, API em caixa-preta e end-to-end | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Banco containerizado com Testcontainers e WireMock para integrações externas | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Teste automatizado de proteção contra dupla reserva | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Ao menos uma funcionalidade nova com evidências de TDD ou BDD | Especificação, seção "Estratégia obrigatória de qualidade" |
+| GitHub Actions em pull requests, JaCoCo e SonarCloud | Especificação, seção "Estratégia obrigatória de qualidade" |
+| JMeter, autorização, validação de entrada e tratamento seguro de erros | Especificação, seção "Estratégia obrigatória de qualidade" |
+| Mocks apenas em testes unitários isolados; persistência e integrações críticas em ambiente real | Especificação, seção "Estratégia obrigatória de qualidade" |
 
 ### 4.4 Decisões da equipe que moldam o escopo
 
@@ -176,7 +176,7 @@ A especificação **não traz uma lista de itens fora de escopo**. O recorte aba
 
 ## 6. Métricas de sucesso
 
-Fato (especificação, seção 6). São as metas mensuráveis; todas medem evidência, não entrega de funcionalidade.
+Fato (especificação, seção "Metas mensuráveis"). São as metas mensuráveis; todas medem evidência, não entrega de funcionalidade.
 
 | Métrica | Meta | Como será medida |
 | --- | --- | --- |
@@ -187,13 +187,13 @@ Fato (especificação, seção 6). São as metas mensuráveis; todas medem evid�
 
 Observações:
 
-- Fato (especificação, seção 6): cobertura alta, sozinha, não garante qualidade; testes triviais escritos só para subir o percentual não asseguram pontuação máxima.
+- Fato (especificação, seção "Metas mensuráveis"): cobertura alta, sozinha, não garante qualidade; testes triviais escritos só para subir o percentual não asseguram pontuação máxima.
 - **Lacuna:** a especificação não define critérios de desempenho (tempos de resposta, número de usuários simultâneos). Qualquer número usado nos testes de carga será suposição, com validação pendente. As decisões da equipe não introduziram número algum.
-- Fato (especificação, seção 8): são limitadores de nota aplicação que não executa, pipeline ausente, falha de autorização ou possibilidade de dupla reserva. As decisões A1, A8, B1, B2 e B3 aumentam a superfície de autorização e entram na matriz perfil × operação.
+- Fato (especificação, seção "Avaliação"): são limitadores de nota aplicação que não executa, pipeline ausente, falha de autorização ou possibilidade de dupla reserva. As decisões A1, A8, B1, B2 e B3 aumentam a superfície de autorização e entram na matriz perfil × operação.
 
 ## 7. Entregáveis
 
-Fato (especificação, seção 7): repositório com histórico e revisão por pares; aplicação executável com instruções; `README.md` e documentação dos fluxos ou da API; `RTM.md` ligando requisito, risco, teste e evidência; diagramas de contexto, componentes e sequências críticas; plano, suíte automatizada e relatório de testes; pipeline de integração contínua; relatórios de SonarCloud e cobertura; plano e resultado do teste de carga; registro de defeitos; relatório final de qualidade; apresentação e demonstração.
+Fato (especificação, seção "Entregáveis"): repositório com histórico e revisão por pares; aplicação executável com instruções; `README.md` e documentação dos fluxos ou da API; `RTM.md` ligando requisito, risco, teste e evidência; diagramas de contexto, componentes e sequências críticas; plano, suíte automatizada e relatório de testes; pipeline de integração contínua; relatórios de SonarCloud e cobertura; plano e resultado do teste de carga; registro de defeitos; relatório final de qualidade; apresentação e demonstração.
 
 ## 8. Lacunas e decisões pendentes de confirmação
 

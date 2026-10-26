@@ -33,7 +33,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 | ID | Divergência | Evidência | Gravidade |
 | --- | --- | --- | --- |
 | DV-01 (**corrigida em `61ce37d`, BUG-009**) | A decisão de 15/10/2026 (ADR-003; [arquitetura.md](../arquitetura.md), seção 13.2) diz que, se a gravação da tentativa de conflito falhar, "o 409 é mantido e a perda vai para o log". O código **não captura** a falha: `registrarEConverter` chama `tentativas.registrar(...)` sem `try/catch` e `ReservaService` não tem `Logger`. Uma falha na gravação vira erro 500 em vez de 409 | `ReservaService.java:97-98`, `:105-106` e `:329-335`; `JdbcTentativaConflitoRepository.java:20-37` | Alta: a resposta de RF-06 e de RN-03 muda; R-19 foi "aceito por decisão" **com** o 409 mantido |
-| DV-02 | `arquitetura.md` descrevia camadas hexagonais; o código é MVC | Corrigido nesta sessão (`1a5b5bd`) | Resolvida |
+| DV-02 | `arquitetura.md` descrevia camadas hexagonais; o código é MVC | Corrigido (`1a5b5bd`) | Resolvida |
 | DV-03 | O relatório anterior citava 313 testes; o total é a soma de duas fases do `verify` (unidade e integração) | Este documento, seção 1 | Baixa, só documentação |
 
 ## 4. Riscos, não riscos, pontos de sensibilidade e trade-offs, com as medidas
@@ -74,7 +74,7 @@ código**: as divergências viram ações priorizadas. A correção de DV-01 vei
 
 | Prioridade | Ação | Origem | Esforço |
 | --- | --- | --- | --- |
-| 1 | ~~Corrigir DV-01~~ **Feito** nesta sessão: BUG-009, vermelho `0a80fc7`, verde `61ce37d` | DV-01, R-19 | Concluído |
+| 1 | ~~Corrigir DV-01~~ **Feito**: BUG-009, vermelho `0a80fc7`, verde `61ce37d` | DV-01, R-19 | Concluído |
 | 2 | ~~Medir CEN-04 e CEN-01 sob carga~~ **Feito nas rodadas 01 a 04** (CEN-01 cumprido, inclusive pelo caminho do impasse; CEN-04 não atende para a criação, com causa no `fsync` do ambiente). Falta validar as hipóteses com o professor e, se possível, repetir em outra máquina | R-24, R-21 | Concluído, com a validação pendente |
 | 3 | ~~Testar R-23 com papel distinto do dono da tabela~~ **Feito** (`AuditoriaPapelIT`); o papel dono da aplicação segue como risco aceito | CEN-06 | Concluído |
 | 4 | Obter o valor de D3 e de D17 e trocar o valor de teste | PS-04, PS-06 | Depende do professor |

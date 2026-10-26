@@ -2,6 +2,12 @@
 
 You are working with Synkra AIOX, an AI-Orchestrated System for Full Stack Development.
 
+## Regras do projeto Organização de Recursos
+
+As regras do projeto ficam em `AGENTS.md` e valem acima dos textos genéricos do AIOX abaixo (por exemplo `npm run lint` na raiz e `docs/stories/`, que este projeto não usa). O Claude Code lê `CLAUDE.md`, não `AGENTS.md`; por isso o arquivo é importado aqui.
+
+@../AGENTS.md
+
 <!-- AIOX-MANAGED-START: core-framework -->
 ## Core Framework Understanding
 

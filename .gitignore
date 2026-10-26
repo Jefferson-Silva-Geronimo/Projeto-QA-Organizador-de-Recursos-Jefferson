@@ -46,3 +46,14 @@ frontend/test-results/
 # Relatórios de sessão e de fase: ficam só na máquina de quem trabalha (F7-18); continuam no histórico do Git
 docs/relatorio-sessao-*.md
 docs/relatorio-fase-*.md
+
+# Configurações de outras ferramentas de agente: o projeto usa só Claude Code e GitHub Copilot (Parte 2, decisão 5)
+.antigravity/
+.codex/
+.cursor/
+.gemini/
+.grok/
+.kimi/
+
+# Material pessoal de apoio: fica só na máquina de quem trabalha; nenhum documento versionado o cita
+docs/local/

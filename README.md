@@ -140,7 +140,7 @@ Em *Settings → Branches → Add branch ruleset* (ou regra de proteção) para 
 
 ## Estrutura de pastas
 
-Todos os itens abaixo existem no repositório (conferido em 24/10/2026).
+Todos os itens abaixo existem no repositório (conferido em 26/10/2026).
 
 ```text
 README.md              visão do projeto
@@ -164,10 +164,9 @@ docs/
   testes/              casos de teste, matriz de autorização, BDD, evidência de TDD, mutação, revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execução E-24, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
-  fase-7-pendencias.md   lista viva do que entra no fechamento da Fase 7, com origem e arquivo de cada item
+  limitacoes-e-divida-tecnica.md   o que está aberto ou declarado: risco aceito, limitação, suposição e dívida técnica
+  evidencias/          índice das evidências do pacote de entrega
   perguntas-professor.md   registro das decisões sobre as lacunas
-  roteiro-demonstracao.md   roteiro da demonstração de dez minutos, sem slides
-  guia-de-evidencias.md   onde achar cada evidência: os seis exercícios da prova oral
   performance/         rnf.md (requisito e modelo de carga), resultado-01.md e resultado-02.md
 perf/                  testes de carga com JMeter: plano, usuários fictícios, resultado bruto e README
 frontend/              React + Vite + TypeScript (ADR-015): cliente gerado do OpenAPI, sessão, tema, rotas por perfil, as 11 telas (T01 a T11), testes de componente e `e2e/` (Playwright)
@@ -180,7 +179,7 @@ src/test/java/         testes de unidade, de arquitetura, de API (MockMvc + Post
 src/test/resources/features/   cenários BDD de aprovação e bloqueio
 .github/               ISSUE_TEMPLATE/defeito.md, pull_request_template.md, dependabot.yml e workflows/ci.yml (jobs test, frontend, e2e e segredos)
 .aiox-core/            framework de agentes, instalado, com as skills do projeto
-.claude/, .codex/, .cursor/, .gemini/, .antigravity/, .grok/, .kimi/   configuração de agentes e IDEs, geradas pelo aiox-core
+.claude/               configuração do Claude Code (CLAUDE.md, regras, hooks e skills); .github/agents/ tem os agentes do GitHub Copilot
 ```
 
 ## Roadmap por fases
@@ -194,7 +193,7 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório de qualidade](docs/relatorio-qualidade.md) e o [mapa de telas](docs/prd/navegacao-telas.md) |
-| 7 | Fechamento, relatório de qualidade e prova oral | Em andamento desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-17, [roteiro da demonstração](docs/roteiro-demonstracao.md) e [guia de evidências](docs/guia-de-evidencias.md) ([pendências](docs/fase-7-pendencias.md)). Pendente: a tag do release candidate `v1.0.0-rc1`, que depende de confirmação expressa |
+| 7 | Fechamento, relatório de qualidade e prova oral | Desde 24/10/2026. Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) com a decisão **liberar com ressalvas** (Jefferson Silva, 24/10/2026), decisões F7-01 a F7-19, `verify` robusto e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). A tag `v1.0.0-rc1` foi publicada em 24/10/2026. Em andamento: pacote de entrega (índice de evidências, `CHANGELOG.md` e decisão de qualidade). A tag `v1.0.0-rc2` só será criada com autorização expressa |
 
 ## Pacote de evidências (release candidate)
 
@@ -209,11 +208,11 @@ Os números abaixo vêm do run [`40120487376`](https://github.com/Jefferson-Silv
 | Limitadores de nota | Clone limpo sobe, pipeline com vermelho intencional barrado, matriz de autorização (141 testes), dupla reserva barrada | [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md) |
 | Defeitos | 27 registrados: 26 fechados e 1 mitigado (BUG-017) | [docs/defeitos/README.md](docs/defeitos/README.md) |
 | Desempenho | RNF-08b **não atendido** (p95 de 568 a 886 ms contra 300 ms) | [docs/performance/resultado-02.md](docs/performance/resultado-02.md) |
-| Prova oral | Roteiro de dez minutos e guia dos seis exercícios | [docs/roteiro-demonstracao.md](docs/roteiro-demonstracao.md); [docs/guia-de-evidencias.md](docs/guia-de-evidencias.md) |
+| Índice | Onde achar cada evidência | [docs/evidencias/README.md](docs/evidencias/README.md) |
 
 ## Metas de qualidade
 
-Fonte: especificação, seção 6.
+Fonte: especificação, seção "Metas mensuráveis".
 
 | Meta | Valor |
 | --- | --- |
@@ -232,7 +231,7 @@ Fonte: especificação, seção 6.
 - **Histórico de trabalho:** está no `git log` e nos pull requests do GitHub, cada um com os checks e a revisão assistida registrados.
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40120487376`); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
-- **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 24/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
+- **Alertas do Dependabot:** 27 abertos, todos no framework `.aiox-core/`, 0 no Maven e 0 no front (consulta de 26/10/2026, F7-08). Justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
 - **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções

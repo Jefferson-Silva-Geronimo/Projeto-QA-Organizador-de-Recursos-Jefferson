@@ -9,7 +9,7 @@
 
 ## Contexto
 
-"Falha de autorização" é limitador de nota (especificação, seção 8). RF-01 exige autenticação e autorização por perfil. A autorização depende também de posse e estado: ninguém aprova a própria reserva (RN-16), só o Responsável não dono rejeita (RN-33), o cancelamento depende de estado e perfil (RN-18). Alterar perfil e desativar usuário são auditados (RN-29) e devem valer de imediato (D14).
+"Falha de autorização" é limitador de nota (especificação, seção "Avaliação"). RF-01 exige autenticação e autorização por perfil. A autorização depende também de posse e estado: ninguém aprova a própria reserva (RN-16), só o Responsável não dono rejeita (RN-33), o cancelamento depende de estado e perfil (RN-18). Alterar perfil e desativar usuário são auditados (RN-29) e devem valer de imediato (D14).
 
 ## Requisitos e cenários
 
