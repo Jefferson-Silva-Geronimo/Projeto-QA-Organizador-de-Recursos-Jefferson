@@ -61,7 +61,7 @@ As quatro condições da seção "Avaliação" da especificação, na ordem em q
 
 ## 5. Pendências, em ordem
 
-1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo no commit de cada release candidate**: na `v1.0.0-rc1` foi feita; na `v1.0.0-rc2` será refeita depois da tag, que só sai com autorização expressa.
+1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo no commit de cada release candidate**: na `v1.0.0-rc1` foi feita; na `v1.0.0-rc2` foi feita (seção 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md)); na `v1.0.0-rc3` será refeita depois da tag, que só sai com autorização expressa.
 2. **RF-13 parcial:** responsividade provada por uma jornada E2E em Chromium; as demais telas em celular e outros navegadores só por roteiro manual. Pendência: ampliar o E2E ou aceitar a limitação.
 4. **RNF-08b não atendido** (p95 de criação de 568 a 886 ms contra 300 ms), hipótese de 300 ms sem validação ([resultado-02.md](performance/resultado-02.md)).
 5. **R-25 aberto** (`NotificacaoApiIT.int01ECt103`, causa desconhecida; RF-11).

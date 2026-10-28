@@ -612,3 +612,16 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Alternativas descartadas | (1) Renomear as observações do front (por exemplo para OF-1 a OF-3): quebraria a rastreabilidade de F7-02 e dos documentos que a citam e equivale a renumerar. (2) Renomear as suposições do PRD: o mesmo problema, em mais documentos (`arquitetura.md`, `plano-de-teste.md`) |
 | Impacto se estiver errada | Leitor que busque "S2" sem contexto pode chegar à série errada; a nota no início de cada uma das duas séries reduz esse risco, e a busca por documento resolve o resto |
 | Origem | Achado C2 da auditoria de leitura de 28/10/2026 (fora do repositório) |
+
+### F7-24. A `v1.0.0-rc3` como tag avaliada, com o mesmo código da rc2 (28/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 28/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | Os documentos que ficaram dentro do commit da `v1.0.0-rc2` (`d2b6af1`) descrevem um estado anterior à tag (por exemplo, que a tag "só será criada com autorização"). A `main` já os corrige, mas a tag avaliada continuava a rc2 |
+| Decisão | Publicar a tag anotada `v1.0.0-rc3` sobre a `main` com a documentação final, **só se** o portão de condições passar por inteiro, e tratá-la como a tag avaliada. A `v1.0.0-rc2` e a `v1.0.0-rc1` (`276224b`) permanecem como histórico e **não são movidas nem apagadas** |
+| Motivo | Alinhar a tag avaliada com a documentação final. O código, os testes e a configuração são idênticos aos da rc2: `git diff v1.0.0-rc2 v1.0.0-rc3` só lista arquivos `.md` e `docs/prd/modelo-dados.dbml`, e o `git diff --stat` de `src`, `frontend`, `pom.xml`, `.mvn`, `Dockerfile`, `compose.yaml`, `compose.e2e.yaml`, `.github`, `perf`, `.env.example` e `docs/api` é vazio |
+| Alternativas descartadas | (1) Mover a `v1.0.0-rc2` para a `main`: proibido, tag publicada não se move. (2) Incluir mudanças de código ou de configuração na rc3, como repetir o `dependency:go-offline` no `Dockerfile` ou ampliar o `dependabot.yml` ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 3): mudariam o commit avaliado e exigiriam novo clone limpo; seguem como dívida técnica, sem prazo |
+| Impacto se estiver errada | Se algum arquivo de código ou configuração divergir da rc2, a rc3 deixa de ser só de documentação; por isso o portão confere o `git diff` antes da tag e o relatório final o confere de novo |
+| Origem | Achado C2 da auditoria de leitura de 28/10/2026 (fora do repositório); declaração do autor em [decisao-qualidade.md](decisao-qualidade.md) |

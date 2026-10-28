@@ -2,6 +2,31 @@
 
 Todas as mudanças relevantes do projeto **Organização de Recursos** por versão. Formato: Adicionado, Corrigido, Alterado e Limitações conhecidas. Fonte: `git log` e pull requests do repositório (números `#nn`). Versões seguem o nome da tag.
 
+## [1.0.0-rc3], 28/10/2026
+
+Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc2` (`d2b6af1`), até o PR 103 e o PR de preparação da rc3. **O código, os testes e a configuração são idênticos aos da `v1.0.0-rc2`**: a diferença para ela são arquivos `.md` e `docs/prd/modelo-dados.dbml`. A `v1.0.0-rc3` passa a ser a tag avaliada, publicada com autorização expressa do autor; a `v1.0.0-rc2` e a `v1.0.0-rc1` permanecem como histórico. O hash da rc3 e o run da CI dela não estão neste arquivo (ele faz parte do commit da tag): `git rev-list -n 1 v1.0.0-rc3` e o run do push na `main` nesse commit; o registro fica em `docs/testes/execucao-e26.md`, depois da tag.
+
+### Adicionado
+- `docs/testes/jacoco-resumo-rc2.md`: totais e cobertura por pacote do `jacoco.xml` da rc2, com o SHA-256 do arquivo, para o dado não depender do artefato da CI, que expira em 25/11/2026 (#102).
+- Seção CEN-10 e CEN-11 em `docs/avaliacao-arquitetural/ciclo-01.md`, com arquivo, linha e teste, e o que continua não verificado (#102).
+- Tabela `tentativas_login` (migração V4) em `docs/prd/modelo-dados.dbml`, que passa a ter as 19 tabelas das migrações (#102).
+- Decisões F7-23 (rótulos S1 a S3), F7-24 (a rc3 como tag avaliada) e, depois da tag, F7-25.
+- Consulta do Dependabot de 28/10/2026 em `docs/testes/alertas-dependabot.md` (#102).
+
+### Corrigido
+- Nome do autor completo ("Jefferson Silva Geronimo") nos campos de autoria dos ADR, de `arquitetura.md`, de `plano-de-teste.md` e de `status-requisitos.md` (#102).
+- README, CHANGELOG, RTM, `evidencias/README.md` e o checklist deixam de descrever a tag como futura e passam a apontar para a tag publicada (#99 e #100).
+- Pendência esquecida em `docs/prd/requisitos-funcionais.md` trocada pela referência ao CT-165 (#102).
+
+### Alterado
+- Ocorrência I-1 (job `e2e` vermelho por rede em `e0ab982`) registrada, sem reexecutar o run (#101, F7-22).
+- Notas de desambiguação dos rótulos S1 a S3 em `docs/prd.md` e em `docs/testes/revisao-assistida-front.md` (#102, F7-23).
+- Frase em `docs/testes/evidencia-tdd.md` sobre os esqueletos de produção em 46 dos 98 commits `test(red)` (#102).
+- A tag avaliada passa a ser a `v1.0.0-rc3` em README, `docs/decisao-qualidade.md` (reafirmação do autor em 28/10/2026) e nos documentos de evidência.
+
+### Limitações conhecidas
+Ver [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md). Além das da rc2: o cancelamento automático por SEM_DECISAO vem **desligado por padrão** (#103); o `dependabot.yml` e o `Dockerfile` continuam como dívida técnica, sem alteração, para o código ficar idêntico ao da rc2 (F7-24).
+
 ## [1.0.0-rc2], 26/10/2026, tag em `d2b6af1`
 
 Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc1` (`276224b`), até o PR 98. A tag `v1.0.0-rc2` foi publicada em 26/10/2026 com autorização expressa do autor, depois de CI verde e Quality Gate OK no commit; a `v1.0.0-rc1` permanece como histórico.

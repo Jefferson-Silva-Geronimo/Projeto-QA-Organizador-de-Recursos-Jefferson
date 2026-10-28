@@ -1,6 +1,6 @@
 # Checklist de entrega (avaliador externo)
 
-Conferência feita como **avaliador externo** em dois momentos: em 26/10/2026 sobre a `main` no commit `5253908`, antes de qualquer `v1.0.0-rc2`, e, depois da tag, em 26/10/2026 **no commit da tag `v1.0.0-rc2` (`d2b6af1`)**, que é o commit avaliado. Os documentos que registram esta conferência entram depois da tag e só mudam documentação. Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
+Conferência feita como **avaliador externo** em dois momentos: em 26/10/2026 sobre a `main` no commit `5253908`, antes de qualquer `v1.0.0-rc2`, e, depois da tag, em 26/10/2026 **no commit da tag `v1.0.0-rc2` (`d2b6af1`)**, que era o commit avaliado na ocasião (a tag avaliada passou a ser a `v1.0.0-rc3`, de código idêntico; ver F7-24 em [decisoes-equipe.md](../decisoes-equipe.md)). Os documentos que registram esta conferência entram depois da tag e só mudam documentação. Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
 
 ## 1. Como foi conferido
 
@@ -41,15 +41,15 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | Item | Existe | Atualizado | Caminho | Observação |
 | --- | --- | --- | --- | --- |
 | `docs/entrega/checklist.md` | Sim | Sim | Este arquivo | Atualizado no commit da tag |
-| `CHANGELOG.md` | Sim | Sim | [CHANGELOG.md](../../CHANGELOG.md) | `1.0.0-rc2` com data e tag |
+| `CHANGELOG.md` | Sim | Sim | [CHANGELOG.md](../../CHANGELOG.md) | `1.0.0-rc3` e `1.0.0-rc2`, com data e tag |
 | `docs/evidencias/README.md` (índice do pacote) | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Run da CI no commit da tag, Quality Gate, JaCoCo e clone limpo |
 | `docs/rtm.md` | Sim | Sim | [rtm.md](../rtm.md) | Uma linha que aponta para a RTM da raiz, sem duplicar |
 | `docs/decisao-qualidade.md` | Sim | Sim | [decisao-qualidade.md](../decisao-qualidade.md) | Declaração de autoria com o nome completo |
-| Tag anotada no commit avaliado | Sim | Sim | `v1.0.0-rc2` em `d2b6af1` | A `v1.0.0-rc1` (`276224b`) permanece como histórico; nenhuma tag foi movida |
+| Tag anotada no commit avaliado | Sim | Sim | `v1.0.0-rc3` (avaliada) e `v1.0.0-rc2` em `d2b6af1` (histórico) | A `v1.0.0-rc1` (`276224b`) permanece como histórico; nenhuma tag foi movida |
 | CI verde no commit da tag | Sim | Sim | Run `40373624577` | `test`, `frontend`, `e2e` e `segredos` verdes |
 | Repositório público | Sim | Sim | Visibilidade `PUBLIC` lida pela API do GitHub | |
 | Nenhum token ou dado pessoal real | Sim | Sim | Job `segredos` verde; `.env` fora do Git | Conferência por varredura da CI, não por leitura de todo o histórico |
-| Toda evidência aponta para o commit da tag | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Os documentos de evidência entram depois da tag e só mudam documentação; o commit avaliado é o da tag |
+| Toda evidência aponta para o commit da tag | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Os documentos de evidência entram depois da tag e só mudam documentação; o commit avaliado é o da tag `v1.0.0-rc3`; até a E-26, os números são os da E-25 (rc2, mesmo código) |
 | Envio do formulário do Hub | n/a | n/a | n/a | **Ação do autor**; não foi enviado |
 
 ## 4. Bloqueadores
