@@ -7,15 +7,18 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | Item | Valor |
 | --- | --- |
 | **Decisão** | **LIBERAR COM RESSALVAS** |
-| Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 (release candidate rc1), reafirmada em 26/10/2026 para a rc2 (commit d2b6af1) |
-| A que se refere | Release candidate **`v1.0.0-rc2`**, tag publicada em 26/10/2026 no commit **`d2b6af1`** com autorização expressa do autor; a `v1.0.0-rc1` (`276224b`) permanece como histórico |
-| Execução da CI no commit da tag | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577): `test`, `frontend`, `e2e` e `segredos` verdes (E-25, [execucao-e25.md](testes/execucao-e25.md)) |
-| Quality Gate do SonarCloud no commit da tag | **OK**: 0 bugs, 0 vulnerabilidades, 0 code smells (análise com `revision` `d2b6af1`) |
+| Quem decidiu | Jefferson Silva Geronimo, em 24/10/2026 (release candidate rc1), reafirmada em 26/10/2026 para a rc2 (commit d2b6af1) e em 28/10/2026 para a rc3 |
+| A que se refere | Release candidate **`v1.0.0-rc3`**, tag publicada em 28/10/2026 com autorização expressa do autor, com o mesmo código, os mesmos testes e a mesma configuração da `v1.0.0-rc2` (`d2b6af1`); a `v1.0.0-rc2` e a `v1.0.0-rc1` (`276224b`) permanecem como histórico. O commit da rc3 se obtém com `git rev-list -n 1 v1.0.0-rc3` |
+| Execução da CI na E-25 (commit da `v1.0.0-rc2`) | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577): `test`, `frontend`, `e2e` e `segredos` verdes (E-25, [execucao-e25.md](testes/execucao-e25.md)) |
+| Quality Gate do SonarCloud na E-25 (commit da `v1.0.0-rc2`) | **OK**: 0 bugs, 0 vulnerabilidades, 0 code smells (análise com `revision` `d2b6af1`) |
+| Números da rc3 | Valem os da E-25 até o registro da execução da rc3 em `docs/testes/execucao-e26.md`, depois da tag: o código, os testes e a configuração são os mesmos (`git diff v1.0.0-rc2 v1.0.0-rc3` só lista arquivos `.md` e `docs/prd/modelo-dados.dbml`) |
 | Alcance | **Avaliação da disciplina.** Não é "pronto para produção": os testes e as medições foram feitos em ambiente local e na CI, em um computador de desenvolvimento, sem ambiente de implantação, sem TLS, sem HSTS, sem CSP e sem limitação de taxa ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md)) |
 
 **Por que "liberar com ressalvas" e não "liberar" nem "não liberar".** Os quatro limitadores de nota e as quatro metas mensuráveis têm evidência, mas há metas não atingidas e riscos aceitos que um avaliador precisa ver (seção 4). "Liberar" sem ressalvas exigiria o professor validar a hipótese de 300 ms ou o RNF-08b medido em outro ambiente dentro da meta.
 
 **Reafirmação para a rc2.** "Em 26/10/2026, eu, Jefferson Silva Geronimo, reafirmo a decisão de qualidade LIBERAR COM RESSALVAS para o release candidate v1.0.0-rc2 (commit d2b6af1), com as ressalvas e os riscos aceitos desta decisão."
+
+**Reafirmação para a rc3.** "Em 28/10/2026, eu, Jefferson Silva Geronimo, reafirmo a decisão de qualidade LIBERAR COM RESSALVAS para o release candidate v1.0.0-rc3, que contém o mesmo código, os mesmos testes e a mesma configuração da v1.0.0-rc2 (d2b6af1) e difere dela apenas pela documentação, com as ressalvas e os riscos aceitos desta decisão. A v1.0.0-rc3 passa a ser a tag avaliada; a v1.0.0-rc2 e a v1.0.0-rc1 permanecem como histórico."
 
 **O que mudaria a decisão para "não liberar":** qualquer limitador deixar de valer (por exemplo, o clone limpo não subir no commit da tag), check obrigatório vermelho na `main`, alerta crítico aberto no Maven ou no front, ou uma decisão de alto impacto da equipe (a A3, de maior retrabalho) se mostrar errada.
 
@@ -36,7 +39,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 
 | Meta | Valor | Resultado | Evidência |
 | --- | --- | --- | --- |
-| Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (commit da tag); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
+| Cobertura de linhas, 80% | **97,01%** (1751 de 1805) | Atingida | JaCoCo, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (E-25, commit da `v1.0.0-rc2`); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
 | Cobertura de branches, 70% | **86,88%** (523 de 602) | Atingida | Mesmo run |
 | Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 22 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
 | Bugs ou vulnerabilidades críticos, 0 | 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud (Quality Gate aprovado); 0 alertas do Dependabot no Maven e 0 no front; nenhum defeito aberto de severidade crítica ou alta | Atingida | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [alertas-dependabot.md](testes/alertas-dependabot.md); [defeitos/README.md](defeitos/README.md) |
@@ -49,7 +52,7 @@ Os 12 entregáveis da seção "Entregáveis" da especificação estão conferido
 
 ## 3. Estado dos testes
 
-Back end: 665 testes (231 de unidade e arquitetura, 434 de integração e BDD); front: 910 testes em 56 arquivos; E2E: 5 de 5; 0 falhas na CI ([execucao-e25.md](testes/execucao-e25.md), commit da tag). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
+Back end: 665 testes (231 de unidade e arquitetura, 434 de integração e BDD); front: 910 testes em 56 arquivos; E2E: 5 de 5; 0 falhas na CI ([execucao-e25.md](testes/execucao-e25.md), E-25, commit da `v1.0.0-rc2`). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
 
 ## 4. Riscos aceitos
 

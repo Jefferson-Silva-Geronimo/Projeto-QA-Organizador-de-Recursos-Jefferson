@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da tag. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); o commit avaliado é o da tag `v1.0.0-rc2` (`d2b6af1`); os commits posteriores só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da `v1.0.0-rc2` e em 28/10/2026 para a `v1.0.0-rc3`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); a tag avaliada é a `v1.0.0-rc3`, de código idêntico ao da `v1.0.0-rc2` (`d2b6af1`), e os números deste relatório são os da E-25 até o registro da E-26 (`docs/testes/execucao-e26.md`); os commits posteriores à rc2 só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -55,7 +55,7 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da tag), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.**
+Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da `v1.0.0-rc2`), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.**
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
@@ -69,7 +69,7 @@ Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferso
 
 **Ambiente realista (fato):** o banco é PostgreSQL 17 em Testcontainers; a notificação usa WireMock (`NotificacaoApiIT`: 9 testes; `NotificacaoTempoLimiteApiIT`: 1). Mocks ficam nos testes de unidade isolados.
 
-**TDD e BDD (fato):** o histórico da `main` no commit da tag (`d2b6af1`) tem 510 commits, 68 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list --state merged`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
+**TDD e BDD (fato):** o histórico da `main` no commit da `v1.0.0-rc2` (`d2b6af1`) tem 510 commits, 68 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list --state merged`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
 
 **Os testes protegem a regra? Experimentos "apague a regra" (24/10/2026, worktree descartável, nada na `main`):** RN-01 (`PeriodoTest`: 2 falhas por asserção; na API o `400` virou `500`), RN-03 (`ConcorrenciaApiIT`: 6 falhas por asserção) e RN-06 (só o caso do Administrador ficou vermelho; isso revelou o BUG-026, corrigido com um teste novo que falha por asserção sem o portão de perfil: `Status expected:<403> but was:<200>`) ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 6; [defeitos/README.md](defeitos/README.md), BUG-026). **Mutação (Fase 4, 17/10/2026, só `model`):** 78 mutantes, 60 mortos, 0 sobreviventes entre os cobertos, pontuação de 77% ([mutacao.md](testes/mutacao.md)).
 
@@ -227,7 +227,7 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 
 | # | Entregável | Onde está | Estado |
 | --- | --- | --- | --- |
-| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (510 commits e 68 PRs mesclados na `main` no commit da tag `d2b6af1`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
+| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (510 commits e 68 PRs mesclados na `main` no commit `d2b6af1` da `v1.0.0-rc2`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
 | 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova no commit da `v1.0.0-rc1` está na seção 2.5 e a do commit da `v1.0.0-rc2` na seção 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md) (clone limpo até o front em 366 s; `verify` em 539 s) |
 | 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README traz o pacote de evidências com os links |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | [RTM.md](../RTM.md); [auditoria-rtm.md](testes/auditoria-rtm.md) | **Atendido** (55 linhas; defeitos da auditoria corrigidos) |
