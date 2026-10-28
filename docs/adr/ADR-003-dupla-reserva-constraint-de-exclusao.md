@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário), inclusive a tentativa de conflito em transação separada |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 2 da equipe; [arquitetura.md](../arquitetura.md), seções 12 e 13.1 |
-| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
+| Decisores | Equipe (Jefferson Silva Geronimo, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

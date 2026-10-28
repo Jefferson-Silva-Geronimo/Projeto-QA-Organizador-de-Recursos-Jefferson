@@ -5,7 +5,7 @@
 | Status | **Aceito, emendado** (decisão da equipe, Jefferson, 17/10/2026). Vale: monólito de um único artefato, Spring Boot 3.x, transação local, domínio sem Spring e portas só onde há troca ou substituição em teste. **Emendado** pelo [ADR-014](ADR-014-estrutura-mvc.md) (estrutura de pacotes: `api/aplicacao/dominio/infra` viram MVC) e pelo [ADR-013](ADR-013-acesso-a-dados-por-sql-direto.md) (acesso a dados por JDBC, sem JPA). A palavra "hexagonal" do título descreve a versão original e não a estrutura atual |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 10 da equipe, revisada em [arquitetura.md](../arquitetura.md), seções 10 e 12 |
-| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
+| Decisores | Equipe (Jefferson Silva Geronimo, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

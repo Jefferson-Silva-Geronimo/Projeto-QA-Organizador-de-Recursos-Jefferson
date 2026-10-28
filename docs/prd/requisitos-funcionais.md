@@ -232,7 +232,7 @@ As regras estão em [regras-negocio.md](regras-negocio.md) (RN-01 a RN-08 da esp
 - **Critérios de aceite:**
   1. Toda recusa por regra devolve código estável e mensagem que indica o motivo (sobreposição, manutenção, fora da janela, estado inválido, motivo ausente), verificado por regra.
   2. Nenhuma mensagem de erro identifica terceiros (B3).
-  3. As telas de busca, criação de reserva e aprovação são operáveis em viewport de celular (largura de verificação a definir na Fase 6; TODO: Fase 6).
+  3. As telas de busca, criação de reserva e aprovação são operáveis em viewport de celular (verificado em 360×640; CT-165, E2E).
   4. Sessão expirada leva ao login sem gravar dados.
 
 ### RF-14. Documentação de API ou dos fluxos públicos do sistema

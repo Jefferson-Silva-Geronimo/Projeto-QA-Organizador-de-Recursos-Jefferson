@@ -5,7 +5,7 @@
 | Status | Aceito em 18/10/2026 (escolha explícita de Jefferson). Detalha o [ADR-010](ADR-010-contrato-openapi-e-front-end-react-vite.md) e respeita o [ADR-004](ADR-004-autenticacao-e-autorizacao.md) e o [ADR-005](ADR-005-relogio-injetavel-e-tempo-em-utc.md) |
 | Data | 18/10/2026 |
 | Origem | [decisoes-equipe.md](../decisoes-equipe.md), seção 8 (F6-01 a F6-05); [navegacao-telas.md](../prd/navegacao-telas.md), tabela de princípios; RF-13; RNF-10; [ADR-004](ADR-004-autenticacao-e-autorizacao.md), [ADR-005](ADR-005-relogio-injetavel-e-tempo-em-utc.md) e [ADR-008](ADR-008-erros-padronizados-e-consultas-parametrizadas.md) |
-| Decisores | Jefferson Silva (dono do projeto e única pessoa da equipe). |
+| Decisores | Jefferson Silva Geronimo (dono do projeto e única pessoa da equipe). |
 
 ## Contexto
 

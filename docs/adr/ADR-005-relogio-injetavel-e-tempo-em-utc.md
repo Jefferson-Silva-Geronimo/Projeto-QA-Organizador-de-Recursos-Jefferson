@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário) |
 | Data | 15/10/2026 |
 | Origem | Decisões iniciais 3 e 11 da equipe; [arquitetura.md](../arquitetura.md), seções 12 e 13.5 |
-| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
+| Decisores | Equipe (Jefferson Silva Geronimo, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

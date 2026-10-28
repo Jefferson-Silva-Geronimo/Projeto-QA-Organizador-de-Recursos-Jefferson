@@ -4,6 +4,8 @@ Item explícito da Fase 7: conferir de fora que **nenhuma regra de negócio est�
 
 Data: 24/10/2026. Decisões de Jefferson sobre os achados: F7-01, F7-02 e F7-03 em [decisoes-equipe.md](../decisoes-equipe.md).
 
+> **Atenção ao rótulo:** S1 a S3 neste documento (e na F7-02) são observações do front end; não confundir com as suposições S1 a S7 de [prd.md](../prd.md), seção 9 (ver F7-23 em [decisoes-equipe.md](../decisoes-equipe.md)).
+
 ## 1. Como foi feita
 
 | Item | Valor |

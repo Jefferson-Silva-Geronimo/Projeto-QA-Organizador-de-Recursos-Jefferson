@@ -599,3 +599,16 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Decisão | **Não reexecutar o run** e **não alterar** `Dockerfile`, `ci.yml`, compose, código nem testes |
 | Motivo | Reexecutar sobrescreveria o status do commit `e0ab982` e esconderia a ocorrência; mexer no `Dockerfile` mudaria a imagem do commit avaliado. A tag `v1.0.0-rc2` (`d2b6af1`) está verde e continua sendo o commit avaliado; a ocorrência é de causa de rede e única |
 | Alternativas descartadas | (1) Reexecutar o run: perde o registro. (2) Repetir o `dependency:go-offline` no `Dockerfile` ou remover o `-q`: é dívida técnica sem prazo ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 3) e só entraria numa `v1.0.0-rc3`, com novo clone limpo |
+
+### F7-23. Colisão dos rótulos S1 a S3 mantida, com notas de desambiguação (28/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 28/10/2026**, a partir de um achado da auditoria de leitura de 28/10/2026 sobre o commit da tag `v1.0.0-rc2` (`d2b6af1`).
+
+| Item | Registro |
+| --- | --- |
+| Situação | O rótulo S1 a S3 tem dois significados: em [prd.md](prd.md), seção 9, são suposições do PRD (S1 problema resolvido de forma manual; S2 escopo; S3 reservas que não cruzam a meia-noite local); em [testes/revisao-assistida-front.md](testes/revisao-assistida-front.md) e na F7-02 acima, são observações do front end (S1 recursos da própria reserva na alteração; S2 janela inicial da Busca; S3 texto de ajuda do cancelamento). Os dois usos já eram anteriores à auditoria |
+| Decisão | **Manter os rótulos como estão** e acrescentar uma nota de desambiguação no início da seção 9 de [prd.md](prd.md) e no cabeçalho de [testes/revisao-assistida-front.md](testes/revisao-assistida-front.md). O texto da F7-02 e as linhas S1 a S7 do PRD não mudam |
+| Motivo | A regra do projeto (AGENTS.md, regra 8 e [convenção de identificadores](../AGENTS.md)) proíbe renumerar e reutilizar identificadores; as duas séries são citadas em outros documentos e em decisões já registradas |
+| Alternativas descartadas | (1) Renomear as observações do front (por exemplo para OF-1 a OF-3): quebraria a rastreabilidade de F7-02 e dos documentos que a citam e equivale a renumerar. (2) Renomear as suposições do PRD: o mesmo problema, em mais documentos (`arquitetura.md`, `plano-de-teste.md`) |
+| Impacto se estiver errada | Leitor que busque "S2" sem contexto pode chegar à série errada; a nota no início de cada uma das duas séries reduz esse risco, e a busca por documento resolve o resto |
+| Origem | Achado C2 da auditoria de leitura de 28/10/2026 (fora do repositório) |
