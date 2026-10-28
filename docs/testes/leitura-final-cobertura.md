@@ -92,3 +92,5 @@ Leitura repetida **no commit da tag**, sem assumir os números das seções 1 a 
 | Dependabot | Todos os alertas abertos em `.aiox-core/` e 0 fora; o número está em [alertas-dependabot.md](alertas-dependabot.md) |
 
 A lacuna da seção 6 continua: o front não tem cobertura medida e o SonarCloud não analisa o TypeScript.
+
+Os totais do JaCoCo (linhas, branches, instruções, métodos e classes), a cobertura por pacote, o SHA-256 do `jacoco.xml` e a explicação da cobertura geral de 94,5% do SonarCloud foram extraídos do artefato antes da expiração e estão em [jacoco-resumo-rc2.md](jacoco-resumo-rc2.md).

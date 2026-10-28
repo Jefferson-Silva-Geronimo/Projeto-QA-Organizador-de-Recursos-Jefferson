@@ -91,3 +91,22 @@ Esta seção é o **único lugar** que guarda o número atual de alertas; os dem
 **Justificativa F7-08, reconfirmada:** nenhum alerta aberto fora de `.aiox-core/`. A imagem da API copia só `.mvn`, `mvnw`, `pom.xml` e `src`, e o `.dockerignore` exclui `.aiox-core` (linha 10); os workflows da CI não citam `aiox`; o front é construído com contexto `./frontend`. O framework é de terceiros e fica fora das imagens e da CI do produto, então os alertas continuam declarados como risco, sem dispensa no GitHub. Se um alerta aparecer em `frontend/` ou no Maven, o fluxo para.
 
 Os PRs 81, 82 e 83 do Dependabot (`vite` 8.3.5, `@tanstack/react-query` 5.104.5 e `typescript-eslint` 8.72.0) foram mesclados antes da tag, sem alerta de segurança no `frontend/`.
+
+## 8. Consulta de 28/10/2026 (depois da tag, `main` em `9d7f327`)
+
+Registro novo; os números das seções 1 a 7 são históricos, de cada data, e não foram alterados. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+
+| Item | Valor |
+| --- | --- |
+| Data da consulta | 28/10/2026 |
+| Consulta | `gh api "repos/<dono>/<repositório>/dependabot/alerts?per_page=100&state=open,auto_dismissed"` e `.../alerts/1` (somente leitura; nenhuma alteração no GitHub) |
+| Alertas desde a criação do repositório | **38** (numeração de 1 a 38): **30 abertos**, **7 dispensados automaticamente** (`auto_dismissed`) e **1 corrigido** (o alerta 1, `fixed` em 26/10/2026 às 16:16 UTC, já registrado na seção 6) |
+| Abertos por manifesto | `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json`: 26; `.aiox-core/package-lock.json`: 4; `frontend/package-lock.json`: **0**; `pom.xml` (Maven): **0** |
+| Abertos por severidade | 9 altos, 16 médios, 5 baixos |
+| Dispensados automaticamente | 7, todos de severidade alta e do manifesto `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json` (alertas 13, 14, 18, 19, 21, 26 e 27); todos criados e atualizados em 17/10/2026; a API não informa data nem motivo da dispensa (`dismissed_at` e `dismissed_reason` vazios) |
+| Abertos por data de criação | 21 em 17/10/2026, 5 em 22/10/2026 e 4 em 26/10/2026 |
+| Em `frontend/` ou no Maven | **0** (abertos, dispensados e corrigidos somados) |
+
+**Por que o número varia.** O GitHub dispensa alertas automaticamente (`auto_dismissed`) e muda o estado de alertas conforme os avisos de segurança e os arquivos de bloqueio mudam; a contagem de "abertos" depende, portanto, do dia da consulta. Os valores registrados neste arquivo e em outros documentos (27 em 24/10/2026, 30 em 26/10/2026 e 30 em 28/10/2026, com a distribuição de severidade diferente: 11, 10 e 9 altos) são cada um verdadeiros na sua data. Entre 26/10 e 28/10 o total de abertos não mudou, mas a distribuição por severidade passou de 10 altos e 15 médios para 9 altos e 16 médios; a API não informa a causa e ela **não foi investigada**.
+
+**A justificativa da F7-08 continua valendo:** nenhum alerta, aberto ou não, está em `frontend/` ou no Maven; todos os 30 abertos são do framework `.aiox-core/`, que não entra nas imagens nem na CI do produto (seção 4).

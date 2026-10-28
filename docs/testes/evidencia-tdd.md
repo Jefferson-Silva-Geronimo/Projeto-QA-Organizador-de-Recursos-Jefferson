@@ -6,6 +6,7 @@ afirmação "desenvolvido com TDD" possa ser conferida no histórico (`git log f
 ## Como ler
 
 - **Red**: commit `test(red)` que adiciona os testes de uma fatia e que, ao ser aplicado sozinho, falha.
+  - **Esqueletos de produção no commit red:** em 46 dos 98 commits `test(red)` até a tag `v1.0.0-rc2` (`d2b6af1`), o commit também traz arquivos de produção mínimos para o teste compilar: assinaturas que retornam valor neutro (`return false`, `return 0`, corpo vazio, comentário "esqueleto da fatia"), tipos e enumerações que o teste referencia e, em dois casos, a dependência de teste no `pom.xml` ou no `package.json`. Nenhum deles traz o comportamento testado: o vermelho continua sendo de **asserção**, nunca de compilação. Contagem de 28/10/2026 com `git log` e `git show --name-only` nos 98 commits `test(red)` (36 com arquivos em `frontend/`, 10 com arquivos em `src/main` e 1 com `pom.xml`; os dois últimos podem coincidir com o primeiro no mesmo commit).
 - **Green**: commit `feat(green)` ou `fix(green)` com a menor implementação que passa a fatia.
 - **Refactor**: commit `refactor` com a suíte verde antes e depois.
 - Os commits `test:` sem `(red)` corrigem o **cenário do teste**, nunca a regra. Cada um está listado como

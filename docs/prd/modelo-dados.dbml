@@ -155,6 +155,23 @@ Table sessoes {
   '''
 }
 
+Table tentativas_login {
+  id bigint [pk, increment]
+  email varchar(254) [not null, note: 'E-mail normalizado. Dado pessoal de vida curta, guardado só durante a janela (lacuna D9).']
+  ocorrida_em timestamptz [not null, note: 'Instante da falha de login. Linhas mais antigas que a janela são apagadas a cada nova falha.']
+
+  indexes {
+    (email, ocorrida_em) [name: 'tentativas_login_email_idx', note: 'Contagem das falhas da conta dentro da janela.']
+    ocorrida_em [name: 'tentativas_login_tempo_idx', note: 'Limpeza das linhas fora da janela.']
+  }
+
+  Note: '''
+  Tabela da migração V4. Limite de tentativas de login por conta, em janela deslizante (SEC-01, OWASP A07).
+  Decisão D18: 5 tentativas em 10 minutos, configuráveis (LOGIN_TENTATIVAS e LOGIN_JANELA, sem valor padrão no código).
+  RF-01. Sem chave estrangeira na migração.
+  '''
+}
+
 // ---------------------------------------------------------------------------
 // Recursos
 // ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@
 | Status | Aceito em 15/10/2026 (aprovação do usuário). A3 decidida pela equipe em 24/10/2026, não validada com o professor (F7-16) |
 | Data | 15/10/2026 |
 | Origem | Decisão inicial 1 da equipe; [modelo-dados.dbml](../prd/modelo-dados.dbml); [arquitetura.md](../arquitetura.md), seção 12 |
-| Decisores | Equipe (Jefferson Silva, única pessoa do projeto), com aprovação do usuário. |
+| Decisores | Equipe (Jefferson Silva Geronimo, única pessoa do projeto), com aprovação do usuário. |
 
 ## Contexto
 

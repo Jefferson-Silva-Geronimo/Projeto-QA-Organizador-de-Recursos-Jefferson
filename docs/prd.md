@@ -206,6 +206,8 @@ Fato (especificação, seção "Entregáveis"): repositório com histórico e re
 
 ## 9. Suposições registradas
 
+> **Atenção ao rótulo:** S1 a S7 aqui são suposições do PRD; não confundir com S1 a S3 de [revisao-assistida-front.md](testes/revisao-assistida-front.md) e da F7-02 em [decisoes-equipe.md](decisoes-equipe.md), que são observações do front end (ver F7-23).
+
 | ID | Suposição | Impacto se estiver errada |
 | --- | --- | --- |
 | S1 | O problema hoje é resolvido de forma manual e sujeito a conflito | Muda o texto de motivação, não os requisitos |

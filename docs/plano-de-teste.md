@@ -12,8 +12,8 @@ Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io
 | Documento | Plano de teste |
 | Versão e estado | 0.3, com os números medidos ao fechar a Fase 4 |
 | Data | 17/10/2026 |
-| Responsável | Equipe: Jefferson Silva (única pessoa do projeto) |
-| Aprovação | Equipe: Jefferson Silva, nas decisões de [decisoes-equipe.md](decisoes-equipe.md). Professor: não validou; as lacunas foram decididas pela equipe em 24/10/2026 (F7-16), registradas em [perguntas-professor.md](perguntas-professor.md) |
+| Responsável | Equipe: Jefferson Silva Geronimo (única pessoa do projeto) |
+| Aprovação | Equipe: Jefferson Silva Geronimo, nas decisões de [decisoes-equipe.md](decisoes-equipe.md). Professor: não validou; as lacunas foram decididas pela equipe em 24/10/2026 (F7-16), registradas em [perguntas-professor.md](perguntas-professor.md) |
 
 ## 2. Objetivo e referências
 
@@ -218,7 +218,7 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 
 | Papel | Responsabilidade | Responsável |
 | --- | --- | --- |
-| Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva (única pessoa do projeto) |
+| Equipe de desenvolvimento e qualidade | Escrever e executar os testes, manter a RTM | Jefferson Silva Geronimo (única pessoa do projeto) |
 | Revisão por pares | Revisar pull requests (exigência da especificação, seção "Entregáveis") | **Limitação:** equipe de uma pessoa, sem par humano. Substituída por revisão crítica assistida registrada em cada pull request; decisão da equipe de 24/10/2026 (F7-16, item 14) em [perguntas-professor.md](perguntas-professor.md) |
 | Professor | Validar as decisões da equipe | Não validadas: decididas pela equipe em 24/10/2026, sem mensagem a enviar ([perguntas-professor.md](perguntas-professor.md)) |
 | Treinamento da equipe nas ferramentas de teste | Aprender JUnit 5, Testcontainers, WireMock e JMeter conforme as aulas | **Lacuna:** sem origem para quem e quando; não há registro de treinamento na documentação |

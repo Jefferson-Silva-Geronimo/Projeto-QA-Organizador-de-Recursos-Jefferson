@@ -6,7 +6,7 @@
 | Documento | Descoberta, drivers, arquitetura C4, ATAM e ADR (Prompts 2.1 a 2.4 da Fase 2) |
 | Estado | Fase 2 concluída em 15/10/2026, com pendências externas listadas na seção 23 |
 | Fonte de verdade | [Especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), lida em 12/10/2026 |
-| Responsável | Equipe: Jefferson Silva (única pessoa do projeto) |
+| Responsável | Equipe: Jefferson Silva Geronimo (única pessoa do projeto) |
 
 Este documento só consome artefatos do repositório, citados em cada seção: [prd.md](prd.md), [perguntas-abertas.md](prd/perguntas-abertas.md), [regras-negocio.md](prd/regras-negocio.md), [requisitos-funcionais.md](prd/requisitos-funcionais.md), [modelo-dados.dbml](prd/modelo-dados.dbml), [fluxos-sequencia.md](prd/fluxos-sequencia.md), [plano-de-teste.md](plano-de-teste.md) e [RTM.md](../RTM.md). Nenhum requisito, persona ou regra é criado ou alterado aqui. Os identificadores existentes são preservados.
 
