@@ -119,7 +119,7 @@ Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o b
 | Aplicação e banco encerrados (`docker compose down`, sem `-v`) | feito; porta 8080 livre | 107 s |
 | `./mvnw -B verify` ("Como testar") | **Passou:** 231 testes de unidade e arquitetura e 434 de integração e BDD, 0 falhas, "All coverage checks have been met", `BUILD SUCCESS`, 10 min 43 s no Maven | **654 s** (de 107 s a 761 s) |
 
-O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-256 do `jacoco.xml` `1eb5f44198d95a0301051a2ad7c818df82b5d39e5526edbe0f472d9116845985`); o da CI no mesmo commit deu 1751 de 1805 e 521 de 602 ([jacoco-resumo-rc2.md](jacoco-resumo-rc2.md), seção 5). Os três valores de branches (523 local e na rc2, 521 na CI da rc3) e os dois de linhas (1751 e 1753) vêm do mesmo código; **a causa não foi investigada**.
+O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-256 do `jacoco.xml` `1eb5f44198d95a0301051a2ad7c818df82b5d39e5526edbe0f472d9116845985`); o da CI no mesmo commit deu 1751 de 1805 e 521 de 602 ([jacoco-resumo-rc2.md](jacoco-resumo-rc2.md), seção 5). Os três valores de branches (523 local e na rc2, 521 na CI da rc3) e os dois de linhas (1751 e 1753) vêm do mesmo código; a variação de branches da CI está explicada em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8, e a diferença de 2 linhas do `verify` local (1753 contra 1751) **não foi investigada**.
 
 **O que deu errado antes da execução que vale (declarado, sem alterar o repositório):**
 

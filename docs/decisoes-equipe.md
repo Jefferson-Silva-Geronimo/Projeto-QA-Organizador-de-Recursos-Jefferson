@@ -641,3 +641,18 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Depois da tag | Clone limpo no commit da tag, execução E-26 e documentos de evidência atualizados; ver [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.7, [execucao-e26.md](testes/execucao-e26.md) e [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 8 |
 | Observação | Os branches do JaCoCo da E-26 são 521 de 602 (86,54%), 2 a menos que os 523 da E-25, com código idêntico; a causa não foi investigada e a meta de 70% continua atendida |
 
+
+### F7-26. Variação de 2 branches entre a E-25 e a E-26: causa apurada, sem alterar teste nem criar nova tag (28/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 28/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | Com código idêntico, o JaCoCo deu 523 de 602 branches (86,88%) na E-25 (run `40373624577`, rc2) e 521 de 602 (86,54%) na E-26 (run `40790098761`, rc3); as linhas foram 1751 de 1805 nas duas (F7-25 registrou a diferença com a causa ainda não investigada) |
+| Causa apurada | Só em `JdbcConfiguracaoRepository`, linhas 39 e 49 (ternário `rs.wasNull() ? null : ...`). Os testes de integração compartilham um PostgreSQL, `limparBanco()` preserva `configuracao`, e `NotificacaoApiIT` e `NotificacaoTempoLimiteApiIT` gravam a configuração sem desfazê-la; `TrocaDeProvedorApiIT` foi a 6ª classe na E-25 e a 30ª na E-26. Detalhe, linhas e rótulos de inferência em [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 8 |
+| Decisão | **Não alterar teste nem código** e **não criar nova tag**; registrar a causa e a dívida técnica ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 3) |
+| Motivo | A meta de 70% de branches e o gate do `pom.xml` continuam atendidos; mexer em teste mudaria o commit avaliado |
+| Alternativas descartadas | Criar uma `v1.0.0-rc4` só para estabilizar 2 branches: nova tag, novo clone limpo e nova execução da CI para um ganho de 0,34 ponto percentual em branches (86,54% para 86,88%), sem meta afetada |
+| Consequência | Nenhuma meta afetada; a cobertura de branches pode variar em poucas unidades entre execuções de código idêntico; a correção do isolamento dos testes só entraria numa versão posterior à rc3 |
+| Impacto se estiver errada | Se o lado sem cobertura não for o do valor nulo, ou se a ordem das classes não for o único fator (ambos inferência, não verificada), a variação pode ter outra causa; a meta continua atendida do mesmo jeito |
+| Origem | Checagem de leitura de 28/10/2026 sobre os artefatos `relatorio-jacoco` dos dois runs (fora do repositório) |

@@ -70,5 +70,5 @@ A `v1.0.0-rc3` (`005c7af`) tem **código idêntico** ao da rc2; o artefato `rela
 | Métodos | 455 | 464 | 98,06% | 455 |
 | Classes | 125 | 127 | 98,43% | 125 |
 
-A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação **não foi investigada** (lacuna); o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da rc3 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
+A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação está em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8; o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da rc3 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
 
