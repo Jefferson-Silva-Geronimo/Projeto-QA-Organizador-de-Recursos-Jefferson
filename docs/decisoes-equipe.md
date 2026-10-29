@@ -625,3 +625,19 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Alternativas descartadas | (1) Mover a `v1.0.0-rc2` para a `main`: proibido, tag publicada não se move. (2) Incluir mudanças de código ou de configuração na rc3, como repetir o `dependency:go-offline` no `Dockerfile` ou ampliar o `dependabot.yml` ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md), seção 3): mudariam o commit avaliado e exigiriam novo clone limpo; seguem como dívida técnica, sem prazo |
 | Impacto se estiver errada | Se algum arquivo de código ou configuração divergir da rc2, a rc3 deixa de ser só de documentação; por isso o portão confere o `git diff` antes da tag e o relatório final o confere de novo |
 | Origem | Achado C2 da auditoria de leitura de 28/10/2026 (fora do repositório); declaração do autor em [decisao-qualidade.md](decisao-qualidade.md) |
+
+### F7-25. Tag `v1.0.0-rc3` publicada (28/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 28/10/2026.** O autor autorizou criar e publicar a tag anotada `v1.0.0-rc3` **somente se** o portão de condições passasse por inteiro (F7-24). Passou, e a tag foi criada e publicada.
+
+| Item | Registro |
+| --- | --- |
+| Tag e commit | `v1.0.0-rc3`, tag anotada no commit `005c7af` (merge do PR 104), publicada em 28/10/2026; `git ls-remote --tags origin` mostra `refs/tags/v1.0.0-rc3^{}` apontando para `005c7afc88c155a3d0d6f0cf64d369f43f882636`. A `v1.0.0-rc2` (`d2b6af1`) e a `v1.0.0-rc1` (`276224b`) permanecem como histórico e não foram movidas |
+| Condição 1 | PR 104 mesclado; nenhum PR nem issue aberto |
+| Condição 2 | Run da `main` no commit ([`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) com `test`, `frontend`, `e2e` e `segredos` verdes, sem reexecutar nenhum job; Quality Gate do SonarCloud OK com `revision` `005c7af`, 0 bugs e 0 vulnerabilidades |
+| Condição 3 | Árvore limpa (só `mvnw.cmd`, que nunca se commita) e HEAD local igual a `origin/main`; `git diff --name-only v1.0.0-rc2 HEAD` só com `.md` e `docs/prd/modelo-dados.dbml`, e `git diff --stat` de `src`, `frontend`, `pom.xml`, `.mvn`, `Dockerfile`, compose, `.github`, `perf`, `.env.example` e `docs/api` vazio |
+| Condição 4 | Nenhum `[NOME COMPLETO]`, `[COMPLETAR` ou `[CONFIRMAR` fora do registro da F7-21; `analyze-docs` com 71 arquivos, 0 erros e 0 avisos |
+| Condição 5 | Nenhum alerta do Dependabot em `frontend/` nem no Maven ([alertas-dependabot.md](testes/alertas-dependabot.md), seção 9) |
+| Depois da tag | Clone limpo no commit da tag, execução E-26 e documentos de evidência atualizados; ver [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.7, [execucao-e26.md](testes/execucao-e26.md) e [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 8 |
+| Observação | Os branches do JaCoCo da E-26 são 521 de 602 (86,54%), 2 a menos que os 523 da E-25, com código idêntico; a causa não foi investigada e a meta de 70% continua atendida |
+

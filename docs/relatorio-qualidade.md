@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da `v1.0.0-rc2` e em 28/10/2026 para a `v1.0.0-rc3`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); a tag avaliada é a `v1.0.0-rc3`, de código idêntico ao da `v1.0.0-rc2` (`d2b6af1`), e os números deste relatório são os da E-25 até o registro da E-26 (`docs/testes/execucao-e26.md`); os commits posteriores à rc2 só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da `v1.0.0-rc2` e em 28/10/2026 para a `v1.0.0-rc3`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); a tag avaliada é a `v1.0.0-rc3`, de código idêntico ao da `v1.0.0-rc2` (`d2b6af1`), e os números deste relatório são os da E-25, repetidos na E-26 ([execucao-e26.md](testes/execucao-e26.md)); só os branches do JaCoCo diferem (86,54% na E-26 e 86,88% na E-25); os commits posteriores à rc2 só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -11,7 +11,7 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 | Fato | Origem |
 | --- | --- |
 | Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint; a prova de clone limpo foi repetida no commit da tag `v1.0.0-rc2` | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
-| **Metas da especificação atingidas:** linhas 97,01% (meta 80%), branches 86,88% (meta 70%), 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud com Quality Gate OK, 100% das linhas críticas da RTM com teste e execução verde | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
+| **Metas da especificação atingidas:** linhas 97,01% (meta 80%), branches 86,54% na E-26 e 86,88% na E-25 (meta 70%), 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud com Quality Gate OK, 100% das linhas críticas da RTM com teste e execução verde | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
 | CI verde na `main` no commit lido: back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `40373624577` |
 | **27 defeitos** registrados: 26 fechados e 1 mitigado (BUG-017), nenhum reaberto, nenhum aberto de severidade crítica ou alta | [defeitos/README.md](defeitos/README.md) |
 
@@ -47,7 +47,7 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 | Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
 | **80%** de cobertura de linhas | **97,01%** (1751 de 1805) | **Atingida** | JaCoCo, run `40373624577` |
-| **70%** de cobertura de branches | **86,88%** (523 de 602) | **Atingida** | JaCoCo, run `40373624577` |
+| **70%** de cobertura de branches | **86,54%** (521 de 602) na E-26; 86,88% (523 de 602) na E-25 | **Atingida** | JaCoCo, runs `40790098761` e `40373624577` |
 | **0** bugs ou vulnerabilidades críticos | **0 bugs, 0 vulnerabilidades**, 0 issues abertas (CRITICAL e BLOCKER inclusive); Quality Gate **OK** | **Atingida** | SonarCloud, análise de `d2b6af1` (consulta de 24/10/2026) |
 | **100%** dos requisitos críticos na RTM | **22 de 22** linhas críticas (12 RF, 8 RN, 2 RNF) com CT existente, teste identificável (Java) ou arquivo em tabela (front), asserção e execução verde no E-24 | **Atingida**, com o limite abaixo | [auditoria-rtm.md](testes/auditoria-rtm.md), seções 8 e 10; [execucao-e24.md](testes/execucao-e24.md) |
 
@@ -55,7 +55,7 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da `v1.0.0-rc2`), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.**
+Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da `v1.0.0-rc2`), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.** Repetida na E-26 (run `40790098761`, commit `005c7af` da rc3): [execucao-e26.md](testes/execucao-e26.md).
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
