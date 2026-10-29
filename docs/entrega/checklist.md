@@ -49,7 +49,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | CI verde no commit da tag | Sim | Sim | Run `40373624577` | `test`, `frontend`, `e2e` e `segredos` verdes |
 | Repositório público | Sim | Sim | Visibilidade `PUBLIC` lida pela API do GitHub | |
 | Nenhum token ou dado pessoal real | Sim | Sim | Job `segredos` verde; `.env` fora do Git | Conferência por varredura da CI, não por leitura de todo o histórico |
-| Toda evidência aponta para o commit da tag | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Os documentos de evidência entram depois da tag e só mudam documentação; o commit avaliado é o da tag `v1.0.0-rc3`; até a E-26, os números são os da E-25 (rc2, mesmo código) |
+| Toda evidência aponta para o commit da tag | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Os documentos de evidência entram depois da tag e só mudam documentação; o commit avaliado é o da tag `v1.0.0-rc3`; a E-26 ([execucao-e26.md](../testes/execucao-e26.md)) repete os números da E-25 (rc2, mesmo código), com 2 branches a menos no JaCoCo |
 | Envio do formulário do Hub | n/a | n/a | n/a | **Ação do autor**; não foi enviado |
 
 ## 4. Bloqueadores

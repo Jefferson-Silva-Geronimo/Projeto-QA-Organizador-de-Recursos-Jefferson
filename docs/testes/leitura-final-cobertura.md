@@ -94,3 +94,21 @@ Leitura repetida **no commit da tag**, sem assumir os números das seções 1 a 
 A lacuna da seção 6 continua: o front não tem cobertura medida e o SonarCloud não analisa o TypeScript.
 
 Os totais do JaCoCo (linhas, branches, instruções, métodos e classes), a cobertura por pacote, o SHA-256 do `jacoco.xml` e a explicação da cobertura geral de 94,5% do SonarCloud foram extraídos do artefato antes da expiração e estão em [jacoco-resumo-rc2.md](jacoco-resumo-rc2.md).
+
+## 8. Leitura no commit da tag `v1.0.0-rc3` (28/10/2026)
+
+Leitura repetida no commit da `v1.0.0-rc3`, que tem o mesmo código da `v1.0.0-rc2` (seção 7); nenhum número da seção 7 foi assumido.
+
+| Item | Valor |
+| --- | --- |
+| Commit lido | `005c7af` (tag `v1.0.0-rc3`) |
+| Run da CI | [`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761) (push na `main`), jobs `test`, `frontend`, `e2e` e `segredos` com sucesso |
+| Testes | Back end **665** (231 + 434), front **910** em 56 arquivos, E2E **5 de 5**, 0 falhas ([execucao-e26.md](execucao-e26.md)) |
+| JaCoCo, linhas | **97,01%** (1751 de 1805), meta de 80% atingida |
+| JaCoCo, branches | **86,54%** (521 de 602), meta de 70% atingida; na seção 7 eram 86,88% (523 de 602) com o mesmo código |
+| Origem | Artefato `relatorio-jacoco` do run, `jacoco.xml`; o log do job `test` diz "All coverage checks have been met"; o artefato expira em 27/11/2026 |
+| SonarCloud | API pública, branch `main`, análise de 2026-10-28 às 23:56 UTC com `revision` `005c7af`: Quality Gate **OK**, 0 bugs, 0 vulnerabilidades, 0 code smells, 0 security hotspots, 0,0% de duplicação, 0 issues abertas; `lines_to_cover` 1805 com 54 não cobertas, `conditions_to_cover` 602 com 81 não cobertas, cobertura geral **94,4%** |
+| Dependabot | Todos os alertas abertos em `.aiox-core/` e 0 fora ([alertas-dependabot.md](alertas-dependabot.md), seção 9) |
+
+A cobertura geral do SonarCloud segue a conta da [seção 4 de jacoco-resumo-rc2.md](jacoco-resumo-rc2.md): (1751 + 521) / (1805 + 602) = 2272 / 2407 = 94,39%, que o painel arredonda para 94,4%. A diferença para a seção 7 (94,5%) é a dos 2 branches; a causa não foi investigada. A lacuna da seção 6 continua: o front não tem cobertura medida.
+

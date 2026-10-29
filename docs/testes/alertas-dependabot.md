@@ -110,3 +110,8 @@ Registro novo; os números das seções 1 a 7 são históricos, de cada data, e 
 **Por que o número varia.** O GitHub dispensa alertas automaticamente (`auto_dismissed`) e muda o estado de alertas conforme os avisos de segurança e os arquivos de bloqueio mudam; a contagem de "abertos" depende, portanto, do dia da consulta. Os valores registrados neste arquivo e em outros documentos (27 em 24/10/2026, 30 em 26/10/2026 e 30 em 28/10/2026, com a distribuição de severidade diferente: 11, 10 e 9 altos) são cada um verdadeiros na sua data. Entre 26/10 e 28/10 o total de abertos não mudou, mas a distribuição por severidade passou de 10 altos e 15 médios para 9 altos e 16 médios; a API não informa a causa e ela **não foi investigada**.
 
 **A justificativa da F7-08 continua valendo:** nenhum alerta, aberto ou não, está em `frontend/` ou no Maven; todos os 30 abertos são do framework `.aiox-core/`, que não entra nas imagens nem na CI do produto (seção 4).
+
+## 9. Revalidação antes da tag `v1.0.0-rc3` (28/10/2026)
+
+Consulta de leitura (GET) à API do GitHub, alertas abertos por manifesto: `.aiox-core/package-lock.json` 4 e `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json` 26, **30 no total**; **0** em `frontend/` e **0** no Maven. O número é o mesmo da seção 8, e a regra da seção 3 (nenhum alerta fora de `.aiox-core/`) continuou valendo no portão da tag.
+

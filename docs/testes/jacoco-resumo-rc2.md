@@ -57,3 +57,18 @@ Leitura pela API pública do SonarCloud (consultas de leitura, sem alteração),
 | `conditions_to_cover` / `uncovered_conditions` | 602 / 79 |
 
 A cobertura geral do SonarCloud **combina linhas e condições (branches)** numa só razão: (linhas cobertas + condições cobertas) / (linhas a cobrir + condições a cobrir) = (1751 + 523) / (1805 + 602) = 2274 / 2407 = 94,47%, que o painel arredonda para 94,5%. O JaCoCo mantém as duas medidas **separadas** (97,01% de linhas, 1751 de 1805; 86,88% de branches, 523 de 602) e o gate do projeto usa cada uma com a sua meta (80% e 70%). Por isso 94,5% e 97,01% / 86,88% descrevem o mesmo código, sem divergência.
+
+## 5. Nota sobre a `v1.0.0-rc3`
+
+A `v1.0.0-rc3` (`005c7af`) tem **código idêntico** ao da rc2; o artefato `relatorio-jacoco` do run da CI dela ([`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) foi lido em 28/10/2026 e **expira em 27/11/2026**, depois do da rc2 (25/11/2026). Totais do `jacoco.xml` do run da rc3 (SHA-256 `fba77529deee141395e373e43bd51034a6ffba86ed9b7719f602f94e67660639`):
+
+| Contador | Cobertos | Total | Cobertura | Na rc2 |
+| --- | --- | --- | --- | --- |
+| Linhas | 1751 | 1805 | 97,01% | 1751 |
+| Branches | 521 | 602 | 86,54% | 523 |
+| Instruções | 10386 | 10618 | 97,81% | 10390 |
+| Métodos | 455 | 464 | 98,06% | 455 |
+| Classes | 125 | 127 | 98,43% | 125 |
+
+A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação **não foi investigada** (lacuna); o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da rc3 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
+

@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5 e no da tag `v1.0.0-rc2` (`d2b6af1`) na seção 2.6.
+Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5, no da tag `v1.0.0-rc2` (`d2b6af1`) na seção 2.6 e no da tag `v1.0.0-rc3` (`005c7af`) na seção 2.7.
 
 ### 2.1 Método
 
@@ -102,6 +102,31 @@ Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o b
 **A primeira tentativa falhou por ambiente, antes de chegar à aplicação.** Parou no passo 2 (`docker compose up -d postgres`, saída 1 em 15 s) com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`, a mesma mensagem das tentativas 1 a 3 da seção 2.5: o Git Bash não encontra o auxiliar de credenciais do Docker Desktop quando o compose consulta o registro para a imagem fixada por digest. Depois de um `docker pull` da imagem fixada feito no PowerShell (resposta: "Image is up to date"), a segunda tentativa passou, **sem alterar nenhum arquivo do repositório**.
 
 **O que isto é e o que não é.** O README não foi alterado entre as tentativas e o passo 2 é o do README; a falha é do ambiente desta máquina, não do projeto. **Lacuna:** não foi investigado por que o auxiliar não está no `PATH` do Git Bash. Uma só máquina e uma só conferência; outros computadores e sistemas operacionais não foram provados.
+
+### 2.7 Rodada 5: commit da tag `v1.0.0-rc3` (`005c7af`), 28/10/2026: PASSOU
+
+**Método:** o da seção 2.6: clone do repositório público numa pasta temporária fora do projeto, `git checkout --detach v1.0.0-rc3`, a seção "Como subir" e a "Como testar" do README, `.env` gerado na hora com valores fictícios (nunca impresso), num script que mede o tempo acumulado de cada passo. O `CLASSPATH` da máquina foi limpo. O `verify` rodou depois de encerrar a aplicação e o banco. **Não foi feito:** o passo 6 do README (front end, `npm ci` e `npm run dev`) e o `GET /api/auth/eu`; o front desta tag tem a CI como evidência (910 testes em 56 arquivos na E-26).
+
+**Resultado** (tempos acumulados desde o início do script, da execução que vale):
+
+| Passo do README | Resultado | Tempo acumulado |
+| --- | --- | --- |
+| Clone no commit `005c7af` (tag `v1.0.0-rc3`) | feito; `git rev-parse HEAD` = `005c7afc88c155a3d0d6f0cf64d369f43f882636` | 17 s |
+| 1. `.env` | preenchido com valores fictícios; `SONAR_ORGANIZATION` e `SONAR_PROJECT_KEY` vazias, opcionais no README | 17 s |
+| 2. `docker compose up -d postgres` | feito; banco pronto | 38 s |
+| 3 e 4. `./mvnw spring-boot:run` e `GET /actuator/health` | HTTP 200, `{"status":"UP"}` | **90 s** (clone até a aplicação no ar; 52 s desde o início do `spring-boot:run`) |
+| 5. `POST /api/auth/login` (Administrador do bootstrap) | HTTP 200, token não impresso | 91 s |
+| Aplicação e banco encerrados (`docker compose down`, sem `-v`) | feito; porta 8080 livre | 107 s |
+| `./mvnw -B verify` ("Como testar") | **Passou:** 231 testes de unidade e arquitetura e 434 de integração e BDD, 0 falhas, "All coverage checks have been met", `BUILD SUCCESS`, 10 min 43 s no Maven | **654 s** (de 107 s a 761 s) |
+
+O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-256 do `jacoco.xml` `1eb5f44198d95a0301051a2ad7c818df82b5d39e5526edbe0f472d9116845985`); o da CI no mesmo commit deu 1751 de 1805 e 521 de 602 ([jacoco-resumo-rc2.md](jacoco-resumo-rc2.md), seção 5). Os três valores de branches (523 local e na rc2, 521 na CI da rc3) e os dois de linhas (1751 e 1753) vêm do mesmo código; **a causa não foi investigada**.
+
+**O que deu errado antes da execução que vale (declarado, sem alterar o repositório):**
+
+- O `docker pull` da imagem fixada, chamado de dentro do Git Bash, terminou com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%`, a mesma mensagem das seções 2.5 e 2.6. O `docker pull` pelo PowerShell respondeu "Image is up to date" e o fluxo seguiu.
+- Uma primeira execução do script foi **descartada**: a interrupção do primeiro script não encerrou os processos filhos, e dois scripts rodaram ao mesmo tempo no mesmo banco, na mesma porta e na mesma pasta, e o `verify` de um deles saiu com 1. Isso foi falha do procedimento de medição, não do projeto. Os recursos Docker criados por essas execuções (contêineres, volume `rc3clone_pgdata`) foram removidos, e a execução acima foi feita uma vez, depois de a máquina ficar sem script rodando. Por isso a rodada vale como uma execução limpa, e não como "primeira tentativa".
+
+**O que isto é e o que não é.** Uma só máquina e uma só conferência limpa; outros computadores e sistemas operacionais não foram provados. O front end não foi repetido nesta rodada.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 

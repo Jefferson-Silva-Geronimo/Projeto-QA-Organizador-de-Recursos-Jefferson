@@ -1,6 +1,6 @@
 # Execução E-25: CI da `main` no commit da tag `v1.0.0-rc2`, em 26/10/2026
 
-Execução de referência do release candidate `v1.0.0-rc2` para a [RTM](../../RTM.md). Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). Todo número vem do log do run abaixo. Os documentos que citam esta execução entram **depois** da tag e só mudam documentação: o commit da `v1.0.0-rc2` (E-25) tem código idêntico ao da `v1.0.0-rc3`, que passou a ser a tag avaliada (F7-24); a execução da rc3 será a E-26.
+Execução de referência do release candidate `v1.0.0-rc2` para a [RTM](../../RTM.md). Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). Todo número vem do log do run abaixo. Os documentos que citam esta execução entram **depois** da tag e só mudam documentação: o commit da `v1.0.0-rc2` (E-25) tem código idêntico ao da `v1.0.0-rc3`, que passou a ser a tag avaliada (F7-24); a execução da rc3 é a E-26 ([execucao-e26.md](execucao-e26.md)).
 
 | Item | Valor |
 | --- | --- |

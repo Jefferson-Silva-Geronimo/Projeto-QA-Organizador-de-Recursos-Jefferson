@@ -2,15 +2,16 @@
 
 Todas as mudanças relevantes do projeto **Organização de Recursos** por versão. Formato: Adicionado, Corrigido, Alterado e Limitações conhecidas. Fonte: `git log` e pull requests do repositório (números `#nn`). Versões seguem o nome da tag.
 
-## [1.0.0-rc3], 28/10/2026
+## [1.0.0-rc3], 28/10/2026, tag em `005c7af`
 
-Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc2` (`d2b6af1`), até o PR 103 e o PR de preparação da rc3. **O código, os testes e a configuração são idênticos aos da `v1.0.0-rc2`**: a diferença para ela são arquivos `.md` e `docs/prd/modelo-dados.dbml`. A `v1.0.0-rc3` passa a ser a tag avaliada, publicada com autorização expressa do autor; a `v1.0.0-rc2` e a `v1.0.0-rc1` permanecem como histórico. O hash da rc3 e o run da CI dela não estão neste arquivo (ele faz parte do commit da tag): `git rev-list -n 1 v1.0.0-rc3` e o run do push na `main` nesse commit; o registro fica em `docs/testes/execucao-e26.md`, depois da tag.
+Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc2` (`d2b6af1`), até o PR 103 e o PR de preparação da rc3. **O código, os testes e a configuração são idênticos aos da `v1.0.0-rc2`**: a diferença para ela são arquivos `.md` e `docs/prd/modelo-dados.dbml`. A `v1.0.0-rc3` passa a ser a tag avaliada, publicada com autorização expressa do autor; a `v1.0.0-rc2` e a `v1.0.0-rc1` permanecem como histórico. A tag `v1.0.0-rc3` aponta para o commit `005c7af`; o run da CI dele é o `40790098761`, registrado em `docs/testes/execucao-e26.md` (665 testes no back end, 910 no front, 5 E2E, JaCoCo 97,01% e 86,54%).
 
 ### Adicionado
 - `docs/testes/jacoco-resumo-rc2.md`: totais e cobertura por pacote do `jacoco.xml` da rc2, com o SHA-256 do arquivo, para o dado não depender do artefato da CI, que expira em 25/11/2026 (#102).
 - Seção CEN-10 e CEN-11 em `docs/avaliacao-arquitetural/ciclo-01.md`, com arquivo, linha e teste, e o que continua não verificado (#102).
 - Tabela `tentativas_login` (migração V4) em `docs/prd/modelo-dados.dbml`, que passa a ter as 19 tabelas das migrações (#102).
 - Decisões F7-23 (rótulos S1 a S3), F7-24 (a rc3 como tag avaliada) e, depois da tag, F7-25.
+- Depois da tag: `docs/testes/execucao-e26.md` (CI no commit da rc3), seção 2.7 de `docs/testes/limitadores-de-nota.md` (clone limpo da rc3) e seção 8 de `docs/testes/leitura-final-cobertura.md`.
 - Consulta do Dependabot de 28/10/2026 em `docs/testes/alertas-dependabot.md` (#102).
 
 ### Corrigido
