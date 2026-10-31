@@ -60,3 +60,7 @@ R-22 (execução em mais de uma instância sem trava eficaz). S6 pode ser invali
 ## Condição de revisão
 
 O professor invalidar S6, ou exigir não comparecimento automático depois que D1 tiver valor.
+
+## Nota de 31/10/2026 (BUG-028)
+
+O job de SEM_DECISAO e o despacho de notificações são agendadores **independentes**, cada um ligado pela sua propriedade `app.jobs.*` e desligado por padrão. Até a versão anterior, `@EnableScheduling` ficava no agendador do SEM_DECISAO, e por isso o despacho de notificações só era agendado quando o SEM_DECISAO também estava ligado ([#111](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/issues/111)); a `v1.0.0-rc4` move a anotação para `AgendamentoConfig`. O texto da decisão acima não foi alterado.

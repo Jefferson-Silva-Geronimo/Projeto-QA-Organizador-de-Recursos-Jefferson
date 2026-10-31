@@ -656,3 +656,33 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Consequência | Nenhuma meta afetada; a cobertura de branches pode variar em poucas unidades entre execuções de código idêntico; a correção do isolamento dos testes só entraria numa versão posterior à rc3 |
 | Impacto se estiver errada | Se o lado sem cobertura não for o do valor nulo, ou se a ordem das classes não for o único fator (ambos inferência, não verificada), a variação pode ter outra causa; a meta continua atendida do mesmo jeito |
 | Origem | Checagem de leitura de 28/10/2026 sobre os artefatos `relatorio-jacoco` dos dois runs (fora do repositório) |
+
+### F7-27. Verificação de conteúdo da documentação, correções aplicadas e o defeito BUG-028 (31/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 31/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | Antes da `v1.0.0-rc4`, a documentação foi conferida contra o código, a CI e a aplicação em execução (clone limpo da `v1.0.0-rc3`, projeto Compose `rc4`, banco reiniciado entre grupos) |
+| O que foi verificado | Todos os hashes de commit e todos os caminhos `arquivo:linha` citados nos 74 documentos versionados (0 inexistentes); os 45 runs da CI citados existem na API do GitHub; RF-01 a RF-14 e as sete regras críticas da especificação conferem com o texto da página oficial; as 11 telas e os 34 códigos de erro conferem entre `telas.ts`, `mensagens.ts`, `CodigoErro.java` e `navegacao-telas.md`; a matriz de 34 operações por 4 identidades (0 divergências) e o `openapi.json` ao vivo (só difere `servers[0].url`); as jornadas de RF-03 a RF-12, as regras RN-01, RN-02, RN-04, RN-06, RN-09 a RN-11, RN-14, RN-16 a RN-25 e RN-33, o relatório conferido à mão e a dupla reserva (20 pedidos simultâneos: 1 aceito, 19 recusados, 1 linha em `ocupacoes`) |
+| Defeito achado | **BUG-028** ([#111](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/issues/111)): `@EnableScheduling` só existia em `AgendadorDeTransicoes`, condicional ao job de SEM_DECISAO; ligar só o despacho de notificações não agendava nada. Corrigido no PR 112 com TDD (vermelho `1aa8939`, verde `95c19c4`), testes CT-168 a CT-170 e o experimento de mutação 23 |
+| Correções de documentação aplicadas | Despacho de notificações descrito como desligado por padrão e independente do outro agendador; Roadmap da Fase 1 sem "lacunas seguem abertas"; R-25 e R-26 e pendências fechadas em `plano-de-teste.md`; vazão da rodada 01 (31,1/s e 13,3/s no recorte do regime, conferida com `analisar_rodada.py` sobre `rodada-01.jtl`; a origem de 30,4/s e 13,0/s não foi identificada); vermelho de CT-081 em `4a54c35`; caminho local do autor removido de `resultado-01.md`; regra 12 do `AGENTS.md`; nota sobre CT-034 e `PeriodoTest` na RTM; "(141 testes; BUG-022)" junto aos "137 casos"; leitura de hoje da API do SonarCloud |
+| Pares vermelho→verde | Nenhum documento versionado afirma uma contagem de pares; só o hash do vermelho de CT-081 estava errado (`7b4219d`, o correto é `4a54c35`, por `git log -S'ct081_'`) e foi corrigido em `plano-tdd.md`. Não se criou contagem nova nesta rodada |
+| Achados que não se confirmaram | **RF-05:** o literal da página oficial é "inclusive na agenda do professor", igual aos documentos; nada foi alterado. **Erro de credencial do Docker no Git Bash:** observado em 30/10/2026 e **não reproduzido** em 31/10/2026 (a imagem do PostgreSQL já estava no cache); a frase condicional do README fica |
+| Mantidos como fotografia datada | O ADR-015 sem a seção "Riscos" e a acentuação de `auditoria-rtm.md`, por serem registros de uma data |
+| Variação de branches | Entre execuções de código idêntico, o JaCoCo deu 523 (E-25), 521 (E-26) e 519 (run `40798680789`, push em `b7beb8f`) de 602 branches: o intervalo é de 4, e não de 2. A diferença da E-26 para o run de `b7beb8f` está em `ReservaService`, linhas 329 e 330 (ramo do impasse `40P01`), e não em `JdbcConfiguracaoRepository`. Hipótese, não verificada: ordem das classes e estado compartilhado entre testes. A F7-26 não é alterada; a meta de 70% é atendida nos três casos |
+| Limites | Não foram conferidas uma a uma todas as afirmações em prosa dos 74 documentos: o que não tem fonte checável por script ou por execução ficou "não verificável". As rotas do front no navegador real não foram repetidas nesta rodada (a comparação com `telas.ts` é estática) |
+| Origem | Verificação de 31/10/2026, arquivos de trabalho fora do repositório |
+
+### F7-28. A `v1.0.0-rc4` como release candidate definitivo, com correção de código (31/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 31/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | A verificação de F7-27 achou o BUG-028, um defeito real de código. O autor decidiu corrigir o código e publicar a `v1.0.0-rc4` **definitiva** já com a correção, em vez de manter o defeito apenas documentado |
+| Decisão | Publicar a tag anotada `v1.0.0-rc4` como a tag avaliada, **só se** o portão de condições passar por inteiro. O código difere da `v1.0.0-rc3` só pela correção mínima (`AgendamentoConfig`, `AgendadorDeTransicoes` sem a anotação e os testes novos); os agendadores continuam **desligados por padrão**, sem mudança em `application.yml`, `.env.example`, compose nem `pom.xml` |
+| Arquitetura de entrega | Três pull requests: C (a correção), A (documentação e estado da rc4) e B (registro dos números medidos no commit X do PR A). X não é tagueado; T, o commit de merge do PR B, é o commit da tag, e `git diff X T` só lista arquivos `.md`. Os documentos dentro de T citam a rc4 pelo nome e X por hash, e apontam para a Release e para `git rev-list -n 1 v1.0.0-rc4`; o hash e o run de T ficam na Release, que não é commit. Nenhum arquivo do repositório muda depois da tag |
+| Alternativas descartadas | (1) Mover a `v1.0.0-rc3`: proibido, tag publicada não se move. (2) Manter o defeito só documentado (dizer que os dois agendadores precisam ser ligados juntos): descartada por decisão do autor, porque o comportamento correto é cada agendador ligar sozinho. (3) A alternativa de criar uma rc4 "só para estabilizar 2 branches", descartada na F7-26, deixa de valer: a rc4 existe por outro motivo, um defeito de código |
+| Impacto se estiver errada | Se a correção alterar algo além do agendamento, o portão da tag acusa: ele lista os arquivos de `src` e `frontend` que diferem da rc3 e só aceita os do PR 112 |
+| Origem | F7-27; pedido do autor de 31/10/2026 |

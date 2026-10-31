@@ -2,6 +2,29 @@
 
 Todas as mudanças relevantes do projeto **Organização de Recursos** por versão. Formato: Adicionado, Corrigido, Alterado e Limitações conhecidas. Fonte: `git log` e pull requests do repositório (números `#nn`). Versões seguem o nome da tag.
 
+## [1.0.0-rc4], 31/10/2026
+
+Release candidate definitivo. Entra o que foi mesclado na `main` depois da versão anterior: a correção do BUG-028 (PR 112, código e testes) e a documentação corrigida e verificada contra o código, a CI e a aplicação em execução. **Diferente da versão anterior, o código mudou**: só `AgendamentoConfig` (novo), `AgendadorDeTransicoes` (sem a anotação `@EnableScheduling`) e testes novos; a configuração padrão não mudou. Os commits e os números da revisão estão na [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) e em `git rev-list -n 1 v1.0.0-rc4`.
+
+### Adicionado
+- `config/AgendamentoConfig`: `@EnableScheduling` incondicional (BUG-028, #111, PR 112).
+- Testes CT-168 a CT-170 (`AgendamentoDeNotificacoesIT`, `AgendamentoDeSemDecisaoIT`, `AgendamentoDesligadoIT`) e o auxiliar `TarefasAgendadas`; experimento de mutação 23 em `docs/testes/mutacao-manual.md`.
+- BUG-028 em `docs/defeitos/README.md` e em `docs/defeitos/analise-causa-raiz.md`.
+- Seção "Configuração opcional" do README (tolerância de não comparecimento, D1, e reenvio de notificações, D3), com os comandos verificados.
+- Seção 9 de `docs/testes/leitura-final-cobertura.md` (leitura da API do SonarCloud e variação de branches entre execuções de código idêntico), `docs/testes/execucao-e27.md`, seções de clone limpo e dos quatro cenários dos agendadores em `docs/testes/limitadores-de-nota.md`.
+- Decisões F7-27, F7-28 e F7-29 em `docs/decisoes-equipe.md`.
+
+### Corrigido
+- **BUG-028:** o despacho de notificações (RF-11) só era agendado quando o job de SEM_DECISAO também estava ligado, porque `@EnableScheduling` ficava em `AgendadorDeTransicoes`. Cada agendador liga agora de forma independente, e os dois continuam desligados por padrão.
+- Documentação: despacho de notificações descrito como desligado por padrão (README e limitações); lacunas D1, D3, D4, D9 e D17 no Roadmap; riscos R-25 e R-26 e pendências já entregues em `docs/plano-de-teste.md`; vazão da rodada 01 em `docs/performance/resultado-02.md` (31,1/s e 13,3/s no recorte do regime); vermelho de CT-081 em `4a54c35`; caminho local do autor removido de `docs/performance/resultado-01.md`; regra 12 do `AGENTS.md` (quatro checks obrigatórios e o Quality Gate dentro do job `test`); nota sobre CT-034 e `PeriodoTest` na RTM; nota "(141 testes; BUG-022)" junto aos "137 casos".
+
+### Alterado
+- A tag avaliada passa a ser a `v1.0.0-rc4` em README, RTM, relatório de qualidade, decisão de qualidade (reafirmação do autor), checklist e documentos de evidência; as execuções anteriores ficam identificadas por número (E-24, E-25, E-26), commit e run.
+- O resumo do JaCoCo passa a se chamar `docs/testes/jacoco-resumo.md` (o nome antigo trazia o número de uma versão).
+
+### Limitações conhecidas
+Ver [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md). Os dois agendadores (notificações e SEM_DECISAO) vêm **desligados por padrão** e ligam cada um pela sua propriedade `app.jobs.*`; a tolerância de não comparecimento e o reenvio de notificações só se configuram por SQL na tabela `configuracao`; a cobertura de branches varia entre execuções de código idêntico (de 519 a 523 de 602 antes desta versão); o erro de credencial do Docker no Git Bash, observado em 30/10/2026, não foi reproduzido em 31/10/2026.
+
 ## [1.0.0-rc3], 28/10/2026, tag em `005c7af`
 
 Entra o que foi mesclado na `main` depois da tag `v1.0.0-rc2` (`d2b6af1`), até o PR 103 e o PR de preparação da rc3. **O código, os testes e a configuração são idênticos aos da `v1.0.0-rc2`**: a diferença para ela são arquivos `.md` e `docs/prd/modelo-dados.dbml`. A `v1.0.0-rc3` passa a ser a tag avaliada, publicada com autorização expressa do autor; a `v1.0.0-rc2` e a `v1.0.0-rc1` permanecem como histórico. A tag `v1.0.0-rc3` aponta para o commit `005c7af`; o run da CI dele é o `40790098761`, registrado em `docs/testes/execucao-e26.md` (665 testes no back end, 910 no front, 5 E2E, JaCoCo 97,01% e 86,54%).

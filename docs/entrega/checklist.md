@@ -1,6 +1,6 @@
 # Checklist de entrega (avaliador externo)
 
-Conferência feita como **avaliador externo** em dois momentos anteriores, com os valores medidos e rotulados abaixo (provisórios: medidos na execução E-25, código idêntico ao da `v1.0.0-rc4`, a ser substituídos pela E-27 no PR B). A tag avaliada é a `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`); ver F7-28 em [decisoes-equipe.md](../decisoes-equipe.md). Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
+Conferência feita como **avaliador externo** em dois momentos anteriores, com os valores medidos e rotulados abaixo (provisórios: medidos na execução E-25, anterior à correção do BUG-028, a registrar de novo na execução E-27 no PR B). A tag avaliada é a `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`); ver F7-28 em [decisoes-equipe.md](../decisoes-equipe.md). Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
 
 ## 1. Como foi conferido
 
@@ -25,7 +25,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | --- | --- | --- | --- | --- | --- |
 | 1 | Repositório com histórico de trabalho e revisão por pares | Sim | Sim | Repositório público; `git log`; contagens de commits e de pull requests mesclados medidas no commit avaliado, a registrar no PR B | **Parcial:** há histórico e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é limitação declarada (F7-16, item 14) |
 | 2 | Aplicação executável e instruções de instalação | Sim | Sim | [README.md](../../README.md), "Como subir" | Subiu em clone limpo (tabela da seção 1) |
-| 3 | `README.md` e documentação dos fluxos ou da API | Sim | Sim | [README.md](../../README.md); [openapi.json](../api/openapi.json); [fluxos-sequencia.md](../prd/fluxos-sequencia.md); [navegacao-telas.md](../prd/navegacao-telas.md) | README com Fase 7 concluída, a tag `v1.0.0-rc4` e os números da execução E-26 (código idêntico) |
+| 3 | `README.md` e documentação dos fluxos ou da API | Sim | Sim | [README.md](../../README.md); [openapi.json](../api/openapi.json); [fluxos-sequencia.md](../prd/fluxos-sequencia.md); [navegacao-telas.md](../prd/navegacao-telas.md) | README com Fase 7 concluída, a tag `v1.0.0-rc4` e os números da execução E-27 (a registrar no PR B) |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | Sim | Sim | [RTM.md](../../RTM.md); [rtm.md](../rtm.md); [auditoria-rtm.md](../testes/auditoria-rtm.md) | 55 linhas; execuções E-24 a E-26 |
 | 5 | Diagramas de contexto, componentes e sequências críticas | Sim | Sim | [arquitetura.md](../arquitetura.md), seções 10.1 (contexto), 10.2 (contêineres) e 10.3 (componentes); [fluxos-sequencia.md](../prd/fluxos-sequencia.md) (14 diagramas) | A renderização dos diagramas Mermaid não foi refeita na fase de fechamento (limitação declarada) |
 | 6 | Plano, suíte automatizada e relatório de testes | Sim | Sim | [plano-de-teste.md](../plano-de-teste.md); [plano-tdd.md](../testes/plano-tdd.md); `src/test` e `frontend`; [casos-de-teste.md](../testes/casos-de-teste.md); [execucao-e25.md](../testes/execucao-e25.md); [relatorio-qualidade.md](../relatorio-qualidade.md) | Sem `TODO` no plano de teste |
@@ -49,7 +49,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | CI verde na execução E-25 | Sim | Sim | Run `40373624577` | `test`, `frontend`, `e2e` e `segredos` verdes |
 | Repositório público | Sim | Sim | Visibilidade `PUBLIC` lida pela API do GitHub | |
 | Nenhum token ou dado pessoal real | Sim | Sim | Job `segredos` verde; `.env` fora do Git | Conferência por varredura da CI, não por leitura de todo o histórico |
-| Toda evidência aponta para o código avaliado | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | O código das execuções E-25 e E-26 ([execucao-e26.md](../testes/execucao-e26.md)) é idêntico ao da `v1.0.0-rc4`; a E-26 repete os números da E-25, com 2 branches a menos no JaCoCo |
+| Toda evidência aponta para o código avaliado | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | As execuções E-25 e E-26 ([execucao-e26.md](../testes/execucao-e26.md)) são anteriores à correção do BUG-028; os números da revisão avaliada são os da execução E-27 (a registrar no PR B) |
 | Envio do formulário do Hub | n/a | n/a | n/a | **Ação do autor**; não foi enviado |
 
 ## 4. Bloqueadores

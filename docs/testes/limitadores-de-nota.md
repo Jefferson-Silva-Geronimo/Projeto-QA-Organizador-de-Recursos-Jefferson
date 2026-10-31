@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.8.
+Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.9.
 
 ### 2.1 Método
 
@@ -119,7 +119,7 @@ Ao fim, a API e o Vite foram encerrados pelos PIDs das portas 8080 e 5173, e o b
 | Aplicação e banco encerrados (`docker compose down`, sem `-v`) | feito; porta 8080 livre | 107 s |
 | `./mvnw -B verify` ("Como testar") | **Passou:** 231 testes de unidade e arquitetura e 434 de integração e BDD, 0 falhas, "All coverage checks have been met", `BUILD SUCCESS`, 10 min 43 s no Maven | **654 s** (de 107 s a 761 s) |
 
-O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-256 do `jacoco.xml` `1eb5f44198d95a0301051a2ad7c818df82b5d39e5526edbe0f472d9116845985`); o da CI no mesmo commit deu 1751 de 1805 e 521 de 602 ([jacoco-resumo-rc2.md](jacoco-resumo-rc2.md), seção 5). Os três valores de branches (523 local e na rc2, 521 na CI da rc3) e os dois de linhas (1751 e 1753) vêm do mesmo código; a variação de branches da CI está explicada em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8, e a diferença de 2 linhas do `verify` local (1753 contra 1751) **não foi investigada**.
+O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-256 do `jacoco.xml` `1eb5f44198d95a0301051a2ad7c818df82b5d39e5526edbe0f472d9116845985`); o da CI no mesmo commit deu 1751 de 1805 e 521 de 602 ([jacoco-resumo.md](jacoco-resumo.md), seção 5). Os três valores de branches (523 local e na rc2, 521 na CI da rc3) e os dois de linhas (1751 e 1753) vêm do mesmo código; a variação de branches da CI está explicada em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8, e a diferença de 2 linhas do `verify` local (1753 contra 1751) **não foi investigada**.
 
 **O que deu errado antes da execução que vale (declarado, sem alterar o repositório):**
 
@@ -127,6 +127,10 @@ O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-25
 - Uma primeira execução do script foi **descartada**: a interrupção do primeiro script não encerrou os processos filhos, e dois scripts rodaram ao mesmo tempo no mesmo banco, na mesma porta e na mesma pasta, e o `verify` de um deles saiu com 1. Isso foi falha do procedimento de medição, não do projeto. Os recursos Docker criados por essas execuções (contêineres, volume `rc3clone_pgdata`) foram removidos, e a execução acima foi feita uma vez, depois de a máquina ficar sem script rodando. Por isso a rodada vale como uma execução limpa, e não como "primeira tentativa".
 
 **O que isto é e o que não é.** Uma só máquina e uma só conferência limpa; outros computadores e sistemas operacionais não foram provados. O front end não foi repetido nesta rodada.
+
+### 2.8 Erro de credencial do Docker no Git Bash: observado em 30/10/2026, não reproduzido em 31/10/2026
+
+Na auditoria de 30/10/2026, o `docker compose up -d postgres` chamado de dentro do Git Bash voltou a falhar com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%` ao baixar a imagem fixada por digest, e passou quando o comando Docker foi rodado pelo PowerShell (mesma falha de ambiente das seções 2.5 e 2.6). Em 31/10/2026, no clone de verificação, o mesmo comando passou no Git Bash **sem erro porque a imagem do PostgreSQL já estava no cache local**; portanto o erro **não foi reproduzido** e esta seção não registra nova verificação do contorno. O README mantém a frase condicional: se o erro ocorrer, rode o comando Docker pelo PowerShell.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
