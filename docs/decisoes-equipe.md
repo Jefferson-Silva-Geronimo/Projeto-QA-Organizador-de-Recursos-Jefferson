@@ -686,3 +686,17 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Alternativas descartadas | (1) Mover a `v1.0.0-rc3`: proibido, tag publicada não se move. (2) Manter o defeito só documentado (dizer que os dois agendadores precisam ser ligados juntos): descartada por decisão do autor, porque o comportamento correto é cada agendador ligar sozinho. (3) A alternativa de criar uma rc4 "só para estabilizar 2 branches", descartada na F7-26, deixa de valer: a rc4 existe por outro motivo, um defeito de código |
 | Impacto se estiver errada | Se a correção alterar algo além do agendamento, o portão da tag acusa: ele lista os arquivos de `src` e `frontend` que diferem da rc3 e só aceita os do PR 112 |
 | Origem | F7-27; pedido do autor de 31/10/2026 |
+
+### F7-29. Autorização da `v1.0.0-rc4` e registro do commit X (31/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 31/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | A correção do BUG-028 (PR 112, merge `9e1cabf`) e a documentação da rc4 (PR 113, merge `b5e9bbd`, ponta da branch em `3299b04`) estão mescladas; as medições de X (execução E-27) e o clone limpo foram feitos e registrados em [execucao-e27.md](testes/execucao-e27.md) e em [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.9 |
+| Commit X | `b5e9bbd5f68ba01c0dfbb40e16e8a552848348ac`, merge do PR 113; run da CI [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466) com `test`, `frontend`, `e2e` e `segredos` verdes, sem reexecutar nenhum job; Quality Gate do SonarCloud OK |
+| Autorização | O autor autorizou, em 31/10/2026, criar e publicar a tag anotada `v1.0.0-rc4` e a Release `v1.0.0-rc4` (pré-lançamento) **somente se** o portão de condições passar por inteiro; a `v1.0.0-rc1`, a `v1.0.0-rc2` e a `v1.0.0-rc3` não são movidas, apagadas nem recriadas |
+| Onde fica o resto | O commit da tag e o run da CI dele não constam em nenhum arquivo do repositório (a referência seria circular): estão na Release `v1.0.0-rc4` e no comando `git rev-list -n 1 v1.0.0-rc4` |
+| Medidas | Back end 670 testes (231 + 439), front 910, E2E 5, linhas 97,84% e branches 87,21% (525 de 602), 535 commits e 78 pull requests mesclados em X; os quatro cenários dos agendadores passaram em X; a calibração curta do JMeter não achou erro real nem resposta 500 |
+| Variação de branches | 525 de 602 em X, com a correção; os valores anteriores (523, 521 e 519 de 602) são de código sem ela. A F7-26 e a F7-27 explicam a variação entre execuções de código idêntico |
+| Origem | F7-28; pedido do autor de 31/10/2026 |

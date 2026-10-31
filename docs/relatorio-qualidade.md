@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números da execução E-25 e em 28/10/2026 com os da E-26, e revisado para a `v1.0.0-rc4`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes da revisão avaliada, a tag `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`), que corrige o BUG-028 e traz a documentação verificada. Todo número dependente de medição está marcado (a registrar no PR B) e é o da execução E-27; as execuções E-25 e E-26 são históricas ([execucao-e25.md](testes/execucao-e25.md), [execucao-e26.md](testes/execucao-e26.md)). Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números da execução E-25 e em 28/10/2026 com os da E-26, e revisado para a `v1.0.0-rc4`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes da revisão avaliada, a tag `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`), que corrige o BUG-028 e traz a documentação verificada. Os números são os da execução E-27, medida no commit `b5e9bbd` (só `.md` depois dele: `git diff --stat b5e9bbd v1.0.0-rc4`); as execuções E-25 e E-26 são históricas ([execucao-e25.md](testes/execucao-e25.md), [execucao-e26.md](testes/execucao-e26.md)). Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -11,8 +11,8 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 | Fato | Origem |
 | --- | --- |
 | Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint; a prova de clone limpo foi repetida na execução E-25 | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
-| **Metas da especificação:** linhas e branches da revisão avaliada (a registrar no PR B) (metas 80% e 70%), bugs, vulnerabilidades, issues abertas e Quality Gate do SonarCloud (a registrar no PR B); 100% das linhas críticas da RTM com teste e execução verde (execução E-24, mantida) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
-| CI na revisão avaliada: back end, front e E2E (a registrar no PR B) | Run (a registrar no PR B) |
+| **Metas da especificação atingidas:** linhas 97,84% (meta 80%) e branches 87,21% (meta 70%) na E-27, 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud com Quality Gate OK, 100% das linhas críticas da RTM com teste e execução verde (execução E-24, mantida) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
+| CI verde na `main` no commit `b5e9bbd` (E-27): back end 670 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `41238067466` |
 | **27 defeitos** registrados: 26 fechados e 1 mitigado (BUG-017), nenhum reaberto, nenhum aberto de severidade crítica ou alta | [defeitos/README.md](defeitos/README.md) |
 
 **As ressalvas (detalhe e riscos aceitos em [decisao-qualidade.md](decisao-qualidade.md)):**
@@ -46,30 +46,30 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 | Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
-| **80%** de cobertura de linhas | (a registrar no PR B) | (a registrar no PR B) | JaCoCo da execução E-27 |
-| **70%** de cobertura de branches | (a registrar no PR B); a cobertura de branches varia entre execuções de código idêntico (de 519 a 523 de 602 antes da rc4, [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 9) | (a registrar no PR B) | JaCoCo da execução E-27 |
-| **0** bugs ou vulnerabilidades críticos | (a registrar no PR B) | (a registrar no PR B) | SonarCloud, análise da execução E-27 |
+| **80%** de cobertura de linhas | **97,84%** (1767 de 1806) | **Atingida** | JaCoCo, run `41238067466` (E-27) |
+| **70%** de cobertura de branches | **87,21%** (525 de 602) na E-27; a cobertura de branches varia entre execuções de código idêntico (de 519 a 523 de 602 antes da rc4, [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 9) | **Atingida** | JaCoCo, run `41238067466` (E-27) |
+| **0** bugs ou vulnerabilidades críticos | **0 bugs, 0 vulnerabilidades**, 0 issues abertas (CRITICAL e BLOCKER inclusive); Quality Gate **OK** | **Atingida** | SonarCloud, análise do commit `b5e9bbd` (E-27, consulta de 31/10/2026) |
 | **100%** dos requisitos críticos na RTM | **22 de 22** linhas críticas (12 RF, 8 RN, 2 RNF) com CT existente, teste identificável (Java) ou arquivo em tabela (front), asserção e execução verde no E-24 | **Atingida**, com o limite abaixo | [auditoria-rtm.md](testes/auditoria-rtm.md), seções 8 e 10; [execucao-e24.md](testes/execucao-e24.md) |
 
 **Limites da quarta meta:** (a) "100% na RTM" foi interpretado como presença, status e execução verde; (b) a relevância de cada CT em cada linha de RN foi julgada à mão, por título ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 10.1); (c) os CT de front não trazem `CT-nnn` dentro do teste, e a tabela CT-arquivo prova o arquivo, não o trecho coberto (BUG-024, decisão F7-05). A especificação avisa que cobertura alta, sozinha, não garante qualidade; os experimentos "apague a regra" estão no bloco 4.
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-27 ((a registrar no PR B)). Históricas: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md), e E-26 (run `40790098761`): [execucao-e26.md](testes/execucao-e26.md).
+Execução de referência: E-27, run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466) (commit `b5e9bbd`), com o detalhe por classe em [execucao-e27.md](testes/execucao-e27.md). **0 falhas em todos os níveis.** Históricas: E-25 (run `40373624577`, [execucao-e25.md](testes/execucao-e25.md)) e E-26 (run `40790098761`, [execucao-e26.md](testes/execucao-e26.md)).
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
-| Unidade e arquitetura (Surefire) | (a registrar no PR B) | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-27 |
-| Integração com banco real (Failsafe, Testcontainers) | (a registrar no PR B) | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT`, `AgendamentoDeNotificacoesIT`, `AgendamentoDeSemDecisaoIT`, `AgendamentoDesligadoIT` | E-27 |
-| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | (a registrar no PR B) | classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-27 |
-| BDD (Cucumber, Failsafe) | (a registrar no PR B) | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-27 |
-| **Back end, total** | (a registrar no PR B) | soma dos níveis acima | E-27 |
-| Front end (Vitest e Testing Library) | (a registrar no PR B) | `frontend/src` | E-27 |
-| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | (a registrar no PR B) | `frontend/e2e/jornadas.spec.ts` | E-27 |
+| Unidade e arquitetura (Surefire) | **231** | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-27 |
+| Integração com banco real (Failsafe, Testcontainers) | **14** | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT`, `AgendamentoDeNotificacoesIT`, `AgendamentoDeSemDecisaoIT`, `AgendamentoDesligadoIT` | E-27 |
+| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | **410** | 30 classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-27 |
+| BDD (Cucumber, Failsafe) | **15** | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-27 |
+| **Back end, total** | **670** | 231 + 439 | E-27 |
+| Front end (Vitest e Testing Library) | **910**, em 56 arquivos | `frontend/src` | E-27 |
+| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | **5** | `frontend/e2e/jornadas.spec.ts` | E-27 |
 
 **Ambiente realista (fato):** o banco é PostgreSQL 17 em Testcontainers; a notificação usa WireMock (`NotificacaoApiIT`: 9 testes; `NotificacaoTempoLimiteApiIT`: 1). Mocks ficam nos testes de unidade isolados.
 
-**TDD e BDD (fato):** as contagens de commits `test(red)`, `feat(green)` ou `fix(green)` e `refactor` da `main` na revisão avaliada são (a registrar no PR B) (`git log`). As contagens de commits e de pull requests mesclados estão em [checklist.md](entrega/checklist.md), medidas no commit avaliado. O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
+**TDD e BDD (fato):** o histórico da `main` no commit `b5e9bbd` tem **99** commits cujo assunto começa com `test(red)`, **99** com `feat(green)` ou `fix(green)` e **12** com `refactor` (`git log`, 31/10/2026); em 46 dos 99 commits `test(red)` o commit também traz esqueletos de produção (ver [evidencia-tdd.md](testes/evidencia-tdd.md)). As contagens de commits e de pull requests mesclados estão em [checklist.md](entrega/checklist.md), medidas no commit avaliado. O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
 
 **Os testes protegem a regra? Experimentos "apague a regra" (24/10/2026, worktree descartável, nada na `main`):** RN-01 (`PeriodoTest`: 2 falhas por asserção; na API o `400` virou `500`), RN-03 (`ConcorrenciaApiIT`: 6 falhas por asserção) e RN-06 (só o caso do Administrador ficou vermelho; isso revelou o BUG-026, corrigido com um teste novo que falha por asserção sem o portão de perfil: `Status expected:<403> but was:<200>`) ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 6; [defeitos/README.md](defeitos/README.md), BUG-026). **Mutação (Fase 4, 17/10/2026, só `model`):** 78 mutantes, 60 mortos, 0 sobreviventes entre os cobertos, pontuação de 77% ([mutacao.md](testes/mutacao.md)).
 

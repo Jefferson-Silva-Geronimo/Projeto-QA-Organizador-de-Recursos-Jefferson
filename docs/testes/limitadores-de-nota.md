@@ -132,6 +132,40 @@ O JaCoCo local do `verify` deu linhas 1753 de 1805 e branches 523 de 602 (SHA-25
 
 Na auditoria de 30/10/2026, o `docker compose up -d postgres` chamado de dentro do Git Bash voltou a falhar com `error getting credentials - err: exec: "docker-credential-desktop": executable file not found in %PATH%` ao baixar a imagem fixada por digest, e passou quando o comando Docker foi rodado pelo PowerShell (mesma falha de ambiente das seções 2.5 e 2.6). Em 31/10/2026, no clone de verificação, o mesmo comando passou no Git Bash **sem erro porque a imagem do PostgreSQL já estava no cache local**; portanto o erro **não foi reproduzido** e esta seção não registra nova verificação do contorno. O README mantém a frase condicional: se o erro ocorrer, rode o comando Docker pelo PowerShell.
 
+### 2.9 Rodada 6: execução E-27, commit `b5e9bbd`, 31/10/2026: PASSOU
+
+**Método:** o da seção 2.6: clone do repositório público numa pasta temporária fora do projeto, `git checkout --detach b5e9bbd`, as seções "Como subir" e "Como testar" do README, `.env` gerado na hora com valores fictícios (senhas aleatórias, não impressas), projeto Compose exclusivo `rc4`. O tempo é acumulado desde o início do script e a máquina estava mais lenta que nas rodadas anteriores: o banco levou 262 s para ficar saudável (a inicialização do PostgreSQL em volume novo no Docker Desktop foi a parte lenta).
+
+| Passo | Resultado | Tempo acumulado |
+| --- | --- | --- |
+| Clone no commit `b5e9bbd` e `.env` | feito; `git rev-parse HEAD` = `b5e9bbd5f68ba01c0dfbb40e16e8a552848348ac` | 30 s |
+| `docker compose up -d postgres` | banco saudável (o erro de credencial do Docker não ocorreu, imagem em cache; ver a seção 2.8) | 262 s |
+| `./mvnw spring-boot:run` e `GET /actuator/health` | HTTP 200, `{"status":"UP"}` | 337 s |
+| Login do Administrador e `GET /api/auth/eu` | HTTP 200, perfil `ADMINISTRADOR` | 340 s |
+| Front end: `npm ci`, `npm run dev`, `GET http://localhost:5173/` | `npm ci` saiu com 0 (cerca de 520 s); HTTP 200; preflight de CORS devolve `Access-Control-Allow-Origin: http://localhost:5173` | 867 s |
+| `./mvnw -B verify` (aplicação e Vite encerrados antes) | **Passou:** 231 testes de unidade e arquitetura e 439 de integração e BDD, 0 falhas, "All coverage checks have been met", `BUILD SUCCESS`; JaCoCo local: linhas 1767 de 1806 e branches 525 de 602, os mesmos números da CI | **480 s** (duração do comando) |
+| `npm run gerar:api` | saída 0; `git diff --ignore-space-at-eol` do schema vazio (o `git status` acusa só o fim de linha do Windows) | 3 s |
+| `npm run lint`, `typecheck`, `test`, `build` | saída 0 nos quatro; `test`: 910 testes em 56 arquivos | 40 s, 13 s, 220 s e 13 s |
+
+**Quatro cenários dos agendadores** (variáveis de ambiente, sem alterar arquivo; banco reiniciado entre os grupos; `NOTIFICACAO_URL=http://127.0.0.1:9999/hook` e `NOTIFICACAO_TOKEN` fictício apontando para um servidor local de teste que registra o caminho, a presença do `Authorization: Bearer` e do `Idempotency-Key` e o corpo; uma reserva SOLICITADA sem decisão e outra aprovada automaticamente, com início 2 minutos depois da criação; leitura 75 s depois do início). O mesmo roteiro foi rodado antes no commit do PR 112 (`9e1cabf`), com os mesmos resultados.
+
+| Cenário | Variáveis | Reserva sem decisão | Notificações | Threads `scheduling-*` |
+| --- | --- | --- | --- | --- |
+| (a) sem `APP_JOBS_*` | nenhuma | continua SOLICITADA | `PENDENTE` com 0 tentativas; 0 chamadas ao servidor | 0 |
+| (b) só notificações | `APP_JOBS_NOTIFICACOES_HABILITADO=true`, `APP_JOBS_NOTIFICACOES_INTERVALO=PT30S` | continua SOLICITADA (o job de SEM_DECISAO não existe) | `ENVIADA` em 1 tentativa; 1 chamada, com `Authorization: Bearer`, `Idempotency-Key` e corpo `evento`, `reservaId`, `destinatarioId`, `instante`, `chaveIdempotencia` | 1 |
+| (c) só SEM_DECISAO | `APP_JOBS_SEM_DECISAO_HABILITADO=true`, `APP_JOBS_SEM_DECISAO_INTERVALO=PT1M` | CANCELADA com motivo `SEM_DECISAO`; a aprovada fica intacta | `PENDENTE` (2), 0 chamadas | 1 |
+| (d) os dois | os quatro acima | CANCELADA com motivo `SEM_DECISAO` | `ENVIADA` (2): `RESERVA_APROVADA` e `RESERVA_CANCELADA` | 1 |
+
+O cenário (b) é o que o BUG-028 impedia: antes da correção, com só o agendador de notificações ligado, as notificações ficavam com 0 tentativas e nenhuma thread `scheduling-*` existia.
+
+**Configuração opcional (D1 e D3), no commit do PR 112:** o comando SQL do README foi executado como está escrito num banco temporário e o efeito foi observado ao vivo. Reenvio (D3): com `tentativas_reenvio = 3` e `intervalo_reenvio_inicial = 30 s`, o servidor de teste parado deixou a notificação `PENDENTE` com 2 tentativas e próxima tentativa agendada (backoff); religado, a notificação foi a `ENVIADA` na 3ª tentativa. Tolerância (D1): sem valor, `nao-comparecimento` respondeu 409 `TOLERANCIA_NAO_CONFIGURADA`; com `tolerancia_nao_comparecimento = 1 minuto`, respondeu 409 `TOLERANCIA_NAO_ENCERRADA` 20 s depois do início e 200 (`NAO_COMPARECEU`) 70 s depois. Não há rota da API para esses valores.
+
+**Calibração curta do JMeter** (5 usuários, rampa de 5 s, 45 s, banco e aplicação à parte em portas locais, plano `perf/reservas.jmx` sem alterar o arquivo; resultado fora do repositório): 190 amostras, **0 erros reais e 0 respostas 500**, 55 criações (30 aceitas, 25 recusadas com 409), nenhum par (recurso, intervalo) com mais de uma ocupação ativa; p95 de 68 ms na consulta e 221 ms na criação nessa carga pequena. **Não substitui** `resultado-01.md` e `resultado-02.md` e não é comparável com as rodadas de 50 usuários.
+
+**Rotas do front no navegador real:** não foram repetidas nesta rodada; a comparação de `telas.ts` com [navegacao-telas.md](../prd/navegacao-telas.md) é estática e os testes de rotas (`Rotas.test.tsx`) estão entre os 910 do front.
+
+**O que isto é e o que não é.** Uma só máquina e uma só conferência limpa; outros computadores e sistemas operacionais não foram provados. Os quatro cenários rodaram uma vez em cada commit, sem repetição para medir variação.
+
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
 ### 3.1 Proteção da `main` (lida da API em 24/10/2026)
