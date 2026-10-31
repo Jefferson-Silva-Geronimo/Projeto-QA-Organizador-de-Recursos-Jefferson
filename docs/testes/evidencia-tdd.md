@@ -193,6 +193,16 @@ escopo da regra do token em `regra-do-token.test.ts`.
 | Bloqueios (T08), levantar com motivo: achado do navegador real, o servidor exige o motivo e o contrato o marca como opcional (12 testes de levantar substituem os 6 anteriores, declarado no commit) | `5e6c7d3` | `bfefdfb` |
 | Histórico de auditoria traz `atorNome`, só o nome e nunca o e-mail, e o usuário desativado mantém o nome (F6-17) | `cb31a0c` | `1c7fc09` (contrato `5b861e3`) |
 
+## Fase 7: agendamento do despacho de notificações (BUG-028)
+
+Fatia de correção de defeito, em ciclo vermelho, verde e refatoração, com a issue 111.
+
+| Fatia | Red | Green | Refactor |
+| --- | --- | --- | --- |
+| O despacho de notificações é agendado com só `app.jobs.notificacoes.*` ligado (CT-168); o job de SEM_DECISAO isolado e o padrão desligado ficam guardados (CT-169 e CT-170) | `1aa8939` | `95c19c4` | `66f1c23` (renumeração dos CT: 166 e 167 já existiam) |
+
+O vermelho é de asserção: `Expecting ArrayList: [] to contain: ["AgendadorDeNotificacoes#despachar"]`. Os casos CT-169 e CT-170 nasceram verdes e não contam como vermelho.
+
 ## Pull requests mesclados por fase
 
 Registro de quais pull requests entraram em cada fase e com que merge commit. Todos em merge commit, sem rebase. Origem: `gh pr list --state merged` em 22/10/2026 (Fase 6) e os registros das fases 4 e 5.

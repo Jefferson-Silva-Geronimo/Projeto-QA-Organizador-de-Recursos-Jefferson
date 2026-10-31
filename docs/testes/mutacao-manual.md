@@ -151,3 +151,13 @@ Experimentos de 26/10/2026 sobre a `main` em `9624160` (depois dos PRs 81 e 82 d
 | **Total** | **22 de 22 (100%)** | 0 de 22 |
 
 **Nenhuma linha é chamada de "coberta" sem execução:** as 22 têm o experimento registrado acima, com a classe, o resultado e o commit. O RN-06 (4) tem a ressalva de que o resultado original deixou um mutante vivo para o Solicitante, corrigido pelo BUG-026 (PR 77) com teste novo visto vermelho; o experimento não foi repetido depois da correção.
+
+## 11. RF-11 e RN-28: agendamento do despacho de notificações (BUG-028)
+
+Experimento de 31/10/2026 sobre o commit `66f1c23` (correção do BUG-028), no mesmo método da abertura deste documento, em `git worktree` descartável (removido depois). RF-11 não é requisito crítico da RTM; o experimento prova que o teste de regressão do defeito falha quando a correção é desfeita.
+
+| Experimento | Quebra | Classes rodadas | Resultado |
+| --- | --- | --- | --- |
+| 23 (RF-11, RN-28, RN-25) | Apagar `AgendamentoConfig.java` (volta a não haver `@EnableScheduling` em nenhuma classe incondicional; a anotação já tinha saído de `AgendadorDeTransicoes`) | `AgendamentoDeNotificacoesIT`, `AgendamentoDeSemDecisaoIT`, `AgendamentoDesligadoIT` (5 testes) | **2 falhas por asserção** (lista de tarefas vazia): `AgendamentoDeNotificacoesIT.ct168_soComOAgendadorDeNotificacoesLigadoODespachoFicaAgendado` e `AgendamentoDeSemDecisaoIT.ct169_soComOJobDeSemDecisaoLigadoEleFicaAgendado`; os 3 demais passam |
+
+Antes da correção (sem o experimento), só o `ct168_soComOAgendadorDeNotificacoesLigadoODespachoFicaAgendado` ficava vermelho: o job de SEM_DECISAO ainda levava a anotação consigo. O experimento 23 mostra também que o `ct169` pega a regressão inversa.

@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
@@ -14,7 +13,6 @@ import org.springframework.scheduling.annotation.Scheduled;
  * é configuração, sem origem na especificação.
  */
 @Configuration
-@EnableScheduling
 @ConditionalOnProperty(name = "app.jobs.sem-decisao.habilitado", havingValue = "true")
 class AgendadorDeTransicoes {
 
