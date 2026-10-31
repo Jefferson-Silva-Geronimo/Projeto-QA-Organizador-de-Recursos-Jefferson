@@ -24,7 +24,7 @@ Este arquivo vale para os agentes do projeto: Claude Code (que o lê pela import
 9. **Commits com caminho explícito.** `git add <arquivo>`, um a um; nunca `git add .` nem `git add -A`. Antes de commitar, `git diff --cached --name-only` deve confirmar que `.env` e `docs/especificacao.md` não estão no índice. `mvnw.cmd` nunca é commitado (só muda o fim de linha no Windows).
 10. **Não decidir lacunas.** Lacuna, ambiguidade ou contradição numa decisão registrada vai ao usuário, com alternativas e recomendação. O texto de uma decisão registrada não é alterado, e nenhum valor sem origem é preenchido.
 11. **Documentos em português do Brasil, com acentuação completa**, termos canônicos da convenção de nomes de `docs/prd/regras-negocio.md` e links relativos válidos. Sem linguagem de sessão nem de agente em primeira pessoa: relatórios de sessão e notas de trabalho ficam fora do repositório.
-12. **Publicar só com autorização.** `git push`, `gh pr create` e `gh pr merge` são do agente `@devops` (`AIOX_ACTIVE_AGENT=devops`, em comando isolado). O merge só acontece com os cinco checks verdes (`test`, `frontend`, `e2e`, `segredos` e SonarCloud), em merge commit. Tag de release só com autorização expressa do usuário.
+12. **Publicar só com autorização.** `git push`, `gh pr create` e `gh pr merge` são do agente `@devops` (`AIOX_ACTIVE_AGENT=devops`, em comando isolado). O merge só acontece com os quatro checks obrigatórios verdes (`test`, `frontend`, `e2e` e `segredos`), em merge commit; o Quality Gate do SonarCloud roda dentro do job `test` (`-Dsonar.qualitygate.wait=true`) e reprova esse job. Tag de release só com autorização expressa do usuário.
 
 ## Convenção de identificadores
 

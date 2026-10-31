@@ -18,7 +18,7 @@ As quatro condições da seção "Avaliação" da especificação, na ordem em q
 
 | Limitador | Situação | Evidência | Prova | Risco se ficar de fora |
 | --- | --- | --- | --- | --- |
-| Aplicação que não executa | **feito** | README "Como subir"; clone limpo da `v1.0.0-rc1` subiu (528 s do clone ao front; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5); `./mvnw -B verify` com 5 execuções consecutivas verdes em clone novo (F7-19) | Defeito real achado e corrigido (BUG-019: o README original não subia) | Nota limitada; o avaliador não consegue rodar |
+| Aplicação que não executa | **feito** | README "Como subir"; o clone limpo da primeira prova subiu (528 s do clone ao front; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.5); `./mvnw -B verify` com 5 execuções consecutivas verdes em clone novo (F7-19) | Defeito real achado e corrigido (BUG-019: o README original não subia) | Nota limitada; o avaliador não consegue rodar |
 | Pipeline ausente | **feito** | [ci.yml](../.github/workflows/ci.yml) com `test`, `frontend`, `e2e` e `segredos`, mais SonarCloud; `main` protegida e válida para administrador; vermelho intencional que barrou o merge (PR descartável 59) | Vermelho intencional visto | Nota limitada; sem prova de qualidade contínua |
 | Falha de autorização | **feito** | `AutorizacaoApiIT.ct117_matrizPerfilXOperacao` (141 casos, a matriz [matriz-autorizacao.md](testes/matriz-autorizacao.md) confere com a API); `AutenticacaoApiIT` e `UsuariosApiIT` para sessão | Experimentos 11 e 12 de [mutacao-manual.md](testes/mutacao-manual.md): a matriz fica vermelha | Nota limitada; perfil acessa o que não deve |
 | Possibilidade de dupla reserva | **feito** | `ConcorrenciaApiIT.ct060` a `ct065` (20 solicitações simultâneas, repetição, vários recursos em ordens opostas), `EsquemaIT.ct007` (constraint de exclusão) | Experimento 2: sem a constraint, 7 de 7 testes de `ConcorrenciaApiIT` falham | Nota limitada; reserva duplicada |
@@ -61,7 +61,7 @@ As quatro condições da seção "Avaliação" da especificação, na ordem em q
 
 ## 5. Pendências, em ordem
 
-1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo no commit de cada release candidate**: na `v1.0.0-rc1` foi feita; na `v1.0.0-rc2` foi feita (seção 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md)); na `v1.0.0-rc3` será refeita depois da tag, que só sai com autorização expressa.
+1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo na revisão avaliada**: as provas anteriores estão nas seções 2.5 e 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md), e a da revisão da `v1.0.0-rc4` está na seção de clone limpo da execução E-27 do mesmo arquivo; a tag só sai com autorização expressa.
 2. **RF-13 parcial:** responsividade provada por uma jornada E2E em Chromium; as demais telas em celular e outros navegadores só por roteiro manual. Pendência: ampliar o E2E ou aceitar a limitação.
 4. **RNF-08b não atendido** (p95 de criação de 568 a 886 ms contra 300 ms), hipótese de 300 ms sem validação ([resultado-02.md](performance/resultado-02.md)).
 5. **R-25 aberto** (`NotificacaoApiIT.int01ECt103`, causa desconhecida; RF-11).

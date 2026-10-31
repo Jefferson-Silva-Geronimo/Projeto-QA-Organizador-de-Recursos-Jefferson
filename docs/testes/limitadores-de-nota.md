@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida no commit da tag `v1.0.0-rc1` (`276224b`) na seção 2.5, no da tag `v1.0.0-rc2` (`d2b6af1`) na seção 2.6 e no da tag `v1.0.0-rc3` (`005c7af`) na seção 2.7.
+Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.8.
 
 ### 2.1 Método
 
@@ -236,6 +236,6 @@ O ciclo de TDD que criou o teste e a constraint está no histórico: `9d4d6d9` (
 | Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados só em Git Bash no Windows; Linux, macOS e PowerShell **não foram verificados** |
 | Login pela tela do front | Lacuna | O front foi verificado até o Vite no ar e o CORS; o login pela interface no navegador **não foi refeito** nesta prova (os roteiros em navegador real da Fase 6 e o E2E cobrem a tela) |
 | Valores do `.env` | Suposição | Gerados por script a partir das dicas do `.env.example`; uma pessoa poderia escolher outros valores válidos. Impacto: se um valor válido for recusado, o README fica incompleto |
-| README restante | Pendência | Roadmap, proteção da `main` e outros trechos seguem desatualizados; ficam para o item 2.7 |
-| Prova a repetir | Pendência | O clone limpo (seção 2) será refeito no commit da tag `v1.0.0-rc1` |
+| README restante | Resolvida | Roadmap, proteção da `main` e outros trechos estavam desatualizados em 24/10/2026; foram atualizados nas fases seguintes |
+| Prova a repetir | Resolvida | O clone limpo foi refeito nas seções 2.5 a 2.8 |
 | Quebra sem a constraint | Limite | Feita uma vez, em uma máquina; sem repetição para medir variação. A falha é determinística nos seis testes de reserva (asserção `expected: 1L`) |

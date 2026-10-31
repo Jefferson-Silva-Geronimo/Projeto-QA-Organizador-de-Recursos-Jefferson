@@ -203,6 +203,8 @@ Riscos iniciais, identificados a partir dos requisitos e das regras. Eles alimen
 | R-22 | Job de SEM_DECISAO em mais de uma instância sem trava eficaz gera evento duplicado | RF-07, RF-16 | RN-25 | Execução repetida e simultânea com relógio controlado |
 | R-23 | Auditoria alterada por papel com privilégio | RF-10 | RN-08, RN-29 | Tentativa de UPDATE e DELETE com cada papel |
 | R-24 | Medidas hipotéticas tornam cenários sem critério de aceite fechado | RF-06 | RN-03 | Validação das hipóteses com o professor |
+| R-25 | Teste de integração intermitente da notificação (`NotificacaoApiIT.int01ECt103`), com causa não encontrada | RF-11 | RN-28 | Risco aceito (decisões-equipe, R-25); monitoramento em [ocorrencias-a-vigiar.md](testes/ocorrencias-a-vigiar.md) |
+| R-26 | Limite de leitura de 10 s só nos testes de contrato da notificação (BUG-017), sem esconder falha de tempo | RF-11 | RN-28 | Mitigação (decisões-equipe, R-26): `int04` mantém o limite de produção |
 
 ### 8.1 Riscos de projeto
 
@@ -253,10 +255,10 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 
 | Pendência | Destino |
 | --- | --- |
-| Requisitos não funcionais e metas numéricas de desempenho | Fase 2 |
-| Cenários de qualidade (CEN-xx) e ADRs | Fase 2 |
-| Ferramentas de API em caixa-preta e de ponta a ponta | Fase 2 e Fase 3 |
-| Política de dados e de limpeza dos testes | Fase 3 |
+| ~~Requisitos não funcionais e metas numéricas de desempenho~~ | Feito: [rnf.md](performance/rnf.md) |
+| ~~Cenários de qualidade (CEN-xx) e ADRs~~ | Feito: [arquitetura.md](arquitetura.md) e [docs/adr](adr/ADR-001-monolito-modular-hexagonal.md) |
+| ~~Ferramentas de API em caixa-preta e de ponta a ponta~~ | Feito: testes de API de integração (`*ApiIT`, Testcontainers e WireMock no `pom.xml`) e E2E com Playwright (`frontend/package.json`) |
+| ~~Política de dados e de limpeza dos testes~~ | Feito: banco real por Testcontainers e `limparBanco()` entre testes ([ADR-009](adr/ADR-009-flyway-e-postgresql-real-nos-testes.md)) |
 | Valores de D1, D3, D4 e D17 e decisão de D9 | Equipe (decididos em 24/10/2026, F7-16) |
 | Validação de A1 a A8 | Não feita: decididas pela equipe em 24/10/2026 (F7-16) |
 | ~~Escolha da funcionalidade de TDD ou BDD~~ | Feito na Fase 4 |

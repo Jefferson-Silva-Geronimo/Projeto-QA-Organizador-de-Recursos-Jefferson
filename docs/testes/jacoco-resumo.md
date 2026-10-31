@@ -1,13 +1,13 @@
-# Resumo do JaCoCo no commit da tag `v1.0.0-rc2`
+# Resumo do JaCoCo
 
-Extração do relatório do JaCoCo do run da CI no commit da tag, feita para que os totais de cobertura continuem comprovados depois que o artefato expirar. Fonte das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Metas mensuráveis" (80% de linhas e 70% de branches). Regra do projeto: o gate do `pom.xml` vale para o conjunto (`BUNDLE`), não por pacote.
+Extração do relatório do JaCoCo do run da CI da execução E-25, feita para que os totais de cobertura continuem comprovados depois que o artefato expirar. Fonte das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Metas mensuráveis" (80% de linhas e 70% de branches). Regra do projeto: o gate do `pom.xml` vale para o conjunto (`BUNDLE`), não por pacote.
 
 ## 1. Origem da extração
 
 | Item | Valor |
 | --- | --- |
 | Run da CI | [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (push na `main`), jobs `test`, `frontend`, `e2e` e `segredos` verdes |
-| Commit | `d2b6af1` (tag `v1.0.0-rc2`) |
+| Execução | E-25 |
 | Artefato | `relatorio-jacoco`; o GitHub o retém por 30 dias e ele **expira em 25/11/2026** |
 | Como foi extraído | `gh run download 40373624577 -n relatorio-jacoco`, para um diretório temporário fora do repositório (apagado depois); os totais abaixo são os contadores do nível do relatório (elemento `report`, depois do último `package`) do `jacoco.xml`, e a coluna "Classes" é o contador `CLASS` de cada pacote |
 | Data da extração | 28/10/2026 |
@@ -46,7 +46,7 @@ Os pacotes com menor cobertura de branches são `br.senac.recursos.integration` 
 
 ## 4. Nota sobre o SonarCloud: por que a cobertura exibida é 94,5%
 
-Leitura pela API pública do SonarCloud (consultas de leitura, sem alteração), projeto `Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson`, branch `main`, análise de 26/10/2026 às 18:04 UTC (`revision` `d2b6af1`) conferida pelo histórico de medidas; a análise mais recente (`9d7f327`, 26/10/2026 às 19:40 UTC, depois só de documentação) mostra os mesmos valores.
+Leitura pela API pública do SonarCloud (consultas de leitura, sem alteração), projeto `Jefferson-Silva-Geronimo_Projeto-QA-Organizador-de-Recursos-Jefferson`, branch `main`, análise de 26/10/2026 às 18:04 UTC (execução E-25) conferida pelo histórico de medidas; a análise mais recente (`9d7f327`, 26/10/2026 às 19:40 UTC, depois só de documentação) mostra os mesmos valores.
 
 | Medida do SonarCloud | Valor |
 | --- | --- |
@@ -58,11 +58,11 @@ Leitura pela API pública do SonarCloud (consultas de leitura, sem alteração),
 
 A cobertura geral do SonarCloud **combina linhas e condições (branches)** numa só razão: (linhas cobertas + condições cobertas) / (linhas a cobrir + condições a cobrir) = (1751 + 523) / (1805 + 602) = 2274 / 2407 = 94,47%, que o painel arredonda para 94,5%. O JaCoCo mantém as duas medidas **separadas** (97,01% de linhas, 1751 de 1805; 86,88% de branches, 523 de 602) e o gate do projeto usa cada uma com a sua meta (80% e 70%). Por isso 94,5% e 97,01% / 86,88% descrevem o mesmo código, sem divergência.
 
-## 5. Nota sobre a `v1.0.0-rc3`
+## 5. Nota sobre a execução E-26
 
-A `v1.0.0-rc3` (`005c7af`) tem **código idêntico** ao da rc2; o artefato `relatorio-jacoco` do run da CI dela ([`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) foi lido em 28/10/2026 e **expira em 27/11/2026**, depois do da rc2 (25/11/2026). Totais do `jacoco.xml` do run da rc3 (SHA-256 `fba77529deee141395e373e43bd51034a6ffba86ed9b7719f602f94e67660639`):
+A execução E-26 tem **código idêntico** ao da E-25; o artefato `relatorio-jacoco` do run da CI dela ([`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) foi lido em 28/10/2026 e **expira em 27/11/2026**, depois do da E-25 (25/11/2026). Totais do `jacoco.xml` do run da E-26 (SHA-256 `fba77529deee141395e373e43bd51034a6ffba86ed9b7719f602f94e67660639`):
 
-| Contador | Cobertos | Total | Cobertura | Na rc2 |
+| Contador | Cobertos | Total | Cobertura | Na E-25 |
 | --- | --- | --- | --- | --- |
 | Linhas | 1751 | 1805 | 97,01% | 1751 |
 | Branches | 521 | 602 | 86,54% | 523 |
@@ -70,5 +70,5 @@ A `v1.0.0-rc3` (`005c7af`) tem **código idêntico** ao da rc2; o artefato `rela
 | Métodos | 455 | 464 | 98,06% | 455 |
 | Classes | 125 | 127 | 98,43% | 125 |
 
-A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação está em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8; o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da rc3 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
+A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação está em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8; o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da E-26 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
 
