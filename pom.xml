@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <springdoc.version>2.8.17</springdoc.version>
         <archunit.version>1.5.1</archunit.version>
-        <jacoco.version>0.8.15</jacoco.version>
+        <jacoco.version>0.8.16</jacoco.version>
         <wiremock.version>3.13.2</wiremock.version>
         <cucumber.version>7.23.0</cucumber.version><!-- 7.24+ exige JUnit Platform 1.13; o Spring Boot 3.5.16 gerencia 1.12 -->
 
