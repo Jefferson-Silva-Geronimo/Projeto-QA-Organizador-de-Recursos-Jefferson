@@ -4,14 +4,14 @@ Onde achar cada prova do produto **Organização de Recursos**. Fonte da exigên
 
 ## 0. Pacote de entrega
 
-Cada linha diz o que provar e onde está. A revisão avaliada é a tag **`v1.0.0-rc4`**; o commit se obtém com `git rev-list -n 1 v1.0.0-rc4`, e a [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) traz o hash, o run da CI e os números dessa revisão. Ela corrige o BUG-028 em relação às execuções E-25 e E-26, que ficam como histórico. Os números da revisão avaliada são os da execução E-27 e estão marcados (a registrar no PR B). Os documentos de evidência só mudam documentação.
+Cada linha diz o que provar e onde está. A revisão avaliada é a tag **`v1.0.0-rc4`**; o commit se obtém com `git rev-list -n 1 v1.0.0-rc4`, e a [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) traz o hash, o run da CI e os números dessa revisão. Ela corrige o BUG-028 em relação às execuções E-25 e E-26, que ficam como histórico. Os números da revisão avaliada são os da execução E-27, medida no commit `b5e9bbd` (só `.md` depois dele: `git diff --stat b5e9bbd v1.0.0-rc4`). Os documentos de evidência só mudam documentação.
 
 | Evidência | Onde |
 | --- | --- |
-| Execução da CI na E-27 (revisão avaliada) | Run, contagens por nível e `test`, `frontend`, `e2e` e `segredos`: (a registrar no PR B) |
-| Quality Gate do SonarCloud na E-27 | (a registrar no PR B) |
-| Relatório do JaCoCo da E-27 | Linhas, branches e artefato `relatorio-jacoco`: (a registrar no PR B) |
-| Clone limpo da execução E-27 | Aplicação no ar, `./mvnw -B verify`, front e os quatro cenários dos agendadores: (a registrar no PR B) |
+| Execução da CI na E-27 (revisão avaliada) | Run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466), verde (`test`, `frontend`, `e2e` e `segredos`); 670 testes no back end (231 + 439), 910 no front e 5 E2E; resumo por classe em [execucao-e27.md](../testes/execucao-e27.md) |
+| Quality Gate do SonarCloud na E-27 | **OK** (0 bugs, 0 vulnerabilidades, 0 code smells, 0 issues abertas), análise com `revision` `b5e9bbd`; leitura em [execucao-e27.md](../testes/execucao-e27.md) |
+| Relatório do JaCoCo da E-27 | Artefato `relatorio-jacoco` do run `41238067466` (**expira em 30/11/2026**): linhas 97,84% (1767 de 1806) e branches 87,21% (525 de 602), SHA-256 do `jacoco.xml` `864d4fd32389c1f96ed1770bf925a3842ebed36ef0e185239ab2c3608136af73`; resumo em [jacoco-resumo.md](../testes/jacoco-resumo.md), seção 6 |
+| Clone limpo da execução E-27 | Banco saudável em 262 s, aplicação no ar em 337 s, login em 340 s e front no ar em 867 s desde o clone; `./mvnw -B verify` verde em 480 s (231 + 439 testes); front: `gerar:api`, `lint`, `typecheck`, `test` (910) e `build` com saída 0; e os quatro cenários dos agendadores: [limitadores-de-nota.md](../testes/limitadores-de-nota.md), seção 2.9 |
 | Release v1.0.0-rc4 | Hash do commit da tag, run da CI da tag e números: [Release](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4); comando `git rev-list -n 1 v1.0.0-rc4` |
 | Execução da CI na E-26 (histórico) | Run [`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761), verde (`test`, `frontend`, `e2e` e `segredos`); 665 testes no back end, 910 no front e 5 E2E; resumo por classe em [execucao-e26.md](../testes/execucao-e26.md) |
 | Quality Gate do SonarCloud na E-26 (histórico) | **OK** (0 bugs, 0 vulnerabilidades, 0 code smells, 0 issues abertas), análise da execução E-26; leitura em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md), seção 8 |

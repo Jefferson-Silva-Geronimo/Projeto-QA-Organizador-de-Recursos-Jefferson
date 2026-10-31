@@ -11,7 +11,7 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 | A que se refere | Release candidate **`v1.0.0-rc4`**, definitivo, a tag avaliada, que corrige o BUG-028 (código e testes) em relação às execuções E-25 e E-26 e traz a documentação verificada; a configuração padrão não muda. O commit se obtém com `git rev-list -n 1 v1.0.0-rc4`; a [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) traz o hash, o run da CI e os números dessa revisão |
 | Execução da CI na E-25 | Run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577): `test`, `frontend`, `e2e` e `segredos` verdes (E-25, [execucao-e25.md](testes/execucao-e25.md)) |
 | Quality Gate do SonarCloud na E-25 | **OK**: 0 bugs, 0 vulnerabilidades, 0 code smells |
-| Números da `v1.0.0-rc4` | (a registrar no PR B), da execução E-27; as execuções anteriores E-25 e E-26 (código sem a correção do BUG-028) estão em [execucao-e25.md](testes/execucao-e25.md) e [execucao-e26.md](testes/execucao-e26.md) |
+| Números da `v1.0.0-rc4` | Execução E-27 ([execucao-e27.md](testes/execucao-e27.md)), run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466) no commit `b5e9bbd` (só `.md` depois dele): 670 testes no back end (231 + 439), 910 no front, 5 E2E, linhas 97,84% e branches 87,21% (525 de 602); Quality Gate do SonarCloud OK. As execuções anteriores E-25 e E-26 (código sem a correção do BUG-028) estão em [execucao-e25.md](testes/execucao-e25.md) e [execucao-e26.md](testes/execucao-e26.md) |
 | Alcance | **Avaliação da disciplina.** Não é "pronto para produção": os testes e as medições foram feitos em ambiente local e na CI, em um computador de desenvolvimento, sem ambiente de implantação, sem TLS, sem HSTS, sem CSP e sem limitação de taxa ([limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md)) |
 
 **Por que "liberar com ressalvas" e não "liberar" nem "não liberar".** Os quatro limitadores de nota e as quatro metas mensuráveis têm evidência, mas há metas não atingidas e riscos aceitos que um avaliador precisa ver (seção 4). "Liberar" sem ressalvas exigiria o professor validar a hipótese de 300 ms ou o RNF-08b medido em outro ambiente dentro da meta.
@@ -43,8 +43,8 @@ Decisão de qualidade do projeto **Organização de Recursos** para o release ca
 
 | Meta | Valor | Resultado | Evidência |
 | --- | --- | --- | --- |
-| Cobertura de linhas, 80% | (a registrar no PR B) | Meta a cumprir | JaCoCo da execução E-27; [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
-| Cobertura de branches, 70% | (a registrar no PR B); varia entre execuções de código idêntico (de 519 a 523 de 602 antes da rc4) | Meta a cumprir | JaCoCo da execução E-27 |
+| Cobertura de linhas, 80% | **97,84%** (1767 de 1806) | Atingida | JaCoCo, run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466) (E-27); [leitura-final-cobertura.md](testes/leitura-final-cobertura.md) |
+| Cobertura de branches, 70% | **87,21%** (525 de 602) na E-27; varia entre execuções de código idêntico (de 519 a 523 de 602 antes da rc4) | Atingida | Run `41238067466` (E-27) |
 | Requisitos críticos na RTM, 100% | 22 de 22 linhas críticas com teste e execução verde; 22 de 22 com prova de que o teste falha quando a regra quebra | Atingida quanto à presença, ao status e à execução verde; a prova de mutação cobre 22 de 22 | [auditoria-rtm.md](testes/auditoria-rtm.md), seção 8; [mutacao-manual.md](testes/mutacao-manual.md), seção 10; [status-requisitos.md](status-requisitos.md) |
 | Bugs ou vulnerabilidades críticos, 0 | 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud (Quality Gate aprovado); 0 alertas do Dependabot no Maven e 0 no front; nenhum defeito aberto de severidade crítica ou alta | Atingida | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [alertas-dependabot.md](testes/alertas-dependabot.md); [defeitos/README.md](defeitos/README.md) |
 
@@ -56,7 +56,7 @@ Os 12 entregáveis da seção "Entregáveis" da especificação estão conferido
 
 ## 3. Estado dos testes
 
-Back end, front e E2E na revisão avaliada: (a registrar no PR B); 0 falhas é a condição para a tag. Históricos: [execucao-e25.md](testes/execucao-e25.md) e [execucao-e26.md](testes/execucao-e26.md). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
+Back end: 670 testes (231 de unidade e arquitetura, 439 de integração e BDD); front: 910 testes em 56 arquivos; E2E: 5 de 5; 0 falhas na CI ([execucao-e27.md](testes/execucao-e27.md), E-27). Históricos: [execucao-e25.md](testes/execucao-e25.md) e [execucao-e26.md](testes/execucao-e26.md). O `./mvnw -B verify` leva de 519 s a 1522 s na máquina de desenvolvimento, conforme a carga. Todos os números vêm de execuções da CI ou de logs citados nos documentos de origem.
 
 ## 4. Riscos aceitos
 

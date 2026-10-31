@@ -72,3 +72,30 @@ A execução E-26 tem **código idêntico** ao da E-25; o artefato `relatorio-ja
 
 A única diferença por pacote está em `br.senac.recursos.repository`: branches 64 de 72 (88,89%) contra 66 de 72 na tabela da seção 3, e instruções 2096 de 2118 contra 2100; os demais pacotes têm os mesmos números da seção 3. A causa da variação está em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8; o código é o mesmo e a meta de 70% de branches segue atendida. O SonarCloud da E-26 mostra cobertura geral de 94,4%, que é (1751 + 521) / (1805 + 602) = 94,39% ([leitura-final-cobertura.md](leitura-final-cobertura.md), seção 8).
 
+## 6. Execução E-27 (revisão avaliada)
+
+O artefato `relatorio-jacoco` do run da CI da E-27 ([`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466), push na `main` no commit `b5e9bbd`, com a correção do BUG-028) foi lido em 31/10/2026 e **expira em 30/11/2026**. SHA-256 do `jacoco.xml`: `864d4fd32389c1f96ed1770bf925a3842ebed36ef0e185239ab2c3608136af73`. Sessão de execução registrada no XML: 31/10/2026 às 20:16 UTC. O `./mvnw -B verify` do clone limpo no mesmo commit deu os mesmos totais (linhas 1767 de 1806; branches 525 de 602).
+
+| Contador | Cobertos | Total | Cobertura | Na E-26 |
+| --- | --- | --- | --- | --- |
+| Linhas | 1767 | 1806 | 97,84% | 1751 de 1805 |
+| Branches | 525 | 602 | 87,21% | 521 de 602 |
+| Instruções | 10426 | 10621 | 98,16% | 10386 de 10618 |
+| Métodos | 462 | 465 | 99,35% | 455 de 464 |
+| Classes | 128 | 128 | 100,00% | 125 de 127 |
+
+| Pacote | Classes | Linhas | Branches | Instruções | Métodos |
+| --- | --- | --- | --- | --- | --- |
+| `br.senac.recursos` | 1 | 33,33% (1 de 3) | sem | 37,50% (3 de 8) | 50,00% (1 de 2) |
+| `br.senac.recursos.config` | 13 | 96,20% (152 de 158) | 69,57% (32 de 46) | 96,43% (865 de 897) | 100,00% (38 de 38) |
+| `br.senac.recursos.controller` | 10 | 97,06% (132 de 136) | 80,56% (29 de 36) | 97,81% (848 de 867) | 98,44% (63 de 64) |
+| `br.senac.recursos.dto` | 26 | 100,00% (52 de 52) | 100,00% (4 de 4) | 100,00% (738 de 738) | 100,00% (37 de 37) |
+| `br.senac.recursos.exception` | 3 | 100,00% (58 de 58) | sem | 100,00% (361 de 361) | 100,00% (10 de 10) |
+| `br.senac.recursos.integration` | 1 | 100,00% (38 de 38) | 62,50% (10 de 16) | 97,81% (179 de 183) | 100,00% (7 de 7) |
+| `br.senac.recursos.model` | 33 | 100,00% (67 de 67) | 100,00% (14 de 14) | 100,00% (804 de 804) | 100,00% (40 de 40) |
+| `br.senac.recursos.model.regra` | 13 | 100,00% (129 de 129) | 98,25% (112 de 114) | 100,00% (659 de 659) | 100,00% (30 de 30) |
+| `br.senac.recursos.repository` | 12 | 98,91% (452 de 457) | 88,89% (64 de 72) | 98,96% (2096 de 2118) | 100,00% (105 de 105) |
+| `br.senac.recursos.security` | 2 | 100,00% (65 de 65) | 83,33% (5 de 6) | 100,00% (420 de 420) | 100,00% (17 de 17) |
+| `br.senac.recursos.service` | 14 | 96,58% (621 de 643) | 86,73% (255 de 294) | 96,83% (3453 de 3566) | 99,13% (114 de 115) |
+
+Mudanças em relação à E-26: o pacote `config` ganha a classe `AgendamentoConfig` (linhas de 137 de 157 para 152 de 158; branches de 29 de 46 para 32 de 46; o aumento coincide com os testes CT-168 a CT-170, que sobem os agendadores); `service` tem 1 linha e 1 branch a mais cobertos; `repository` tem os 64 de 72 branches da E-26. **A variação de branches entre execuções de código idêntico** (523, 521 e 519 de 602 antes da rc4) está em [leitura-final-cobertura.md](leitura-final-cobertura.md), seção 9, e em F7-26 e F7-27; o valor de 525 vale para este código e pode variar em poucas unidades em outras execuções. A meta de 70% de branches é atendida com folga. O SonarCloud da E-27 mostra cobertura geral de 95,2%, que é (1767 + 525) / (1806 + 602) = 2292 / 2408 = 95,18%.
