@@ -272,6 +272,9 @@ Testes de `frontend/src`. O nome do arquivo está na coluna de passos; o resulta
 | CT-165 | Fluxo principal em celular, 360 por 640 (E2E) | E | No viewport 360 por 640, a Solicitante busca e reserva uma sala e a encontra na lista; a página não rola na horizontal antes nem depois (`jornadas.spec.ts`) | Jornada completa utilizável em celular | RF-13, F6-07, F6-11 |
 | CT-166 | Motivo do bloqueio obrigatório no contrato | A | Ler `/v3/api-docs`: o `required` de `NovoBloqueioRequisicao` e de `LevantamentoRequisicao` (`ContratoDeRequisicoesApiIT`) | `NovoBloqueioRequisicao` exige `recursoId`, `inicio`, `fim` e `motivo`, e `LevantamentoRequisicao` exige `motivo` | RF-08, RF-14, R-15, F6-19 |
 | CT-167 | Servidor recusa sem motivo como o contrato diz | A | Criar bloqueio sem `motivo`; levantar com corpo `{}` e sem corpo (`ContratoDeRequisicoesApiIT`) | 400 `MOTIVO_OBRIGATORIO` nos três casos, nada gravado na criação e o bloqueio continua ativo | RF-08, RF-14, RN-22, D15, F6-19 |
+| CT-168 | Só o agendador de notificações ligado: o despacho fica agendado e o job de SEM_DECISAO não existe | I | Subir o contexto com `app.jobs.notificacoes.habilitado=true` e `app.jobs.notificacoes.intervalo=PT1H` e listar as tarefas agendadas (`AgendamentoDeNotificacoesIT`) | A tarefa `AgendadorDeNotificacoes#despachar` está agendada; `AgendadorDeTransicoes` não existe como bean e nenhuma tarefa dele está agendada | RF-11, RN-28, ADR-007, ADR-012, BUG-028 |
+| CT-169 | Só o job de SEM_DECISAO ligado: ele fica agendado e o despacho de notificações não existe | I | Subir o contexto com `app.jobs.sem-decisao.habilitado=true` e `app.jobs.sem-decisao.intervalo=PT1H` (`AgendamentoDeSemDecisaoIT`) | A tarefa `AgendadorDeTransicoes#cancelarSemDecisao` está agendada; `AgendadorDeNotificacoes` não existe como bean | RN-25, D2, RF-11, ADR-012, BUG-028 |
+| CT-170 | Sem nenhuma propriedade `app.jobs.*` nada é agendado | I | Subir o contexto sem as propriedades, como no `application.yml` (`AgendamentoDesligadoIT`) | Nenhum dos dois agendadores existe e a lista de tarefas agendadas é vazia | RN-25, RN-28, D2, D3, BUG-028 |
 
 ## 4. Cobertura por regra crítica
 
@@ -320,6 +323,9 @@ Os CT de front e E2E não trazem o identificador `CT-nnn` dentro do teste (BUG-0
 | CT-163 | Responsável aprova recurso restrito (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "Responsável aprova a reserva de um recurso restrito" (arquivo com 5 testes) |
 | CT-164 | Solicitante não vê a ação de aprovar (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "Solicitante não vê a ação de aprovar" (arquivo com 5 testes) |
 | CT-165 | Fluxo principal em celular, 360 por 640 (E2E) | `frontend/e2e/jornadas.spec.ts`, teste "em celular (360 por 640): fluxo principal: buscar e reservar uma sala, sem rolagem horizontal" (arquivo com 5 testes) |
+| CT-168 | Só o agendador de notificações ligado | `config/AgendamentoDeNotificacoesIT` (2 testes, os dois com o prefixo `ct168_`) |
+| CT-169 | Só o job de SEM_DECISAO ligado | `config/AgendamentoDeSemDecisaoIT` (2 testes, os dois com o prefixo `ct169_`) |
+| CT-170 | Padrão desligado | `config/AgendamentoDesligadoIT` (1 teste, `ct170_`) |
 
 `*` arquivo compartilhado por mais de um CT.
 

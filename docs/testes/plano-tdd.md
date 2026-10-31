@@ -521,6 +521,7 @@ Os casos de cada regra são os CT cuja coluna *Rastreio* de [casos-de-teste.md](
 | RN-28 | CT-103 | Corpo mínimo | integração | `NotificacaoApiIT` | red `5462457` | verde (E-24) |
 | RN-28 | CT-104 | Envio depois do commit | integração | `NotificacaoApiIT` | red `5462457` | verde (E-24) |
 | RN-28 | CT-105 | Reenvio com a mesma chave | integração | `NotificacaoApiIT` | red `5462457` | verde (E-24) |
+| RN-28 | CT-168 | Despacho agendado com só o agendador de notificações ligado (BUG-028) | integração | `AgendamentoDeNotificacoesIT` | red `1aa8939` | verde (CI do PR C, issue 111) |
 | RN-29 | CT-005 | Sessão revogada deixa de valer | API | `AutenticacaoApiIT`, `UsuariosApiIT` | red `6a9f4d9`, `c49f13c` | verde (E-24) |
 | RN-29 | CT-016 | Auditoria de usuários e perfis | integração | `UsuariosApiIT` | red `c49f13c` | verde (E-24) |
 | RN-29 | CT-026 | Auditoria de cadastro | integração | `CatalogoApiIT` | red `24c7364` | verde (E-24) |
