@@ -108,7 +108,7 @@ processo de issues; a abertura retroativa de issues para BUG-001 a BUG-006 depen
 - **Como corrigir:** a cadeia de segurança passa a decidir o perfil por método e caminho; `@PreAuthorize` permanece
   como segunda camada e como fonte dos perfis do contrato. Publicada a
   [matriz de autorização](../testes/matriz-autorizacao.md).
-- **Teste de regressão:** CT-117 a CT-121 em `AutorizacaoApiIT` (137 casos), vermelho em `d793879` e verde em
+- **Teste de regressão:** CT-117 a CT-121 em `AutorizacaoApiIT` (137 casos; hoje 141 testes, BUG-022), vermelho em `d793879` e verde em
   `73488e5`.
 - **Commit:** `73488e5`.
 

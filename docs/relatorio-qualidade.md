@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números do commit da `v1.0.0-rc2` e em 28/10/2026 para a `v1.0.0-rc3`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes no commit `d2b6af1` (run da CI [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)); a tag avaliada é a `v1.0.0-rc3`, de código idêntico ao da `v1.0.0-rc2` (`d2b6af1`), e os números deste relatório são os da E-25, repetidos na E-26 ([execucao-e26.md](testes/execucao-e26.md)); só os branches do JaCoCo diferem (86,54% na E-26 e 86,88% na E-25); os commits posteriores à rc2 só mudam documentação. Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números da execução E-25 e em 28/10/2026 com os da E-26, e revisado para a `v1.0.0-rc4`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes da revisão avaliada, a tag `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`), que corrige o BUG-028 e traz a documentação verificada. Todo número dependente de medição está marcado (a registrar no PR B) e é o da execução E-27; as execuções E-25 e E-26 são históricas ([execucao-e25.md](testes/execucao-e25.md), [execucao-e26.md](testes/execucao-e26.md)). Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -10,9 +10,9 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 | Fato | Origem |
 | --- | --- |
-| Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint; a prova de clone limpo foi repetida no commit da tag `v1.0.0-rc2` | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
-| **Metas da especificação atingidas:** linhas 97,01% (meta 80%), branches 86,54% na E-26 e 86,88% na E-25 (meta 70%), 0 bugs, 0 vulnerabilidades e 0 issues abertas no SonarCloud com Quality Gate OK, 100% das linhas críticas da RTM com teste e execução verde | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
-| CI verde na `main` no commit lido: back end 665 testes, front 910 em 56 arquivos, E2E 5 de 5, 0 falhas | Run `40373624577` |
+| Os **quatro limitadores de nota** estão demonstrados, cada um com evidência de execução: aplicação sobe em clone limpo (depois de corrigir o defeito do README, BUG-019), pipeline com checks obrigatórios e um vermelho intencional que bloqueou o merge, matriz de autorização verde (141 testes) e dupla reserva barrada, com o teste vermelho sem a constraint; a prova de clone limpo foi repetida na execução E-25 | [limitadores-de-nota.md](testes/limitadores-de-nota.md) |
+| **Metas da especificação:** linhas e branches da revisão avaliada (a registrar no PR B) (metas 80% e 70%), bugs, vulnerabilidades, issues abertas e Quality Gate do SonarCloud (a registrar no PR B); 100% das linhas críticas da RTM com teste e execução verde (execução E-24, mantida) | [leitura-final-cobertura.md](testes/leitura-final-cobertura.md); [auditoria-rtm.md](testes/auditoria-rtm.md) |
+| CI na revisão avaliada: back end, front e E2E (a registrar no PR B) | Run (a registrar no PR B) |
 | **27 defeitos** registrados: 26 fechados e 1 mitigado (BUG-017), nenhum reaberto, nenhum aberto de severidade crítica ou alta | [defeitos/README.md](defeitos/README.md) |
 
 **As ressalvas (detalhe e riscos aceitos em [decisao-qualidade.md](decisao-qualidade.md)):**
@@ -46,30 +46,30 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 
 | Meta (especificação, seção "Metas mensuráveis") | Resultado | Situação | Origem |
 | --- | --- | --- | --- |
-| **80%** de cobertura de linhas | **97,01%** (1751 de 1805) | **Atingida** | JaCoCo, run `40373624577` |
-| **70%** de cobertura de branches | **86,54%** (521 de 602) na E-26; 86,88% (523 de 602) na E-25 | **Atingida** | JaCoCo, runs `40790098761` e `40373624577` |
-| **0** bugs ou vulnerabilidades críticos | **0 bugs, 0 vulnerabilidades**, 0 issues abertas (CRITICAL e BLOCKER inclusive); Quality Gate **OK** | **Atingida** | SonarCloud, análise de `d2b6af1` (consulta de 24/10/2026) |
+| **80%** de cobertura de linhas | (a registrar no PR B) | (a registrar no PR B) | JaCoCo da execução E-27 |
+| **70%** de cobertura de branches | (a registrar no PR B); a cobertura de branches varia entre execuções de código idêntico (de 519 a 523 de 602 antes da rc4, [leitura-final-cobertura.md](testes/leitura-final-cobertura.md), seção 9) | (a registrar no PR B) | JaCoCo da execução E-27 |
+| **0** bugs ou vulnerabilidades críticos | (a registrar no PR B) | (a registrar no PR B) | SonarCloud, análise da execução E-27 |
 | **100%** dos requisitos críticos na RTM | **22 de 22** linhas críticas (12 RF, 8 RN, 2 RNF) com CT existente, teste identificável (Java) ou arquivo em tabela (front), asserção e execução verde no E-24 | **Atingida**, com o limite abaixo | [auditoria-rtm.md](testes/auditoria-rtm.md), seções 8 e 10; [execucao-e24.md](testes/execucao-e24.md) |
 
 **Limites da quarta meta:** (a) "100% na RTM" foi interpretado como presença, status e execução verde; (b) a relevância de cada CT em cada linha de RN foi julgada à mão, por título ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 10.1); (c) os CT de front não trazem `CT-nnn` dentro do teste, e a tabela CT-arquivo prova o arquivo, não o trecho coberto (BUG-024, decisão F7-05). A especificação avisa que cobertura alta, sozinha, não garante qualidade; os experimentos "apague a regra" estão no bloco 4.
 
 ## 4. Resultado dos testes por nível
 
-Execução de referência: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577) (`d2b6af1`, commit da `v1.0.0-rc2`), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md). **0 falhas em todos os níveis.** Repetida na E-26 (run `40790098761`, commit `005c7af` da rc3): [execucao-e26.md](testes/execucao-e26.md).
+Execução de referência: E-27 ((a registrar no PR B)). Históricas: E-25, run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577), com o detalhe por classe em [execucao-e25.md](testes/execucao-e25.md), e E-26 (run `40790098761`): [execucao-e26.md](testes/execucao-e26.md).
 
 | Nível | Testes | Onde | Origem |
 | --- | --- | --- | --- |
-| Unidade e arquitetura (Surefire) | **231** | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-25 |
-| Integração com banco real (Failsafe, Testcontainers) | **9** | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT` | E-25 |
-| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | **410** | 30 classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-25 |
-| BDD (Cucumber, Failsafe) | **15** | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-25 |
-| **Back end, total** | **665** | 231 + 434 | E-25 |
-| Front end (Vitest e Testing Library) | **910**, em 56 arquivos | `frontend/src` | E-25 |
-| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | **5** | `frontend/e2e/jornadas.spec.ts` | E-25 |
+| Unidade e arquitetura (Surefire) | (a registrar no PR B) | `src/test`, inclui `ArquiteturaTest` (6 regras MVC, ADR-014) | E-27 |
+| Integração com banco real (Failsafe, Testcontainers) | (a registrar no PR B) | `AuditoriaPapelIT`, `ContextoIT`, `EsquemaIT`, `PrimeiroAdministradorIT`, `AgendamentoDeNotificacoesIT`, `AgendamentoDeSemDecisaoIT`, `AgendamentoDesligadoIT` | E-27 |
+| API em caixa-preta (Failsafe, MockMvc sobre o contexto completo e PostgreSQL real) | (a registrar no PR B) | classes `*ApiIT`, inclusive `AutorizacaoApiIT` (141) e `ConcorrenciaApiIT` (7) | E-27 |
+| BDD (Cucumber, Failsafe) | (a registrar no PR B) | `CucumberIT`, feature `aprovacao-bloqueio.feature` | E-27 |
+| **Back end, total** | (a registrar no PR B) | soma dos níveis acima | E-27 |
+| Front end (Vitest e Testing Library) | (a registrar no PR B) | `frontend/src` | E-27 |
+| E2E (Playwright, Chromium, contra API, PostgreSQL e front reais) | (a registrar no PR B) | `frontend/e2e/jornadas.spec.ts` | E-27 |
 
 **Ambiente realista (fato):** o banco é PostgreSQL 17 em Testcontainers; a notificação usa WireMock (`NotificacaoApiIT`: 9 testes; `NotificacaoTempoLimiteApiIT`: 1). Mocks ficam nos testes de unidade isolados.
 
-**TDD e BDD (fato):** o histórico da `main` no commit da `v1.0.0-rc2` (`d2b6af1`) tem 510 commits, 68 pull requests mesclados, **98** commits cujo assunto começa com `test(red)`, **98** com `feat(green)` ou `fix(green)` e **11** com `refactor` (`git log` e `gh pr list --state merged`, 26/10/2026). O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
+**TDD e BDD (fato):** as contagens de commits `test(red)`, `feat(green)` ou `fix(green)` e `refactor` da `main` na revisão avaliada são (a registrar no PR B) (`git log`). As contagens de commits e de pull requests mesclados estão em [checklist.md](entrega/checklist.md), medidas no commit avaliado. O ciclo da Fase 4 está ligado fatia a fatia em [evidencia-tdd.md](testes/evidencia-tdd.md), e o BDD em [bdd-aprovacao-bloqueio.md](testes/bdd-aprovacao-bloqueio.md). Nesta fase, o `MavenWrapperTest` (F7-06 e F7-14) foi feito em `test(red)` visto vermelho por asserção e depois `feat(green)`.
 
 **Os testes protegem a regra? Experimentos "apague a regra" (24/10/2026, worktree descartável, nada na `main`):** RN-01 (`PeriodoTest`: 2 falhas por asserção; na API o `400` virou `500`), RN-03 (`ConcorrenciaApiIT`: 6 falhas por asserção) e RN-06 (só o caso do Administrador ficou vermelho; isso revelou o BUG-026, corrigido com um teste novo que falha por asserção sem o portão de perfil: `Status expected:<403> but was:<200>`) ([auditoria-rtm.md](testes/auditoria-rtm.md), seção 6; [defeitos/README.md](defeitos/README.md), BUG-026). **Mutação (Fase 4, 17/10/2026, só `model`):** 78 mutantes, 60 mortos, 0 sobreviventes entre os cobertos, pontuação de 77% ([mutacao.md](testes/mutacao.md)).
 
@@ -227,8 +227,8 @@ Fonte: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pa
 
 | # | Entregável | Onde está | Estado |
 | --- | --- | --- | --- |
-| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (510 commits e 68 PRs mesclados na `main` no commit `d2b6af1` da `v1.0.0-rc2`); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
-| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); a prova no commit da `v1.0.0-rc1` está na seção 2.5 e a do commit da `v1.0.0-rc2` na seção 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md) (clone limpo até o front em 366 s; `verify` em 539 s) |
+| 1 | Repositório com histórico de trabalho e revisão por pares | Este repositório (contagens de commits e PRs mesclados em [checklist.md](entrega/checklist.md)); [perguntas-professor.md](perguntas-professor.md) | **Parcial:** histórico completo e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é **limitação declarada** (decisão da equipe não validada, F7-16, item 14) |
+| 2 | Aplicação executável e instruções de instalação | [README.md](../README.md), "Como subir"; [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2 | **Atendido** (clone limpo sobe, depois da correção do BUG-019); as provas estão nas seções 2.5 e 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md) (clone limpo até o front em 366 s; `verify` em 539 s) |
 | 3 | `README.md` e documentação dos fluxos ou da API | [README.md](../README.md); `docs/api/openapi.json`; [fluxos-sequencia.md](prd/fluxos-sequencia.md); [navegacao-telas.md](prd/navegacao-telas.md) | **Atendido**; o README traz o pacote de evidências com os links |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | [RTM.md](../RTM.md); [auditoria-rtm.md](testes/auditoria-rtm.md) | **Atendido** (55 linhas; defeitos da auditoria corrigidos) |
 | 5 | Diagramas de contexto, componentes e sequências críticas | [arquitetura.md](arquitetura.md) (C4) e [fluxos-sequencia.md](prd/fluxos-sequencia.md) (14 diagramas) | **Atendido** (renderização não refeita nesta fase) |

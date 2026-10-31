@@ -492,6 +492,7 @@ Aprovadas pelo usuário na Fase 2. Cada uma vira ADR no Prompt 2.4 e é analisad
 - **Porta e adapter:** o caso de uso depende de uma porta de notificação; o adaptador de webhook implementa a porta. Trocar o provedor altera um componente e nenhum contrato da API.
 - **Gravação transacional e envio posterior (decisão aprovada em 15/10/2026):** `notificacoes` recebe a linha PENDENTE na mesma transação da mudança de estado (RN-28). O **Despachante de notificações** envia depois do commit e atualiza o status. Se a aplicação cair entre o commit e o envio, a linha continua PENDENTE e será reenviada, o que atende "envio após o commit" sem perda.
 - **Idempotência:** `chave_idempotencia` única; o reenvio usa a mesma chave (C6).
+- **Nota de 31/10/2026 (BUG-028):** os dois agendadores (despacho de notificações e job de SEM_DECISAO) vêm desligados por padrão e ligam cada um pela sua propriedade `app.jobs.*`; `@EnableScheduling` está em `AgendamentoConfig`, incondicional. Até a versão anterior ele ficava no agendador do SEM_DECISAO, e o despacho só era agendado com os dois ligados. O texto acima não foi alterado.
 - **Falha do provedor:** nunca altera a reserva (RN-28). A resposta de erro do provedor não atravessa a API: o corpo é descartado e só o status é registrado (RNF-07).
 - **Configuração:** endereço e token por variável de ambiente, nunca no repositório (A5). Timeouts: **configuráveis, sem valor** (pergunta aberta 5).
 - **Teste:** WireMock com a matriz de respostas 200, 404, 500, lentidão e JSON inválido (RN-28).

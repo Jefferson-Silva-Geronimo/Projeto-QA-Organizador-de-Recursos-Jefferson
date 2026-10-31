@@ -37,14 +37,16 @@ Só o regime (descartados os primeiros 35 s), que é o que compara com o requisi
 
 | Rodada | Operação | n | p50 (ms) | p95 (ms) | p99 (ms) | Vazão |
 | --- | --- | --- | --- | --- | --- | --- |
-| 01 | consulta | 9.124 | 26 | 72 | 552 | 30,4/s |
-| 01 | criação | 3.907 | 247 | **622** | 1.441 | 13,0/s |
+| 01 | consulta | 9.124 | 26 | 72 | 552 | 31,1/s |
+| 01 | criação | 3.907 | 247 | **622** | 1.441 | 13,3/s |
 | 02 | consulta | 8.942 | 17 | 152 | 583 | 30,4/s |
 | 02 | criação | 3.832 | 289 | **886** | 1.699 | 13,0/s |
 | 03 | consulta | 4.639 | 16 | 55 | 80 | 15,8/s |
 | 03 | criação | 1.987 | 238 | **568** | 867 | 6,8/s |
 | 04 (diagnóstico) | consulta | 4.929 | 25 | 76 | 130 | 16,8/s |
 | 04 (diagnóstico) | criação | 2.112 | **31** | **87** | 149 | 7,2/s |
+
+A vazão é a do recorte do regime: amostras depois dos primeiros 35 s divididas pela duração observada menos 35 s (`perf/analisar_rodada.py`; as rodadas 01 e 02 duraram 328,7 s cada, ou seja, 293,7 s de regime). Recalculada do `rodada-01.jtl`, a rodada 01 dá 31,1/s na consulta e 13,3/s na criação; as edições anteriores traziam 30,4/s e 13,0/s, que não conferem com esse arquivo, e a origem desses dois valores não foi identificada. As rodadas 02 a 04 conferem com o recálculo. Percentis e contagens da rodada 01 não mudam.
 
 Em todas as rodadas: **0 erro real, 0 resposta 500, 0 sobreposição no banco, 0 par duplicado**, e cada recusa 409 gerou
 exatamente uma linha em `tentativas_conflito` (as contagens batem com as respostas 409).

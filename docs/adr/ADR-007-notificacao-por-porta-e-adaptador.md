@@ -59,3 +59,7 @@ R-20 (perda, duplicação ou reenvio que nunca executa). S5 (o endpoint de teste
 ## Condição de revisão
 
 O professor exigir provedor real; D3 e D9 definirem valores e retenção.
+
+## Nota de 31/10/2026 (BUG-028)
+
+O despacho de notificações só roda quando o agendador de notificações está ligado: `app.jobs.notificacoes.habilitado=true` e `app.jobs.notificacoes.intervalo` (ISO-8601, sem valor padrão, lacuna D3). Os dois vêm **desligados por padrão** e, sem eles, a notificação nasce PENDENTE e fica assim. Até a versão anterior o agendamento dependia de o job de SEM_DECISAO também estar ligado ([#111](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/issues/111)); a `v1.0.0-rc4` corrige: cada agendador liga de forma independente e `@EnableScheduling` fica em `AgendamentoConfig`. O texto da decisão acima não foi alterado.

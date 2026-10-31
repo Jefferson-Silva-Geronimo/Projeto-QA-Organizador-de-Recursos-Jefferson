@@ -820,7 +820,7 @@ As quatro condições que a especificação usa como limitador de nota precisam 
 **Prompt 7.C: release candidate**
 
 ```text
-Atue como engenheiro de release. Valide que um clone limpo do repositório sobe seguindo apenas o README, com compose e comandos documentados, e registre o resultado. Atualize o README com instalação, execução, testes, CI, links dos relatórios do JaCoCo e do SonarCloud e o pacote de evidências com os links dos runs. Depois de ./mvnw -B verify e os testes E2E verdes na main, crie a tag v1.0.0-rc1. Não altere código nem testes.
+Atue como engenheiro de release. Valide que um clone limpo do repositório sobe seguindo apenas o README, com compose e comandos documentados, e registre o resultado. Atualize o README com instalação, execução, testes, CI, links dos relatórios do JaCoCo e do SonarCloud e o pacote de evidências com os links dos runs. Depois de ./mvnw -B verify e os testes E2E verdes na main, crie a tag do release candidate. Não altere código nem testes.
 ```
 
 ### 11.5 Prova oral e demonstração

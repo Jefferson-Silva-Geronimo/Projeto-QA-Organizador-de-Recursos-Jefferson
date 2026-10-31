@@ -388,7 +388,7 @@ Os casos de cada regra são os CT cuja coluna *Rastreio* de [casos-de-teste.md](
 | RN-04 | CT-029 | Bloqueio cobre o intervalo | API | `CatalogoApiIT` | red `24c7364` | verde (E-24) |
 | RN-04 | CT-076 | Bloqueio sem reservas | API | `AprovacaoBloqueioApiIT` | red `7b4219d` | verde (E-24) |
 | RN-04 | CT-080 | Bordas do bloqueio | unidade | `AprovacaoBloqueioApiIT` | red `7b4219d` | verde (E-24) |
-| RN-04 | CT-081 | Nova reserva em recurso bloqueado | API | `ReservasApiIT` | red `7b4219d` | verde (E-24) |
+| RN-04 | CT-081 | Nova reserva em recurso bloqueado | API | `ReservasApiIT` | red `4a54c35` | verde (E-24) |
 | RN-05 | CT-075 | Transições proibidas | unidade | `MaquinaDeEstadosTest` | red `7b4219d` | verde (E-24) |
 | RN-05 | CT-096 | Um evento por transição | integração | `AuditoriaApiIT` | red `4b5551f` | verde (E-24) |
 | RN-06 | CT-066 | Responsável aprova reserva de outro | API | `AprovacaoBloqueioApiIT` | red `7b4219d` | verde (E-24) |
@@ -529,7 +529,7 @@ Os casos de cada regra são os CT cuja coluna *Rastreio* de [casos-de-teste.md](
 | RN-29 | CT-122 | Primeiro Administrador | integração | `PrimeiroAdministradorIT` | red `00127d1` | verde (E-24) |
 | RN-30 | CT-059 | Recusa gera tentativa de conflito | integração | `ReservasApiIT` | ver [evidencia-tdd.md](evidencia-tdd.md) | verde (E-24) |
 | RN-30 | CT-065 | Tentativa gravada fora da transação desfeita | integração | `ConcorrenciaApiIT` | red `5d570f8` | verde (E-24) |
-| RN-30 | CT-081 | Nova reserva em recurso bloqueado | API | `ReservasApiIT` | red `7b4219d` | verde (E-24) |
+| RN-30 | CT-081 | Nova reserva em recurso bloqueado | API | `ReservasApiIT` | red `4a54c35` | verde (E-24) |
 | RN-30 | CT-111 | Conflitos evitados | integração | `RelatorioApiIT` | red `4b3a176` | verde (E-24) |
 | RN-31 | CT-107 | Carga horária | integração | `RelatorioApiIT` | red `4b3a176` | verde (E-24) |
 | RN-31 | CT-108 | Estados que contam | integração | `RelatorioApiIT` | red `4b3a176` | verde (E-24) |
