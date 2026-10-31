@@ -18,7 +18,7 @@ class AgendamentoDesligadoIT extends BancoRealIT {
     private ApplicationContext contexto;
 
     @Test
-    void ct168_semPropriedadesNenhumAgendadorExisteENadaEhAgendado() {
+    void ct170_semPropriedadesNenhumAgendadorExisteENadaEhAgendado() {
         assertThat(contexto.containsBean("agendadorDeNotificacoes")).isFalse();
         assertThat(contexto.containsBean("agendadorDeTransicoes")).isFalse();
         assertThat(TarefasAgendadas.de(contexto)).isEmpty();

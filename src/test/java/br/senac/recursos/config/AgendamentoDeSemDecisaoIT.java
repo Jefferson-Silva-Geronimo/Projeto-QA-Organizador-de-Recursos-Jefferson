@@ -23,12 +23,12 @@ class AgendamentoDeSemDecisaoIT extends BancoRealIT {
     private ApplicationContext contexto;
 
     @Test
-    void ct167_soComOJobDeSemDecisaoLigadoEleFicaAgendado() {
+    void ct169_soComOJobDeSemDecisaoLigadoEleFicaAgendado() {
         assertThat(TarefasAgendadas.de(contexto)).contains("AgendadorDeTransicoes#cancelarSemDecisao");
     }
 
     @Test
-    void ct167_soComOJobDeSemDecisaoLigadoOdespachoDeNotificacoesNaoExiste() {
+    void ct169_soComOJobDeSemDecisaoLigadoOdespachoDeNotificacoesNaoExiste() {
         assertThat(contexto.containsBean("agendadorDeNotificacoes")).isFalse();
         assertThat(TarefasAgendadas.de(contexto)).doesNotContain("AgendadorDeNotificacoes#despachar");
     }
