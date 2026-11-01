@@ -264,7 +264,7 @@ O README ([Execuções registradas](../../README.md)) já listava um run vermelh
 
 ## 4. c) Autorização: matriz perfil × operação
 
-[matriz-autorizacao.md](matriz-autorizacao.md) lista **34 operações** em 3 perfis. `AutorizacaoApiIT` (`src/test/java/br/senac/recursos/controller/`) executa a mesma lista contra a API real e, no caso `ct117_matrizPublicadaCorrespondeAAutorizacaoTestada` (linhas 173 a 209), **falha se o documento divergir** da lista testada.
+[matriz-autorizacao.md](matriz-autorizacao.md) lista **34 operações protegidas** (mais o login público, 35 no contrato) por perfil; o sem token é a 4ª identidade (`ct119`). `AutorizacaoApiIT` (`src/test/java/br/senac/recursos/controller/`) executa a mesma lista contra a API real e, no caso `ct117_matrizPublicadaCorrespondeAAutorizacaoTestada` (linhas 173 a 209), **falha se o documento divergir** da lista testada.
 
 | Evidência | Valor |
 | --- | --- |

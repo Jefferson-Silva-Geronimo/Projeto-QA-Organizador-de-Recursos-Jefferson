@@ -2,6 +2,28 @@
 
 Todas as mudanças relevantes do projeto **Organização de Recursos** por versão. Formato: Adicionado, Corrigido, Alterado e Limitações conhecidas. Fonte: `git log` e pull requests do repositório (números `#nn`). Versões seguem o nome da tag.
 
+## [1.0.0-rc5], 01/11/2026
+
+Release candidate que muda **só documentação e o `.env.example`**. O código, os testes, as dependências, os workflows e a configuração de build são idênticos aos da `v1.0.0-rc4` (`git diff --name-only v1.0.0-rc4 v1.0.0-rc5` lista só arquivos `.md` e `.env.example`; F7-31). A `v1.0.0-rc4` e a Release dela permanecem como histórico. Os commits e os números da revisão estão na [Release v1.0.0-rc5](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc5) e em `git rev-list -n 1 v1.0.0-rc5`.
+
+### Adicionado
+- README: passo 0 (`git clone` e `git checkout --detach` na tag), lista única de pré-requisitos (Git, `curl`, Bash, Java 21, Docker Compose v2 sem `sudo`, `unzip` em Linux, Node), login por `curl` com as variáveis do `.env`, fluxo mínimo por `curl` (Solicitante, sala, reserva 201 e reserva sobreposta 409), aviso de terminal ocupado e como parar, e instrução de limpeza com o aviso de que `docker compose down -v` apaga o banco local.
+- `docs/testes/limitadores-de-nota.md`, seção 2.11: dois testes manuais em Ubuntu 24.04 sobre WSL2, sem log versionado.
+- `docs/testes/alertas-dependabot.md`, seção 10: medição do `npm audit` do front (14 `moderate`, só de desenvolvimento).
+- Decisão F7-31 em `docs/decisoes-equipe.md`, que supera a F7-30 apenas em "sem nova tag" e em manter o `.env.example` como dívida.
+
+### Corrigido
+- `.env.example`: a `DB_URL` passa a ser `jdbc:postgresql://localhost:5432/${POSTGRES_DB}`, sem `<` nem `>`; quem copia o arquivo e preenche só o que está vazio sobe a aplicação sem editar a `DB_URL`.
+- README: `unzip` explicado junto ao passo do `./mvnw` (a mensagem "Failed to validate Maven distribution SHA-256" não indica ataque), passo 6 do front ligado à seção "Front end", exemplos de corpo das requisições, F7-01 a F7-31, "E-24 a E-27" e a ressalva de que "nenhum alerta" no front vale para o Dependabot e não para o `npm audit`.
+- `docs/plano-de-teste.md` (estado da seção 6, fotografia da Fase 4 identificada, palavra TODO), `docs/status-requisitos.md` (tag publicada, seção 2.10, nota sobre RF-13 e fotografia datada), `docs/arquitetura.md` (convenção do dia da semana, `analyze-docs`), `docs/performance/resultado-01.md` (caminho local removido) e `docs/defeitos/README.md` (barra final de seis linhas da tabela).
+
+### Alterado
+- A tag avaliada passa a ser a `v1.0.0-rc5` em README, RTM, relatório de qualidade, decisão de qualidade (reafirmação nova do autor; as anteriores ficam no histórico), checklist e documentos de evidência; as execuções E-25 a E-27 continuam identificadas por número, commit e run.
+- "Linux não foi testado" passa a registrar os dois testes manuais em Linux (README, relatório de qualidade e `limitadores-de-nota.md`); macOS e PowerShell continuam não verificados.
+
+### Limitações conhecidas
+Ver [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md). Além das da rc4: 14 avisos `moderate` do `npm audit` em dependências de desenvolvimento do front, aceitos como risco (F7-31); os PRs 107 a 110 do Dependabot ficam sem mesclar; o teste de carga não foi refeito porque nenhum código nem configuração de execução muda.
+
 ## [1.0.0-rc4], 31/10/2026
 
 Release candidate definitivo. Entra o que foi mesclado na `main` depois da versão anterior: a correção do BUG-028 (PR 112, código e testes) e a documentação corrigida e verificada contra o código, a CI e a aplicação em execução. **Diferente da versão anterior, o código mudou**: só `AgendamentoConfig` (novo), `AgendadorDeTransicoes` (sem a anotação `@EnableScheduling`) e testes novos; a configuração padrão não mudou. Os commits e os números da revisão estão na [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) e em `git rev-list -n 1 v1.0.0-rc4`.

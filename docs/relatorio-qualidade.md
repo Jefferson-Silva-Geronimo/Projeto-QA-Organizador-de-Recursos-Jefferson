@@ -111,7 +111,7 @@ Plano e requisito em [rnf.md](performance/rnf.md): 50 usuários simultâneos; RN
 
 | Categoria | Situação |
 | --- | --- |
-| A01 Broken Access Control | Atendida: matriz de 34 operações em 3 perfis (`AutorizacaoApiIT`, 141 testes na classe) e regras de posse |
+| A01 Broken Access Control | Atendida: matriz de 34 operações protegidas (mais o login público, 35 no contrato) por perfil, com o sem token como 4ª identidade (`AutorizacaoApiIT`, 141 testes na classe) e regras de posse |
 | A02 Security Misconfiguration | Parcial: sem TLS e sem `Content-Security-Policy` |
 | A03 Software Supply Chain Failures | Parcial: **soma SHA-256 do Maven fixada** e barrando soma errada na CI (F7-06); SBOM, licenças e assinatura ficam como dívida |
 | A04 Cryptographic Failures | Parcial: BCrypt e token opaco com hash; sem TLS na aplicação |

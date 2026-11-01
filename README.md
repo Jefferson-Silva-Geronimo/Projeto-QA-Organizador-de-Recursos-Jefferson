@@ -113,11 +113,11 @@ Pré-requisitos (instale antes de começar):
    npm run dev
    ```
 
-   `gerar:api`, `lint`, `typecheck`, `test` e `build` são conferências, na ordem da CI (seção "Front end"); para só usar a tela bastam `npm ci`, o `.env` e `npm run dev`. O `npm run dev` também ocupa o terminal (`Ctrl+C` para parar). Abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
+   `gerar:api`, `lint`, `typecheck`, `test` e `build` são conferências, na ordem da CI (seção "Front end"); para só usar a tela bastam `npm ci`, o `.env` e `npm run dev`. No Windows, o `git status` pode listar `frontend/src/api/schema.d.ts` depois do `gerar:api` só por causa do fim de linha; o conteúdo não muda. O `npm run dev` também ocupa o terminal (`Ctrl+C` para parar). Abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
 
 ### Primeiro uso pela API (fluxo mínimo)
 
-Com a aplicação no ar e o `TOKEN` do passo 5, o Administrador cadastra um Solicitante e uma sala, e o **Solicitante** (o Administrador recebe 403 em reservas) reserva a sala. Os corpos seguem o contrato [docs/api/openapi.json](docs/api/openapi.json): na sala, `horaAbertura` e `horaFechamento` são `HH:mm` e `diasFuncionamento` usa 1 (segunda) a 7 (domingo); o fuso é `America/Sao_Paulo` (RN-15), então `13:00Z` é 10:00 local; a reserva precisa estar no futuro, dentro do horário da sala e sem cruzar a meia-noite. **A data do exemplo pode já ter passado: troque `2026-12-15` por uma data futura.** `tipoSala` é livre (`AULA` é só exemplo).
+Com a aplicação no ar e o `TOKEN` do passo 5, o Administrador cadastra um Solicitante e uma sala, e o **Solicitante** (o Administrador recebe 403 em reservas) reserva a sala. Os corpos seguem o contrato [docs/api/openapi.json](docs/api/openapi.json): na sala, `horaAbertura` e `horaFechamento` são `HH:mm` e `diasFuncionamento` usa 1 (segunda) a 7 (domingo); o fuso é `America/Sao_Paulo` (RN-15), então `13:00Z` é 10:00 local; a reserva precisa estar no futuro, dentro do horário da sala e sem cruzar a meia-noite. **A data do exemplo pode já ter passado: troque `2027-03-16` por uma data futura.** `tipoSala` é livre (`AULA` é só exemplo).
 
 ```bash
 AUTH="Authorization: Bearer $TOKEN"; JSON='Content-Type: application/json'
@@ -136,11 +136,11 @@ TOKEN2=$(curl -s -X POST "$API/api/auth/login" -H "$JSON" \
 
 # 4. Reservar a sala: 201 e "estado":"APROVADA" (sala não restrita)
 curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
-  -d "{\"titulo\":\"Aula de teste\",\"inicio\":\"2026-12-15T13:00:00Z\",\"fim\":\"2026-12-15T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
+  -d "{\"titulo\":\"Aula de teste\",\"inicio\":\"2027-03-16T13:00:00Z\",\"fim\":\"2027-03-16T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
 
 # 5. Repetir com uma janela que se sobrepõe: 409 com o código CONFLITO_DE_ALOCACAO
 curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
-  -d "{\"titulo\":\"Outra aula\",\"inicio\":\"2026-12-15T13:30:00Z\",\"fim\":\"2026-12-15T14:30:00Z\",\"recursoIds\":[$SALA_ID]}"
+  -d "{\"titulo\":\"Outra aula\",\"inicio\":\"2027-03-16T13:30:00Z\",\"fim\":\"2027-03-16T14:30:00Z\",\"recursoIds\":[$SALA_ID]}"
 ```
 
 ### Parar e limpar
