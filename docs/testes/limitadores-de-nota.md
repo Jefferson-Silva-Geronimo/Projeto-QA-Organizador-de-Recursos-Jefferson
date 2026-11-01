@@ -212,6 +212,73 @@ Fluxo curto pela API, sem nenhuma variável `APP_JOBS_*`: criar Solicitante (201
 
 **Limites:** dois registros manuais, sem log versionado, um só computador (WSL2), imagem do PostgreSQL já baixada no `verify`; o login pela página do front não foi testado; macOS e PowerShell continuam não verificados. A medição de Linux sobre a versão avaliada não está nesta seção.
 
+**Atualização de 01/11/2026 (o erro do `unzip` foi observado).** Em teste manual do autor, sem log versionado, em Ubuntu 24.04.1 LTS sobre WSL2, com o `unzip` ausente (`which unzip` vazio) **e** o cache do Maven vazio (`~/.m2` renomeado), clone novo da `main`, o comando `./mvnw -v 2>&1 | tail -5` imprimiu, nas palavras exatas do registro:
+
+```text
+Error: Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised.
+If you updated your Maven version, you need to update the specified distributionSha256Sum property.
+```
+
+Isso confirma por observação o que o item acima só derivava do código do wrapper. Contraprova: no primeiro registro desta seção o `unzip` também estava ausente, mas o cache do Maven já estava preenchido por execuções anteriores, e o `./mvnw spring-boot:run` subiu a aplicação sem erro; com o cache cheio o `unzip` não foi exigido. **Limitação:** o caso só ocorre na primeira execução do wrapper, quando a distribuição do Maven ainda não está no cache (`~/.m2/wrapper/dists`, conforme `MAVEN_USER_HOME` no `mvnw`); depois disso o erro não reaparece, mesmo sem `unzip`. Não há log versionado desse teste, e ele foi feito uma vez, num só computador. Depois dele o `unzip` foi instalado (`6.0-28ubuntu4.1`) e o cache esvaziado de novo para a rodada da seção 2.12.
+
+### 2.12 Clone limpo do commit X2 em Windows e Linux (01/11/2026): PASSOU, sem repetir nenhum passo
+
+**Método.** Duas verificações de leitura, cada uma num clone novo do GitHub em pasta temporária fora do projeto, seguindo só o README do commit X2 (`9a74598127a5b420c0494d4d3b6686966b8590bf`, o merge do PR 117), com `.env` criado do `.env.example` com valores fictícios, projeto Compose exclusivo e a imagem do PostgreSQL já baixada. X2 não é a tag: a `v1.0.0-rc5` ainda não existia, e o commit da tag só difere de X2 em arquivos `.md` (F7-31, decisão 1). Os registros de trabalho ficaram fora do repositório e **não há log versionado**; os tempos foram medidos com `date`, em **um só computador por sistema, e não são mínimos**. A causa das diferenças de tempo entre os dois sistemas e entre as rodadas não foi isolada.
+
+**Ambiente.**
+
+| Sistema | Ambiente | Observação |
+| --- | --- | --- |
+| Windows | Windows 11, Git Bash, Java 21.0.6, Node 22.13.1, Docker 29.8.2, Docker Compose v5.6.0 | A descrição do hardware não consta do registro desta rodada (não verificado) |
+| Linux | Ubuntu 24.04.1 LTS sobre WSL2, Java 21.0.7, Node 22.23.4, Docker em execução; `unzip` instalado (`/usr/bin/unzip`); `~/.m2` inexistente (cache do Maven vazio) | Portas 5432, 8080 e 5173 livres antes de começar |
+
+**Passos do README e resultado.**
+
+| Passo do README | Windows (X2) | Linux (X2) |
+| --- | --- | --- |
+| 0. `git clone` | ok, 20 s | ok (tempo não registrado) |
+| 0. `git checkout --detach v1.0.0-rc5` | **falhou, esperado**: a tag não existia. Saída: `fatal: git checkout: --detach does not take a path argument 'v1.0.0-rc5'`. Seguiu-se na `main` (HEAD conferido) | **falhou, esperado**: mesma saída, código de saída 128; seguiu-se na `main` |
+| 1. `.env` do `.env.example`; `grep -n '[<>]' .env` | ok, 2 s; `grep` vazio; só as `SONAR_*` ficaram vazias | ok; `grep` vazio; só as `SONAR_*` ficaram vazias |
+| 2. `docker compose up -d --wait postgres` (com `-p` do projeto exclusivo) | ok, 34 s, contêiner `Healthy`, sem erro de credencial | ok, 24 s, saída 0 e `Healthy` |
+| 3. `spring-boot:run` logo depois do passo 2, **na primeira tentativa** | ok: `Started … in 16.329 seconds`; saúde `UP` 95 s depois do lançamento; nenhuma ocorrência de `Unable to obtain connection` nem de `BUILD FAILURE` | ok: cerca de 303 s do comando até `Started … in 9.523 seconds` e o Administrador criado, com o cache do Maven vazio (a distribuição do Maven levou cerca de 37 s, o restante foi download de dependências); Flyway aplicou 4 migrações |
+| 4. `/actuator/health` | `{"status":"UP"}` | `{"status":"UP"}`, HTTP 200 |
+| 5. Login do Administrador | ok, token de 43 caracteres | ok, token de 43 caracteres |
+| Primeiro uso pela API (blocos do README, sem ajuste à mão) | usuário **201** (`id` 2); sala **201** (`id` 1), `SALA_ID=1` extraído sozinho; reserva **201** `APROVADA` (2027-03-16); reserva sobreposta **409** `CONFLITO_DE_ALOCACAO`; Administrador reservando **403** `ACESSO_NEGADO` | os mesmos resultados: **201**, **201**, **201** `APROVADA`, **409** `CONFLITO_DE_ALOCACAO`, **403** `ACESSO_NEGADO` |
+| 6. `npm ci` | ok, 270 s (389 pacotes; 14 `moderate`, F7-31) | ok, 65 s (391 pacotes; 14 `moderate`) |
+| 6. `gerar:api` | ok, 5 s; `git status` mostra só `schema.d.ts` modificado e `git diff --ignore-space-at-eol` vazio: **só fim de linha**, como o README avisa | ok, 3 s; `git diff -- frontend/src/api/schema.d.ts` **vazio** |
+| 6. `lint`, `typecheck` | ok, 92 s e 15 s | ok, 17 s e 11 s |
+| 6. `npm test` | ok: **56 arquivos e 910 testes**, 275 s | ok: **56 arquivos e 910 testes**, 118 s |
+| 6. `build` | ok, 21 s | ok, 11 s |
+| 6. `npm run dev` | `http://localhost:5173/` com HTTP 200; preflight `OPTIONS /api/auth/login` com a origem do Vite respondeu 200; login pela página não testado | `http://localhost:5173/` com HTTP 200; Vite pronto em 294 ms; login pela página não testado |
+| `./mvnw -B verify` (aplicação e Vite parados, só os processos abertos na rodada) | `BUILD SUCCESS` em **669 s** (Maven: `Total time: 10:53 min`) | `BUILD SUCCESS` em **456 s** (Maven: `Total time: 07:32 min`); os plugins `surefire`, `failsafe` e `jacoco` foram baixados nessa execução |
+
+**Números do `verify`.**
+
+| Número | Windows | Linux |
+| --- | --- | --- |
+| Surefire (unidade e arquitetura) | 231, 0 falhas | 231, 0 falhas, 0 erros e 0 ignorados |
+| Failsafe (integração e BDD) | 439, 0 falhas | 439 no total do Maven, 0 falhas, 0 erros e 0 ignorados |
+| JaCoCo, linhas | 1767 de 1806 | 1767 de 1806 |
+| JaCoCo, branches | 525 de 602 | 523 de 602 |
+| Gate de cobertura | "All coverage checks have been met" | gate de cobertura passou |
+
+- Os 523 branches do Linux ficam **entre os valores já registrados de 519 a 525 de 602** em execuções do mesmo código: 519, 521 e 523 na F7-27 (decisão de variação de branches) e 525 na execução E-27 (seção 2.9) e na seção 2.10. Essa faixa é a dos registros, e não um limite definido por regra; os branches variam entre execuções e a meta é de 70%. Nenhum número nem texto histórico foi alterado.
+- **Divergência de contagem no Linux, não investigada.** No Linux o total do Maven foi 439; a soma manual dos XMLs feita pelo agente deu 434 e não foi investigada; o clone foi apagado. Vale o total do Maven. (O mesmo somatório sobre os XMLs do artefato `relatorios-de-teste` do run de X2 também dá 434, contra 439 no log do Maven desse run; a causa continua não investigada.)
+- No Linux, o comando de login do README (`curl -s` sem `-w`) não mostra o código HTTP; o resultado foi conferido pelo token não vazio.
+
+**Falha anterior e correção (a corrida entre o banco e a aplicação).** Duas medições do mesmo trecho, no mesmo Windows:
+
+| Commit | Comando do passo 2 | Resultado do passo 3 lançado em seguida |
+| --- | --- | --- |
+| `cdd48c079d050c499f093d3828c17ee3e2ebc1c7` (merge do PR 116) | `docker compose up -d postgres` (sem espera; 24 s) | **falhou** em 211 s, na primeira tentativa: `Unable to obtain connection from database` (`FlywaySqlException`), `PSQLException: A tentativa de conexão falhou.`, `Caused by: java.io.EOFException` e `BUILD FAILURE`; o banco já estava `healthy` quando foi consultado. Repetido com o banco pronto: `Started … in 10.237 seconds`, saúde `UP` em 33 s |
+| X2 (`9a74598…`, merge do PR 117) | `docker compose up -d --wait postgres` (34 s) | **ok na primeira tentativa**, sem repetição |
+
+A causa em `cdd48c0` é que o passo 2 retornava antes de o PostgreSQL aceitar conexões; o PR 117 trocou o comando por `docker compose up -d --wait postgres` (Docker Compose v2) e deu ao fluxo mínimo as funções que extraem o `id` da sala e imprimem o código HTTP. Em `cdd48c0` o Windows registrou ainda: `npm ci` em 208 s, `npm test` em 237 s (56 arquivos e 910 testes) e `./mvnw -B verify` em 493 s (Maven: 08:13 min) com 231 + 439 testes, linhas 1767 de 1806 e branches 525 de 602. A mensagem do passo 0 (tag inexistente) é **esperada antes da tag** e será verificada depois dela.
+
+**CI no commit X2.** O run [`41350189027`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41350189027) (`main` em X2, push) terminou com sucesso nos quatro jobs (`test`, `frontend`, `e2e` e `segredos`). Lido do log e dos artefatos desse run, e da API pública do SonarCloud para a `main` (leitura): back end 670 testes (231 + 439, 0 falhas); front 910 testes em 56 arquivos; E2E 5 de 5; JaCoCo, somando o `jacoco.csv` do artefato `relatorio-jacoco`, linhas 1767 de 1806 e branches 525 de 602; "All coverage checks have been met"; Quality Gate do SonarCloud aprovado (a análise da `main` anota a revisão X2), 0 bugs, 0 vulnerabilidades e cobertura geral 95,2%. **Igual à execução E-27 em todos os números comparados**, sem arredondamento: a E-27 registra 670 testes (231 + 439), front 910 em 56 arquivos, E2E 5, linhas 1767 de 1806, branches 525 de 602, Quality Gate OK, 0 bugs, 0 vulnerabilidades e cobertura geral 95,2%.
+
+**Limites desta seção:** um computador por sistema, uma rodada em X2 por sistema e sem log versionado; os tempos não são mínimos e variam com a máquina (no Windows a máquina estava mais lenta que na verificação de `cdd48c0`: `npm ci`, `lint`, `npm test` e `verify` levaram mais); o login pela página do front não foi testado; macOS e PowerShell continuam não verificados; a verificação com a tag `v1.0.0-rc5` (passo 0) depende da existência da tag.
+
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
 ### 3.1 Proteção da `main` (lida da API em 24/10/2026)
@@ -317,7 +384,7 @@ O ciclo de TDD que criou o teste e a constraint está no histórico: `9d4d6d9` (
 | Item | Tipo | Detalhe |
 | --- | --- | --- |
 | Tempo do clone limpo | Limite | Medido num computador com cache do Maven e do Docker. Máquina sem cache leva mais tempo; não medido |
-| Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados em Git Bash no Windows e, em dois testes manuais do autor sem log versionado, em Ubuntu 24.04 sobre WSL2 (seção 2.11); macOS e PowerShell **não foram verificados** |
+| Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados em Git Bash no Windows e, em testes manuais do autor sem log versionado, em Ubuntu 24.04 sobre WSL2 (seções 2.11 e 2.12); macOS e PowerShell **não foram verificados** |
 | Login pela tela do front | Lacuna | O front foi verificado até o Vite no ar e o CORS; o login pela interface no navegador **não foi refeito** nesta prova (os roteiros em navegador real da Fase 6 e o E2E cobrem a tela) |
 | Valores do `.env` | Suposição | Gerados por script a partir das dicas do `.env.example`; uma pessoa poderia escolher outros valores válidos. Impacto: se um valor válido for recusado, o README fica incompleto |
 | README restante | Resolvida | Roadmap, proteção da `main` e outros trechos estavam desatualizados em 24/10/2026; foram atualizados nas fases seguintes |
