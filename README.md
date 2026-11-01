@@ -81,7 +81,7 @@ Pré-requisitos (instale antes de começar):
    ```
 
    A `DB_URL` termina com o `POSTGRES_DB`, e `DB_USER` e `DB_PASSWORD` repetem `POSTGRES_USER` e `POSTGRES_PASSWORD`. Se o seu `.env` veio de uma versão anterior à rc5, a `DB_URL` trazia o texto `<POSTGRES_DB>`: troque-o pelo nome do banco ou use a linha acima.
-2. Suba o banco: `docker compose up -d postgres`. A primeira vez baixa a imagem do PostgreSQL.
+2. Suba o banco e **espere ele ficar saudável**: `docker compose up -d --wait postgres` (Docker Compose v2). O comando só termina quando o teste de saúde do `compose.yaml` (`pg_isready`) passa; sem a espera, o `docker compose up -d postgres` retorna antes de o PostgreSQL aceitar conexões, e o passo 3, logo em seguida, pode falhar com `Unable to obtain connection from database` (`FlywaySqlException`). A primeira vez baixa a imagem do PostgreSQL.
 3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`.
    - Esse comando **fica em primeiro plano e ocupa o terminal** enquanto a aplicação roda: use um terminal para ele e outro para os passos 4 a 6. Na primeira execução o Maven baixa muitas dependências e a aplicação demora a ficar pronta. Para parar, `Ctrl+C` nesse terminal.
    - Se o `. ./.env` mostrar `syntax error`, procure `<` ou `>` no `.env` (`grep -n '[<>]' .env`).
@@ -117,30 +117,34 @@ Pré-requisitos (instale antes de começar):
 
 ### Primeiro uso pela API (fluxo mínimo)
 
-Com a aplicação no ar e o `TOKEN` do passo 5, o Administrador cadastra um Solicitante e uma sala, e o **Solicitante** (o Administrador recebe 403 em reservas) reserva a sala. Os corpos seguem o contrato [docs/api/openapi.json](docs/api/openapi.json): na sala, `horaAbertura` e `horaFechamento` são `HH:mm` e `diasFuncionamento` usa 1 (segunda) a 7 (domingo); o fuso é `America/Sao_Paulo` (RN-15), então `13:00Z` é 10:00 local; a reserva precisa estar no futuro, dentro do horário da sala e sem cruzar a meia-noite. **A data do exemplo pode já ter passado: troque `2027-03-16` por uma data futura.** `tipoSala` é livre (`AULA` é só exemplo).
+Com a aplicação no ar e o `TOKEN` do passo 5 (na mesma sessão do Bash, com `API` definida), o Administrador cadastra um Solicitante e uma sala, e o **Solicitante** reserva a sala; o Administrador recebe 403 em reservas. Cada chamada mostra o código HTTP esperado, e o `id` da sala é extraído da resposta, sem `jq`. Os corpos seguem o contrato [docs/api/openapi.json](docs/api/openapi.json): na sala, `horaAbertura` e `horaFechamento` são `HH:mm` e `diasFuncionamento` usa 1 (segunda) a 7 (domingo); o fuso é `America/Sao_Paulo` (RN-15), então `13:00Z` é 10:00 local; a reserva precisa estar no futuro, dentro do horário da sala e sem cruzar a meia-noite. **A data do exemplo pode já ter passado: troque `2027-03-16` por uma data futura.** `tipoSala` é livre (`AULA` é só exemplo).
 
 ```bash
-AUTH="Authorization: Bearer $TOKEN"; JSON='Content-Type: application/json'
+JSON='Content-Type: application/json'
+# postar CAMINHO TOKEN CORPO: faz o POST e mostra o corpo da resposta e, na linha seguinte, o código HTTP
+postar() { curl -s -w '\nHTTP %{http_code}\n' -X POST "$API$1" -H "Authorization: Bearer $2" -H "$JSON" -d "$3"; }
+# pegar_id: lê o corpo da resposta e imprime o primeiro "id" (o "id" é o primeiro campo do JSON)
+pegar_id() { sed -n 's/^{"id":\([0-9]*\).*/\1/p'; }
 
-# 1. Solicitante (como Administrador); a resposta traz o "id" do usuário
-curl -s -X POST "$API/api/usuarios" -H "$AUTH" -H "$JSON" \
-  -d '{"nome":"Professora Teste","email":"solicitante@exemplo.test","senha":"senha-local-1234","perfil":"SOLICITANTE"}'
+# 1. Solicitante (como Administrador): HTTP 201 e o "id" do usuário
+R=$(postar /api/usuarios "$TOKEN" '{"nome":"Professora Teste","email":"solicitante@exemplo.test","senha":"senha-local-1234","perfil":"SOLICITANTE"}'); echo "$R"
 
-# 2. Sala (como Administrador); anote o "id" da resposta em SALA_ID (por exemplo, SALA_ID=1)
-curl -s -X POST "$API/api/salas" -H "$AUTH" -H "$JSON" \
-  -d '{"nome":"Sala 101","capacidade":30,"localizacao":"Bloco A","tipoSala":"AULA","horaAbertura":"07:00","horaFechamento":"22:00","diasFuncionamento":[1,2,3,4,5,6,7],"restrito":false}'
+# 2. Sala (como Administrador): HTTP 201; o "id" da sala vai para SALA_ID
+R=$(postar /api/salas "$TOKEN" '{"nome":"Sala 101","capacidade":30,"localizacao":"Bloco A","tipoSala":"AULA","horaAbertura":"07:00","horaFechamento":"22:00","diasFuncionamento":[1,2,3,4,5,6,7],"restrito":false}'); echo "$R"
+SALA_ID=$(echo "$R" | pegar_id); echo "SALA_ID=$SALA_ID"
 
-# 3. Entrar como Solicitante
+# 3. Entrar como Solicitante (se TOKEN2 ficar vazio, o login falhou)
 TOKEN2=$(curl -s -X POST "$API/api/auth/login" -H "$JSON" \
   -d '{"email":"solicitante@exemplo.test","senha":"senha-local-1234"}' | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
 
-# 4. Reservar a sala: 201 e "estado":"APROVADA" (sala não restrita)
-curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
-  -d "{\"titulo\":\"Aula de teste\",\"inicio\":\"2027-03-16T13:00:00Z\",\"fim\":\"2027-03-16T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
+# 4. Reservar a sala (como Solicitante): HTTP 201 e "estado":"APROVADA" (sala não restrita)
+postar /api/reservas "$TOKEN2" "{\"titulo\":\"Aula de teste\",\"inicio\":\"2027-03-16T13:00:00Z\",\"fim\":\"2027-03-16T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
 
-# 5. Repetir com uma janela que se sobrepõe: 409 com o código CONFLITO_DE_ALOCACAO
-curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
-  -d "{\"titulo\":\"Outra aula\",\"inicio\":\"2027-03-16T13:30:00Z\",\"fim\":\"2027-03-16T14:30:00Z\",\"recursoIds\":[$SALA_ID]}"
+# 5. Repetir com uma janela que se sobrepõe: HTTP 409 com o código CONFLITO_DE_ALOCACAO
+postar /api/reservas "$TOKEN2" "{\"titulo\":\"Outra aula\",\"inicio\":\"2027-03-16T13:30:00Z\",\"fim\":\"2027-03-16T14:30:00Z\",\"recursoIds\":[$SALA_ID]}"
+
+# 6. O Administrador não reserva: HTTP 403
+postar /api/reservas "$TOKEN" "{\"titulo\":\"Teste do Administrador\",\"inicio\":\"2027-03-17T13:00:00Z\",\"fim\":\"2027-03-17T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
 ```
 
 ### Parar e limpar
