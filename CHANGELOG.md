@@ -9,6 +9,7 @@ Release candidate que muda **só documentação e o `.env.example`**. O código,
 ### Adicionado
 - README: passo 0 (`git clone` e `git checkout --detach` na tag), lista única de pré-requisitos (Git, `curl`, Bash, Java 21, Docker Compose v2 sem `sudo`, `unzip` em Linux, Node), login por `curl` com as variáveis do `.env`, fluxo mínimo por `curl` (Solicitante, sala, reserva 201 e reserva sobreposta 409), aviso de terminal ocupado e como parar, e instrução de limpeza com o aviso de que `docker compose down -v` apaga o banco local.
 - `docs/testes/limitadores-de-nota.md`, seção 2.11: dois testes manuais em Ubuntu 24.04 sobre WSL2, sem log versionado.
+- `docs/testes/limitadores-de-nota.md`, seção 2.12 e atualização da seção 2.11: verificação do commit `9a74598` em clone limpo, em Windows e em Linux (Ubuntu 24.04 sobre WSL2), feita depois da documentação do PR 117, com o run [`41350189027`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41350189027) nos mesmos números da E-27. O banco sobe com `docker compose up -d --wait postgres` e a aplicação, na primeira tentativa; o erro do `unzip` foi observado em Linux sem `unzip` e com o cache do Maven vazio.
 - `docs/testes/alertas-dependabot.md`, seção 10: medição do `npm audit` do front (14 `moderate`, só de desenvolvimento).
 - Decisão F7-31 em `docs/decisoes-equipe.md`, que supera a F7-30 apenas em "sem nova tag" e em manter o `.env.example` como dívida.
 
@@ -21,6 +22,7 @@ Release candidate que muda **só documentação e o `.env.example`**. O código,
 ### Alterado
 - A tag avaliada passa a ser a `v1.0.0-rc5` em README, RTM, relatório de qualidade, decisão de qualidade (reafirmação nova do autor; as anteriores ficam no histórico), checklist e documentos de evidência; as execuções E-25 a E-27 continuam identificadas por número, commit e run.
 - "Linux não foi testado" passa a registrar os dois testes manuais em Linux (README, relatório de qualidade e `limitadores-de-nota.md`); macOS e PowerShell continuam não verificados.
+- README: `command -v unzip` e o aviso de que o erro só aparece na primeira execução do wrapper, "Docker em execução" (Docker Desktop no Windows e no macOS, daemon ativo no Linux), tempos como faixas medidas (um só computador por sistema, não são mínimos) no lugar de "cerca de 8 minutos" e a evidência do commit `9a74598`.
 
 ### Limitações conhecidas
 Ver [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md). Além das da rc4: 14 avisos `moderate` do `npm audit` em dependências de desenvolvimento do front, aceitos como risco (F7-31); os PRs 107 a 110 do Dependabot ficam sem mesclar; o teste de carga não foi refeito porque nenhum código nem configuração de execução muda.
