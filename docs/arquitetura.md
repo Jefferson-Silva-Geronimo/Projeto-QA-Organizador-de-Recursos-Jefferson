@@ -502,7 +502,7 @@ Aprovadas pelo usuário na Fase 2. Cada uma vira ADR no Prompt 2.4 e é analisad
 - **Fonte única de tempo:** a porta de relógio, usada por regras, agendador e despachante. O relógio do banco não é usado em regra de negócio, para que o teste controle o instante.
 - **Armazenamento:** `timestamptz` em UTC (RN-15). O fuso vem de `configuracao.fuso`, padrão America/Sao_Paulo (A6).
 - **Janela e dias:** o período da reserva é convertido para o fuso configurado antes de comparar com `hora_abertura`, `hora_fechamento` e `sala_dias_funcionamento`. A reserva que cruza a meia-noite local é recusada (RN-14, S3).
-- **Convenção do dia da semana** (`sala_dias_funcionamento.dia_semana`, "a definir na Fase 2" no DBML): proposta de adotar a numeração de segunda a domingo da API de datas do Java. **Escolha sem requisito**; a equipe confirma.
+- **Convenção do dia da semana** (`sala_dias_funcionamento.dia_semana`; a nota do DBML ainda diz "a definir na Fase 2"): **fato**, o código adota a numeração de segunda (1) a domingo (7) da API de datas do Java (`DayOfWeek.of` em `RecursoService`, `RelatorioService` e `ReservaService`; `CHECK` de 1 a 7 em `V2__esquema.sql`). **Lacuna**: a especificação não define a convenção, e a escolha continua sendo da equipe.
 - **Instante de início:** pelo D10, a reserva já começou no instante de início; as regras de cancelamento, alteração e SEM_DECISAO usam a comparação "instante atual maior ou igual ao início".
 - **Reserva com início no passado:** recusada quando o início é anterior ou igual ao instante atual (D16).
 
@@ -743,7 +743,7 @@ Nenhum outro risco foi aceito: os demais aguardam teste ou decisão.
 | Todo cenário com as seis partes e medida; medidas sem origem como hipótese | **Atendido** (CEN-01 a CEN-11) |
 | Ao menos um trade-off nomeado e matriz com linha para todo requisito crítico | **Atendido** (TO-01 a TO-05; seção 21) |
 | Outra equipe entende, rastreia e contesta sem explicação oral | **Parcial**: falta leitura por pessoa da equipe fora da autoria |
-| `analyze-docs` sem pendências | **Verificado por script** em colunas, links, fences, IDs e Mermaid; skill completa pendente de execução pela equipe |
+| `analyze-docs` sem pendências | **Verificado por script** em colunas, links, fences, IDs e Mermaid na Fase 2; depois, a skill `analyze-docs` roda ao fim de toda edição de documentação (AGENTS.md, regra 2) |
 | Perguntas das lacunas respondidas ou assumidas | **Parcial**: A1 a A8 decididas pela equipe em 24/10/2026, sem validação do professor; as hipóteses de desempenho seguem sem validação |
 
 ## 24. Próximos passos

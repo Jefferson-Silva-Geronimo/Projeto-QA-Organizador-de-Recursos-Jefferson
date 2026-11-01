@@ -115,3 +115,20 @@ Registro novo; os números das seções 1 a 7 são históricos, de cada data, e 
 
 Consulta de leitura (GET) à API do GitHub, alertas abertos por manifesto: `.aiox-core/package-lock.json` 4 e `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json` 26, **30 no total**; **0** em `frontend/` e **0** no Maven. O número é o mesmo da seção 8, e a regra da seção 3 (nenhum alerta fora de `.aiox-core/`) continuou valendo no portão da tag.
 
+
+## 10. `npm audit` do front (01/11/2026)
+
+Registro novo; os números das seções 1 a 9 são históricos, de cada data, e não foram alterados. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+
+O Dependabot e o `npm audit` consultam bases de avisos diferentes. A afirmação "nenhum alerta no front e no Maven" das seções anteriores vale para o **Dependabot**; ela não cobre o `npm audit`, que um teste manual em Linux (Ubuntu 24.04 sobre WSL2) mostrou acusar vulnerabilidades no front ([limitadores-de-nota.md](limitadores-de-nota.md), seção 2.11).
+
+| Item | Valor |
+| --- | --- |
+| Consulta | `npm ci`, `npm audit` e `npm audit --omit=dev` em `frontend/`, num clone temporário fora do repositório, sem `npm audit fix` e sem alterar `package.json` nem `package-lock.json` (somente leitura) |
+| `npm audit` | **14 vulnerabilidades, todas `moderate`** (0 baixas, 0 altas, 0 críticas) |
+| `npm audit --omit=dev` | **0 vulnerabilidades**: todos os pacotes afetados são dependências de desenvolvimento |
+| Causa única | `minimatch` abaixo de 11.0.1 (GHSA-g3hv-75wg-m249, negação de serviço por amplificação de globparts); `package-lock.json` tem `minimatch` 3.1.5 e duas cópias aninhadas |
+| Pacotes afetados | `minimatch`, `eslint`, `eslint-plugin-jsx-a11y`, `typescript-eslint`, `openapi-typescript` e as dependências deles (`@eslint/config-array`, `@eslint/eslintrc`, `@eslint-community/eslint-utils`, `@redocly/openapi-core`, `@typescript-eslint/eslint-plugin`, `parser`, `type-utils`, `typescript-estree` e `utils`) |
+| Dependabot na mesma data | 30 alertas abertos, 4 em `.aiox-core/package-lock.json` e 26 em `.aiox-core/scripts/diagnostics/health-dashboard/package-lock.json`; **0** em `frontend/` e **0** no Maven |
+| Onde estão os pacotes | Todos em `devDependencies` de `frontend/package.json` (`eslint`, `eslint-plugin-jsx-a11y`, `typescript-eslint`, `openapi-typescript`) ou dependências delas; as `dependencies` (`react`, `react-dom`, `react-router-dom`, `@tanstack/react-query`, `openapi-fetch`) não têm aviso |
+| Decisão | **Não corrigir** (F7-31): o conserto sugerido (`npm audit fix --force`) troca para `eslint-plugin-jsx-a11y@6.4.1` e força versões antigas de `eslint`, com mudança que quebra compatibilidade, e altera o `package-lock.json`, o que invalidaria as medições. Risco aceito e documentado, a tratar depois da entrega |

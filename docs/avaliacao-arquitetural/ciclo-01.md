@@ -104,7 +104,7 @@ As medições da seção 1 são de 17/10/2026 (Fase 4). Esta seção atualiza a 
 
 ## 7. Complemento de 28/10/2026: CEN-10 e CEN-11
 
-Os cenários CEN-10 e CEN-11 ([ciclo-00.md](ciclo-00.md), seção 3) ficaram fora da comparação da seção 2, que cobre CEN-01 a CEN-09. Este complemento faz a mesma comparação, sobre o código da execução E-25, idêntico ao da `v1.0.0-rc4`. Este passo **não alterou código**. Linhas citadas são desse código e podem mudar com edições posteriores. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
+Os cenários CEN-10 e CEN-11 ([ciclo-00.md](ciclo-00.md), seção 3) ficaram fora da comparação da seção 2, que cobre CEN-01 a CEN-09. Este complemento faz a mesma comparação, sobre o código da execução E-25, idêntico ao da `v1.0.0-rc4` e ao da `v1.0.0-rc5`. Este passo **não alterou código**. Linhas citadas são desse código e podem mudar com edições posteriores. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
 
 | Cenário | A arquitetura promete | O código faz (arquivo e linha) | Teste que prova | Veredito |
 | --- | --- | --- | --- | --- |

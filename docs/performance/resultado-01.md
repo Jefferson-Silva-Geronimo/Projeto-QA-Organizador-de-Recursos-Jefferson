@@ -16,7 +16,7 @@ validada pelo professor.
 | Aplicação | `java -jar` do Spring Boot 3.5.16, Java 21.0.6, parâmetros padrão da JVM, porta 18080 |
 | Banco | PostgreSQL 17 em contêiner, imagem `postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3`, Docker 29.8.2 |
 | Pool de conexões | Padrão do HikariCP, **não configurado no projeto** |
-| JMeter | Apache JMeter **5.6.3**, binário oficial, SHA-512 conferido, em `C:\Users\super\tools` (fora do repositório) |
+| JMeter | Apache JMeter **5.6.3**, binário oficial, SHA-512 conferido, instalado fora do repositório |
 | Commit | `d42be77` (o jar foi gerado do `d8d26af`; a diferença entre os dois é só documentação) |
 | Plano | `perf/reservas.jmx`, comando em [perf/README.md](../../perf/README.md) |
 | Aquecimento | 1 rodada descartada (20 usuários, 45 s, 737 amostras, outras datas) antes da rodada 01 |

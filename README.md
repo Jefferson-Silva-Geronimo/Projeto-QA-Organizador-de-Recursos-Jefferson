@@ -26,16 +26,32 @@ Disciplina de Qualidade de Software (TADS, 2026.2). Entrega na semana 46.
 
 ## Como subir
 
-Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, Node 22.12 ou mais novo. O Maven vem pelo wrapper (`./mvnw`), que em Linux exige `unzip` (veja "Limitações conhecidas"). Os comandos abaixo são de um shell Bash (Git Bash no Windows, Linux ou macOS).
+Pré-requisitos (instale antes de começar):
 
-**Onde foi verificado:** o fluxo foi verificado em **Windows 11 com Git Bash**, num só computador. **Linux, macOS e PowerShell não foram testados** (fonte: [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5 e 2.6).
+- Git, `curl` e um shell Bash: o Git Bash (Git for Windows) no Windows, ou o Bash do sistema no Linux e no macOS. Os comandos abaixo são de Bash.
+- Java 21 (Temurin ou equivalente).
+- Docker com o Docker Compose v2 (comando `docker compose`), usado sem `sudo`: em Linux, o usuário precisa estar no grupo `docker`.
+- `unzip`, em Linux. O Maven vem pelo wrapper (`./mvnw`), que sem `unzip` falha com uma mensagem que parece ataque (veja o passo 3). Em Debian e Ubuntu: `sudo apt install -y unzip`.
+- Node 22.12 ou mais novo, só para o front end (passo 6).
 
-1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias **e a que vem com um placeholder entre `<` e `>`** (`DB_URL`, que traz o texto `<POSTGRES_DB>`), com valores **locais** (senhas inventadas por você, nunca reais). O `.env` é lido no Bash por `. ./.env` (passo 3), então **não pode sobrar `<` nem `>` em nenhum valor**: troque `<POSTGRES_DB>` na `DB_URL` pelo nome do banco que você escolheu. O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
+**Onde foi verificado:** o fluxo foi verificado em **Windows 11 com Git Bash**, num só computador, e em dois testes manuais do autor em **Ubuntu 24.04 sobre WSL2**, sobre a `main` (o segundo registro anota o commit `b2d6110`) e sem log versionado ([docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5, 2.6 e 2.11). A CI roda os quatro jobs em `ubuntu-24.04` ([ci.yml](.github/workflows/ci.yml)). **macOS e PowerShell não foram testados.**
+
+0. Baixe o código da versão avaliada e entre na pasta clonada (os passos seguintes rodam na raiz dela):
+
+   ```bash
+   git clone https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson.git
+   cd Projeto-QA-Organizador-de-Recursos-Jefferson
+   git checkout --detach v1.0.0-rc5
+   ```
+
+   A `main` pode ter commits posteriores à tag; para reproduzir os números deste README, use a tag.
+1. Copie `.env.example` para `.env` (`cp .env.example .env`) e preencha **todas** as variáveis que vierem vazias, com valores **locais** (senhas inventadas por você, nunca reais). A `DB_URL` já vem pronta e usa o `POSTGRES_DB` que você preencher: não mude a ordem das linhas. O `.env` é lido no Bash por `. ./.env` (passo 3) e pelo Docker Compose, então **não pode sobrar `<` nem `>` em nenhum valor**. O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
 
    | Variável | O que colocar |
    | --- | --- |
    | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Nome, usuário e senha do banco local |
-   | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Os mesmos valores. A `DB_URL` **vem com o placeholder `<POSTGRES_DB>` e precisa ser editada**: `jdbc:postgresql://localhost:5432/` seguido do nome do banco, sem `<` nem `>` |
+   | `DB_URL` | **Já vem preenchida** (`jdbc:postgresql://localhost:5432/${POSTGRES_DB}`) e usa o `POSTGRES_DB`; não precisa editar |
+   | `DB_USER`, `DB_PASSWORD` | Os mesmos valores de `POSTGRES_USER` e `POSTGRES_PASSWORD` |
    | `SESSAO_DURACAO` | Duração da sessão em ISO-8601, por exemplo `PT30M` |
    | `LOGIN_TENTATIVAS`, `LOGIN_JANELA` | Já vêm preenchidos (`5` e `PT10M`); mantenha |
    | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_SENHA` | O primeiro Administrador, criado só se não houver usuário. Sem ele não há como entrar |
@@ -45,13 +61,13 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
 
    `SESSAO_DURACAO`, `LOGIN_TENTATIVAS` e `LOGIN_JANELA` não têm valor padrão: sem eles a aplicação não sobe.
 
-   Exemplo de `.env` completo, com as mesmas variáveis do `.env.example` (exemplo para teste local; nunca use senhas reais):
+   Exemplo de `.env` depois de preenchido, com as mesmas variáveis do `.env.example` (exemplo para teste local; nunca use senhas reais):
 
    ```bash
    POSTGRES_DB=recursos
    POSTGRES_USER=recursos
    POSTGRES_PASSWORD=senha-local-do-banco
-   DB_URL=jdbc:postgresql://localhost:5432/recursos
+   DB_URL=jdbc:postgresql://localhost:5432/${POSTGRES_DB}
    DB_USER=recursos
    DB_PASSWORD=senha-local-do-banco
    SESSAO_DURACAO=PT30M
@@ -64,12 +80,72 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
    LOGIN_JANELA=PT10M
    ```
 
-   O nome do banco em `POSTGRES_DB` e no fim da `DB_URL` é o mesmo, e `DB_USER` e `DB_PASSWORD` repetem `POSTGRES_USER` e `POSTGRES_PASSWORD`.
-2. Suba o banco: `docker compose up -d postgres`.
-3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`. Se o `. ./.env` mostrar `syntax error`, procure `<` ou `>` no `.env` (`grep -n '[<>]' .env`), em geral o `<POSTGRES_DB>` que sobrou na `DB_URL`.
-4. Verifique a saúde: `GET http://localhost:8080/actuator/health` deve responder `{"status":"UP"}`.
-5. Entre com o Administrador do passo 1: `POST http://localhost:8080/api/auth/login` com o corpo `{"email": "<BOOTSTRAP_ADMIN_EMAIL>", "senha": "<BOOTSTRAP_ADMIN_SENHA>"}`. A resposta traz o token; as demais operações exigem `Authorization: Bearer <token>` (ADR-004).
-6. Front end (opcional): em outro terminal, `cd frontend`, `npm ci`, `cp .env.example .env` e `npm run dev`; abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
+   A `DB_URL` termina com o `POSTGRES_DB`, e `DB_USER` e `DB_PASSWORD` repetem `POSTGRES_USER` e `POSTGRES_PASSWORD`. Se o seu `.env` veio de uma versão anterior à rc5, a `DB_URL` trazia o texto `<POSTGRES_DB>`: troque-o pelo nome do banco ou use a linha acima.
+2. Suba o banco: `docker compose up -d postgres`. A primeira vez baixa a imagem do PostgreSQL.
+3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`.
+   - Esse comando **fica em primeiro plano e ocupa o terminal** enquanto a aplicação roda: use um terminal para ele e outro para os passos 4 a 6. Na primeira execução o Maven baixa muitas dependências e a aplicação demora a ficar pronta. Para parar, `Ctrl+C` nesse terminal.
+   - Se o `. ./.env` mostrar `syntax error`, procure `<` ou `>` no `.env` (`grep -n '[<>]' .env`).
+   - Em Linux **sem `unzip`**, o `./mvnw` termina com `Error: Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised`. Isso **não indica ataque**: sem `unzip` o wrapper baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip` fixada em `.mvn/wrapper/maven-wrapper.properties` (F7-06, F7-14). Instale o `unzip` (`sudo apt install -y unzip` em Debian e Ubuntu) e rode de novo.
+4. Em outro terminal, na raiz do repositório, verifique a saúde: `curl -s http://localhost:8080/actuator/health` deve responder `{"status":"UP"}`.
+5. Entre com o Administrador do passo 1. O corpo é JSON (`Content-Type: application/json`) com `email` e `senha`, e a resposta traz `token`, `perfil` e `expiraEm`. No mesmo terminal do passo 4:
+
+   ```bash
+   set -a && . ./.env && set +a
+   API=http://localhost:8080
+   TOKEN=$(curl -s -X POST "$API/api/auth/login" -H 'Content-Type: application/json' \
+     -d "{\"email\":\"$BOOTSTRAP_ADMIN_EMAIL\",\"senha\":\"$BOOTSTRAP_ADMIN_SENHA\"}" \
+     | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+   echo "$TOKEN"
+   ```
+
+   As demais operações exigem `Authorization: Bearer <token>` (ADR-004; aqui, `-H "Authorization: Bearer $TOKEN"`). Se a senha tiver `"` ou `\`, escape-os no JSON.
+6. Front end (opcional), em outro terminal, a partir da raiz do repositório:
+
+   ```bash
+   cd frontend
+   npm ci
+   cp .env.example .env     # ajuste VITE_API_URL se a API não estiver em http://localhost:8080
+   npm run gerar:api        # regenera src/api/schema.d.ts a partir de ../docs/api/openapi.json
+   npm run lint
+   npm run typecheck
+   npm test
+   npm run build
+   npm run dev
+   ```
+
+   `gerar:api`, `lint`, `typecheck`, `test` e `build` são conferências, na ordem da CI (seção "Front end"); para só usar a tela bastam `npm ci`, o `.env` e `npm run dev`. No Windows, o `git status` pode listar `frontend/src/api/schema.d.ts` depois do `gerar:api` só por causa do fim de linha; o conteúdo não muda. O `npm run dev` também ocupa o terminal (`Ctrl+C` para parar). Abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
+
+### Primeiro uso pela API (fluxo mínimo)
+
+Com a aplicação no ar e o `TOKEN` do passo 5, o Administrador cadastra um Solicitante e uma sala, e o **Solicitante** (o Administrador recebe 403 em reservas) reserva a sala. Os corpos seguem o contrato [docs/api/openapi.json](docs/api/openapi.json): na sala, `horaAbertura` e `horaFechamento` são `HH:mm` e `diasFuncionamento` usa 1 (segunda) a 7 (domingo); o fuso é `America/Sao_Paulo` (RN-15), então `13:00Z` é 10:00 local; a reserva precisa estar no futuro, dentro do horário da sala e sem cruzar a meia-noite. **A data do exemplo pode já ter passado: troque `2027-03-16` por uma data futura.** `tipoSala` é livre (`AULA` é só exemplo).
+
+```bash
+AUTH="Authorization: Bearer $TOKEN"; JSON='Content-Type: application/json'
+
+# 1. Solicitante (como Administrador); a resposta traz o "id" do usuário
+curl -s -X POST "$API/api/usuarios" -H "$AUTH" -H "$JSON" \
+  -d '{"nome":"Professora Teste","email":"solicitante@exemplo.test","senha":"senha-local-1234","perfil":"SOLICITANTE"}'
+
+# 2. Sala (como Administrador); anote o "id" da resposta em SALA_ID (por exemplo, SALA_ID=1)
+curl -s -X POST "$API/api/salas" -H "$AUTH" -H "$JSON" \
+  -d '{"nome":"Sala 101","capacidade":30,"localizacao":"Bloco A","tipoSala":"AULA","horaAbertura":"07:00","horaFechamento":"22:00","diasFuncionamento":[1,2,3,4,5,6,7],"restrito":false}'
+
+# 3. Entrar como Solicitante
+TOKEN2=$(curl -s -X POST "$API/api/auth/login" -H "$JSON" \
+  -d '{"email":"solicitante@exemplo.test","senha":"senha-local-1234"}' | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+
+# 4. Reservar a sala: 201 e "estado":"APROVADA" (sala não restrita)
+curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
+  -d "{\"titulo\":\"Aula de teste\",\"inicio\":\"2027-03-16T13:00:00Z\",\"fim\":\"2027-03-16T14:00:00Z\",\"recursoIds\":[$SALA_ID]}"
+
+# 5. Repetir com uma janela que se sobrepõe: 409 com o código CONFLITO_DE_ALOCACAO
+curl -s -X POST "$API/api/reservas" -H "Authorization: Bearer $TOKEN2" -H "$JSON" \
+  -d "{\"titulo\":\"Outra aula\",\"inicio\":\"2027-03-16T13:30:00Z\",\"fim\":\"2027-03-16T14:30:00Z\",\"recursoIds\":[$SALA_ID]}"
+```
+
+### Parar e limpar
+
+`Ctrl+C` na API e no Vite. `docker compose down` derruba o banco e **mantém os dados** no volume; `docker compose down -v` também **apaga o volume e todos os dados do banco local**. O `.env` e a pasta clonada ficam até você apagá-los.
 
 ## Configuração opcional
 
@@ -112,7 +188,7 @@ Roda os testes de unidade e de arquitetura (`*Test`, Surefire) e os de integraç
 | `ArquiteturaTest` | Seis regras de camada MVC: o model não depende de Spring, persistência nem das outras camadas, o controller não acessa repository, o service não depende de controller nem de DTO (ADR-014) |
 | `ContextoIT` | A aplicação sobe com PostgreSQL real, o Flyway aplica a baseline e o relógio é UTC (ADR-005, ADR-009) |
 
-O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). Na execução E-25 (run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe está em [docs/testes/execucao-e25.md](docs/testes/execucao-e25.md). A tag avaliada é a `v1.0.0-rc4` (`git checkout --detach v1.0.0-rc4`; commit em `git rev-list -n 1 v1.0.0-rc4`; [Release](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4)). Na E-26 (run [`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) a contagem é a mesma: 665 testes no back end, 910 no front e 5 no E2E; resultado por classe em [docs/testes/execucao-e26.md](docs/testes/execucao-e26.md). O código dessas execuções é o da versão anterior, sem a correção do BUG-028. Na execução E-27 (run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466), commit `b5e9bbd`, que só difere da tag em arquivos `.md`: `git diff --stat b5e9bbd v1.0.0-rc4`) o back end tem 670 testes (231 de unidade e arquitetura e 439 de integração e BDD, com os 5 novos CT-168 a CT-170), o front 910 e o E2E 5; resultado por classe em [docs/testes/execucao-e27.md](docs/testes/execucao-e27.md).
+O `verify` roda também o gate de cobertura do JaCoCo, que reprova abaixo de 80% de linhas ou de 70% de branches (`pom.xml`, ADR-011). Na execução E-25 (run [`40373624577`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40373624577)) o back end tem 665 testes, o front 910 e o E2E 5; o resultado por classe está em [docs/testes/execucao-e25.md](docs/testes/execucao-e25.md). A tag avaliada é a `v1.0.0-rc5` (`git checkout --detach v1.0.0-rc5`; commit em `git rev-list -n 1 v1.0.0-rc5`; [Release](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc5)). O código, os testes, as dependências, os workflows e a configuração de build da rc5 são idênticos aos da `v1.0.0-rc4`: a rc5 muda a documentação e o `.env.example` (F7-31). Na E-26 (run [`40790098761`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40790098761)) a contagem é a mesma: 665 testes no back end, 910 no front e 5 no E2E; resultado por classe em [docs/testes/execucao-e26.md](docs/testes/execucao-e26.md). O código dessas execuções é o da versão anterior, sem a correção do BUG-028. Na execução E-27 (run [`41238067466`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/41238067466), commit `b5e9bbd`, que só difere da tag em arquivos `.md`: `git diff --stat b5e9bbd v1.0.0-rc4`) o back end tem 670 testes (231 de unidade e arquitetura e 439 de integração e BDD, com os 5 novos CT-168 a CT-170), o front 910 e o E2E 5; resultado por classe em [docs/testes/execucao-e27.md](docs/testes/execucao-e27.md).
 
 ### Requisitos para rodar o `verify`
 
@@ -143,7 +219,7 @@ O tempo esperado, com a máquina livre, é de **cerca de 8 minutos** (475 s a 51
 
 ### Front end
 
-Pré-requisito: Node 22.12 ou mais novo. Tudo roda em `frontend/`.
+Pré-requisito: Node 22.12 ou mais novo (veja os pré-requisitos de "Como subir"). Os comandos do passo 6, em detalhe; tudo roda em `frontend/`.
 
 ```bash
 cd frontend
@@ -206,7 +282,7 @@ Em *Settings → Branches → Add branch ruleset* (ou regra de proteção) para 
 
 ## Estrutura de pastas
 
-Todos os itens abaixo existem no repositório (conferido em 26/10/2026).
+Todos os itens abaixo existem no repositório (conferido em 01/11/2026).
 
 ```text
 README.md              visão do projeto
@@ -229,7 +305,7 @@ docs/
   api/                 openapi.json: contrato OpenAPI da API, conferido por teste (`DocumentacaoApiIT`)
   adr/                 ADR-001 a ADR-015 (decisões de arquitetura)
   avaliacao-arquitetural/   ciclo-00.md (ATAM, CEN-01 a CEN-11) e ciclo-01.md (código de pé)
-  testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execuções E-24 e E-25, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
+  testes/              casos de teste, plano de TDD, matriz de autorização, BDD, evidência de TDD, mutação (PIT e manual), revisão de segurança, modelo de ameaças, limitadores de nota, auditoria da RTM, execuções E-24 a E-27, alertas do Dependabot, revisão assistida do front, ocorrências a vigiar, o E2E e o roteiro de verificação em navegador real
   defeitos/            README.md: processo, labels e índice BUG-xxx; analise-causa-raiz.md
   decisoes-equipe.md   decisões e suposições aceitas, com quem e quando
   limitacoes-e-divida-tecnica.md   o que está aberto ou declarado: risco aceito, limitação, suposição e dívida técnica
@@ -266,11 +342,11 @@ src/test/resources/features/   cenários BDD de aprovação e bloqueio
 | 4 | Back end guiado por testes (TDD e BDD) | Concluída; PR 2 mesclado na `main` em 17/10/2026 (468 testes, 96,7% de linhas, 84,6% de branches, Quality Gate do SonarCloud aprovado). Lacunas decididas pela equipe em 24/10/2026, sem validação do professor |
 | 5 | Testes de carga, segurança e robustez (JMeter) | Concluída em 17/10/2026. Carga: rodadas 01 a 04; a criação de reserva **não atende** a hipótese de p95 de 300 ms nesta máquina, com causa localizada no `fsync` do PostgreSQL em Docker; consulta, 0 erro real, 0 resposta 500 e 0 dupla reserva atendem. Segurança: revisão OWASP Top 10:2025, CORS, correlação de logs, varredura de segredos, Dependabot e limite de tentativas de login (5 em 10 minutos) |
 | 6 | Front end | Concluída em 22/10/2026: as 11 telas do mapa de telas (T01 a T11), cada uma com teste de componente, verificação em navegador real e documentação, e 5 testes E2E na CI. RF-11 e RF-14 não têm tela, por interpretação declarada (F6-20). Ver o [relatório de qualidade](docs/relatorio-qualidade.md) e o [mapa de telas](docs/prd/navegacao-telas.md) |
-| 7 | Fechamento e relatório de qualidade | **Concluída.** Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) e [decisão de qualidade](docs/decisao-qualidade.md) (**liberar com ressalvas**, Jefferson Silva Geronimo), decisões F7-01 a F7-29, `verify` robusto, os três PRs do Dependabot do front mesclados, 22 de 22 requisitos críticos com prova de mutação e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). Tag `v1.0.0-rc4`; o histórico de versões está no [CHANGELOG.md](CHANGELOG.md). Pacote de entrega: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md) |
+| 7 | Fechamento e relatório de qualidade | **Concluída.** Feitos: revisão assistida do front, limitadores de nota, auditoria da RTM e correção dos defeitos achados, soma do Maven, modelo de ameaças, leitura final de cobertura e do SonarCloud, [relatório final de qualidade](docs/relatorio-qualidade.md) e [decisão de qualidade](docs/decisao-qualidade.md) (**liberar com ressalvas**, Jefferson Silva Geronimo), decisões F7-01 a F7-31, `verify` robusto, os três PRs do Dependabot do front mesclados, 22 de 22 requisitos críticos com prova de mutação e [limitações e dívida técnica](docs/limitacoes-e-divida-tecnica.md). Tag `v1.0.0-rc5` (as anteriores ficam como histórico); o histórico de versões está no [CHANGELOG.md](CHANGELOG.md). Pacote de entrega: [índice de evidências](docs/evidencias/README.md), [CHANGELOG.md](CHANGELOG.md), [status dos requisitos](docs/status-requisitos.md) e [checklist do avaliador](docs/entrega/checklist.md) |
 
 ## Pacote de evidências (release candidate)
 
-A tag avaliada é a **`v1.0.0-rc4`**. Em relação às execuções E-25 e E-26 ela corrige o defeito BUG-028 (o agendamento do despacho de notificações dependia do agendador de SEM_DECISAO; [#111](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/issues/111)), com teste de regressão (CT-168 a CT-170), e traz a documentação corrigida e verificada contra o código, a CI e a aplicação em execução; a configuração padrão não muda. O commit da tag é o que `git rev-list -n 1 v1.0.0-rc4` imprime, e a [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) traz o hash, o run da CI e os números dessa revisão. Os números abaixo são os da execução E-27, medida no commit `b5e9bbd` (só `.md` depois dele: `git diff --stat b5e9bbd v1.0.0-rc4`); os de E-25 e E-26 são históricos ([docs/testes/execucao-e25.md](docs/testes/execucao-e25.md), [docs/testes/execucao-e26.md](docs/testes/execucao-e26.md)). A decisão de qualidade é **liberar com ressalvas** (Jefferson Silva Geronimo, 24/10/2026), reafirmada para a `v1.0.0-rc4`, e as ressalvas estão no [relatório final](docs/relatorio-qualidade.md).
+A tag avaliada é a **`v1.0.0-rc5`**. Em relação à `v1.0.0-rc4`, que fica como histórico, ela muda só a documentação e o `.env.example` (a `DB_URL` passa a vir pronta, sem `<` nem `>`; F7-31); o código, os testes, as dependências, os workflows e a configuração de build são os mesmos. Em relação às execuções E-25 e E-26, o código corrige o defeito BUG-028 (o agendamento do despacho de notificações dependia do agendador de SEM_DECISAO; [#111](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/issues/111)), com teste de regressão (CT-168 a CT-170); a configuração padrão não muda. O commit da tag é o que `git rev-list -n 1 v1.0.0-rc5` imprime, e a [Release v1.0.0-rc5](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc5) traz o hash, o run da CI e os números dessa revisão. Os números abaixo são os da execução E-27, medida no commit `b5e9bbd` sobre o código da rc4 (o mesmo da rc5); os de E-25 e E-26 são históricos ([docs/testes/execucao-e25.md](docs/testes/execucao-e25.md), [docs/testes/execucao-e26.md](docs/testes/execucao-e26.md)). A decisão de qualidade é **liberar com ressalvas** (Jefferson Silva Geronimo, 24/10/2026), reafirmada para a `v1.0.0-rc5`, e as ressalvas estão no [relatório final](docs/relatorio-qualidade.md).
 
 | Evidência | Resultado | Onde |
 | --- | --- | --- |
@@ -308,8 +384,8 @@ Fonte: especificação, seção "Metas mensuráveis".
 - **Valores sem valor padrão (D1, D3, D4, D9, D17):** decididos pela equipe em 24/10/2026, sem valor padrão no código; ver [docs/decisoes-equipe.md](docs/decisoes-equipe.md).
 - **SonarCloud:** análise ligada na CI, com o Quality Gate reprovando o job `test`. Os números lidos no fechamento estão em [docs/testes/leitura-final-cobertura.md](docs/testes/leitura-final-cobertura.md) (run `40373624577`, execução E-25); o SonarCloud e o JaCoCo medem só o Java, e o front não tem cobertura medida.
 - **Os dois agendadores vêm desligados por padrão:** o job que cancela a reserva SOLICITADA sem decisão (RN-25, D2) e o despacho de notificações (RF-11) só ligam com `app.jobs.sem-decisao.habilitado=true` e `app.jobs.notificacoes.habilitado=true`, cada um de forma independente, e exigem a frequência em `.intervalo` (ISO-8601, sem valor padrão); o `application.yml` não tem `app.jobs.*`. Sem eles, uma reserva SOLICITADA sem decisão continua SOLICITADA (só a rejeição ou o cancelamento manual a encerram) e a notificação nasce `PENDENTE` e permanece assim. Até a versão anterior o despacho só era agendado com o job de SEM_DECISAO também ligado (BUG-028, corrigido na rc4). Como ligar: seção "Configuração opcional"; detalhe em [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md).
-- **Alertas do Dependabot:** todos no framework `.aiox-core/`, nenhum no Maven nem no front (F7-08). Número, manifestos, severidades e justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md).
-- **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256": instale `unzip`. No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
+- **Alertas do Dependabot:** todos no framework `.aiox-core/`, nenhum no Maven nem no front (F7-08). Número, manifestos, severidades e justificativa em [docs/testes/alertas-dependabot.md](docs/testes/alertas-dependabot.md). Isso vale para o **Dependabot**; o `npm audit` do front é outra base de avisos e acusa 14 vulnerabilidades `moderate`, todas em dependências de desenvolvimento (0 com `npm audit --omit=dev`), que a equipe aceitou como risco (F7-31; [docs/limitacoes-e-divida-tecnica.md](docs/limitacoes-e-divida-tecnica.md)).
+- **Maven Wrapper e `unzip` (F7-06, F7-14):** `.mvn/wrapper/maven-wrapper.properties` fixa a soma SHA-256 do `apache-maven-3.10.0-bin.zip`. Em Linux **sem `unzip`**, o `mvnw` baixa o `.tar.gz` do Maven, cuja soma não confere com a do `.zip`, e termina com "Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised" (não indica ataque): instale `unzip` (`sudo apt install -y unzip` em Debian e Ubuntu). No `Dockerfile` da API, o estágio de compilação instala `unzip` com `apt-get` **sem versão do pacote fixada** (as imagens-base seguem fixadas por digest, e o `unzip` não vai para a imagem de execução). Quem subir a versão do Maven deve atualizar a soma junto com a URL.
 
 ## Convenções
 

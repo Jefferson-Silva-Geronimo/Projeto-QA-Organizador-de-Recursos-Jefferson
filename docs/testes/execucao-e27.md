@@ -1,6 +1,6 @@
 # Execução E-27: CI da `main` no commit X (`b5e9bbd`), em 31/10/2026
 
-Execução de referência da `v1.0.0-rc4` para a [RTM](../../RTM.md): o commit X é o merge do PR 113 (A), com o código do PR 112 (C, a correção do BUG-028). X não é o commit da tag: a tag fica no commit de merge do PR seguinte (PR B, só documentação), que só difere de X em arquivos `.md` (`git diff --stat b5e9bbd v1.0.0-rc4`); o comando `git rev-list -n 1 v1.0.0-rc4` imprime o commit da tag. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). Todo número vem do log do run abaixo, do artefato `relatorio-jacoco` ou da API pública do SonarCloud, lida em 31/10/2026.
+Execução de referência da `v1.0.0-rc4` para a [RTM](../../RTM.md), com o código que a `v1.0.0-rc5` também tem (F7-31): o commit X é o merge do PR 113 (A), com o código do PR 112 (C, a correção do BUG-028). X não é o commit da tag: a tag fica no commit de merge do PR seguinte (PR B, só documentação), que só difere de X em arquivos `.md` (`git diff --stat b5e9bbd v1.0.0-rc4`); o comando `git rev-list -n 1 v1.0.0-rc4` imprime o commit da tag. Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). Todo número vem do log do run abaixo, do artefato `relatorio-jacoco` ou da API pública do SonarCloud, lida em 31/10/2026.
 
 | Item | Valor |
 | --- | --- |

@@ -29,7 +29,7 @@ falha aberta; as lacunas estão em "parcial", com ação.
 ### A01 Broken Access Control: atendida
 - **Evidência:** autorização em duas camadas (ADR-004). Camada 1 na cadeia de segurança, por método e caminho, antes de o
   corpo ser lido: `SegurancaConfig.java:74-94`. Camada 2: `@PreAuthorize` nos controladores. Posse: o Solicitante não
-  lê nem altera reserva de outro (`AutorizacaoApiIT#ct118`). Matriz perfil × operação (34 operações × 3 perfis = 102 combinações, dentro dos 141 testes da classe no run E-24):
+  lê nem altera reserva de outro (`AutorizacaoApiIT#ct118`). Matriz perfil × operação (34 operações protegidas, mais o login público, que dão 35 no contrato, × 3 perfis = 102 combinações; o sem token é a 4ª identidade, em `ct119`; dentro dos 141 testes da classe no run E-24):
   `AutorizacaoApiIT#ct117`, publicada em [matriz-autorizacao.md](matriz-autorizacao.md) e agora conferida por asserção.
   Token ausente, inválido, revogado e expirado: `#ct119`. Mensagem de conflito não identifica terceiros: `#ct121`.
 - **Defeito achado e corrigido:** BUG-008.
