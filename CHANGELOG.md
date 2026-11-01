@@ -15,6 +15,7 @@ Release candidate que muda **só documentação e o `.env.example`**. O código,
 ### Corrigido
 - `.env.example`: a `DB_URL` passa a ser `jdbc:postgresql://localhost:5432/${POSTGRES_DB}`, sem `<` nem `>`; quem copia o arquivo e preenche só o que está vazio sobe a aplicação sem editar a `DB_URL`.
 - README: `unzip` explicado junto ao passo do `./mvnw` (a mensagem "Failed to validate Maven distribution SHA-256" não indica ataque), passo 6 do front ligado à seção "Front end", exemplos de corpo das requisições, F7-01 a F7-31, "E-24 a E-27" e a ressalva de que "nenhum alerta" no front vale para o Dependabot e não para o `npm audit`.
+- README: o passo do banco passa a esperar o PostgreSQL ficar saudável (`docker compose up -d --wait postgres`), porque a aplicação iniciada logo em seguida podia falhar com `Unable to obtain connection from database`; o fluxo mínimo por `curl` extrai o `id` da sala da resposta e mostra o código HTTP de cada chamada.
 - `docs/plano-de-teste.md` (estado da seção 6, fotografia da Fase 4 identificada, palavra TODO), `docs/status-requisitos.md` (tag publicada, seção 2.10, nota sobre RF-13 e fotografia datada), `docs/arquitetura.md` (convenção do dia da semana, `analyze-docs`), `docs/performance/resultado-01.md` (caminho local removido) e `docs/defeitos/README.md` (barra final de seis linhas da tabela).
 
 ### Alterado
