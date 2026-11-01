@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.9.
+Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.9, e a da tag publicada, seguindo só o README, na seção 2.10.
 
 ### 2.1 Método
 
@@ -165,6 +165,28 @@ O cenário (b) é o que o BUG-028 impedia: antes da correção, com só o agenda
 **Rotas do front no navegador real:** não foram repetidas nesta rodada; a comparação de `telas.ts` com [navegacao-telas.md](../prd/navegacao-telas.md) é estática e os testes de rotas (`Rotas.test.tsx`) estão entre os 910 do front.
 
 **O que isto é e o que não é.** Uma só máquina e uma só conferência limpa; outros computadores e sistemas operacionais não foram provados. Os quatro cenários rodaram uma vez em cada commit, sem repetição para medir variação.
+
+### 2.10 Clone limpo da `v1.0.0-rc4` seguindo só o README (31/10/2026): PASSOU depois de uma lacuna do README
+
+**Método:** clone do repositório público numa pasta temporária fora do projeto, `git checkout --detach v1.0.0-rc4` (`git rev-parse HEAD` = `10e83439fae622b74e25444e9abd24e031e142d4`), seguindo só o README da tag, `.env` criado a partir do `.env.example` com valores fictícios, projeto Compose exclusivo, um computador (o mesmo das seções anteriores).
+
+| Passo do README | Resultado | Tempo |
+| --- | --- | --- |
+| Pré-requisitos (Java 21.0.6, Node 22.13.1, Docker 29.8.2) | ok | |
+| Clone e checkout | ok | 12 s |
+| 1. `.env` a partir do `.env.example`, preenchendo as variáveis vazias | **falhou no passo 3**: a `DB_URL` não vem vazia, vem com o texto `<POSTGRES_DB>`; o `. ./.env` do passo 3 deu `syntax error near unexpected token 'newline'` e a aplicação não subiu | |
+| 2. `docker compose up -d postgres` | ok (o `docker compose` faz o próprio parse do `.env` e não reclama do `<POSTGRES_DB>`) | banco saudável em 43 s |
+| 3 e 4. `spring-boot:run` e `/actuator/health` (depois de trocar o `<POSTGRES_DB>` na `DB_URL` pelo nome do banco) | `{"status":"UP"}`; "Started ... in 22,6 s" | 102 s |
+| 5. Login do Administrador | HTTP 200, token recebido; `/api/auth/eu` com perfil `ADMINISTRADOR` | 110 s |
+| 6. `npm ci`, `cp .env.example .env`, `npm run dev` | `npm ci` saiu com 0 em 127 s numa execução limpa; página em http://localhost:5173/ com HTTP 200; login pela página com o Chromium do Playwright levou ao menu do Administrador | |
+
+Depois, com a aplicação e o Vite parados e o banco no ar: `./mvnw -B verify` saiu com 0 em **747 s**, **231 testes de unidade e arquitetura e 439 de integração e BDD (670), 0 falhas**, "All coverage checks have been met", `BUILD SUCCESS`; JaCoCo local: linhas **1767 de 1806** e branches **525 de 602**. Front: `gerar:api` (sem diferença de conteúdo no schema; o `git status` acusa só o fim de linha do Windows), `lint`, `typecheck` e `build` com saída 0; `npm test`: **56 arquivos e 910 testes**.
+
+Fluxo curto pela API, sem nenhuma variável `APP_JOBS_*`: criar Solicitante (201) e sala livre (201); reserva das 14 às 16 com 201 `APROVADA`; reserva sobreposta das 15 às 17 com 409 `CONFLITO_DE_ALOCACAO`; a notificação ficou `PENDENTE` com 0 tentativas, como o README diz.
+
+**O que falhou e a correção.** A única falha foi a do passo 1 (`DB_URL` com placeholder). O texto do README ("preencha todas as variáveis que vierem vazias") não cobria a variável que vem preenchida com `<POSTGRES_DB>`. O README da `main` passou a dizer que a `DB_URL` também precisa ser editada, que o `.env` é lido por `. ./.env` e não pode ter `<` nem `>`, traz um exemplo de `.env` completo com as variáveis do `.env.example` e uma verificação de uma linha depois do passo 3 (decisão F7-30). A tag `v1.0.0-rc4` continua com o texto anterior. O texto novo foi validado num clone da `main` com o README corrigido: `.env` montado a partir do bloco de exemplo, `. ./.env` sem erro, `/actuator/health` UP em 80 s e login do Administrador com HTTP 200; nessa validação o `docker compose up -d postgres` falhou no Git Bash com `error getting credentials - err: exec: "docker-credential-desktop"` e passou com o remédio do README (`docker pull` da imagem fixada pelo PowerShell, "Image is up to date", e o `up` repetido).
+
+**Limites:** uma só máquina e uma só conferência; o `verify` levou mais que os "cerca de 8 minutos" do README, dentro do aviso de que pode chegar a 25 minutos.
 
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 

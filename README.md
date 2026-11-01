@@ -30,12 +30,12 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
 
 **Onde foi verificado:** o fluxo foi verificado em **Windows 11 com Git Bash**, num só computador. **Linux, macOS e PowerShell não foram testados** (fonte: [docs/testes/limitadores-de-nota.md](docs/testes/limitadores-de-nota.md), seções 2.5 e 2.6).
 
-1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias com valores **locais** (senhas inventadas por você, nunca reais). O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
+1. Copie `.env.example` para `.env` e preencha **todas** as variáveis que vierem vazias **e a que vem com um placeholder entre `<` e `>`** (`DB_URL`, que traz o texto `<POSTGRES_DB>`), com valores **locais** (senhas inventadas por você, nunca reais). O `.env` é lido no Bash por `. ./.env` (passo 3), então **não pode sobrar `<` nem `>` em nenhum valor**: troque `<POSTGRES_DB>` na `DB_URL` pelo nome do banco que você escolheu. O arquivo `.env` não é versionado e nenhum segredo entra no repositório.
 
    | Variável | O que colocar |
    | --- | --- |
    | `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | Nome, usuário e senha do banco local |
-   | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Os mesmos valores, no formato `jdbc:postgresql://localhost:5432/<POSTGRES_DB>` |
+   | `DB_URL`, `DB_USER`, `DB_PASSWORD` | Os mesmos valores. A `DB_URL` **vem com o placeholder `<POSTGRES_DB>` e precisa ser editada**: `jdbc:postgresql://localhost:5432/` seguido do nome do banco, sem `<` nem `>` |
    | `SESSAO_DURACAO` | Duração da sessão em ISO-8601, por exemplo `PT30M` |
    | `LOGIN_TENTATIVAS`, `LOGIN_JANELA` | Já vêm preenchidos (`5` e `PT10M`); mantenha |
    | `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_SENHA` | O primeiro Administrador, criado só se não houver usuário. Sem ele não há como entrar |
@@ -44,8 +44,29 @@ Pré-requisitos: Java 21 (Temurin ou equivalente), Docker e, para o front end, N
    | `NOTIFICACAO_URL`, `NOTIFICACAO_TOKEN`, `NOTIFICACAO_TIMEOUT_CONEXAO`, `NOTIFICACAO_TIMEOUT_LEITURA` | **Opcionais**; não vêm no `.env.example`, a aplicação lê de `application.yml`. `NOTIFICACAO_URL` é o endereço do provedor do webhook e `NOTIFICACAO_TOKEN` a credencial enviada como Bearer; vazios (o padrão), o envio fica desligado e as notificações ficam `PENDENTE`. Os dois prazos têm padrão `PT0.5S` (conexão) e `PT1.5S` (leitura), valores iniciais a validar (ADR-007) |
 
    `SESSAO_DURACAO`, `LOGIN_TENTATIVAS` e `LOGIN_JANELA` não têm valor padrão: sem eles a aplicação não sobe.
+
+   Exemplo de `.env` completo, com as mesmas variáveis do `.env.example` (exemplo para teste local; nunca use senhas reais):
+
+   ```bash
+   POSTGRES_DB=recursos
+   POSTGRES_USER=recursos
+   POSTGRES_PASSWORD=senha-local-do-banco
+   DB_URL=jdbc:postgresql://localhost:5432/recursos
+   DB_USER=recursos
+   DB_PASSWORD=senha-local-do-banco
+   SESSAO_DURACAO=PT30M
+   BOOTSTRAP_ADMIN_EMAIL=admin@exemplo.test
+   BOOTSTRAP_ADMIN_SENHA=senha-local-do-admin
+   SONAR_ORGANIZATION=
+   SONAR_PROJECT_KEY=
+   CORS_ORIGENS=http://localhost:5173
+   LOGIN_TENTATIVAS=5
+   LOGIN_JANELA=PT10M
+   ```
+
+   O nome do banco em `POSTGRES_DB` e no fim da `DB_URL` é o mesmo, e `DB_USER` e `DB_PASSWORD` repetem `POSTGRES_USER` e `POSTGRES_PASSWORD`.
 2. Suba o banco: `docker compose up -d postgres`.
-3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`.
+3. Exporte as variáveis do `.env` e rode a aplicação: `set -a && . ./.env && set +a && ./mvnw spring-boot:run`. Se o `. ./.env` mostrar `syntax error`, procure `<` ou `>` no `.env` (`grep -n '[<>]' .env`), em geral o `<POSTGRES_DB>` que sobrou na `DB_URL`.
 4. Verifique a saúde: `GET http://localhost:8080/actuator/health` deve responder `{"status":"UP"}`.
 5. Entre com o Administrador do passo 1: `POST http://localhost:8080/api/auth/login` com o corpo `{"email": "<BOOTSTRAP_ADMIN_EMAIL>", "senha": "<BOOTSTRAP_ADMIN_SENHA>"}`. A resposta traz o token; as demais operações exigem `Authorization: Bearer <token>` (ADR-004).
 6. Front end (opcional): em outro terminal, `cd frontend`, `npm ci`, `cp .env.example .env` e `npm run dev`; abra o endereço que o Vite mostrar (por padrão `http://localhost:5173`) e entre com o mesmo Administrador.
