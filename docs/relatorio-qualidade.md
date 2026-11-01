@@ -1,6 +1,6 @@
 # Relatório final de qualidade
 
-Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números da execução E-25 e em 28/10/2026 com os da E-26, e revisado para a `v1.0.0-rc4`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes da revisão avaliada, a tag `v1.0.0-rc4` (commit em `git rev-list -n 1 v1.0.0-rc4`), que corrige o BUG-028 e traz a documentação verificada. Os números são os da execução E-27, medida no commit `b5e9bbd` (só `.md` depois dele: `git diff --stat b5e9bbd v1.0.0-rc4`); as execuções E-25 e E-26 são históricas ([execucao-e25.md](testes/execucao-e25.md), [execucao-e26.md](testes/execucao-e26.md)). Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
+Relatório de qualidade do projeto **Organização de Recursos**, escrito em 24/10/2026 e atualizado em 26/10/2026 com os números da execução E-25 e em 28/10/2026 com os da E-26, e revisado para a `v1.0.0-rc5`. Fonte dos requisitos e das metas: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html). **Todo número cita um arquivo, um run ou uma consulta; o que não tem origem está como lacuna.** Este relatório descreve o estado do código e dos testes da revisão avaliada, a tag `v1.0.0-rc5` (commit em `git rev-list -n 1 v1.0.0-rc5`), que tem o código da `v1.0.0-rc4` (inclui a correção do BUG-028) e muda só a documentação e o `.env.example` (F7-31). Os números do código são os da execução E-27, medida no commit `b5e9bbd` sobre o código da rc4 (`git diff --stat b5e9bbd v1.0.0-rc4` lista só `.md`); as execuções E-25 e E-26 são históricas ([execucao-e25.md](testes/execucao-e25.md), [execucao-e26.md](testes/execucao-e26.md)). Cada afirmação é um **fato** (com arquivo), uma **lacuna**, uma **suposição** (com impacto) ou uma **decisão** (com origem).
 
 ## 1. Resumo e decisão de qualidade
 
@@ -40,7 +40,7 @@ A decisão de qualidade (**liberar com ressalvas**), os critérios, a evidência
 | TLS, `Strict-Transport-Security`, `Content-Security-Policy`, limitação de taxa, teste de XSS e teste do tempo constante do login | Lacuna | [modelo-de-ameacas.md](testes/modelo-de-ameacas.md) |
 | SBOM, verificação de licenças e assinatura do artefato | Dívida técnica | F7-06 |
 | Mutação: só o pacote `model`, em 17/10/2026, **não repetida** | Limite | [mutacao.md](testes/mutacao.md) |
-| README verificado só em Git Bash no Windows (Linux, macOS e PowerShell não); login pela tela não refeito no clone limpo | Limite | [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 6 |
+| README verificado em Git Bash no Windows e em dois testes manuais do autor em Ubuntu 24.04 sobre WSL2, sem log versionado (macOS e PowerShell não); login pela tela não refeito no clone limpo | Limite | [limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 6 |
 
 ## 3. Metas contra resultado
 

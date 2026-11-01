@@ -13,7 +13,7 @@ As quatro condições que a [especificação do projeto](https://afonsolelis.git
 
 ## 2. a) Aplicação executa em clone limpo
 
-Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.9, e a da tag publicada, seguindo só o README, na seção 2.10.
+Prova repetida na seção 2.5 (execução E-24), na seção 2.6 (execução E-25) e na seção 2.7 (execução E-26); a da revisão da `v1.0.0-rc4` está na seção 2.9, e a da tag publicada, seguindo só o README, na seção 2.10; a seção 2.11 registra dois testes manuais em Linux.
 
 ### 2.1 Método
 
@@ -188,6 +188,30 @@ Fluxo curto pela API, sem nenhuma variável `APP_JOBS_*`: criar Solicitante (201
 
 **Limites:** uma só máquina e uma só conferência; o `verify` levou mais que os "cerca de 8 minutos" do README, dentro do aviso de que pode chegar a 25 minutos.
 
+### 2.11 Clone limpo em Linux (teste manual)
+
+**Teste manual do autor em Ubuntu 24.04 sobre WSL2, sobre a `main` (o segundo registro anota o commit `b2d6110`, a `v1.0.0-rc4` mais dois commits), sem log versionado.** Foram dois registros independentes, cada um seguindo só o README, com o projeto Compose `linux` e clone numa pasta temporária (apagada ao fim). Os números abaixo vêm dos dois registros; **não há log nem artefato versionado** que os comprove, e eles não foram reproduzidos no repositório. Ambiente: Linux 6.18 (WSL2), Java 21.0.7, Docker 29.8.2, Node 22.23.4; `unzip` presente nos dois (o caso **sem** `unzip` não foi executado nesses testes).
+
+| Passo do README | Registro 1 | Registro 2 |
+| --- | --- | --- |
+| Clone da branch padrão | ok, 4 s | ok, cerca de 20 s (`b2d6110`) |
+| 1. `.env` (exemplo do README, `<POSTGRES_DB>` trocado por `recursos`) | ok, `grep -n '[<>]' .env` vazio | ok, `grep -n '[<>]' .env` vazio |
+| 2. `docker compose up -d postgres` (com `-p linux`) | ok, 20 s, sem o erro de credencial do Windows | ok, 23 s para subir e saudável em 38 a 54 s |
+| 3 e 4. `spring-boot:run` e `/actuator/health` | `{"status":"UP"}` em 97 s, com download do wrapper e das dependências, sem `syntax error` | `{"status":"UP"}` em cerca de 126 s, com cache frio; Flyway aplicado e Administrador criado |
+| 5. Login do Administrador | HTTP 200 com `token`, `perfil` e `expiraEm` | HTTP 200 em 0,64 s |
+| Fluxo curto pela API | não executado | Solicitante 201; sala 201; login do Solicitante 200; reserva 201 `APROVADA` (2026-11-10, 13:00Z a 14:00Z); reserva sobreposta (13:30Z a 14:30Z) 409 `CONFLITO_DE_ALOCACAO` |
+| 6. Front end | não executado | `npm ci` 69 s (391 pacotes); `gerar:api` 2 s, sem alteração no `git status`; `lint` 12 s; `typecheck` 10 s; `npm test` 109 s, **56 arquivos e 910 testes**; `build` 13 s; `npm run dev` pronto e http://localhost:5173/ com HTTP 200 e CORS com a origem `http://localhost:5173` (login pela página não testado) |
+| `./mvnw -B verify`, aplicação parada | `BUILD SUCCESS` em 455 s (Maven 07:32 min), 439 testes de integração e BDD, 0 falhas | `BUILD SUCCESS` em 425 s (Maven 07:01 min); Surefire **231** e Failsafe **439** (670), 0 falhas; JaCoCo **1767 de 1806** linhas (97,84%) e **525 de 602** branches (87,21%), "All coverage checks have been met" |
+
+**Achados.**
+
+- O `npm ci` avisou `eslint@9.39.5` obsoleto e **14 vulnerabilidades `moderate`** no `npm audit`; o README dizia que os alertas do Dependabot estão só em `.aiox-core/`, o que vale para o Dependabot e não para o `npm audit`. Conferido em [alertas-dependabot.md](alertas-dependabot.md), seção 10, e tratado em F7-31 (risco aceito, dependências de desenvolvimento).
+- Lacunas do README nesses testes, e o que virou correção: (1) o README não dizia como clonar nem qual versão usar (agora o passo 0 clona e faz `git checkout --detach` na tag); (2) o `.env` era preenchido à mão, com a `DB_URL` a editar (a `DB_URL` do `.env.example` passa a vir pronta, F7-31); (3) o nome do projeto Compose sem `-p` sai do nome da pasta (não mudou); (4) o README não dizia que `spring-boot:run` e `npm run dev` ocupam o terminal, que a primeira execução baixa muitas dependências nem como parar (agora diz); (5) o passo 6 não ligava `gerar:api`, `lint`, `typecheck`, `test` e `build` (agora liga); (6) não havia exemplo de corpo de usuário, sala e reserva nem o formato `HH:mm` (agora há o fluxo mínimo por `curl`); (7) não havia instrução de limpeza nem aviso de que `docker compose down -v` apaga o banco (agora há); (8) o README não separava os pré-requisitos (agora há uma lista única).
+- **Falha sem `unzip`, não observada nesses testes.** A mensagem "Failed to validate Maven distribution SHA-256, your Maven distribution might be compromised" em Linux sem `unzip` vem do código do wrapper (`mvnw`, linhas 178 a 180, que troca o `.zip` pelo `.tar.gz`, e 246, que imprime o erro), e não de uma execução registrada nesta seção. O README passa a dizer que ela não indica ataque e a trazer `sudo apt install -y unzip`.
+- O tempo do `verify` (455 s e 425 s) ficou dentro do "cerca de 8 minutos" do README.
+
+**Limites:** dois registros manuais, sem log versionado, um só computador (WSL2), imagem do PostgreSQL já baixada no `verify`; o login pela página do front não foi testado; macOS e PowerShell continuam não verificados. A medição de Linux sobre a versão avaliada não está nesta seção.
+
 ## 3. b) Pipeline: check obrigatório na `main`, runs verdes e um vermelho intencional
 
 ### 3.1 Proteção da `main` (lida da API em 24/10/2026)
@@ -293,7 +317,7 @@ O ciclo de TDD que criou o teste e a constraint está no histórico: `9d4d6d9` (
 | Item | Tipo | Detalhe |
 | --- | --- | --- |
 | Tempo do clone limpo | Limite | Medido num computador com cache do Maven e do Docker. Máquina sem cache leva mais tempo; não medido |
-| Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados só em Git Bash no Windows; Linux, macOS e PowerShell **não foram verificados** |
+| Sistemas além do Windows com Git Bash | Lacuna | Os comandos do README foram executados em Git Bash no Windows e, em dois testes manuais do autor sem log versionado, em Ubuntu 24.04 sobre WSL2 (seção 2.11); macOS e PowerShell **não foram verificados** |
 | Login pela tela do front | Lacuna | O front foi verificado até o Vite no ar e o CORS; o login pela interface no navegador **não foi refeito** nesta prova (os roteiros em navegador real da Fase 6 e o E2E cobrem a tela) |
 | Valores do `.env` | Suposição | Gerados por script a partir das dicas do `.env.example`; uma pessoa poderia escolher outros valores válidos. Impacto: se um valor válido for recusado, o README fica incompleto |
 | README restante | Resolvida | Roadmap, proteção da `main` e outros trechos estavam desatualizados em 24/10/2026; foram atualizados nas fases seguintes |

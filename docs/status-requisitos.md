@@ -1,6 +1,6 @@
 # Status dos requisitos obrigatórios
 
-Comparação dos 14 requisitos funcionais obrigatórios (RF-01 a RF-14) e das regras críticas (RN-01 a RN-08) da [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seções "Requisitos funcionais obrigatórios" e "Regras críticas", com o código, os testes e a [RTM.md](../RTM.md). Posição de 26/10/2026, sobre a `main` em `7aabc26`; os resultados de teste são os da execução E-24 (run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445), `c9240cd`: back end 665 testes, front 910, E2E 5 de 5, 0 falhas; [execucao-e24.md](testes/execucao-e24.md)).
+Comparação dos 14 requisitos funcionais obrigatórios (RF-01 a RF-14) e das regras críticas (RN-01 a RN-08) da [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seções "Requisitos funcionais obrigatórios" e "Regras críticas", com o código, os testes e a [RTM.md](../RTM.md). Posição de 26/10/2026 (fotografia datada; os números atuais estão em [RTM.md](../RTM.md) e em [relatorio-qualidade.md](relatorio-qualidade.md)), sobre a `main` em `7aabc26`; os resultados de teste são os da execução E-24 (run [`40116523445`](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/actions/runs/40116523445), `c9240cd`: back end 665 testes, front 910, E2E 5 de 5, 0 falhas; [execucao-e24.md](testes/execucao-e24.md)).
 
 ## 1. Critério
 
@@ -61,8 +61,8 @@ As quatro condições da seção "Avaliação" da especificação, na ordem em q
 
 ## 5. Pendências, em ordem
 
-1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo na revisão avaliada**: as provas anteriores estão nas seções 2.5 e 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md), e a da revisão da `v1.0.0-rc4` está na seção 2.9 do mesmo arquivo; a tag só sai com autorização expressa.
-2. **RF-13 parcial:** responsividade provada por uma jornada E2E em Chromium; as demais telas em celular e outros navegadores só por roteiro manual. Pendência: ampliar o E2E ou aceitar a limitação.
+1. **Limitadores de nota (aplicação que não executa, pipeline ausente, falha de autorização e dupla reserva):** nenhuma pendência aberta; os quatro têm evidência e prova. O que continua é a **repetição da prova de clone limpo na revisão avaliada**: as provas anteriores estão nas seções 2.5 e 2.6 de [limitadores-de-nota.md](testes/limitadores-de-nota.md), a do commit da `v1.0.0-rc4` na seção 2.9, a da tag publicada da rc4 na seção 2.10 e os dois testes manuais em Linux na seção 2.11; a tag da rc5 só sai com autorização expressa.
+2. **RF-13 parcial:** responsividade provada por uma jornada E2E em Chromium; as demais telas em celular e outros navegadores só por roteiro manual. Pendência: ampliar o E2E ou aceitar a limitação. Aqui "parcial" mede a completude da prova de responsividade; na [RTM.md](../RTM.md), RF-13 está `testado` porque existem testes que passam. São duas escalas diferentes.
 4. **RNF-08b não atendido** (p95 de criação de 568 a 886 ms contra 300 ms), hipótese de 300 ms sem validação ([resultado-02.md](performance/resultado-02.md)).
 5. **R-25 aberto** (`NotificacaoApiIT.int01ECt103`, causa desconhecida; RF-11).
 6. **D14:** a troca de perfil não é recusada pelo mínimo de dois Responsáveis (decisão declarada).

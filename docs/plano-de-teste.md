@@ -1,6 +1,6 @@
 # Plano de teste
 
-Plano de teste no formato da ISO/IEC/IEEE 29119-3, completado na Fase 4 e atualizado com os números medidos na Fase 5. Os casos de teste ficam em [casos-de-teste.md](testes/casos-de-teste.md). Nenhum número foi inventado: o que não tem origem é hipótese ou proposta, e o que depende de decisão fica como `TODO` com o motivo.
+Plano de teste no formato da ISO/IEC/IEEE 29119-3, completado na Fase 4 e atualizado com os números medidos na Fase 5. Os casos de teste ficam em [casos-de-teste.md](testes/casos-de-teste.md). Nenhum número foi inventado: o que não tem origem é hipótese ou proposta, e o que depende de decisão fica como pendência registrada, com o motivo.
 
 Fonte dos requisitos: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html).
 
@@ -115,7 +115,7 @@ Metas da especificação (seção "Metas mensuráveis"):
 | Requisitos críticos na RTM | 100% |
 | Bugs ou vulnerabilidades críticos | 0 |
 
-Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; evidência de CI E-2: run `39055557492`, check `test` verde):
+Os valores da tabela a seguir são uma fotografia da Fase 4; os valores finais, da execução E-27, estão em [relatorio-qualidade.md](relatorio-qualidade.md) e em [testes/execucao-e27.md](testes/execucao-e27.md). Resultado medido na Fase 4 (execução local de 17/10/2026, `./mvnw -B clean verify`; evidência de CI E-2: run `39055557492`, check `test` verde):
 
 | Meta | Meta da especificação | Medido | Situação |
 | --- | --- | --- | --- |
@@ -148,13 +148,13 @@ Critério numérico de defeito bloqueante: não definido, porque nenhum requisit
 
 | Entregável | Origem | Estado |
 | --- | --- | --- |
-| Este plano de teste | Especificação, seção "Entregáveis" | Esqueleto |
+| Este plano de teste | Especificação, seção "Entregáveis" | Feito: completado na Fase 4 e atualizado com os números da Fase 5; os números finais estão em [relatorio-qualidade.md](relatorio-qualidade.md) |
 | Casos de teste identificados por CT-xxx | [casos-de-teste.md](testes/casos-de-teste.md) | Feito na fatia 4.0; execução por fatia |
 | RTM com cenário, caso de teste e evidência | Especificação, seção "Entregáveis" | Feito na Fase 4 (E-1) |
-| Suíte automatizada e relatório de testes | Especificação, seção "Entregáveis" | Feito: 468 testes no `verify` e na CI |
-| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção "Entregáveis" | JaCoCo feito; SonarCloud pendente (Bloco F) |
-| Plano e resultado do teste de carga | Especificação, seção "Entregáveis" | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx) e [resultado-01.md](performance/resultado-01.md) |
-| Registro de defeitos | Especificação, seção "Entregáveis" | Feito: BUG-001 a BUG-009 em [defeitos](defeitos/README.md) |
+| Suíte automatizada e relatório de testes | Especificação, seção "Entregáveis" | Feito: 670 testes no back end (231 de unidade e arquitetura e 439 de integração e BDD), 910 no front e 5 E2E na execução E-27 ([execucao-e27.md](testes/execucao-e27.md)) |
+| Relatórios de cobertura (JaCoCo) e de análise estática (SonarCloud) | Especificação, seção "Entregáveis" | Feito: JaCoCo e SonarCloud, com Quality Gate OK na E-27 ([leitura-final-cobertura.md](testes/leitura-final-cobertura.md), [jacoco-resumo.md](testes/jacoco-resumo.md)) |
+| Plano e resultado do teste de carga | Especificação, seção "Entregáveis" | Feito: [rnf.md](performance/rnf.md), [perf/reservas.jmx](../perf/reservas.jmx), [resultado-01.md](performance/resultado-01.md) e [resultado-02.md](performance/resultado-02.md) |
+| Registro de defeitos | Especificação, seção "Entregáveis" | Feito: BUG-001 a BUG-028 em [defeitos](defeitos/README.md) |
 | Relatório final de qualidade | Especificação, seção "Entregáveis" | [relatorio-qualidade.md](relatorio-qualidade.md) e [decisao-qualidade.md](decisao-qualidade.md) |
 | Evidência de TDD ou BDD | Especificação, seção "Estratégia obrigatória de qualidade" | Feito: [evidencia-tdd.md](testes/evidencia-tdd.md) |
 
@@ -246,7 +246,7 @@ Semanas 47 a 50: prova oral, feedback e correções, revisão integrada e encerr
 
 ## 10. Rastreabilidade
 
-- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco, caso de teste, evidência e status (48 testados e 1 parcial em 17/10/2026).
+- Toda regra e todo requisito têm linha na [RTM](../RTM.md), com risco, caso de teste, evidência e status (49 testadas e 0 parciais no resumo atual da RTM; eram 48 e 1 em 17/10/2026).
 - Casos de teste usam o prefixo CT-xxx e estão ligados na RTM desde a Fase 4.
 - Defeitos usam o prefixo BUG-xxx e são registrados em `docs/defeitos/` desde a Fase 3.
 - Identificadores: RN-xx, RF-xx, RNF-xx, CEN-xx, ADR-xxx, CT-xxx, INT-xx, BUG-xxx e R-xx.

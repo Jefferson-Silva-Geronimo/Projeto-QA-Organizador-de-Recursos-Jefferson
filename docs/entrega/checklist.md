@@ -1,6 +1,6 @@
 # Checklist de entrega (avaliador externo)
 
-Conferência feita como **avaliador externo** sobre o commit `b5e9bbd` (execução E-27, merge do PR 113), em 31/10/2026, com os valores medidos abaixo. A tag avaliada é a `v1.0.0-rc4` e só difere desse commit em arquivos `.md` (`git diff --stat b5e9bbd v1.0.0-rc4`); o commit da tag se obtém com `git rev-list -n 1 v1.0.0-rc4` e a [Release v1.0.0-rc4](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc4) traz o hash e o run da CI da tag. Ver F7-28 em [decisoes-equipe.md](../decisoes-equipe.md). Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
+Conferência feita como **avaliador externo** sobre o commit `b5e9bbd` (execução E-27, merge do PR 113), em 31/10/2026, com os valores medidos abaixo. A tag avaliada é a `v1.0.0-rc5`; o commit `b5e9bbd` tem o código da `v1.0.0-rc4`, o mesmo da rc5, que muda só `.md` e o `.env.example` (F7-31). O commit da tag se obtém com `git rev-list -n 1 v1.0.0-rc5` e a [Release v1.0.0-rc5](https://github.com/Jefferson-Silva-Geronimo/Projeto-QA-Organizador-de-Recursos-Jefferson/releases/tag/v1.0.0-rc5) traz o hash e o run da CI da tag. Ver F7-28 e F7-31 em [decisoes-equipe.md](../decisoes-equipe.md). Fonte dos entregáveis: [especificação do projeto](https://afonsolelis.github.io/aulas_senac/pages/qualidade2/especificacao-projeto.html), seção "Entregáveis".
 
 ## 1. Como foi conferido
 
@@ -26,7 +26,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | --- | --- | --- | --- | --- | --- |
 | 1 | Repositório com histórico de trabalho e revisão por pares | Sim | Sim | Repositório público; `git log`; 535 commits e 78 pull requests mesclados na `main` no commit `b5e9bbd` (`git rev-list --count` e `gh pr list --state merged`, 31/10/2026) | **Parcial:** há histórico e revisão **assistida** registrada; "revisão por pares" com equipe de uma pessoa é limitação declarada (F7-16, item 14) |
 | 2 | Aplicação executável e instruções de instalação | Sim | Sim | [README.md](../../README.md), "Como subir" | Subiu em clone limpo (tabela da seção 1) |
-| 3 | `README.md` e documentação dos fluxos ou da API | Sim | Sim | [README.md](../../README.md); [openapi.json](../api/openapi.json); [fluxos-sequencia.md](../prd/fluxos-sequencia.md); [navegacao-telas.md](../prd/navegacao-telas.md) | README com Fase 7 concluída, a tag `v1.0.0-rc4` e os números da execução E-27 |
+| 3 | `README.md` e documentação dos fluxos ou da API | Sim | Sim | [README.md](../../README.md); [openapi.json](../api/openapi.json); [fluxos-sequencia.md](../prd/fluxos-sequencia.md); [navegacao-telas.md](../prd/navegacao-telas.md) | README com Fase 7 concluída, a tag `v1.0.0-rc5` e os números da execução E-27 (código da rc4, o mesmo da rc5) |
 | 4 | `RTM.md` ligando requisito, risco, teste e evidência | Sim | Sim | [RTM.md](../../RTM.md); [rtm.md](../rtm.md); [auditoria-rtm.md](../testes/auditoria-rtm.md) | 55 linhas; execuções E-24 a E-27 |
 | 5 | Diagramas de contexto, componentes e sequências críticas | Sim | Sim | [arquitetura.md](../arquitetura.md), seções 10.1 (contexto), 10.2 (contêineres) e 10.3 (componentes); [fluxos-sequencia.md](../prd/fluxos-sequencia.md) (14 diagramas) | A renderização dos diagramas Mermaid não foi refeita na fase de fechamento (limitação declarada) |
 | 6 | Plano, suíte automatizada e relatório de testes | Sim | Sim | [plano-de-teste.md](../plano-de-teste.md); [plano-tdd.md](../testes/plano-tdd.md); `src/test` e `frontend`; [casos-de-teste.md](../testes/casos-de-teste.md); [execucao-e27.md](../testes/execucao-e27.md); [relatorio-qualidade.md](../relatorio-qualidade.md) | Sem `TODO` no plano de teste |
@@ -42,11 +42,11 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | Item | Existe | Atualizado | Caminho | Observação |
 | --- | --- | --- | --- | --- |
 | `docs/entrega/checklist.md` | Sim | Sim | Este arquivo | Atualizado na revisão avaliada |
-| `CHANGELOG.md` | Sim | Sim | [CHANGELOG.md](../../CHANGELOG.md) | Seção `1.0.0-rc4` e histórico de versões, com data |
+| `CHANGELOG.md` | Sim | Sim | [CHANGELOG.md](../../CHANGELOG.md) | Seção `1.0.0-rc5` e histórico de versões, com data |
 | `docs/evidencias/README.md` (índice do pacote) | Sim | Sim | [evidencias/README.md](../evidencias/README.md) | Run da CI, Quality Gate, JaCoCo e clone limpo |
 | `docs/rtm.md` | Sim | Sim | [rtm.md](../rtm.md) | Uma linha que aponta para a RTM da raiz, sem duplicar |
 | `docs/decisao-qualidade.md` | Sim | Sim | [decisao-qualidade.md](../decisao-qualidade.md) | Declaração de autoria com o nome completo |
-| Tag anotada no commit avaliado | Sim | Sim | `v1.0.0-rc4` (avaliada); `git rev-list -n 1 v1.0.0-rc4` | As tags de versões anteriores permanecem como histórico (CHANGELOG.md); nenhuma tag foi movida |
+| Tag anotada no commit avaliado | Sim | Sim | `v1.0.0-rc5` (avaliada); `git rev-list -n 1 v1.0.0-rc5` | As tags de versões anteriores permanecem como histórico (CHANGELOG.md); nenhuma tag foi movida |
 | CI verde na execução E-27 | Sim | Sim | Run `41238067466` | `test`, `frontend`, `e2e` e `segredos` verdes |
 | Repositório público | Sim | Sim | Visibilidade `PUBLIC` lida pela API do GitHub | |
 | Nenhum token ou dado pessoal real | Sim | Sim | Job `segredos` verde; `.env` fora do Git | Conferência por varredura da CI, não por leitura de todo o histórico |
@@ -60,7 +60,7 @@ Clone novo do repositório público numa pasta temporária fora do projeto, `git
 | 1 | `./mvnw -B verify` falhava em computador lento | **Resolvido** (PR 93); passou na execução E-27 em 480 s no clone limpo (539 s na E-25 e 773 s na conferência anterior) |
 | 2 | O relatório do JaCoCo da CI expirava em 7 dias | **Resolvido**: `retention-days: 30`, o artefato da E-27 expira em 30/11/2026; resumo versionado em [leitura-final-cobertura.md](../testes/leitura-final-cobertura.md) |
 | 3 | Faltavam `CHANGELOG.md`, `docs/evidencias/README.md`, `docs/rtm.md` e `docs/decisao-qualidade.md` | **Resolvido** |
-| 4 | As evidências não apontavam para a tag avaliada | **Resolvido** com a `v1.0.0-rc4` |
+| 4 | As evidências não apontavam para a tag avaliada | **Resolvido** com a `v1.0.0-rc5` |
 | 5 | `plano-de-teste.md` com 4 `TODO` | **Resolvido** |
 | 6 | README e `relatorio-qualidade.md` desatualizados | **Resolvido** |
 | 7 | README mandava preencher variáveis `SONAR_*` que são só do SonarCloud | **Resolvido** |
