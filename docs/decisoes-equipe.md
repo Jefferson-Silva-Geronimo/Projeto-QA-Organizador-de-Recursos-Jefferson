@@ -700,3 +700,16 @@ Nessa execução o contexto extra não apareceu como custo visível acima da var
 | Medidas | Back end 670 testes (231 + 439), front 910, E2E 5, linhas 97,84% e branches 87,21% (525 de 602), 535 commits e 78 pull requests mesclados em X; os quatro cenários dos agendadores passaram em X; a calibração curta do JMeter não achou erro real nem resposta 500 |
 | Variação de branches | 525 de 602 em X, com a correção; os valores anteriores (523, 521 e 519 de 602) são de código sem ela. A F7-26 e a F7-27 explicam a variação entre execuções de código idêntico |
 | Origem | F7-28; pedido do autor de 31/10/2026 |
+
+### F7-30. Lacuna do README sobre a `DB_URL` do `.env`: corrigida só na `main`, sem nova tag (31/10/2026)
+
+**Decisão da equipe (Jefferson Silva Geronimo), 31/10/2026.**
+
+| Item | Registro |
+| --- | --- |
+| Situação | No clone limpo da `v1.0.0-rc4` seguindo só o README ([limitadores-de-nota.md](testes/limitadores-de-nota.md), seção 2.10), a aplicação não subiu: o `.env.example` traz `DB_URL=jdbc:postgresql://localhost:5432/<POSTGRES_DB>`, o README mandava preencher "as variáveis que vierem vazias" e o `. ./.env` do passo 3 falha com `syntax error near unexpected token 'newline'` por causa do `<POSTGRES_DB>`. O `docker compose` não tem o problema (faz o próprio parse) |
+| Decisão | Corrigir **só o README da `main`**: redação que cobre também a variável com placeholder, aviso de que a `DB_URL` precisa ser editada e de que o `.env` não pode ter `<` nem `>`, exemplo de `.env` completo derivado do `.env.example` real e uma verificação de uma linha depois do passo 3. **Sem nova tag**: o formulário recebe só o link do repositório e o avaliador clona a `main`; a `v1.0.0-rc4` continua com o texto anterior do README |
+| Alternativa descartada | Uma `v1.0.0-rc5` com o `.env.example` corrigido: exigiria nova rodada de evidências (CI, clone limpo, decisão de qualidade) por um ajuste de texto, e mexeria em arquivo que não é documentação |
+| Consequência | O README da tag e o da `main` divergem só neste ponto. Quem clonar a tag precisa saber editar a `DB_URL` (o erro aponta a linha 7 do `.env`); quem clonar a `main` segue o texto novo. O `.env.example` continua como está: dívida técnica em [limitacoes-e-divida-tecnica.md](limitacoes-e-divida-tecnica.md) |
+| Impacto se estiver errada | Se o avaliador clonar a tag e não a `main`, tropeça no mesmo ponto; o erro mostrado (`DB_URL` na linha 7) e o aviso do README da `main` o resolvem |
+| Origem | Teste de clone limpo da tag de 31/10/2026; pedido do autor |
